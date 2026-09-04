@@ -1,0 +1,3163 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1.0">
+
+<title>GameDay Sports</title>
+
+<style>
+*{box-sizing:border-box}
+
+body{
+  margin:0;
+  background:#090e0b;
+  color:#fff;
+  font-family:Arial,sans-serif;
+  padding-bottom:90px;
+}
+
+header{
+  position:sticky;
+  top:0;
+  z-index:50;
+  background:#101712;
+  border-bottom:1px solid #27342c;
+  padding:14px;
+}
+
+.header-row{
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap:10px;
+}
+
+h1{
+  margin:0;
+  font-size:23px;
+}
+
+.live{
+  padding:6px 9px;
+  border-radius:999px;
+  background:#173c22;
+  color:#b9f5c8;
+  border:1px solid #2c7442;
+  font-size:10px;
+  font-weight:bold;
+}
+
+.subtitle{
+  margin-top:5px;
+  color:#94a198;
+  font-size:12px;
+}
+
+.account-bar{
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap:8px;
+  margin-top:10px;
+  font-size:12px;
+}
+
+.account-status{
+  color:#b9c5bc;
+  overflow:hidden;
+  text-overflow:ellipsis;
+  white-space:nowrap;
+}
+
+.account-link{
+  color:#c9f2d2;
+  text-decoration:none;
+  font-weight:bold;
+  white-space:nowrap;
+}
+
+main{
+  max-width:1000px;
+  margin:auto;
+  padding:14px;
+}
+
+.section-title{
+  color:#91a097;
+  text-transform:uppercase;
+  font-size:11px;
+  font-weight:bold;
+  margin:8px 0;
+}
+
+.featured{
+  display:flex;
+  gap:7px;
+  overflow-x:auto;
+  padding-bottom:10px;
+}
+
+button,select,input{
+  font:inherit;
+}
+
+.sport-btn,
+.view-btn,
+.market-btn,
+.action-btn{
+  cursor:pointer;
+  border:1px solid #324238;
+  background:#141c17;
+  color:#fff;
+  font-weight:bold;
+}
+
+.sport-btn{
+  border-radius:999px;
+  padding:9px 13px;
+  white-space:nowrap;
+}
+
+.sport-btn.active,
+.view-btn.active,
+.market-btn.active{
+  background:#eef5f0;
+  color:#07100a;
+}
+
+.worldwide{
+  width:100%;
+  background:#141c17;
+  color:#fff;
+  border:1px solid #324238;
+  border-radius:10px;
+  padding:12px;
+  margin-bottom:12px;
+}
+
+.views{
+  display:grid;
+  grid-template-columns:repeat(3,1fr);
+  gap:7px;
+  margin-bottom:12px;
+}
+
+.view-btn{
+  border-radius:10px;
+  padding:10px 6px;
+}
+
+.toolbar{
+  display:flex;
+  align-items:center;
+  gap:10px;
+  margin-bottom:12px;
+  flex-wrap:wrap;
+}
+
+.refresh{
+  border:0;
+  border-radius:9px;
+  padding:10px 13px;
+  cursor:pointer;
+  font-weight:bold;
+}
+
+#status{
+  color:#a6b2aa;
+  font-size:13px;
+}
+
+.cards{
+  display:grid;
+  gap:13px;
+}
+
+.card{
+  background:#131b16;
+  border:1px solid #27372d;
+  border-radius:14px;
+  overflow:hidden;
+}
+
+.card-head{
+  padding:13px;
+  border-bottom:1px solid #27372d;
+}
+
+.time{
+  color:#91a198;
+  font-size:11px;
+  margin-bottom:8px;
+}
+
+.team{
+  display:flex;
+  justify-content:space-between;
+  gap:10px;
+  margin:6px 0;
+  font-weight:bold;
+}
+
+.tag{
+  color:#829087;
+  font-size:9px;
+}
+
+.market-tabs{
+  display:flex;
+  gap:6px;
+  padding:10px 12px 0;
+  overflow-x:auto;
+}
+
+.market-btn{
+  border-radius:999px;
+  padding:7px 10px;
+  font-size:11px;
+  white-space:nowrap;
+}
+
+.books{
+  display:grid;
+  gap:9px;
+  padding:11px;
+}
+
+.book{
+  background:#0c130f;
+  border:1px solid #28392f;
+  border-radius:11px;
+  padding:10px;
+}
+
+.book-name{
+  color:#d1ddd5;
+  font-size:12px;
+  font-weight:bold;
+  margin-bottom:8px;
+}
+
+.odds-grid{
+  display:grid;
+  grid-template-columns:repeat(2,minmax(0,1fr));
+  gap:7px;
+}
+
+.odd-btn{
+  width:100%;
+  text-align:left;
+  background:#172019;
+  color:#fff;
+  border:1px solid #34453a;
+  border-radius:9px;
+  padding:10px;
+  cursor:pointer;
+}
+
+.odd-btn.selected{
+  background:#17321f;
+  border:2px solid #69d887;
+}
+
+.odd-name{
+  color:#b4c0b8;
+  font-size:11px;
+  overflow-wrap:anywhere;
+}
+
+.odd-description{
+  font-weight:bold;
+  font-size:11px;
+  margin-top:4px;
+}
+
+.odd-price{
+  font-size:18px;
+  font-weight:bold;
+  margin-top:5px;
+}
+
+.odd-point{
+  color:#cbd5ce;
+  font-size:11px;
+  margin-top:3px;
+}
+
+.notice,.empty,.error,.success{
+  background:#141c17;
+  border:1px solid #2b3a31;
+  border-radius:11px;
+  padding:14px;
+  color:#b9c4bc;
+}
+
+.error{
+  border-color:#733b3b;
+  color:#efb4b4;
+}
+
+.success{
+  border-color:#326744;
+  color:#bef1c9;
+}
+
+.event-btn,
+.prop-btn,
+.future-btn{
+  width:100%;
+  background:#141c17;
+  color:#fff;
+  border:1px solid #314137;
+  border-radius:11px;
+  padding:12px;
+  margin-bottom:8px;
+  text-align:left;
+  cursor:pointer;
+}
+
+.event-btn strong,
+.future-btn strong{
+  display:block;
+  margin-bottom:4px;
+}
+
+.event-btn span,
+.future-btn span{
+  color:#9eada3;
+  font-size:11px;
+}
+
+.action-row{
+  display:flex;
+  flex-wrap:wrap;
+  gap:8px;
+  margin:10px 0;
+}
+
+.action-btn{
+  border:0;
+  border-radius:9px;
+  padding:11px 13px;
+}
+
+.back-btn{
+  background:#202b24;
+}
+
+.group-heading{
+  color:#a8b6ad;
+  margin:18px 0 8px;
+  font-size:13px;
+  font-weight:bold;
+}
+
+/* BET SLIP */
+
+.betslip-bar{
+  position:fixed;
+  left:0;
+  right:0;
+  bottom:0;
+  z-index:100;
+  background:#111914;
+  border-top:1px solid #304037;
+  padding:10px 14px;
+}
+
+.betslip-summary{
+  max-width:1000px;
+  margin:auto;
+}
+
+.betslip-open-btn{
+  width:100%;
+  border:0;
+  border-radius:10px;
+  padding:13px;
+  font-weight:bold;
+  cursor:pointer;
+}
+
+.bet-count{
+  display:inline-block;
+  margin-left:5px;
+  padding:3px 8px;
+  background:#1d5d30;
+  color:#fff;
+  border-radius:999px;
+  font-size:12px;
+}
+
+.betslip-panel{
+  position:fixed;
+  inset:0;
+  z-index:200;
+  background:#090e0b;
+  overflow-y:auto;
+  display:none;
+}
+
+.betslip-panel.open{
+  display:block;
+}
+
+.betslip-header{
+  position:sticky;
+  top:0;
+  z-index:5;
+  background:#111914;
+  border-bottom:1px solid #304037;
+  padding:14px;
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+}
+
+.close-slip{
+  border:0;
+  background:#202b24;
+  color:#fff;
+  border-radius:8px;
+  padding:9px 12px;
+  cursor:pointer;
+}
+
+.slip-content{
+  max-width:700px;
+  margin:auto;
+  padding:14px;
+}
+
+.bet-type-tabs{
+  display:grid;
+  grid-template-columns:repeat(2,1fr);
+  gap:7px;
+  margin-bottom:14px;
+}
+
+.bet-type-btn{
+  border:1px solid #324238;
+  background:#141c17;
+  color:#fff;
+  border-radius:10px;
+  padding:11px;
+  font-weight:bold;
+  cursor:pointer;
+}
+
+.bet-type-btn.active{
+  background:#eef5f0;
+  color:#07100a;
+}
+
+.slip-item{
+  background:#131b16;
+  border:1px solid #2c3b31;
+  border-radius:12px;
+  padding:12px;
+  margin-bottom:10px;
+}
+
+.slip-event{
+  color:#aab6ae;
+  font-size:12px;
+  margin-bottom:6px;
+}
+
+.slip-row{
+  display:flex;
+  justify-content:space-between;
+  gap:10px;
+}
+
+.slip-pick{
+  font-weight:bold;
+}
+
+.remove-btn{
+  border:0;
+  border-radius:8px;
+  background:#302020;
+  color:#f3baba;
+  padding:7px 9px;
+  cursor:pointer;
+}
+
+.stake-box{
+  background:#131b16;
+  border:1px solid #2c3b31;
+  border-radius:12px;
+  padding:14px;
+  margin-top:12px;
+}
+
+.stake-box input{
+  width:100%;
+  margin-top:7px;
+  padding:13px;
+  background:#0c130f;
+  color:#fff;
+  border:1px solid #34453a;
+  border-radius:9px;
+  font-size:18px;
+}
+
+.payout-row{
+  display:flex;
+  justify-content:space-between;
+  gap:10px;
+  margin-top:12px;
+}
+
+.payout-value{
+  font-size:20px;
+  font-weight:bold;
+}
+
+.place-btn{
+  width:100%;
+  border:0;
+  border-radius:11px;
+  padding:14px;
+  margin-top:14px;
+  background:#eef5f0;
+  color:#07100a;
+  font-weight:bold;
+  cursor:pointer;
+}
+
+.place-btn:disabled{
+  opacity:.5;
+}
+
+.test-label{
+  background:#433514;
+  border:1px solid #725c21;
+  color:#f0d987;
+  border-radius:9px;
+  padding:10px;
+  margin-bottom:12px;
+  font-size:12px;
+}
+
+.history{
+  margin-top:18px;
+}
+
+.history-item{
+  background:#131b16;
+  border:1px solid #2c3b31;
+  border-radius:10px;
+  padding:11px;
+  margin-bottom:8px;
+}
+
+.history-row{
+  display:flex;
+  justify-content:space-between;
+  gap:10px;
+}
+
+.history-small{
+  color:#94a198;
+  font-size:11px;
+  margin-top:5px;
+}
+
+@media(min-width:700px){
+  .odds-grid{
+    grid-template-columns:repeat(3,minmax(0,1fr));
+  }
+}
+</style>
+</head>
+
+<body>
+
+<header>
+
+<div class="header-row">
+  <h1>GameDay Sports</h1>
+  <div class="live">LIVE ODDS</div>
+</div>
+
+<div class="subtitle">
+  Sportsbook • Player Props • Futures
+</div>
+
+<div class="account-bar">
+  <div id="accountStatus" class="account-status">
+    Checking GameDay account...
+  </div>
+
+  <a
+    class="account-link"
+    href="gameday-auth.html">
+    Account
+  </a>
+</div>
+
+</header>
+
+<main>
+
+<div class="section-title">
+  Featured Sports
+</div>
+
+<div class="featured">
+
+<button class="sport-btn active" data-sport="nfl">
+NFL
+</button>
+
+<button class="sport-btn" data-sport="nba">
+NBA
+</button>
+
+<button class="sport-btn" data-sport="wnba">
+WNBA
+</button>
+
+<button class="sport-btn" data-sport="mlb">
+MLB
+</button>
+
+<button class="sport-btn" data-sport="nhl">
+NHL
+</button>
+
+<button class="sport-btn" data-sport="ncaaf">
+NCAAF
+</button>
+
+<button class="sport-btn" data-sport="ncaab">
+NCAAB
+</button>
+
+<button class="sport-btn" data-sport="mls">
+MLS
+</button>
+
+<button class="sport-btn" data-sport="epl">
+EPL
+</button>
+
+<button class="sport-btn" data-sport="ucl">
+UCL
+</button>
+
+</div>
+
+<div class="section-title">
+  Worldwide Sports
+</div>
+
+<select id="sportSelect" class="worldwide">
+<option value="">
+Loading sports...
+</option>
+</select>
+
+<div class="views">
+
+<button
+  class="view-btn active"
+  data-view="games">
+Games
+</button>
+
+<button
+  class="view-btn"
+  data-view="props">
+Player Props
+</button>
+
+<button
+  class="view-btn"
+  data-view="futures">
+Futures
+</button>
+
+</div>
+
+<div class="toolbar">
+
+<button id="refreshBtn" class="refresh">
+Refresh
+</button>
+
+<span id="status">
+Ready
+</span>
+
+</div>
+
+<div id="content" class="cards"></div>
+
+</main>
+
+<div class="betslip-bar">
+  <div class="betslip-summary">
+
+    <button
+      class="betslip-open-btn"
+      id="openSlipBtn">
+
+      Bet Slip
+
+      <span
+        id="betCount"
+        class="bet-count">
+        0
+      </span>
+
+    </button>
+
+  </div>
+</div>
+
+<div
+  id="betslipPanel"
+  class="betslip-panel">
+
+<div class="betslip-header">
+
+<strong>
+GameDay Bet Slip
+</strong>
+
+<button
+  id="closeSlipBtn"
+  class="close-slip">
+Close
+</button>
+
+</div>
+
+<div class="slip-content">
+
+<div class="test-label">
+TEST MODE — wagers are saved to GameDay's database but no real money is charged.
+</div>
+
+<div class="bet-type-tabs">
+
+<button
+  id="singleTab"
+  class="bet-type-btn active">
+Single
+</button>
+
+<button
+  id="parlayTab"
+  class="bet-type-btn">
+Parlay
+</button>
+
+</div>
+
+<div id="slipMessage"></div>
+
+<div id="slipItems"></div>
+
+<div class="stake-box">
+
+<label for="stakeInput">
+Stake
+</label>
+
+<input
+  id="stakeInput"
+  type="number"
+  min="1"
+  step="1"
+  placeholder="10.00">
+
+<div class="payout-row">
+
+<span>
+Potential Return
+</span>
+
+<span
+  id="potentialReturn"
+  class="payout-value">
+$0.00
+</span>
+
+</div>
+
+<button
+  id="placeBetBtn"
+  class="place-btn">
+Place Test Wager
+</button>
+
+</div>
+
+<div class="history">
+
+<div class="section-title">
+Recent Test Wagers
+</div>
+
+<div id="wagerHistory">
+Sign in to view wager history.
+</div>
+
+</div>
+
+</div>
+</div>
+
+<script type="module">
+
+import {
+  createClient
+} from "https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/+esm";
+
+
+/* --------------------------------
+   CONFIG
+-------------------------------- */
+
+const SUPABASE_URL =
+"https://qsvrvhcklnsbekxblpfo.supabase.co";
+
+const SUPABASE_KEY =
+"sb_publishable_-yCYGvDqIzVFgu90lgoVpw_uoWnYmO0";
+
+const ODDS_API =
+SUPABASE_URL +
+"/functions/v1/odds-proxy";
+
+const supabase =
+createClient(
+  SUPABASE_URL,
+  SUPABASE_KEY
+);
+
+
+/* --------------------------------
+   STATE
+-------------------------------- */
+
+let currentSport =
+"nfl";
+
+let currentView =
+"games";
+
+let gameMarket =
+"h2h";
+
+let latestGames =
+[];
+
+let selectedEvent =
+null;
+
+let propMarkets =
+[];
+
+let betSlip =
+[];
+
+let betType =
+"single";
+
+let currentUser =
+null;
+
+
+/* --------------------------------
+   ELEMENTS
+-------------------------------- */
+
+const contentEl =
+document.getElementById(
+  "content"
+);
+
+const statusEl =
+document.getElementById(
+  "status"
+);
+
+const accountStatus =
+document.getElementById(
+  "accountStatus"
+);
+
+const sportSelect =
+document.getElementById(
+  "sportSelect"
+);
+
+const refreshBtn =
+document.getElementById(
+  "refreshBtn"
+);
+
+const betCount =
+document.getElementById(
+  "betCount"
+);
+
+const slipItems =
+document.getElementById(
+  "slipItems"
+);
+
+const slipMessage =
+document.getElementById(
+  "slipMessage"
+);
+
+const stakeInput =
+document.getElementById(
+  "stakeInput"
+);
+
+const potentialReturn =
+document.getElementById(
+  "potentialReturn"
+);
+
+const wagerHistory =
+document.getElementById(
+  "wagerHistory"
+);
+
+
+/* --------------------------------
+   HELPERS
+-------------------------------- */
+
+function escapeHtml(value){
+
+return String(value ?? "")
+.replaceAll("&","&amp;")
+.replaceAll("<","&lt;")
+.replaceAll(">","&gt;");
+
+}
+
+function formatPrice(value){
+
+if(typeof value !== "number"){
+  return "--";
+}
+
+return value > 0
+? "+" + value
+: String(value);
+
+}
+
+function money(value){
+
+return "$" +
+Number(value || 0)
+.toFixed(2);
+
+}
+
+function dateTime(value){
+
+if(!value){
+  return "Time unavailable";
+}
+
+return new Intl.DateTimeFormat(
+  "en-US",
+  {
+    month:"short",
+    day:"numeric",
+    hour:"numeric",
+    minute:"2-digit"
+  }
+).format(
+  new Date(value)
+);
+
+}
+
+function market(
+  book,
+  key
+){
+
+return book?.markets?.find(
+  item =>
+  item.key === key
+);
+
+}
+
+function marketTitle(key){
+
+if(key === "h2h"){
+  return "Moneyline";
+}
+
+if(key === "spreads"){
+  return "Spread";
+}
+
+if(key === "totals"){
+  return "Total";
+}
+
+return String(key)
+.replaceAll("_"," ")
+.replace(
+  /\b\w/g,
+  c => c.toUpperCase()
+);
+
+}
+
+function americanToDecimal(
+  odds
+){
+
+if(odds > 0){
+
+  return 1 +
+  odds / 100;
+
+}
+
+return 1 +
+100 /
+Math.abs(odds);
+
+}
+
+
+/* --------------------------------
+   ODDS API
+-------------------------------- */
+
+async function oddsApi(body){
+
+const response =
+await fetch(
+  ODDS_API,
+  {
+    method:"POST",
+
+    headers:{
+      "Content-Type":
+      "application/json"
+    },
+
+    body:
+    JSON.stringify(body)
+  }
+);
+
+const data =
+await response.json();
+
+if(!response.ok){
+
+throw new Error(
+  data.detail ||
+  data.error ||
+  "GameDay odds request failed"
+);
+
+}
+
+return data;
+
+}
+
+
+/* --------------------------------
+   AUTH
+-------------------------------- */
+
+async function checkAccount(){
+
+const {
+  data,
+  error
+} =
+await supabase.auth.getSession();
+
+if(
+  error ||
+  !data.session
+){
+
+currentUser =
+null;
+
+accountStatus.textContent =
+"Not signed in";
+
+return;
+
+}
+
+currentUser =
+data.session.user;
+
+accountStatus.textContent =
+currentUser.email ||
+"GameDay user";
+
+await loadWagerHistory();
+
+}
+
+supabase.auth.onAuthStateChange(
+async (
+  event,
+  session
+) => {
+
+if(session?.user){
+
+currentUser =
+session.user;
+
+accountStatus.textContent =
+currentUser.email ||
+"Signed in";
+
+await loadWagerHistory();
+
+}else{
+
+currentUser =
+null;
+
+accountStatus.textContent =
+"Not signed in";
+
+wagerHistory.innerHTML =
+"Sign in to view wager history.";
+
+}
+
+}
+);
+
+
+/* --------------------------------
+   SELECTIONS
+-------------------------------- */
+
+function selectionId(data){
+
+return [
+data.eventId,
+data.market,
+data.name,
+data.description || "",
+data.point ?? ""
+].join("|");
+
+}
+
+function isSelected(data){
+
+const id =
+selectionId(data);
+
+return betSlip.some(
+  item =>
+  item.id === id
+);
+
+}
+
+function toggleSelection(
+  data
+){
+
+const id =
+selectionId(data);
+
+const existing =
+betSlip.findIndex(
+  item =>
+  item.id === id
+);
+
+if(existing >= 0){
+
+betSlip.splice(
+  existing,
+  1
+);
+
+}else{
+
+betSlip.push({
+  ...data,
+  id
+});
+
+}
+
+updateBetSlip();
+
+if(
+  currentView ===
+  "games"
+){
+
+renderGames();
+
+}
+
+}
+
+
+/* --------------------------------
+   ODDS BUTTON
+-------------------------------- */
+
+function renderSelectableOdd(
+  data
+){
+
+const selected =
+isSelected(data);
+
+const encoded =
+encodeURIComponent(
+  JSON.stringify(data)
+);
+
+return `
+<button
+  class="odd-btn ${
+    selected
+    ? "selected"
+    : ""
+  }"
+  data-selection="${encoded}">
+
+<div class="odd-name">
+${escapeHtml(
+  data.name
+)}
+</div>
+
+${
+data.description
+? `
+<div class="odd-description">
+${escapeHtml(
+  data.description
+)}
+</div>
+`
+: ""
+}
+
+<div class="odd-price">
+${formatPrice(
+  data.price
+)}
+</div>
+
+${
+data.point !== null &&
+data.point !== undefined
+? `
+<div class="odd-point">
+${escapeHtml(
+  data.point
+)}
+</div>
+`
+: ""
+}
+
+</button>
+`;
+
+}
+
+
+/* --------------------------------
+   GAME RENDERING
+-------------------------------- */
+
+function renderBook(
+  game,
+  book,
+  key
+){
+
+const selectedMarket =
+market(
+  book,
+  key
+);
+
+if(
+  !selectedMarket
+  ?.outcomes
+  ?.length
+){
+
+return "";
+
+}
+
+const eventName =
+`${game.away_team} @ ${game.home_team}`;
+
+return `
+<div class="book">
+
+<div class="book-name">
+GameDay Sports
+</div>
+
+<div class="odds-grid">
+
+${
+selectedMarket.outcomes
+.map(
+  outcome =>
+  renderSelectableOdd({
+
+    eventId:
+    game.id,
+
+    event:
+    eventName,
+
+    sport:
+    currentSport,
+
+    market:
+    key,
+
+    marketTitle:
+    marketTitle(key),
+
+    name:
+    outcome.name,
+
+    description:
+    outcome.description || "",
+
+    point:
+    outcome.point ?? null,
+
+    price:
+    outcome.price
+
+  })
+)
+.join("")
+}
+
+</div>
+
+</div>
+`;
+
+}
+
+function renderGame(game){
+
+return `
+<div class="card">
+
+<div class="card-head">
+
+<div class="time">
+${dateTime(
+  game.commence_time
+)}
+</div>
+
+<div class="team">
+
+<span>
+${escapeHtml(
+  game.away_team
+)}
+</span>
+
+<span class="tag">
+AWAY
+</span>
+
+</div>
+
+<div class="team">
+
+<span>
+${escapeHtml(
+  game.home_team
+)}
+</span>
+
+<span class="tag">
+HOME
+</span>
+
+</div>
+
+</div>
+
+<div class="market-tabs">
+
+<button
+  class="market-btn ${
+    gameMarket === "h2h"
+    ? "active"
+    : ""
+  }"
+  data-market="h2h">
+Moneyline
+</button>
+
+<button
+  class="market-btn ${
+    gameMarket === "spreads"
+    ? "active"
+    : ""
+  }"
+  data-market="spreads">
+Spread
+</button>
+
+<button
+  class="market-btn ${
+    gameMarket === "totals"
+    ? "active"
+    : ""
+  }"
+  data-market="totals">
+Total
+</button>
+
+</div>
+
+<div class="books">
+
+${
+(game.bookmakers || [])
+.map(
+  book =>
+  renderBook(
+    game,
+    book,
+    gameMarket
+  )
+)
+.filter(Boolean)
+.join("")
+}
+
+</div>
+
+</div>
+`;
+
+}
+
+function renderGames(){
+
+if(
+  !latestGames.length
+){
+
+contentEl.innerHTML =
+`
+<div class="empty">
+No games are currently available.
+</div>
+`;
+
+return;
+
+}
+
+contentEl.innerHTML =
+latestGames
+.map(renderGame)
+.join("");
+
+bindOddButtons();
+
+bindMarketButtons();
+
+}
+
+async function loadGames(){
+
+statusEl.textContent =
+"Loading GameDay lines...";
+
+contentEl.innerHTML = "";
+
+try{
+
+const data =
+await oddsApi({
+  mode:"games",
+  sport:currentSport
+});
+
+latestGames =
+data.games || [];
+
+statusEl.textContent =
+latestGames.length +
+" games";
+
+renderGames();
+
+}catch(error){
+
+statusEl.textContent =
+"Failed";
+
+contentEl.innerHTML =
+`
+<div class="error">
+${escapeHtml(
+  error.message
+)}
+</div>
+`;
+
+}
+
+}
+
+
+/* --------------------------------
+   PLAYER PROPS
+-------------------------------- */
+
+async function loadEvents(){
+
+selectedEvent =
+null;
+
+propMarkets =
+[];
+
+statusEl.textContent =
+"Loading prop games...";
+
+contentEl.innerHTML = "";
+
+try{
+
+const data =
+await oddsApi({
+  mode:"events",
+  sport:currentSport
+});
+
+const events =
+data.events || [];
+
+if(
+  !events.length
+){
+
+statusEl.textContent =
+"No prop events";
+
+contentEl.innerHTML =
+`
+<div class="empty">
+No current player-prop events.
+</div>
+`;
+
+return;
+
+}
+
+statusEl.textContent =
+"Choose a matchup";
+
+contentEl.innerHTML =
+events.map(
+  (event,index) => `
+
+<button
+  class="event-btn"
+  data-event-index="${index}">
+
+<strong>
+${escapeHtml(
+  event.away_team
+)}
+@
+${escapeHtml(
+  event.home_team
+)}
+</strong>
+
+<span>
+${dateTime(
+  event.commence_time
+)}
+</span>
+
+</button>
+
+`
+).join("");
+
+document
+.querySelectorAll(
+  ".event-btn"
+)
+.forEach(
+  button => {
+
+button.addEventListener(
+  "click",
+  () => {
+
+selectEvent(
+  events[
+    Number(
+      button.dataset.eventIndex
+    )
+  ]
+);
+
+}
+);
+
+}
+);
+
+}catch(error){
+
+statusEl.textContent =
+"Failed";
+
+contentEl.innerHTML =
+`
+<div class="error">
+${escapeHtml(
+  error.message
+)}
+</div>
+`;
+
+}
+
+}
+
+async function selectEvent(
+  event
+){
+
+selectedEvent =
+event;
+
+statusEl.textContent =
+"Finding player props...";
+
+try{
+
+const data =
+await oddsApi({
+
+mode:
+"prop_markets",
+
+sport:
+currentSport,
+
+event_id:
+event.id
+
+});
+
+propMarkets =
+data.prop_markets || [];
+
+renderPropPicker();
+
+}catch(error){
+
+contentEl.innerHTML =
+`
+<div class="error">
+${escapeHtml(
+  error.message
+)}
+</div>
+`;
+
+}
+
+}
+
+function renderPropPicker(){
+
+if(
+  !propMarkets.length
+){
+
+contentEl.innerHTML =
+`
+<div class="empty">
+No player props are currently available.
+</div>
+`;
+
+return;
+
+}
+
+statusEl.textContent =
+propMarkets.length +
+" prop markets";
+
+contentEl.innerHTML =
+`
+
+<div class="action-row">
+
+<button
+  class="action-btn back-btn"
+  id="backEvents">
+← Games
+</button>
+
+</div>
+
+${
+propMarkets.map(
+  key => `
+
+<button
+  class="prop-btn"
+  data-prop="${escapeHtml(
+    key
+  )}">
+${escapeHtml(
+  marketTitle(key)
+)}
+</button>
+
+`
+).join("")
+}
+
+`;
+
+document
+.getElementById(
+  "backEvents"
+)
+.addEventListener(
+  "click",
+  loadEvents
+);
+
+document
+.querySelectorAll(
+  ".prop-btn"
+)
+.forEach(
+  button => {
+
+button.addEventListener(
+  "click",
+  () =>
+  loadProp(
+    button.dataset.prop
+  )
+);
+
+}
+);
+
+}
+
+async function loadProp(key){
+
+statusEl.textContent =
+"Loading " +
+marketTitle(key) +
+"...";
+
+try{
+
+const data =
+await oddsApi({
+
+mode:"props",
+
+sport:
+currentSport,
+
+event_id:
+selectedEvent.id,
+
+markets:[
+  key
+]
+
+});
+
+renderPropResults(
+  data.event,
+  key
+);
+
+}catch(error){
+
+contentEl.innerHTML =
+`
+<div class="error">
+${escapeHtml(
+  error.message
+)}
+</div>
+`;
+
+}
+
+}
+
+function renderPropResults(
+  event,
+  key
+){
+
+const eventName =
+`${selectedEvent.away_team} @ ${selectedEvent.home_team}`;
+
+let html =
+`
+<div class="action-row">
+
+<button
+  class="action-btn back-btn"
+  id="backProps">
+← Prop Markets
+</button>
+
+</div>
+
+<div class="group-heading">
+${escapeHtml(
+  marketTitle(key)
+)}
+</div>
+`;
+
+(event.bookmakers || [])
+.forEach(
+  book => {
+
+const selectedMarket =
+market(
+  book,
+  key
+);
+
+if(
+  !selectedMarket
+  ?.outcomes
+  ?.length
+){
+
+return;
+
+}
+
+html +=
+`
+<div class="book">
+
+<div class="book-name">
+GameDay Sports
+</div>
+
+<div class="odds-grid">
+
+${
+selectedMarket.outcomes
+.map(
+  outcome =>
+  renderSelectableOdd({
+
+eventId:
+event.id,
+
+event:
+eventName,
+
+sport:
+currentSport,
+
+market:
+key,
+
+marketTitle:
+marketTitle(key),
+
+name:
+outcome.name,
+
+description:
+outcome.description || "",
+
+point:
+outcome.point ?? null,
+
+price:
+outcome.price
+
+})
+)
+.join("")
+}
+
+</div>
+</div>
+`;
+
+}
+);
+
+contentEl.innerHTML =
+html;
+
+document
+.getElementById(
+  "backProps"
+)
+.addEventListener(
+  "click",
+  renderPropPicker
+);
+
+bindOddButtons();
+
+}
+
+
+/* --------------------------------
+   FUTURES
+-------------------------------- */
+
+async function loadFutureMarkets(){
+
+statusEl.textContent =
+"Finding futures...";
+
+contentEl.innerHTML = "";
+
+try{
+
+const data =
+await oddsApi({
+
+mode:
+"future_markets",
+
+sport:
+currentSport
+
+});
+
+const futures =
+data.futures || [];
+
+if(
+  !futures.length
+){
+
+contentEl.innerHTML =
+`
+<div class="empty">
+No futures are currently available.
+</div>
+`;
+
+return;
+
+}
+
+statusEl.textContent =
+futures.length +
+" futures markets";
+
+contentEl.innerHTML =
+futures.map(
+  future => `
+
+<button
+  class="future-btn"
+  data-future="${escapeHtml(
+    future.key
+  )}">
+
+<strong>
+${escapeHtml(
+  future.title
+)}
+</strong>
+
+<span>
+View GameDay futures
+</span>
+
+</button>
+
+`
+).join("");
+
+document
+.querySelectorAll(
+  ".future-btn"
+)
+.forEach(
+  button => {
+
+button.addEventListener(
+  "click",
+  () =>
+  loadFuture(
+    button.dataset.future
+  )
+);
+
+}
+);
+
+}catch(error){
+
+contentEl.innerHTML =
+`
+<div class="error">
+${escapeHtml(
+  error.message
+)}
+</div>
+`;
+
+}
+
+}
+
+async function loadFuture(
+  key
+){
+
+statusEl.textContent =
+"Loading futures...";
+
+try{
+
+const data =
+await oddsApi({
+
+mode:
+"futures",
+
+sport:
+currentSport,
+
+future_key:
+key
+
+});
+
+const items =
+data.futures || [];
+
+let html =
+`
+<div class="action-row">
+
+<button
+  class="action-btn back-btn"
+  id="backFutures">
+← Futures
+</button>
+
+</div>
+
+<div class="group-heading">
+${escapeHtml(
+  data.future?.title ||
+  "Futures"
+)}
+</div>
+`;
+
+items.forEach(
+  (item,itemIndex) => {
+
+(item.bookmakers || [])
+.forEach(
+  book => {
+
+const outright =
+market(
+  book,
+  "outrights"
+);
+
+if(
+  !outright
+  ?.outcomes
+  ?.length
+){
+
+return;
+
+}
+
+html +=
+`
+<div class="book">
+
+<div class="book-name">
+GameDay Sports
+</div>
+
+<div class="odds-grid">
+
+${
+outright.outcomes.map(
+  outcome =>
+  renderSelectableOdd({
+
+eventId:
+item.id ||
+`${key}-${itemIndex}`,
+
+event:
+data.future?.title ||
+"GameDay Futures",
+
+sport:
+currentSport,
+
+market:
+"outrights",
+
+marketTitle:
+"Futures",
+
+name:
+outcome.name,
+
+description:"",
+
+point:null,
+
+price:
+outcome.price
+
+})
+)
+.join("")
+}
+
+</div>
+</div>
+`;
+
+}
+);
+
+}
+);
+
+contentEl.innerHTML =
+html;
+
+document
+.getElementById(
+  "backFutures"
+)
+.addEventListener(
+  "click",
+  loadFutureMarkets
+);
+
+bindOddButtons();
+
+statusEl.textContent =
+"GameDay futures";
+
+}catch(error){
+
+contentEl.innerHTML =
+`
+<div class="error">
+${escapeHtml(
+  error.message
+)}
+</div>
+`;
+
+}
+
+}
+
+
+/* --------------------------------
+   SPORTS LIST
+-------------------------------- */
+
+async function loadSports(){
+
+try{
+
+const data =
+await oddsApi({
+  mode:"sports"
+});
+
+const sports =
+data.sports || [];
+
+sportSelect.innerHTML =
+`
+<option value="">
+Select worldwide sport
+</option>
+`
++
+sports
+.filter(
+  sport =>
+  sport.active
+)
+.map(
+  sport => `
+
+<option
+  value="${escapeHtml(
+    sport.key
+  )}">
+${escapeHtml(
+  sport.group
+)}
+—
+${escapeHtml(
+  sport.title
+)}
+</option>
+
+`
+)
+.join("");
+
+}catch{
+
+sportSelect.innerHTML =
+`
+<option value="">
+Worldwide sports unavailable
+</option>
+`;
+
+}
+
+}
+
+
+/* --------------------------------
+   BET SLIP
+-------------------------------- */
+
+function updateBetSlip(){
+
+betCount.textContent =
+betSlip.length;
+
+renderSlip();
+
+updatePayout();
+
+}
+
+function renderSlip(){
+
+if(
+  !betSlip.length
+){
+
+slipItems.innerHTML =
+`
+<div class="empty">
+Select a GameDay line to add it to your bet slip.
+</div>
+`;
+
+return;
+
+}
+
+slipItems.innerHTML =
+betSlip.map(
+  (item,index) => `
+
+<div class="slip-item">
+
+<div class="slip-event">
+${escapeHtml(
+  item.event
+)}
+</div>
+
+<div class="slip-row">
+
+<div>
+
+<div class="slip-pick">
+
+${escapeHtml(
+  item.name
+)}
+
+${
+item.point !== null &&
+item.point !== undefined
+? " " +
+escapeHtml(
+  item.point
+)
+: ""
+}
+
+</div>
+
+<div>
+${escapeHtml(
+  item.marketTitle
+)}
+•
+${formatPrice(
+  item.price
+)}
+</div>
+
+</div>
+
+<button
+  class="remove-btn"
+  data-remove="${index}">
+Remove
+</button>
+
+</div>
+
+</div>
+
+`
+).join("");
+
+document
+.querySelectorAll(
+  "[data-remove]"
+)
+.forEach(
+  button => {
+
+button.addEventListener(
+  "click",
+  () => {
+
+betSlip.splice(
+  Number(
+    button.dataset.remove
+  ),
+  1
+);
+
+updateBetSlip();
+
+if(
+  currentView ===
+  "games"
+){
+
+renderGames();
+
+}
+
+}
+);
+
+}
+);
+
+}
+
+function updatePayout(){
+
+const stake =
+Number(
+  stakeInput.value
+) || 0;
+
+let result = 0;
+
+if(
+  stake > 0 &&
+  betSlip.length
+){
+
+if(
+  betType ===
+  "parlay"
+){
+
+const decimal =
+betSlip.reduce(
+  (total,item) =>
+  total *
+  americanToDecimal(
+    item.price
+  ),
+  1
+);
+
+result =
+stake *
+decimal;
+
+}else{
+
+result =
+stake *
+americanToDecimal(
+  betSlip[0].price
+);
+
+}
+
+}
+
+potentialReturn.textContent =
+money(result);
+
+}
+
+async function placeTestWager(){
+
+slipMessage.innerHTML = "";
+
+if(
+  !currentUser
+){
+
+slipMessage.innerHTML =
+`
+<div class="error">
+Sign in to your GameDay account before placing a test wager.
+</div>
+`;
+
+return;
+
+}
+
+const stake =
+Number(
+  stakeInput.value
+);
+
+if(
+  !Number.isFinite(stake) ||
+  stake <= 0
+){
+
+slipMessage.innerHTML =
+`
+<div class="error">
+Enter a valid stake.
+</div>
+`;
+
+return;
+
+}
+
+if(
+  !betSlip.length
+){
+
+slipMessage.innerHTML =
+`
+<div class="error">
+Select at least one line.
+</div>
+`;
+
+return;
+
+}
+
+let selections =
+betSlip;
+
+if(
+  betType ===
+  "single"
+){
+
+selections =
+[
+  betSlip[0]
+];
+
+}
+
+if(
+  betType ===
+  "parlay" &&
+  betSlip.length < 2
+){
+
+slipMessage.innerHTML =
+`
+<div class="error">
+A parlay requires at least two selections.
+</div>
+`;
+
+return;
+
+}
+
+const button =
+document.getElementById(
+  "placeBetBtn"
+);
+
+button.disabled =
+true;
+
+button.textContent =
+"Saving wager...";
+
+try{
+
+const {
+  data,
+  error
+} =
+await supabase.functions.invoke(
+  "place-test-wager",
+  {
+    body:{
+
+wager_type:
+betType,
+
+stake:
+stake,
+
+selections:
+selections.map(
+  item => ({
+
+event_id:
+String(
+  item.eventId
+),
+
+event_name:
+item.event,
+
+sport_key:
+item.sport,
+
+market_key:
+item.market,
+
+market_title:
+item.marketTitle,
+
+selection_name:
+item.name,
+
+description:
+item.description || null,
+
+point:
+item.point,
+
+american_odds:
+Number(
+  item.price
+)
+
+})
+)
+
+}
+}
+);
+
+if(error){
+
+throw error;
+
+}
+
+if(
+  data?.error
+){
+
+throw new Error(
+  data.error
+);
+
+}
+
+slipMessage.innerHTML =
+`
+<div class="success">
+
+Test wager saved successfully.
+
+<br><br>
+
+<strong>
+${escapeHtml(
+  data.wager.wager_type
+  .toUpperCase()
+)}
+</strong>
+
+<br>
+
+Stake:
+${money(
+  data.wager.stake
+)}
+
+<br>
+
+Potential Return:
+${money(
+  data.wager.potential_return
+)}
+
+<br>
+
+Status:
+${escapeHtml(
+  data.wager.status
+)}
+
+</div>
+`;
+
+betSlip = [];
+
+stakeInput.value = "";
+
+updateBetSlip();
+
+await loadWagerHistory();
+
+}catch(error){
+
+slipMessage.innerHTML =
+`
+<div class="error">
+${escapeHtml(
+  error.message ||
+  "Unable to save wager."
+)}
+</div>
+`;
+
+}finally{
+
+button.disabled =
+false;
+
+button.textContent =
+"Place Test Wager";
+
+}
+
+}
+
+
+/* --------------------------------
+   WAGER HISTORY
+-------------------------------- */
+
+async function loadWagerHistory(){
+
+if(
+  !currentUser
+){
+
+return;
+
+}
+
+const {
+  data,
+  error
+} =
+await supabase
+.from("wagers")
+.select(
+  "id,wager_type,stake,potential_return,status,placed_at,is_test"
+)
+.order(
+  "placed_at",
+  {
+    ascending:false
+  }
+)
+.limit(10);
+
+if(error){
+
+wagerHistory.innerHTML =
+`
+<div class="error">
+Unable to load wager history.
+</div>
+`;
+
+return;
+
+}
+
+if(
+  !data?.length
+){
+
+wagerHistory.innerHTML =
+`
+<div class="empty">
+No test wagers yet.
+</div>
+`;
+
+return;
+
+}
+
+wagerHistory.innerHTML =
+data.map(
+  wager => `
+
+<div class="history-item">
+
+<div class="history-row">
+
+<strong>
+${escapeHtml(
+  wager.wager_type
+  .toUpperCase()
+)}
+</strong>
+
+<strong>
+${money(
+  wager.stake
+)}
+</strong>
+
+</div>
+
+<div class="history-row">
+
+<span>
+Potential:
+${money(
+  wager.potential_return
+)}
+</span>
+
+<span>
+${escapeHtml(
+  wager.status
+)}
+</span>
+
+</div>
+
+<div class="history-small">
+${dateTime(
+  wager.placed_at
+)}
+•
+TEST
+</div>
+
+</div>
+
+`
+).join("");
+
+}
+
+
+/* --------------------------------
+   BINDING
+-------------------------------- */
+
+function bindOddButtons(){
+
+document
+.querySelectorAll(
+  "[data-selection]"
+)
+.forEach(
+  button => {
+
+button.addEventListener(
+  "click",
+  () => {
+
+const data =
+JSON.parse(
+  decodeURIComponent(
+    button.dataset.selection
+  )
+);
+
+toggleSelection(
+  data
+);
+
+}
+);
+
+}
+);
+
+}
+
+function bindMarketButtons(){
+
+document
+.querySelectorAll(
+  "[data-market]"
+)
+.forEach(
+  button => {
+
+button.addEventListener(
+  "click",
+  () => {
+
+gameMarket =
+button.dataset.market;
+
+renderGames();
+
+}
+);
+
+}
+);
+
+}
+
+
+/* --------------------------------
+   VIEW CONTROL
+-------------------------------- */
+
+function loadCurrentView(){
+
+if(
+  currentView ===
+  "games"
+){
+
+loadGames();
+
+return;
+
+}
+
+if(
+  currentView ===
+  "props"
+){
+
+loadEvents();
+
+return;
+
+}
+
+loadFutureMarkets();
+
+}
+
+document
+.querySelectorAll(
+  ".sport-btn"
+)
+.forEach(
+  button => {
+
+button.addEventListener(
+  "click",
+  () => {
+
+currentSport =
+button.dataset.sport;
+
+document
+.querySelectorAll(
+  ".sport-btn"
+)
+.forEach(
+  item =>
+  item.classList.toggle(
+    "active",
+    item === button
+  )
+);
+
+loadCurrentView();
+
+}
+);
+
+}
+);
+
+document
+.querySelectorAll(
+  ".view-btn"
+)
+.forEach(
+  button => {
+
+button.addEventListener(
+  "click",
+  () => {
+
+currentView =
+button.dataset.view;
+
+document
+.querySelectorAll(
+  ".view-btn"
+)
+.forEach(
+  item =>
+  item.classList.toggle(
+    "active",
+    item === button
+  )
+);
+
+loadCurrentView();
+
+}
+);
+
+}
+);
+
+sportSelect
+.addEventListener(
+  "change",
+  () => {
+
+if(
+  !sportSelect.value
+){
+
+return;
+
+}
+
+currentSport =
+sportSelect.value;
+
+document
+.querySelectorAll(
+  ".sport-btn"
+)
+.forEach(
+  button =>
+  button.classList.remove(
+    "active"
+  )
+);
+
+loadCurrentView();
+
+}
+);
+
+refreshBtn
+.addEventListener(
+  "click",
+  loadCurrentView
+);
+
+document
+.getElementById(
+  "openSlipBtn"
+)
+.addEventListener(
+  "click",
+  () => {
+
+document
+.getElementById(
+  "betslipPanel"
+)
+.classList.add(
+  "open"
+);
+
+renderSlip();
+
+loadWagerHistory();
+
+}
+);
+
+document
+.getElementById(
+  "closeSlipBtn"
+)
+.addEventListener(
+  "click",
+  () => {
+
+document
+.getElementById(
+  "betslipPanel"
+)
+.classList.remove(
+  "open"
+);
+
+}
+);
+
+document
+.getElementById(
+  "singleTab"
+)
+.addEventListener(
+  "click",
+  () => {
+
+betType =
+"single";
+
+document
+.getElementById(
+  "singleTab"
+)
+.classList.add(
+  "active"
+);
+
+document
+.getElementById(
+  "parlayTab"
+)
+.classList.remove(
+  "active"
+);
+
+updatePayout();
+
+}
+);
+
+document
+.getElementById(
+  "parlayTab"
+)
+.addEventListener(
+  "click",
+  () => {
+
+betType =
+"parlay";
+
+document
+.getElementById(
+  "parlayTab"
+)
+.classList.add(
+  "active"
+);
+
+document
+.getElementById(
+  "singleTab"
+)
+.classList.remove(
+  "active"
+);
+
+updatePayout();
+
+}
+);
+
+stakeInput
+.addEventListener(
+  "input",
+  updatePayout
+);
+
+document
+.getElementById(
+  "placeBetBtn"
+)
+.addEventListener(
+  "click",
+  placeTestWager
+);
+
+
+/* --------------------------------
+   START
+-------------------------------- */
+
+await checkAccount();
+
+await loadSports();
+
+await loadGames();
+
+updateBetSlip();
+
+</script>
+
+</body>
+</html>
