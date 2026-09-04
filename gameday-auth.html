@@ -1,0 +1,581 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+  <title>GameDay Account</title>
+
+  <style>
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      margin: 0;
+      background: #090e0b;
+      color: #ffffff;
+      font-family: Arial, sans-serif;
+    }
+
+    header {
+      background: #101712;
+      border-bottom: 1px solid #27342c;
+      padding: 16px;
+    }
+
+    h1 {
+      margin: 0;
+      font-size: 24px;
+    }
+
+    .subtitle {
+      color: #9aa99f;
+      font-size: 12px;
+      margin-top: 5px;
+    }
+
+    main {
+      max-width: 520px;
+      margin: auto;
+      padding: 18px;
+    }
+
+    .card {
+      background: #131b16;
+      border: 1px solid #2b3a31;
+      border-radius: 14px;
+      padding: 16px;
+      margin-bottom: 14px;
+    }
+
+    .card h2 {
+      margin-top: 0;
+      font-size: 18px;
+    }
+
+    label {
+      display: block;
+      margin: 12px 0 6px;
+      font-size: 12px;
+      color: #b6c1b9;
+    }
+
+    input {
+      width: 100%;
+      border: 1px solid #34453a;
+      border-radius: 9px;
+      padding: 13px;
+      background: #0c130f;
+      color: #ffffff;
+      font-size: 16px;
+    }
+
+    button {
+      width: 100%;
+      border: 0;
+      border-radius: 10px;
+      padding: 13px;
+      margin-top: 12px;
+      font-size: 15px;
+      font-weight: bold;
+      cursor: pointer;
+    }
+
+    .primary {
+      background: #eef5f0;
+      color: #07100a;
+    }
+
+    .secondary {
+      background: #202b24;
+      color: #ffffff;
+    }
+
+    .danger {
+      background: #392020;
+      color: #f2c1c1;
+    }
+
+    .status {
+      padding: 12px;
+      border-radius: 10px;
+      background: #141c17;
+      border: 1px solid #2b3a31;
+      color: #b7c2ba;
+      margin-bottom: 14px;
+      line-height: 1.5;
+    }
+
+    .success {
+      border-color: #316643;
+      color: #bff1ca;
+    }
+
+    .error {
+      border-color: #733b3b;
+      color: #efb4b4;
+    }
+
+    .account-row {
+      margin: 8px 0;
+      font-size: 14px;
+    }
+
+    .account-label {
+      color: #89968e;
+      font-size: 11px;
+      text-transform: uppercase;
+      margin-bottom: 3px;
+    }
+
+    .hidden {
+      display: none;
+    }
+
+    .sportsbook-link {
+      display: block;
+      text-align: center;
+      text-decoration: none;
+      background: #163d22;
+      color: #bff1ca;
+      border: 1px solid #2c7442;
+      border-radius: 10px;
+      padding: 13px;
+      font-weight: bold;
+      margin-top: 12px;
+    }
+  </style>
+</head>
+
+<body>
+
+<header>
+  <h1>GameDay Sports</h1>
+  <div class="subtitle">
+    Account • Sportsbook • Casino
+  </div>
+</header>
+
+<main>
+
+  <div id="status" class="status">
+    Checking your GameDay account...
+  </div>
+
+  <div id="authForms">
+
+    <div class="card">
+      <h2>Create Account</h2>
+
+      <label for="signupEmail">Email</label>
+      <input
+        id="signupEmail"
+        type="email"
+        autocomplete="email"
+        placeholder="you@example.com"
+      >
+
+      <label for="signupPassword">Password</label>
+      <input
+        id="signupPassword"
+        type="password"
+        autocomplete="new-password"
+        placeholder="Create a password"
+      >
+
+      <button
+        id="signupBtn"
+        class="primary">
+        Create GameDay Account
+      </button>
+    </div>
+
+    <div class="card">
+      <h2>Sign In</h2>
+
+      <label for="signinEmail">Email</label>
+      <input
+        id="signinEmail"
+        type="email"
+        autocomplete="email"
+        placeholder="you@example.com"
+      >
+
+      <label for="signinPassword">Password</label>
+      <input
+        id="signinPassword"
+        type="password"
+        autocomplete="current-password"
+        placeholder="Password"
+      >
+
+      <button
+        id="signinBtn"
+        class="primary">
+        Sign In
+      </button>
+    </div>
+
+  </div>
+
+  <div id="accountPanel" class="card hidden">
+
+    <h2>My GameDay Account</h2>
+
+    <div class="account-row">
+      <div class="account-label">Status</div>
+      Signed In
+    </div>
+
+    <div class="account-row">
+      <div class="account-label">Email</div>
+      <div id="accountEmail">—</div>
+    </div>
+
+    <div class="account-row">
+      <div class="account-label">User ID</div>
+      <div id="accountId">—</div>
+    </div>
+
+    <a
+      class="sportsbook-link"
+      href="gameday-betslip.html">
+      Open GameDay Sportsbook
+    </a>
+
+    <button
+      id="signoutBtn"
+      class="danger">
+      Sign Out
+    </button>
+
+  </div>
+
+</main>
+
+<script type="module">
+
+import {
+  createClient
+} from "https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/+esm";
+
+const SUPABASE_URL =
+  "https://qsvrvhcklnsbekxblpfo.supabase.co";
+
+const SUPABASE_KEY =
+  "sb_publishable_-yCYGvDqIzVFgu90lgoVpw_uoWnYmO0";
+
+const supabase =
+  createClient(
+    SUPABASE_URL,
+    SUPABASE_KEY
+  );
+
+const statusEl =
+  document.getElementById("status");
+
+const authForms =
+  document.getElementById("authForms");
+
+const accountPanel =
+  document.getElementById("accountPanel");
+
+const accountEmail =
+  document.getElementById("accountEmail");
+
+const accountId =
+  document.getElementById("accountId");
+
+const signupBtn =
+  document.getElementById("signupBtn");
+
+const signinBtn =
+  document.getElementById("signinBtn");
+
+const signoutBtn =
+  document.getElementById("signoutBtn");
+
+function showStatus(
+  message,
+  type = ""
+) {
+
+  statusEl.textContent =
+    message;
+
+  statusEl.className =
+    "status";
+
+  if (type) {
+    statusEl.classList.add(type);
+  }
+}
+
+function showSignedOut() {
+
+  authForms.classList.remove(
+    "hidden"
+  );
+
+  accountPanel.classList.add(
+    "hidden"
+  );
+
+  showStatus(
+    "You are not signed in."
+  );
+}
+
+function showSignedIn(user) {
+
+  authForms.classList.add(
+    "hidden"
+  );
+
+  accountPanel.classList.remove(
+    "hidden"
+  );
+
+  accountEmail.textContent =
+    user.email || "No email";
+
+  accountId.textContent =
+    user.id;
+
+  showStatus(
+    "Your GameDay account is active.",
+    "success"
+  );
+}
+
+async function checkSession() {
+
+  const {
+    data,
+    error
+  } =
+    await supabase.auth.getSession();
+
+  if (error) {
+
+    showStatus(
+      error.message,
+      "error"
+    );
+
+    return;
+  }
+
+  const session =
+    data.session;
+
+  if (session?.user) {
+
+    showSignedIn(
+      session.user
+    );
+
+  } else {
+
+    showSignedOut();
+  }
+}
+
+signupBtn.addEventListener(
+  "click",
+  async () => {
+
+    const email =
+      document
+        .getElementById(
+          "signupEmail"
+        )
+        .value
+        .trim();
+
+    const password =
+      document
+        .getElementById(
+          "signupPassword"
+        )
+        .value;
+
+    if (!email) {
+
+      showStatus(
+        "Enter an email address.",
+        "error"
+      );
+
+      return;
+    }
+
+    if (password.length < 6) {
+
+      showStatus(
+        "Password must be at least 6 characters.",
+        "error"
+      );
+
+      return;
+    }
+
+    signupBtn.disabled =
+      true;
+
+    showStatus(
+      "Creating your GameDay account..."
+    );
+
+    const {
+      data,
+      error
+    } =
+      await supabase.auth.signUp({
+        email,
+        password
+      });
+
+    signupBtn.disabled =
+      false;
+
+    if (error) {
+
+      showStatus(
+        error.message,
+        "error"
+      );
+
+      return;
+    }
+
+    if (data.session) {
+
+      showSignedIn(
+        data.user
+      );
+
+      return;
+    }
+
+    showStatus(
+      "Account created. Check your email if GameDay requires email confirmation.",
+      "success"
+    );
+  }
+);
+
+signinBtn.addEventListener(
+  "click",
+  async () => {
+
+    const email =
+      document
+        .getElementById(
+          "signinEmail"
+        )
+        .value
+        .trim();
+
+    const password =
+      document
+        .getElementById(
+          "signinPassword"
+        )
+        .value;
+
+    if (!email || !password) {
+
+      showStatus(
+        "Enter your email and password.",
+        "error"
+      );
+
+      return;
+    }
+
+    signinBtn.disabled =
+      true;
+
+    showStatus(
+      "Signing in..."
+    );
+
+    const {
+      data,
+      error
+    } =
+      await supabase
+        .auth
+        .signInWithPassword({
+          email,
+          password
+        });
+
+    signinBtn.disabled =
+      false;
+
+    if (error) {
+
+      showStatus(
+        error.message,
+        "error"
+      );
+
+      return;
+    }
+
+    showSignedIn(
+      data.user
+    );
+  }
+);
+
+signoutBtn.addEventListener(
+  "click",
+  async () => {
+
+    const {
+      error
+    } =
+      await supabase.auth.signOut();
+
+    if (error) {
+
+      showStatus(
+        error.message,
+        "error"
+      );
+
+      return;
+    }
+
+    showSignedOut();
+  }
+);
+
+supabase.auth.onAuthStateChange(
+  (event, session) => {
+
+    if (session?.user) {
+
+      showSignedIn(
+        session.user
+      );
+
+    } else if (
+      event === "SIGNED_OUT"
+    ) {
+
+      showSignedOut();
+    }
+  }
+);
+
+checkSession();
+
+</script>
+
+</body>
+</html>
