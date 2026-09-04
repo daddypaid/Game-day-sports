@@ -1,0 +1,609 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>GameDay Sports V3</title>
+
+  <style>
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      margin: 0;
+      background: #0b0f0d;
+      color: white;
+      font-family: Arial, sans-serif;
+    }
+
+    header {
+      position: sticky;
+      top: 0;
+      z-index: 20;
+      background: #111814;
+      border-bottom: 1px solid #26332b;
+      padding: 16px;
+    }
+
+    .header-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 12px;
+    }
+
+    h1 {
+      margin: 0;
+      font-size: 24px;
+    }
+
+    .live-badge {
+      background: #183823;
+      border: 1px solid #2f6f43;
+      color: #aff1c1;
+      padding: 6px 10px;
+      border-radius: 999px;
+      font-size: 11px;
+      font-weight: bold;
+    }
+
+    .subtitle {
+      color: #9aac9f;
+      margin-top: 5px;
+      font-size: 13px;
+    }
+
+    main {
+      padding: 16px;
+      max-width: 950px;
+      margin: auto;
+    }
+
+    .tabs {
+      display: flex;
+      gap: 8px;
+      overflow-x: auto;
+      margin-bottom: 14px;
+    }
+
+    .tab {
+      flex: 0 0 auto;
+      border: 1px solid #33463a;
+      background: #151d18;
+      color: white;
+      padding: 10px 15px;
+      border-radius: 20px;
+      font-weight: bold;
+      cursor: pointer;
+    }
+
+    .tab.active {
+      background: white;
+      color: #0b0f0d;
+    }
+
+    .toolbar {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      flex-wrap: wrap;
+      margin-bottom: 16px;
+    }
+
+    .refresh {
+      border: 0;
+      border-radius: 10px;
+      padding: 12px 16px;
+      font-size: 14px;
+      font-weight: bold;
+      cursor: pointer;
+    }
+
+    #status {
+      color: #aab6ad;
+      font-size: 14px;
+    }
+
+    .games {
+      display: grid;
+      gap: 16px;
+    }
+
+    .game {
+      background: #141c17;
+      border: 1px solid #27372d;
+      border-radius: 15px;
+      overflow: hidden;
+    }
+
+    .game-header {
+      padding: 14px;
+      border-bottom: 1px solid #26332b;
+    }
+
+    .game-time {
+      color: #94a399;
+      font-size: 12px;
+      margin-bottom: 10px;
+    }
+
+    .team-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 12px;
+      margin: 6px 0;
+    }
+
+    .team {
+      font-size: 17px;
+      font-weight: bold;
+    }
+
+    .team-label {
+      color: #87968c;
+      font-size: 10px;
+      font-weight: bold;
+    }
+
+    .market-tabs {
+      display: flex;
+      gap: 6px;
+      padding: 12px 14px 0;
+      overflow-x: auto;
+    }
+
+    .market-btn {
+      border: 1px solid #314338;
+      background: #101712;
+      color: white;
+      border-radius: 999px;
+      padding: 7px 11px;
+      font-size: 12px;
+      font-weight: bold;
+      cursor: pointer;
+    }
+
+    .market-btn.active {
+      background: #e9f4ec;
+      color: #0b0f0d;
+    }
+
+    .books {
+      padding: 12px 14px 14px;
+      display: grid;
+      gap: 10px;
+    }
+
+    .book {
+      background: #0d1410;
+      border: 1px solid #26362d;
+      border-radius: 12px;
+      padding: 11px;
+    }
+
+    .book-name {
+      color: #c5d0c8;
+      font-size: 13px;
+      font-weight: bold;
+      margin-bottom: 8px;
+    }
+
+    .odds-row {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0,1fr));
+      gap: 8px;
+    }
+
+    .odd {
+      background: #172019;
+      border: 1px solid #324238;
+      border-radius: 10px;
+      padding: 9px;
+    }
+
+    .odd.best {
+      border: 2px solid #78d590;
+      background: #17321f;
+    }
+
+    .best-label {
+      display: inline-block;
+      margin-bottom: 4px;
+      font-size: 9px;
+      font-weight: bold;
+      color: #9ef0b2;
+      text-transform: uppercase;
+    }
+
+    .odd-name {
+      font-size: 11px;
+      color: #aeb9b1;
+      overflow: hidden;
+      white-space: nowrap;
+      text-overflow: ellipsis;
+    }
+
+    .odd-price {
+      margin-top: 4px;
+      font-size: 16px;
+      font-weight: bold;
+    }
+
+    .odd-point {
+      margin-top: 2px;
+      font-size: 11px;
+      color: #d5ddd7;
+    }
+
+    .empty,
+    .error {
+      padding: 16px;
+      border-radius: 12px;
+      background: #151d18;
+      color: #b8c2bb;
+    }
+
+    .error {
+      border: 1px solid #703434;
+      color: #f2b0b0;
+    }
+
+    @media (min-width: 700px) {
+      .odds-row {
+        grid-template-columns: repeat(3, minmax(0,1fr));
+      }
+    }
+  </style>
+</head>
+
+<body>
+
+<header>
+  <div class="header-row">
+    <h1>GameDay Sports</h1>
+    <div class="live-badge">LIVE ODDS</div>
+  </div>
+  <div class="subtitle">Compare sportsbook lines in real time</div>
+</header>
+
+<main>
+
+  <div class="tabs">
+    <button class="tab active" data-sport="nfl">NFL</button>
+    <button class="tab" data-sport="nba">NBA</button>
+    <button class="tab" data-sport="mlb">MLB</button>
+    <button class="tab" data-sport="nhl">NHL</button>
+  </div>
+
+  <div class="toolbar">
+    <button class="refresh" id="refreshBtn">Refresh Odds</button>
+    <span id="status">Ready</span>
+  </div>
+
+  <div id="games" class="games"></div>
+
+</main>
+
+<script>
+  const ODDS_PROXY =
+    "https://qsvrvhcklnsbekxblpfo.supabase.co/functions/v1/odds-proxy";
+
+  let currentSport = "nfl";
+  let currentMarket = "h2h";
+  let latestGames = [];
+
+  const statusEl = document.getElementById("status");
+  const gamesEl = document.getElementById("games");
+  const refreshBtn = document.getElementById("refreshBtn");
+
+  document.querySelectorAll(".tab").forEach(button => {
+    button.addEventListener("click", () => {
+      document.querySelectorAll(".tab").forEach(btn => {
+        btn.classList.remove("active");
+      });
+
+      button.classList.add("active");
+      currentSport = button.dataset.sport;
+      loadOdds();
+    });
+  });
+
+  refreshBtn.addEventListener("click", loadOdds);
+
+  function formatOdds(price) {
+    if (typeof price !== "number") return "--";
+    return price > 0 ? "+" + price : String(price);
+  }
+
+  function formatTime(time) {
+    if (!time) return "Time unavailable";
+
+    const date = new Date(time);
+
+    return new Intl.DateTimeFormat("en-US", {
+      weekday: "short",
+      month: "short",
+      day: "numeric",
+      hour: "numeric",
+      minute: "2-digit"
+    }).format(date);
+  }
+
+  function getMarket(bookmaker, key) {
+    if (!bookmaker || !bookmaker.markets) return null;
+
+    return bookmaker.markets.find(
+      market => market.key === key
+    );
+  }
+
+  function getAllPrices(game, marketKey) {
+    const prices = [];
+
+    (game.bookmakers || []).forEach(bookmaker => {
+      const market = getMarket(bookmaker, marketKey);
+
+      if (!market || !market.outcomes) return;
+
+      market.outcomes.forEach(outcome => {
+        if (typeof outcome.price === "number") {
+          prices.push({
+            name: outcome.name,
+            price: outcome.price,
+            point: outcome.point ?? null
+          });
+        }
+      });
+    });
+
+    return prices;
+  }
+
+  function bestPriceForOutcome(game, marketKey, outcomeName, point) {
+    const matches = getAllPrices(game, marketKey).filter(item => {
+      if (item.name !== outcomeName) return false;
+
+      if (marketKey === "spreads" || marketKey === "totals") {
+        return item.point === point;
+      }
+
+      return true;
+    });
+
+    if (!matches.length) return null;
+
+    return Math.max(...matches.map(item => item.price));
+  }
+
+  function isBestLine(game, marketKey, outcome) {
+    if (typeof outcome.price !== "number") return false;
+
+    const best = bestPriceForOutcome(
+      game,
+      marketKey,
+      outcome.name,
+      outcome.point ?? null
+    );
+
+    return outcome.price === best;
+  }
+
+  function renderBookmaker(game, bookmaker, marketKey) {
+    const market = getMarket(bookmaker, marketKey);
+
+    if (!market || !market.outcomes || !market.outcomes.length) {
+      return "";
+    }
+
+    return `
+      <div class="book">
+
+        <div class="book-name">
+          ${bookmaker.title || bookmaker.key}
+        </div>
+
+        <div class="odds-row">
+
+          ${market.outcomes.map(outcome => {
+            const best = isBestLine(
+              game,
+              marketKey,
+              outcome
+            );
+
+            return `
+              <div class="odd ${best ? "best" : ""}">
+
+                ${
+                  best
+                    ? `<div class="best-label">Best Line</div>`
+                    : ""
+                }
+
+                <div class="odd-name">
+                  ${outcome.name || ""}
+                </div>
+
+                <div class="odd-price">
+                  ${formatOdds(outcome.price)}
+                </div>
+
+                ${
+                  outcome.point !== null &&
+                  outcome.point !== undefined
+                    ? `
+                      <div class="odd-point">
+                        ${outcome.point}
+                      </div>
+                    `
+                    : ""
+                }
+
+              </div>
+            `;
+          }).join("")}
+
+        </div>
+
+      </div>
+    `;
+  }
+
+  function renderGame(game) {
+    const bookmakers = game.bookmakers || [];
+
+    return `
+      <div class="game">
+
+        <div class="game-header">
+
+          <div class="game-time">
+            ${formatTime(game.commence_time)}
+          </div>
+
+          <div class="team-row">
+            <div class="team">${game.away_team}</div>
+            <div class="team-label">AWAY</div>
+          </div>
+
+          <div class="team-row">
+            <div class="team">${game.home_team}</div>
+            <div class="team-label">HOME</div>
+          </div>
+
+        </div>
+
+        <div class="market-tabs">
+
+          <button
+            class="market-btn ${currentMarket === "h2h" ? "active" : ""}"
+            onclick="changeMarket('h2h')"
+          >
+            Moneyline
+          </button>
+
+          <button
+            class="market-btn ${currentMarket === "spreads" ? "active" : ""}"
+            onclick="changeMarket('spreads')"
+          >
+            Spread
+          </button>
+
+          <button
+            class="market-btn ${currentMarket === "totals" ? "active" : ""}"
+            onclick="changeMarket('totals')"
+          >
+            Total
+          </button>
+
+        </div>
+
+        <div class="books">
+
+          ${
+            bookmakers.length
+              ? bookmakers
+                  .map(bookmaker =>
+                    renderBookmaker(
+                      game,
+                      bookmaker,
+                      currentMarket
+                    )
+                  )
+                  .filter(Boolean)
+                  .join("")
+              : `
+                  <div class="empty">
+                    No sportsbook lines available yet.
+                  </div>
+                `
+          }
+
+        </div>
+
+      </div>
+    `;
+  }
+
+  function renderGames() {
+    gamesEl.innerHTML =
+      latestGames.map(renderGame).join("");
+  }
+
+  function changeMarket(market) {
+    currentMarket = market;
+    renderGames();
+  }
+
+  async function loadOdds() {
+    statusEl.textContent =
+      "Loading " + currentSport.toUpperCase() + "...";
+
+    refreshBtn.disabled = true;
+    gamesEl.innerHTML = "";
+
+    try {
+      const response = await fetch(ODDS_PROXY, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json"
+        },
+        body: JSON.stringify({
+          sport: currentSport
+        })
+      });
+
+      const data = await response.json();
+
+      if (!response.ok) {
+        throw new Error(
+          data.error ||
+          "Backend returned HTTP " + response.status
+        );
+      }
+
+      latestGames =
+        Array.isArray(data.games)
+          ? data.games
+          : [];
+
+      if (!latestGames.length) {
+        statusEl.textContent = "Connected";
+
+        gamesEl.innerHTML = `
+          <div class="empty">
+            No ${currentSport.toUpperCase()} games available right now.
+          </div>
+        `;
+
+        return;
+      }
+
+      statusEl.textContent =
+        latestGames.length +
+        " " +
+        currentSport.toUpperCase() +
+        " games";
+
+      renderGames();
+
+    } catch (error) {
+      statusEl.textContent = "Connection failed";
+
+      gamesEl.innerHTML = `
+        <div class="error">
+          ${error.message}
+        </div>
+      `;
+    } finally {
+      refreshBtn.disabled = false;
+    }
+  }
+
+  loadOdds();
+</script>
+
+</body>
+</html>
