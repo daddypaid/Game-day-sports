@@ -83,7 +83,7 @@ main{
 
 .nav{
   display:grid;
-  grid-template-columns:repeat(2,1fr);
+  grid-template-columns:repeat(4,1fr);
   gap:8px;
   margin-bottom:14px;
 }
@@ -352,6 +352,8 @@ button:disabled{
   }
 
 }
+
+@media(max-width:520px){.nav{grid-template-columns:repeat(2,1fr)}.nav a{font-size:12px;padding:10px 6px}}
 </style>
 </head>
 
@@ -381,15 +383,10 @@ Balance: —
 <main>
 
 <div class="nav">
-
-<a href="gameday-wallet.html">
-Sportsbook
-</a>
-
-<a href="gameday-settlement.html">
-Wager Settlement
-</a>
-
+<a href="gameday-sportsbook.html">Sportsbook</a>
+<a href="gameday-casino-v2.html">Casino</a>
+<a href="gameday-my-bets.html">My Bets</a>
+<a href="gameday-auth.html">Account</a>
 </div>
 
 <div class="notice">
