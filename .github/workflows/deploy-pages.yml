@@ -45,6 +45,15 @@ jobs:
           grep -q "TEST MODE" gameday-sportsbook.html
           grep -q "Test Wallet" gameday-auth.html
 
+          casino_games=(gameday-blackjack.html gameday-roulette.html gameday-baccarat.html gameday-slots.html)
+          for file in "${casino_games[@]}"; do
+            grep -q 'href="gameday-sportsbook.html">Sportsbook</a>' "$file"
+            grep -q 'href="gameday-casino-v2.html">Casino</a>' "$file"
+            grep -q 'href="gameday-my-bets.html">My Bets</a>' "$file"
+            grep -q 'href="gameday-auth.html">Account</a>' "$file"
+            grep -q 'TEST MODE' "$file"
+          done
+
           if grep -RInE \
             --include='*.html' --include='*.js' --include='*.css' \
             'SUPABASE_SERVICE_ROLE_KEY|SUPABASE_SECRET_KEYS|API_SPORTS_KEY|ODDS_API_KEY|sb_secret_[A-Za-z0-9_-]+' .; then
