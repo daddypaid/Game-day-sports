@@ -171,6 +171,50 @@ main{
   to{transform:rotate(-360deg)}
 }
 
+.wheel-label{
+  position:absolute;
+  left:50%;
+  top:50%;
+  width:22px;
+  height:16px;
+  margin-left:-11px;
+  margin-top:-8px;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  font-size:8px;
+  font-weight:800;
+  color:#fff;
+  text-shadow:0 1px 2px #000;
+  pointer-events:none;
+}
+
+.roulette-ball{
+  position:absolute;
+  left:50%;
+  top:50%;
+  width:11px;
+  height:11px;
+  margin-left:-5.5px;
+  margin-top:-5.5px;
+  border-radius:50%;
+  background:#fff;
+  border:1px solid #ddd;
+  box-shadow:0 1px 5px rgba(0,0,0,.8);
+  transform:rotate(0deg) translateY(-105px);
+  transform-origin:center;
+  z-index:4;
+  transition:transform .75s cubic-bezier(.2,.7,.15,1);
+}
+
+.wheel.spinning .roulette-ball{
+  animation:ballOrbit .32s linear infinite reverse;
+}
+
+@keyframes ballOrbit{
+  to{transform:rotate(360deg) translateY(-105px)}
+}
+
 .wheel-result{
   width:100px;
   height:100px;
@@ -385,6 +429,8 @@ TEST MODE — Roulette uses your GameDay test wallet only.
 <div id="message"></div>
 
 <div class="wheel">
+<div id="wheelLabels" aria-hidden="true"></div>
+<div id="rouletteBall" class="roulette-ball" aria-hidden="true"></div>
 <div id="wheelResult" class="wheel-result green">?</div>
 </div>
 
@@ -500,6 +546,12 @@ document.getElementById("message");
 const wheel =
 document.querySelector(".wheel");
 
+const wheelLabels =
+document.getElementById("wheelLabels");
+
+const rouletteBall =
+document.getElementById("rouletteBall");
+
 const wheelResult =
 document.getElementById("wheelResult");
 
@@ -531,6 +583,25 @@ return redNumbers.has(n)
 ? "red"
 : "black";
 
+}
+
+function buildWheelLabels(){
+  if(!wheelLabels) return;
+  const order=[0,32,15,19,4,21,2,25,17,34,6,27,13,36,11,30,8,23,10,5,24,16,33,1,20,14,31,9,22,18,29,7,28,12,35,3,26];
+  wheelLabels.innerHTML=order.map((n,i)=>{
+    const angle=(i/order.length)*360;
+    const cls=numberColor(n);
+    const bg=cls==='green'?'#17743a':cls==='red'?'#8f202a':'#171717';
+    return `<span class="wheel-label" style="background:${bg};transform:rotate(${angle}deg) translateY(-92px) rotate(${-angle}deg)">${n}</span>`;
+  }).join('');
+}
+
+function landBall(number){
+  if(!rouletteBall) return;
+  const order=[0,32,15,19,4,21,2,25,17,34,6,27,13,36,11,30,8,23,10,5,24,16,33,1,20,14,31,9,22,18,29,7,28,12,35,3,26];
+  const idx=Math.max(0,order.indexOf(Number(number)));
+  const angle=(idx/order.length)*360;
+  rouletteBall.style.transform=`rotate(${angle}deg) translateY(-105px)`;
 }
 
 function renderNumbers(){
@@ -726,6 +797,7 @@ const spin =
 data.spin;
 
 wheel.classList.remove("spinning");
+landBall(spin.winning_number);
 
 walletBalance =
 Number(spin.balance);
@@ -903,6 +975,7 @@ spinBtn.addEventListener(
 spin
 );
 
+buildWheelLabels();
 renderNumbers();
 
 const signedIn =
