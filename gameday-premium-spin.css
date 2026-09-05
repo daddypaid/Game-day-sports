@@ -1,0 +1,52 @@
+/* GameDay Premium Slot Spin Motion */
+/* Shared motion layer for Lucky 7s, Midnight Monsters and Galactic Rebellion. */
+
+/* 5x3 video slots */
+.reel-shell{position:relative;overflow:hidden}
+.reel-shell::after{content:"";position:absolute;inset:0;pointer-events:none;opacity:0;background:linear-gradient(180deg,transparent 0%,rgba(255,255,255,.12) 46%,rgba(255,255,255,.26) 50%,rgba(255,255,255,.08) 54%,transparent 100%);transform:translateY(-115%)}
+body:has(.cell.spin) .reel-shell::after{opacity:.7;animation:gdScan 420ms linear infinite}
+.cell.spin{animation:gdVideoReel 180ms linear infinite!important;filter:blur(1.8px) saturate(1.2) brightness(.9)!important;will-change:transform,filter}
+.cell.spin:nth-child(5n+1){animation-delay:0ms!important}
+.cell.spin:nth-child(5n+2){animation-delay:-34ms!important}
+.cell.spin:nth-child(5n+3){animation-delay:-68ms!important}
+.cell.spin:nth-child(5n+4){animation-delay:-102ms!important}
+.cell.spin:nth-child(5n+5){animation-delay:-136ms!important}
+.cell.spin .symbol{box-shadow:0 14px 25px rgba(0,0,0,.38);transform:scale(.96)}
+.cell.win{animation:gdWinPop .48s cubic-bezier(.2,.85,.3,1.25) 2 alternate!important;z-index:3}
+.cell.feature-hit{animation:gdFeaturePop .38s ease 5 alternate!important;z-index:4}
+.spinbtn:not(:disabled){position:relative;overflow:hidden;isolation:isolate}
+.spinbtn:not(:disabled)::after{content:"";position:absolute;inset:-45%;border-radius:50%;background:conic-gradient(transparent 0 38%,rgba(255,255,255,.62) 46%,transparent 54% 100%);animation:gdSpinHalo 1.6s linear infinite;z-index:-1}
+body:has(.cell.spin) .spinbtn{animation:gdSpinPress .55s ease-in-out infinite alternate!important}
+
+/* Classic 3-reel Lucky 7s */
+.reels{position:relative;overflow:hidden}
+.reels::after{content:"";position:absolute;inset:0;pointer-events:none;opacity:0;background:linear-gradient(180deg,rgba(255,255,255,.04),rgba(255,255,255,.32) 49%,rgba(255,255,255,.05) 53%,transparent 75%);transform:translateY(-120%)}
+.reels:has(.reel.spinning)::after{opacity:.65;animation:gdScan 360ms linear infinite}
+.reel.spinning{animation:gdClassicReel 135ms linear infinite!important;filter:blur(1.4px) saturate(1.18);will-change:transform,filter}
+.reel.spinning:nth-child(1){animation-delay:0ms!important}
+.reel.spinning:nth-child(2){animation-delay:-42ms!important}
+.reel.spinning:nth-child(3){animation-delay:-84ms!important}
+.reel:not(.spinning){transition:transform .18s cubic-bezier(.18,.88,.32,1.32),filter .2s ease,box-shadow .2s ease}
+.reels:not(:has(.reel.spinning)) .reel{animation:gdReelLock .24s cubic-bezier(.2,.9,.25,1.25) 1}
+#spinBtn:not(:disabled){box-shadow:0 0 0 2px rgba(255,220,115,.28),0 0 24px rgba(255,72,50,.32),inset 0 -8px 14px rgba(0,0,0,.22)}
+#spinBtn:not(:disabled){background:radial-gradient(circle at 35% 25%,#ffdf75,#e32f23 50%,#8f0f0b 82%)!important;color:#fff!important;border:2px solid #ffd878!important;text-shadow:0 2px 4px #460500}
+#spinBtn:disabled{filter:saturate(.6) brightness(.72)}
+
+@keyframes gdVideoReel{
+  0%{transform:translateY(-14px) scaleY(1.08);filter:blur(2.2px) brightness(.78)}
+  48%{transform:translateY(13px) scaleY(.94);filter:blur(3px) brightness(1.02)}
+  100%{transform:translateY(-14px) scaleY(1.08);filter:blur(2.2px) brightness(.78)}
+}
+@keyframes gdClassicReel{
+  0%{transform:translateY(-18px) scaleY(1.12)}
+  50%{transform:translateY(18px) scaleY(.9)}
+  100%{transform:translateY(-18px) scaleY(1.12)}
+}
+@keyframes gdScan{to{transform:translateY(115%)}}
+@keyframes gdSpinHalo{to{transform:rotate(1turn)}}
+@keyframes gdSpinPress{to{transform:scale(.94);filter:brightness(1.28)}}
+@keyframes gdReelLock{0%{transform:translateY(-8px) scaleY(1.05)}65%{transform:translateY(4px) scaleY(.97)}100%{transform:none}}
+@keyframes gdWinPop{from{transform:scale(1);filter:brightness(1)}to{transform:scale(1.09);filter:brightness(1.55) saturate(1.25)}}
+@keyframes gdFeaturePop{from{transform:scale(1);filter:brightness(1)}to{transform:scale(1.07);filter:brightness(1.7) saturate(1.35)}}
+
+@media(prefers-reduced-motion:reduce){.cell.spin,.reel.spinning,.spinbtn,.reel-shell::after,.reels::after{animation-duration:.5s!important}.cell.win,.cell.feature-hit{animation:none!important}}
