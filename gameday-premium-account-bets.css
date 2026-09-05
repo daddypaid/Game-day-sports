@@ -1,0 +1,23 @@
+/* Premium My Bets + Account interiors */
+.gd-art-my-bets,.gd-art-account{background:radial-gradient(circle at 50% -8%,rgba(74,54,16,.22),transparent 32%),linear-gradient(180deg,#080a08,#040504 72%)!important;color:#f8f4e8!important}
+.gd-art-my-bets header,.gd-art-account header{background:rgba(5,7,6,.95)!important;border-bottom:1px solid rgba(228,184,79,.34)!important;box-shadow:0 8px 24px rgba(0,0,0,.38);backdrop-filter:blur(16px);-webkit-backdrop-filter:blur(16px)}
+.gd-art-my-bets header h1,.gd-art-account header h1{font-family:Georgia,serif!important;color:#fff0ad!important;text-shadow:0 0 18px rgba(230,187,77,.2)}
+.gd-art-my-bets main,.gd-art-account main{position:relative}
+.gd-art-my-bets main::before,.gd-art-account main::before{content:"";display:block;width:100%;aspect-ratio:1200/420;border-radius:18px;margin:0 0 16px;background-size:cover;background-position:center;border:1px solid #6d521e;box-shadow:0 18px 46px rgba(0,0,0,.42),inset 0 0 40px rgba(0,0,0,.18)}
+.gd-art-my-bets main::before{background-image:url('assets/gameday-my-bets-premium.svg')}
+.gd-art-account main::before{background-image:url('assets/gameday-account-premium.svg')}
+.gd-art-my-bets .status,.gd-art-my-bets .empty,.gd-art-my-bets .error,.gd-art-account .status,.gd-art-account .card,.gd-art-account .empty{background:linear-gradient(180deg,rgba(18,21,17,.97),rgba(7,9,8,.98))!important;border:1px solid rgba(228,184,79,.22)!important;box-shadow:0 14px 32px rgba(0,0,0,.36)!important}
+.gd-art-my-bets .status{border-left:3px solid #d8b653!important}.gd-art-my-bets .section{color:#e8c660!important;letter-spacing:.14em;font-size:11px!important}
+.gd-art-my-bets .bet{position:relative;overflow:hidden;background:linear-gradient(145deg,#151811,#080a08)!important;border:1px solid #6a511d!important;border-radius:16px!important;box-shadow:0 14px 34px rgba(0,0,0,.4),inset 0 1px rgba(255,255,255,.025)!important;padding:15px!important}
+.gd-art-my-bets .bet::before{content:"";position:absolute;left:0;top:0;bottom:0;width:3px;background:linear-gradient(#f4d46a,#8c6015)}
+.gd-art-my-bets .summary-box,.gd-art-my-bets .selection{background:#0c100d!important;border-color:#3b321b!important}.gd-art-my-bets .selection{box-shadow:inset 0 0 20px rgba(0,0,0,.18)}
+.gd-art-my-bets .selection-title,.gd-art-my-bets .value{color:#fff0ad!important}.gd-art-my-bets .label{color:#d4b65e!important}
+.gd-art-my-bets .pill.pending,.gd-art-my-bets .pill.accepted{background:#3d2d0d!important;border:1px solid #8e6a1c;color:#ffe89b!important}.gd-art-my-bets .pill.won{background:#103e22!important;border:1px solid #2fa75c;color:#aff4c3!important}.gd-art-my-bets .pill.lost{background:#421a1d!important;border:1px solid #8e343c;color:#ffb6bb!important}
+.gd-art-my-bets .refresh{background:linear-gradient(180deg,#f2d36d,#b87b17)!important;color:#171007!important;border:1px solid #ffe29a!important;box-shadow:0 0 20px rgba(228,184,79,.18);text-transform:uppercase;letter-spacing:.06em}
+.gd-art-account .card{border-radius:17px!important}.gd-art-account .card h2{font-family:Georgia,serif;color:#fff0ad!important;margin-top:0}.gd-art-account .email{color:#f4d36a!important}.gd-art-account input{background:#090c09!important;border:1px solid #5b4519!important;color:#fff!important;box-shadow:inset 0 0 16px rgba(0,0,0,.18)}
+.gd-art-account .primary{background:linear-gradient(180deg,#f5d66f,#b97b17)!important;color:#171007!important;border:1px solid #ffe59c!important;box-shadow:0 0 18px rgba(228,184,79,.17)}
+.gd-art-account .secondary,.gd-art-account .refresh-wallet{background:#10150f!important;border:1px solid #5b4519!important;color:#f4d36a!important}.gd-art-account .link{background:linear-gradient(180deg,#0e4b29,#082a18)!important;border:1px solid #2fab61!important;color:#c9ffda!important;box-shadow:0 0 17px rgba(41,193,104,.12)}
+.gd-art-account .danger{background:linear-gradient(180deg,#4a2021,#281011)!important;border:1px solid #7f3438!important;color:#ffc0c3!important}
+.gd-art-account .wallet-head{padding:10px 0 12px;border-bottom:1px solid #342c18}.gd-art-account .wallet-balance{font:900 30px Georgia,serif;color:#bfffd3!important;text-shadow:0 0 18px rgba(41,220,116,.18)}
+.gd-art-account .tx{border-top-color:#322b19!important;padding:13px 0!important}.gd-art-account .tx-title{color:#fff0ad!important}.gd-art-account .muted,.gd-art-account .tx-meta,.gd-art-account .wallet-rule,.gd-art-account .password-help{color:#a8a393!important}
+@media(max-width:520px){.gd-art-my-bets main,.gd-art-account main{padding:8px!important}.gd-art-my-bets main::before,.gd-art-account main::before{border-radius:13px;margin-bottom:9px}.gd-art-my-bets .bet{padding:11px!important}.gd-art-account .card{padding:12px!important}.gd-art-account .wallet-balance{font-size:24px!important}}
