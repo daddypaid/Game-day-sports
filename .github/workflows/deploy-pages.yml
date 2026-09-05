@@ -113,10 +113,23 @@ jobs:
           grep -q '.reel{min-height:82px' gameday-slots.html
           grep -q '.spin{min-height:38px' gameday-slots.html
 
+          # Shared detailed-card and custom-wager layer
+          test -s gameday-card-wager-ui.js
+          grep -q 'gameday-detailed-card' gameday-card-wager-ui.js
+          grep -q 'Custom bet: type any whole' gameday-card-wager-ui.js
+          grep -q "window.prompt('Enter custom whole-dollar bet'" gameday-card-wager-ui.js
+          shared_ui_pages=(gameday-blackjack.html gameday-roulette.html gameday-baccarat.html gameday-slots.html gameday-video-poker.html gameday-bonus-poker.html gameday-deuces-wild.html gameday-three-card-poker.html gameday-ultimate-texas-holdem.html gameday-caribbean-stud.html)
+          for file in "${shared_ui_pages[@]}"; do
+            grep -q 'src="gameday-card-wager-ui.js"' "$file"
+          done
+          grep -q 'step="1"' gameday-blackjack.html
+          grep -q 'step="1"' gameday-card-wager-ui.js
+
           pwa_required=(
             manifest.webmanifest
             sw.js
             gameday-app.js
+            gameday-card-wager-ui.js
             offline.html
             icons/gameday-192.png
             icons/gameday-512.png
@@ -140,6 +153,7 @@ jobs:
           grep -q "./gameday-three-card-poker.html" sw.js
           grep -q "./gameday-ultimate-texas-holdem.html" sw.js
           grep -q "./gameday-caribbean-stud.html" sw.js
+          grep -q "./gameday-card-wager-ui.js" sw.js
           for file in "${required[@]}"; do
             grep -q 'rel="manifest" href="manifest.webmanifest"' "$file"
             grep -q 'src="gameday-app.js"' "$file"
