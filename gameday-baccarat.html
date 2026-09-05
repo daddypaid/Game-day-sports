@@ -1,0 +1,1021 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1.0">
+
+<title>GameDay Baccarat</title>
+
+<style>
+*{box-sizing:border-box}
+
+body{
+  margin:0;
+  background:#08100b;
+  color:#fff;
+  font-family:Arial,sans-serif;
+}
+
+header{
+  position:sticky;
+  top:0;
+  z-index:20;
+  background:#101712;
+  border-bottom:1px solid #27342c;
+  padding:14px;
+}
+
+.header-row{
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+  gap:10px;
+}
+
+h1{
+  margin:0;
+  font-size:23px;
+}
+
+.badge{
+  background:#433514;
+  color:#f0d987;
+  border:1px solid #725c21;
+  border-radius:999px;
+  padding:6px 9px;
+  font-size:10px;
+  font-weight:bold;
+}
+
+.account-row{
+  margin-top:9px;
+  display:flex;
+  justify-content:space-between;
+  gap:10px;
+  align-items:center;
+}
+
+.account{
+  color:#aab7ae;
+  font-size:12px;
+  overflow:hidden;
+  white-space:nowrap;
+  text-overflow:ellipsis;
+}
+
+.balance{
+  background:#163d22;
+  border:1px solid #2e7040;
+  color:#c6f1cf;
+  border-radius:9px;
+  padding:7px 9px;
+  font-weight:bold;
+  white-space:nowrap;
+}
+
+main{
+  max-width:760px;
+  margin:auto;
+  padding:14px;
+}
+
+.nav{
+  display:grid;
+  grid-template-columns:repeat(2,1fr);
+  gap:8px;
+  margin-bottom:14px;
+}
+
+.nav a{
+  text-decoration:none;
+  text-align:center;
+  padding:11px;
+  border-radius:10px;
+  background:#202b24;
+  color:#fff;
+  font-weight:bold;
+}
+
+.notice,
+.error,
+.success{
+  border-radius:11px;
+  padding:12px;
+  margin-bottom:12px;
+}
+
+.notice{
+  background:#433514;
+  border:1px solid #725c21;
+  color:#f0d987;
+}
+
+.error{
+  background:#2a1717;
+  border:1px solid #733b3b;
+  color:#efb4b4;
+}
+
+.success{
+  background:#14291a;
+  border:1px solid #326744;
+  color:#bef1c9;
+}
+
+.table{
+  background:
+    radial-gradient(circle at center,#175731 0%,#113d23 58%,#0a2817 100%);
+  border:2px solid #33764a;
+  border-radius:28px;
+  padding:18px 14px;
+  min-height:470px;
+}
+
+.table-title{
+  text-align:center;
+  color:#c4dac8;
+  text-transform:uppercase;
+  letter-spacing:1px;
+  font-size:11px;
+  font-weight:bold;
+}
+
+.side{
+  margin-top:18px;
+  text-align:center;
+}
+
+.side-title{
+  font-size:18px;
+  font-weight:bold;
+  margin-bottom:10px;
+}
+
+.cards{
+  display:flex;
+  justify-content:center;
+  flex-wrap:wrap;
+  gap:8px;
+}
+
+.card{
+  width:65px;
+  height:93px;
+  background:#f7f7f4;
+  color:#111;
+  border-radius:8px;
+  padding:7px;
+  display:flex;
+  flex-direction:column;
+  justify-content:space-between;
+  font-weight:bold;
+  box-shadow:0 3px 8px rgba(0,0,0,.25);
+}
+
+.card.red{
+  color:#b11d2a;
+}
+
+.rank{
+  font-size:18px;
+}
+
+.suit{
+  font-size:30px;
+  text-align:center;
+}
+
+.total{
+  margin-top:9px;
+  color:#d9e6dc;
+  font-weight:bold;
+}
+
+.versus{
+  text-align:center;
+  margin:18px 0;
+  color:#9fb1a4;
+  font-weight:bold;
+}
+
+.result{
+  text-align:center;
+  font-size:22px;
+  font-weight:bold;
+  margin-top:17px;
+}
+
+.controls{
+  background:#111914;
+  border:1px solid #2d3d33;
+  border-radius:14px;
+  padding:14px;
+  margin-top:14px;
+}
+
+label{
+  display:block;
+  color:#aab7ae;
+  font-size:12px;
+  margin-bottom:6px;
+}
+
+input{
+  width:100%;
+  background:#090f0b;
+  color:#fff;
+  border:1px solid #34493b;
+  border-radius:10px;
+  padding:13px;
+  font-size:18px;
+}
+
+.quick-bets{
+  display:grid;
+  grid-template-columns:repeat(4,1fr);
+  gap:7px;
+  margin:8px 0 14px;
+}
+
+.quick-bets button{
+  background:#202b24;
+  color:#fff;
+}
+
+.bet-options{
+  display:grid;
+  grid-template-columns:repeat(3,1fr);
+  gap:8px;
+}
+
+.bet-btn{
+  color:#fff;
+  min-height:68px;
+  border:1px solid #425047;
+}
+
+.player-btn{
+  background:#23406a;
+}
+
+.banker-btn{
+  background:#7c2028;
+}
+
+.tie-btn{
+  background:#1e6c39;
+}
+
+.bet-btn.selected{
+  outline:3px solid #e1d075;
+}
+
+.play-btn{
+  width:100%;
+  margin-top:14px;
+  background:#eef5f0;
+  color:#07100a;
+  font-size:17px;
+}
+
+button{
+  border:0;
+  border-radius:10px;
+  font-weight:bold;
+  cursor:pointer;
+}
+
+button:disabled{
+  opacity:.45;
+}
+
+.history-title{
+  margin:18px 0 8px;
+  color:#91a097;
+  font-size:12px;
+  font-weight:bold;
+  text-transform:uppercase;
+}
+
+.history-item{
+  background:#111914;
+  border:1px solid #2d3d33;
+  border-radius:11px;
+  padding:11px;
+  margin-bottom:8px;
+}
+
+.history-row{
+  display:flex;
+  justify-content:space-between;
+  gap:10px;
+}
+
+.small{
+  color:#8f9d94;
+  font-size:11px;
+  margin-top:5px;
+}
+</style>
+</head>
+
+<body>
+
+<header>
+
+<div class="header-row">
+  <h1>GameDay Baccarat</h1>
+  <div class="badge">TEST CASINO</div>
+</div>
+
+<div class="account-row">
+  <div id="account" class="account">
+    Checking account...
+  </div>
+
+  <div id="balance" class="balance">
+    Balance: —
+  </div>
+</div>
+
+</header>
+
+<main>
+
+<div class="nav">
+  <a href="gameday-casino.html">Casino</a>
+  <a href="gameday-wallet.html">Sportsbook</a>
+</div>
+
+<div class="notice">
+TEST MODE — Baccarat uses your GameDay test wallet only.
+</div>
+
+<div id="message"></div>
+
+<div class="table">
+
+<div class="table-title">
+GameDay Baccarat
+</div>
+
+<div class="side">
+
+<div class="side-title">
+Player
+</div>
+
+<div id="playerCards" class="cards"></div>
+
+<div id="playerTotal" class="total">
+Total: —
+</div>
+
+</div>
+
+<div class="versus">
+VS
+</div>
+
+<div class="side">
+
+<div class="side-title">
+Banker
+</div>
+
+<div id="bankerCards" class="cards"></div>
+
+<div id="bankerTotal" class="total">
+Total: —
+</div>
+
+</div>
+
+<div id="result" class="result">
+Choose a bet
+</div>
+
+</div>
+
+<div class="controls">
+
+<label for="stake">
+Stake
+</label>
+
+<input
+  id="stake"
+  type="number"
+  min="1"
+  max="10000"
+  value="25">
+
+<div class="quick-bets">
+
+<button data-chip="10">
+$10
+</button>
+
+<button data-chip="25">
+$25
+</button>
+
+<button data-chip="50">
+$50
+</button>
+
+<button data-chip="100">
+$100
+</button>
+
+</div>
+
+<div class="bet-options">
+
+<button
+  class="bet-btn player-btn"
+  data-bet="player">
+
+Player
+<br>
+1:1
+
+</button>
+
+<button
+  class="bet-btn banker-btn"
+  data-bet="banker">
+
+Banker
+<br>
+0.95:1
+
+</button>
+
+<button
+  class="bet-btn tie-btn"
+  data-bet="tie">
+
+Tie
+<br>
+8:1
+
+</button>
+
+</div>
+
+<button
+  id="dealBtn"
+  class="play-btn">
+
+Deal Baccarat
+
+</button>
+
+</div>
+
+<div class="history-title">
+Recent Baccarat Rounds
+</div>
+
+<div id="history">
+Loading...
+</div>
+
+</main>
+
+<script type="module">
+
+import {
+  createClient
+} from "https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/+esm";
+
+const supabase =
+createClient(
+  "https://qsvrvhcklnsbekxblpfo.supabase.co",
+  "sb_publishable_-yCYGvDqIzVFgu90lgoVpw_uoWnYmO0"
+);
+
+let currentUser = null;
+let walletBalance = 0;
+let selectedBet = null;
+
+const account =
+document.getElementById("account");
+
+const balance =
+document.getElementById("balance");
+
+const stake =
+document.getElementById("stake");
+
+const message =
+document.getElementById("message");
+
+const playerCards =
+document.getElementById("playerCards");
+
+const bankerCards =
+document.getElementById("bankerCards");
+
+const playerTotal =
+document.getElementById("playerTotal");
+
+const bankerTotal =
+document.getElementById("bankerTotal");
+
+const resultEl =
+document.getElementById("result");
+
+const dealBtn =
+document.getElementById("dealBtn");
+
+const historyEl =
+document.getElementById("history");
+
+function money(value){
+
+  return "$" +
+  Number(value || 0)
+  .toFixed(2);
+
+}
+
+function escapeHtml(value){
+
+  return String(value ?? "")
+  .replaceAll("&","&amp;")
+  .replaceAll("<","&lt;")
+  .replaceAll(">","&gt;");
+
+}
+
+function showMessage(
+  text,
+  type="success"
+){
+
+  message.innerHTML =
+  `
+  <div class="${type}">
+    ${escapeHtml(text)}
+  </div>
+  `;
+
+}
+
+function cardHtml(card){
+
+  const red =
+  card.suit === "♥" ||
+  card.suit === "♦";
+
+  return `
+  <div class="card ${red ? "red" : ""}">
+
+    <div class="rank">
+      ${escapeHtml(card.rank)}
+    </div>
+
+    <div class="suit">
+      ${escapeHtml(card.suit)}
+    </div>
+
+    <div class="rank">
+      ${escapeHtml(card.rank)}
+    </div>
+
+  </div>
+  `;
+
+}
+
+function renderRound(round){
+
+  playerCards.innerHTML =
+  (round.player_cards || [])
+  .map(cardHtml)
+  .join("");
+
+  bankerCards.innerHTML =
+  (round.banker_cards || [])
+  .map(cardHtml)
+  .join("");
+
+  playerTotal.textContent =
+  "Total: " +
+  String(round.player_total);
+
+  bankerTotal.textContent =
+  "Total: " +
+  String(round.banker_total);
+
+  const resultName =
+  String(round.result || "")
+  .toUpperCase();
+
+  resultEl.textContent =
+  resultName + " WINS";
+
+  walletBalance =
+  Number(round.balance);
+
+  balance.textContent =
+  "Balance: " +
+  money(walletBalance);
+
+  if(
+    round.bet_type ===
+    round.result
+  ){
+
+    showMessage(
+      `You won. Total return: ${money(round.payout)}`
+    );
+
+  }else{
+
+    showMessage(
+      `${resultName} won. Your ${round.bet_type.toUpperCase()} wager lost.`,
+      "error"
+    );
+
+  }
+
+}
+
+async function loadAccount(){
+
+  const {
+    data,
+    error
+  } =
+  await supabase.auth.getSession();
+
+  if(
+    error ||
+    !data.session
+  ){
+
+    account.textContent =
+    "Not signed in";
+
+    balance.textContent =
+    "Balance: —";
+
+    showMessage(
+      "Sign in before playing Baccarat.",
+      "error"
+    );
+
+    return false;
+
+  }
+
+  currentUser =
+  data.session.user;
+
+  account.textContent =
+  currentUser.email ||
+  "GameDay user";
+
+  return true;
+
+}
+
+async function loadWallet(){
+
+  if(!currentUser){
+    return;
+  }
+
+  const {
+    data,
+    error
+  } =
+  await supabase
+  .from("wallets")
+  .select("balance")
+  .eq(
+    "user_id",
+    currentUser.id
+  )
+  .single();
+
+  if(error){
+
+    balance.textContent =
+    "Balance unavailable";
+
+    return;
+
+  }
+
+  walletBalance =
+  Number(data.balance || 0);
+
+  balance.textContent =
+  "Balance: " +
+  money(walletBalance);
+
+}
+
+async function playBaccarat(){
+
+  message.innerHTML = "";
+
+  if(!currentUser){
+
+    showMessage(
+      "Sign in first.",
+      "error"
+    );
+
+    return;
+
+  }
+
+  if(!selectedBet){
+
+    showMessage(
+      "Choose Player, Banker, or Tie.",
+      "error"
+    );
+
+    return;
+
+  }
+
+  const amount =
+  Number(stake.value);
+
+  if(
+    !Number.isFinite(amount) ||
+    amount <= 0
+  ){
+
+    showMessage(
+      "Enter a valid stake.",
+      "error"
+    );
+
+    return;
+
+  }
+
+  if(
+    amount >
+    walletBalance
+  ){
+
+    showMessage(
+      "Insufficient test balance.",
+      "error"
+    );
+
+    return;
+
+  }
+
+  dealBtn.disabled = true;
+
+  dealBtn.textContent =
+  "Dealing...";
+
+  try{
+
+    const {
+      data,
+      error
+    } =
+    await supabase.functions.invoke(
+      "baccarat-test",
+      {
+        body:{
+          stake:amount,
+          bet_type:selectedBet
+        }
+      }
+    );
+
+    if(error){
+      throw error;
+    }
+
+    if(data?.error){
+
+      throw new Error(
+        data.error
+      );
+
+    }
+
+    renderRound(
+      data.round
+    );
+
+    await loadHistory();
+
+  }catch(error){
+
+    showMessage(
+      error.message ||
+      "Unable to play Baccarat.",
+      "error"
+    );
+
+  }finally{
+
+    dealBtn.disabled =
+    false;
+
+    dealBtn.textContent =
+    "Deal Baccarat";
+
+  }
+
+}
+
+async function loadHistory(){
+
+  if(!currentUser){
+    return;
+  }
+
+  const {
+    data,
+    error
+  } =
+  await supabase
+  .from("baccarat_rounds")
+  .select(
+    "stake,bet_type,player_total,banker_total,result,payout,created_at"
+  )
+  .order(
+    "created_at",
+    {
+      ascending:false
+    }
+  )
+  .limit(10);
+
+  if(error){
+
+    historyEl.innerHTML =
+    `
+    <div class="error">
+      Unable to load Baccarat history.
+    </div>
+    `;
+
+    return;
+
+  }
+
+  if(!data?.length){
+
+    historyEl.innerHTML =
+    `
+    <div class="notice">
+      No Baccarat rounds yet.
+    </div>
+    `;
+
+    return;
+
+  }
+
+  historyEl.innerHTML =
+  data.map(
+    round => `
+
+    <div class="history-item">
+
+      <div class="history-row">
+
+        <strong>
+          ${escapeHtml(
+            round.result.toUpperCase()
+          )}
+        </strong>
+
+        <strong>
+          ${money(
+            round.stake
+          )}
+        </strong>
+
+      </div>
+
+      <div class="history-row">
+
+        <span>
+          Bet:
+          ${escapeHtml(
+            round.bet_type.toUpperCase()
+          )}
+        </span>
+
+        <span>
+          P ${round.player_total}
+          —
+          B ${round.banker_total}
+        </span>
+
+      </div>
+
+      <div class="small">
+        Payout:
+        ${money(
+          round.payout
+        )}
+      </div>
+
+    </div>
+
+    `
+  ).join("");
+
+}
+
+document
+.querySelectorAll(
+  "[data-chip]"
+)
+.forEach(
+  button => {
+
+    button.addEventListener(
+      "click",
+      () => {
+
+        stake.value =
+        button.dataset.chip;
+
+      }
+    );
+
+  }
+);
+
+document
+.querySelectorAll(
+  "[data-bet]"
+)
+.forEach(
+  button => {
+
+    button.addEventListener(
+      "click",
+      () => {
+
+        document
+        .querySelectorAll(
+          "[data-bet]"
+        )
+        .forEach(
+          item =>
+          item.classList.remove(
+            "selected"
+          )
+        );
+
+        button.classList.add(
+          "selected"
+        );
+
+        selectedBet =
+        button.dataset.bet;
+
+        resultEl.textContent =
+        "Bet selected: " +
+        selectedBet.toUpperCase();
+
+      }
+    );
+
+  }
+);
+
+dealBtn
+.addEventListener(
+  "click",
+  playBaccarat
+);
+
+const signedIn =
+await loadAccount();
+
+if(signedIn){
+
+  await Promise.all([
+    loadWallet(),
+    loadHistory()
+  ]);
+
+}
+
+</script>
+
+</body>
+</html>
