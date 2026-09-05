@@ -26,6 +26,6 @@ jobs:
           fi
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          git add gameday-poker.html gameday-app.js sw.js .github/workflows/deploy-pages.yml
+          git add gameday-poker.html gameday-app.js sw.js
           git commit -m "Wire Bonus Poker into GameDay"
           git push
