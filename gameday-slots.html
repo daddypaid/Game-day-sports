@@ -1,0 +1,810 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1.0">
+
+<title>GameDay Slots</title>
+
+<style>
+*{box-sizing:border-box}
+
+body{
+  margin:0;
+  background:#090d0a;
+  color:#fff;
+  font-family:Arial,sans-serif;
+}
+
+header{
+  position:sticky;
+  top:0;
+  z-index:20;
+  background:#101712;
+  border-bottom:1px solid #27342c;
+  padding:14px;
+}
+
+.header-row{
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+}
+
+h1{
+  margin:0;
+  font-size:24px;
+}
+
+.badge{
+  background:#433514;
+  color:#f0d987;
+  border:1px solid #725c21;
+  border-radius:999px;
+  padding:6px 9px;
+  font-size:10px;
+  font-weight:bold;
+}
+
+.account-row{
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+  margin-top:9px;
+  gap:10px;
+}
+
+.account{
+  color:#aab7ae;
+  font-size:12px;
+  overflow:hidden;
+  white-space:nowrap;
+  text-overflow:ellipsis;
+}
+
+.balance{
+  background:#163d22;
+  border:1px solid #2e7040;
+  color:#c6f1cf;
+  border-radius:9px;
+  padding:7px 9px;
+  font-weight:bold;
+}
+
+main{
+  max-width:700px;
+  margin:auto;
+  padding:14px;
+}
+
+.nav{
+  display:grid;
+  grid-template-columns:repeat(2,1fr);
+  gap:8px;
+  margin-bottom:14px;
+}
+
+.nav a{
+  text-decoration:none;
+  text-align:center;
+  padding:11px;
+  background:#202b24;
+  color:#fff;
+  border-radius:10px;
+  font-weight:bold;
+}
+
+.notice,
+.success,
+.error{
+  border-radius:11px;
+  padding:12px;
+  margin-bottom:12px;
+}
+
+.notice{
+  background:#433514;
+  border:1px solid #725c21;
+  color:#f0d987;
+}
+
+.success{
+  background:#14291a;
+  border:1px solid #326744;
+  color:#bef1c9;
+}
+
+.error{
+  background:#2a1717;
+  border:1px solid #733b3b;
+  color:#efb4b4;
+}
+
+.machine{
+  background:
+    linear-gradient(180deg,#241d0a,#11140e);
+  border:3px solid #8f7626;
+  border-radius:26px;
+  padding:22px 15px;
+  box-shadow:
+    inset 0 0 25px rgba(0,0,0,.45);
+}
+
+.machine-title{
+  text-align:center;
+  font-size:28px;
+  font-weight:bold;
+  color:#f1da88;
+  margin-bottom:18px;
+}
+
+.reels{
+  display:grid;
+  grid-template-columns:repeat(3,1fr);
+  gap:9px;
+}
+
+.reel{
+  background:#f4f4ee;
+  border:4px solid #d4c466;
+  border-radius:13px;
+  min-height:120px;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  font-size:58px;
+  color:#111;
+}
+
+.result{
+  text-align:center;
+  font-size:21px;
+  font-weight:bold;
+  margin-top:18px;
+}
+
+.controls{
+  margin-top:14px;
+  background:#111914;
+  border:1px solid #2d3d33;
+  border-radius:14px;
+  padding:14px;
+}
+
+label{
+  display:block;
+  color:#aab7ae;
+  font-size:12px;
+  margin-bottom:6px;
+}
+
+input{
+  width:100%;
+  background:#090f0b;
+  color:#fff;
+  border:1px solid #34493b;
+  border-radius:10px;
+  padding:13px;
+  font-size:18px;
+}
+
+.chips{
+  display:grid;
+  grid-template-columns:repeat(4,1fr);
+  gap:7px;
+  margin:9px 0 14px;
+}
+
+button{
+  min-height:46px;
+  border:0;
+  border-radius:10px;
+  font-weight:bold;
+  cursor:pointer;
+}
+
+.chips button{
+  background:#202b24;
+  color:#fff;
+}
+
+.spin{
+  width:100%;
+  background:#eef5f0;
+  color:#07100a;
+  font-size:18px;
+}
+
+.spin:disabled{
+  opacity:.45;
+}
+
+.paytable{
+  background:#111914;
+  border:1px solid #2d3d33;
+  border-radius:14px;
+  padding:14px;
+  margin-top:14px;
+}
+
+.pay-row{
+  display:flex;
+  justify-content:space-between;
+  padding:6px 0;
+  border-bottom:1px solid #253129;
+}
+
+.pay-row:last-child{
+  border-bottom:0;
+}
+
+.history-title{
+  margin:18px 0 8px;
+  color:#91a097;
+  text-transform:uppercase;
+  font-size:12px;
+  font-weight:bold;
+}
+
+.history-item{
+  background:#111914;
+  border:1px solid #2d3d33;
+  border-radius:11px;
+  padding:11px;
+  margin-bottom:8px;
+}
+
+.history-row{
+  display:flex;
+  justify-content:space-between;
+  gap:10px;
+}
+
+.small{
+  color:#8f9d94;
+  font-size:11px;
+  margin-top:5px;
+}
+</style>
+</head>
+
+<body>
+
+<header>
+
+<div class="header-row">
+<h1>GameDay Slots</h1>
+<div class="badge">TEST CASINO</div>
+</div>
+
+<div class="account-row">
+
+<div id="account" class="account">
+Checking account...
+</div>
+
+<div id="balance" class="balance">
+Balance: —
+</div>
+
+</div>
+
+</header>
+
+<main>
+
+<div class="nav">
+<a href="gameday-casino.html">Casino</a>
+<a href="gameday-wallet.html">Sportsbook</a>
+</div>
+
+<div class="notice">
+TEST MODE — Slots use your GameDay test wallet only.
+</div>
+
+<div id="message"></div>
+
+<div class="machine">
+
+<div class="machine-title">
+🎰 GameDay Jackpot
+</div>
+
+<div class="reels">
+
+<div id="reel1" class="reel">❔</div>
+<div id="reel2" class="reel">❔</div>
+<div id="reel3" class="reel">❔</div>
+
+</div>
+
+<div id="result" class="result">
+Ready to Spin
+</div>
+
+</div>
+
+<div class="controls">
+
+<label for="stake">
+Spin Bet
+</label>
+
+<input
+id="stake"
+type="number"
+min="1"
+max="1000"
+value="10">
+
+<div class="chips">
+
+<button data-chip="5">$5</button>
+<button data-chip="10">$10</button>
+<button data-chip="25">$25</button>
+<button data-chip="50">$50</button>
+
+</div>
+
+<button id="spinBtn" class="spin">
+SPIN
+</button>
+
+</div>
+
+<div class="paytable">
+
+<strong>Payout Table</strong>
+
+<div class="pay-row">
+<span>💎 💎 💎</span>
+<strong>20×</strong>
+</div>
+
+<div class="pay-row">
+<span>7️⃣ 7️⃣ 7️⃣</span>
+<strong>15×</strong>
+</div>
+
+<div class="pay-row">
+<span>⭐ ⭐ ⭐</span>
+<strong>10×</strong>
+</div>
+
+<div class="pay-row">
+<span>🔔 🔔 🔔</span>
+<strong>8×</strong>
+</div>
+
+<div class="pay-row">
+<span>🍒 🍒 🍒</span>
+<strong>6×</strong>
+</div>
+
+<div class="pay-row">
+<span>🍋 🍋 🍋</span>
+<strong>5×</strong>
+</div>
+
+<div class="pay-row">
+<span>Any Pair</span>
+<strong>2×</strong>
+</div>
+
+</div>
+
+<div class="history-title">
+Recent Spins
+</div>
+
+<div id="history">
+Loading...
+</div>
+
+</main>
+
+<script type="module">
+
+import {
+createClient
+} from "https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/+esm";
+
+const supabase =
+createClient(
+"https://qsvrvhcklnsbekxblpfo.supabase.co",
+"sb_publishable_-yCYGvDqIzVFgu90lgoVpw_uoWnYmO0"
+);
+
+let user = null;
+let walletBalance = 0;
+
+const account =
+document.getElementById("account");
+
+const balance =
+document.getElementById("balance");
+
+const stake =
+document.getElementById("stake");
+
+const message =
+document.getElementById("message");
+
+const result =
+document.getElementById("result");
+
+const spinBtn =
+document.getElementById("spinBtn");
+
+const history =
+document.getElementById("history");
+
+const reel1 =
+document.getElementById("reel1");
+
+const reel2 =
+document.getElementById("reel2");
+
+const reel3 =
+document.getElementById("reel3");
+
+function money(v){
+
+return "$" +
+Number(v || 0)
+.toFixed(2);
+
+}
+
+function showMessage(
+text,
+type="success"
+){
+
+message.innerHTML =
+`<div class="${type}">
+${text}
+</div>`;
+
+}
+
+async function loadAccount(){
+
+const {
+data,
+error
+} =
+await supabase.auth.getSession();
+
+if(
+error ||
+!data.session
+){
+
+account.textContent =
+"Not signed in";
+
+balance.textContent =
+"Balance: —";
+
+showMessage(
+"Sign in before playing Slots.",
+"error"
+);
+
+return false;
+
+}
+
+user =
+data.session.user;
+
+account.textContent =
+user.email ||
+"GameDay user";
+
+return true;
+
+}
+
+async function loadWallet(){
+
+if(!user){
+return;
+}
+
+const {
+data,
+error
+} =
+await supabase
+.from("wallets")
+.select("balance")
+.eq(
+"user_id",
+user.id
+)
+.single();
+
+if(error){
+
+balance.textContent =
+"Balance unavailable";
+
+return;
+
+}
+
+walletBalance =
+Number(data.balance || 0);
+
+balance.textContent =
+"Balance: " +
+money(walletBalance);
+
+}
+
+async function spin(){
+
+message.innerHTML = "";
+
+const amount =
+Number(stake.value);
+
+if(
+!Number.isFinite(amount) ||
+amount <= 0
+){
+
+showMessage(
+"Enter a valid spin bet.",
+"error"
+);
+
+return;
+
+}
+
+if(
+amount >
+walletBalance
+){
+
+showMessage(
+"Insufficient test balance.",
+"error"
+);
+
+return;
+
+}
+
+spinBtn.disabled = true;
+spinBtn.textContent =
+"SPINNING...";
+
+result.textContent =
+"Spinning...";
+
+reel1.textContent = "🎰";
+reel2.textContent = "🎰";
+reel3.textContent = "🎰";
+
+try{
+
+const {
+data,
+error
+} =
+await supabase.functions.invoke(
+"slots-test",
+{
+body:{
+stake:amount
+}
+}
+);
+
+if(error){
+throw error;
+}
+
+if(data?.error){
+throw new Error(data.error);
+}
+
+const spinData =
+data.spin;
+
+reel1.textContent =
+spinData.reels[0];
+
+reel2.textContent =
+spinData.reels[1];
+
+reel3.textContent =
+spinData.reels[2];
+
+walletBalance =
+Number(spinData.balance);
+
+balance.textContent =
+"Balance: " +
+money(walletBalance);
+
+if(
+spinData.result ===
+"won"
+){
+
+result.textContent =
+`WIN — ${spinData.multiplier}×`;
+
+showMessage(
+`You won ${money(spinData.payout)} total return.`
+);
+
+}else{
+
+result.textContent =
+"No Win";
+
+showMessage(
+"Spin lost.",
+"error"
+);
+
+}
+
+await loadHistory();
+
+}catch(error){
+
+showMessage(
+error.message ||
+"Unable to spin Slots.",
+"error"
+);
+
+result.textContent =
+"Spin Error";
+
+}finally{
+
+spinBtn.disabled =
+false;
+
+spinBtn.textContent =
+"SPIN";
+
+}
+
+}
+
+async function loadHistory(){
+
+if(!user){
+return;
+}
+
+const {
+data,
+error
+} =
+await supabase
+.from("slot_spins")
+.select(
+"stake,reels,payout,result,created_at"
+)
+.order(
+"created_at",
+{
+ascending:false
+}
+)
+.limit(10);
+
+if(error){
+
+history.innerHTML =
+`
+<div class="error">
+Unable to load Slots history.
+</div>
+`;
+
+return;
+
+}
+
+if(!data?.length){
+
+history.innerHTML =
+`
+<div class="notice">
+No Slot spins yet.
+</div>
+`;
+
+return;
+
+}
+
+history.innerHTML =
+data.map(
+spin => `
+
+<div class="history-item">
+
+<div class="history-row">
+
+<strong>
+${spin.result.toUpperCase()}
+</strong>
+
+<strong>
+${money(spin.stake)}
+</strong>
+
+</div>
+
+<div class="history-row">
+
+<span>
+${spin.reels.join(" ")}
+</span>
+
+<span>
+Payout ${money(spin.payout)}
+</span>
+
+</div>
+
+</div>
+
+`
+).join("");
+
+}
+
+document
+.querySelectorAll(
+"[data-chip]"
+)
+.forEach(
+button => {
+
+button.addEventListener(
+"click",
+() => {
+
+stake.value =
+button.dataset.chip;
+
+}
+);
+
+}
+);
+
+spinBtn.addEventListener(
+"click",
+spin
+);
+
+const signedIn =
+await loadAccount();
+
+if(signedIn){
+
+await Promise.all([
+loadWallet(),
+loadHistory()
+]);
+
+}
+
+</script>
+
+</body>
+</html>
