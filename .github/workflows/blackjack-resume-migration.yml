@@ -9,20 +9,22 @@ permissions:
 
 jobs:
   migrate:
-    if: github.event.head_commit.message == 'Add Blackjack resume migration'
+    if: github.event.head_commit.message == 'Fix Blackjack resume migration'
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
         uses: actions/checkout@v4
 
       - name: Add active-hand recovery
-        shell: python
+        shell: bash
         run: |
+          set -euo pipefail
+          python - <<'PY'
           from pathlib import Path
           path = Path('gameday-blackjack.html')
           text = path.read_text()
 
-          marker = '''function cardHtml(card){'''
+          marker = 'function cardHtml(card){'
           if marker not in text:
               raise SystemExit('Blackjack cardHtml marker not found')
           resume = '''async function resumeActiveHand(){
@@ -77,9 +79,8 @@ jobs:
       ]);
 
       await resumeActiveHand();'''
-          count = text.count(old)
-          if count != 1:
-              raise SystemExit(f'Expected one auth-state load block, found {count}')
+          if text.count(old) != 1:
+              raise SystemExit(f'Expected one auth-state load block, found {text.count(old)}')
           text = text.replace(old, new, 1)
 
           old2 = '''  await Promise.all([
@@ -92,12 +93,12 @@ jobs:
   ]);
 
   await resumeActiveHand();'''
-          count2 = text.count(old2)
-          if count2 != 1:
-              raise SystemExit(f'Expected one initial load block, found {count2}')
+          if text.count(old2) != 1:
+              raise SystemExit(f'Expected one initial load block, found {text.count(old2)}')
           text = text.replace(old2, new2, 1)
 
           path.write_text(text)
+          PY
 
       - name: Verify recovery wiring
         shell: bash
