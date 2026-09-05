@@ -45,6 +45,12 @@ jobs:
           grep -q "TEST MODE" gameday-sportsbook.html
           grep -q "Test Wallet" gameday-auth.html
 
+          if grep -RInE --exclude-dir=.git --exclude='deploy-pages.yml' \
+            'SUPABASE_SERVICE_ROLE_KEY|SUPABASE_SECRET_KEYS|API_SPORTS_KEY|ODDS_API_KEY|sb_secret_[A-Za-z0-9_-]+' .; then
+            echo "Private backend credential reference detected in public site source."
+            exit 1
+          fi
+
       - name: Configure Pages
         uses: actions/configure-pages@v5
 
