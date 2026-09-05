@@ -2,32 +2,107 @@
 <html lang="en">
 <head>
 <link rel="manifest" href="manifest.webmanifest">
-<meta name="theme-color" content="#101712">
+<meta name="theme-color" content="#0b120e">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <meta name="apple-mobile-web-app-title" content="GameDay">
 <link rel="apple-touch-icon" href="icons/gameday-192.png">
-<meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1.0"><title>GameDay Casino</title>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1.0">
+<title>GameDay Casino</title>
 <style>
-*{box-sizing:border-box}body{margin:0;background:#08100b;color:#fff;font-family:Arial,sans-serif}header{position:sticky;top:0;z-index:20;background:#101712;border-bottom:1px solid #27342c;padding:14px}h1{margin:0;font-size:24px}.sub{margin-top:5px;color:#94a198;font-size:12px}.nav{display:grid;grid-template-columns:repeat(4,1fr);gap:7px;margin-top:10px}.nav a{text-decoration:none;text-align:center;padding:10px 6px;border-radius:9px;background:#202b24;color:#fff;font-weight:bold;font-size:12px}.nav a.active{background:#eef5f0;color:#07100a}main{max-width:760px;margin:auto;padding:14px}.hero{background:radial-gradient(circle at top right,#1f5b33 0%,#143621 38%,#101912 75%);border:1px solid #2d5939;border-radius:20px;padding:22px;margin-bottom:14px}.hero h2{margin:0 0 8px;font-size:30px}.hero p{margin:0;color:#c0cbc3;line-height:1.45}.notice{background:#433514;border:1px solid #725c21;color:#f1da88;border-radius:11px;padding:12px;margin-bottom:16px}.games{display:grid;grid-template-columns:repeat(2,1fr);gap:12px}.game{text-decoration:none;color:#fff;background:#132319;border:1px solid #357746;border-radius:16px;padding:16px;min-height:150px;display:flex;flex-direction:column;justify-content:space-between}.icon{font-size:38px}.name{font-size:21px;font-weight:bold;margin-top:9px}.copy{color:#a9b5ac;font-size:12px;margin-top:6px;line-height:1.4}.status{margin-top:12px;display:inline-block;width:max-content;border-radius:999px;padding:5px 8px;font-size:10px;font-weight:bold;background:#183e25;color:#c9f1d1;border:1px solid #317143}.wallet{margin-top:18px;background:#111914;border:1px solid #2d3d33;border-radius:14px;padding:15px}.row{display:flex;justify-content:space-between;gap:10px}.big{font-size:26px;font-weight:bold}.small{color:#94a097;font-size:11px;margin-top:5px}@media(max-width:480px){.games{grid-template-columns:1fr}.nav{grid-template-columns:repeat(2,1fr)}}
+*{box-sizing:border-box}
+:root{--bg:#0a0f0c;--panel:#111813;--line:#27342c;--green:#1f6b38;--gold:#d4b95c;--text:#f7f8f7;--muted:#9da9a1}
+body{margin:0;background:linear-gradient(180deg,#0d1510 0,#090e0b 46%,#070b08 100%);color:var(--text);font-family:Arial,sans-serif;min-height:100vh}
+header{position:sticky;top:0;z-index:30;background:rgba(12,18,14,.97);border-bottom:1px solid var(--line);backdrop-filter:blur(14px);-webkit-backdrop-filter:blur(14px)}
+.topbar{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:13px 14px 10px}
+.brand{min-width:0}.brand h1{margin:0;font-size:25px;line-height:1}.brand .sub{margin-top:5px;font-size:11px;color:var(--muted);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.wallet-pill{flex:0 0 auto;background:#153f24;border:1px solid #2e7040;border-radius:12px;padding:8px 10px;text-align:right}.wallet-pill .label{display:block;font-size:9px;color:#a9cdb2;text-transform:uppercase;font-weight:800;letter-spacing:.06em}.wallet-pill strong{display:block;margin-top:2px;font-size:14px;color:#d4f4db}
+.nav{display:grid;grid-template-columns:repeat(4,1fr);gap:7px;padding:0 14px 10px}.nav a{text-decoration:none;text-align:center;padding:9px 5px;border-radius:9px;background:#1d2721;color:#fff;font-weight:700;font-size:11px}.nav a.active{background:#eef5f0;color:#07100a}
+.categories{display:flex;gap:7px;overflow-x:auto;padding:9px 14px 11px;border-top:1px solid rgba(255,255,255,.025);scrollbar-width:none}.categories::-webkit-scrollbar{display:none}.cat{flex:0 0 auto;text-decoration:none;color:#d6ddd8;background:#151d18;border:1px solid #2c3931;padding:8px 12px;border-radius:999px;font-size:11px;font-weight:800;white-space:nowrap}.cat.active{background:#edf3ef;color:#0b120e;border-color:#edf3ef}
+main{max-width:900px;margin:auto;padding:12px 0 110px}
+.hero{margin:0 14px 15px;border-radius:18px;min-height:160px;overflow:hidden;position:relative;border:1px solid #3c5f48;background:radial-gradient(circle at 82% 24%,rgba(211,183,82,.28),transparent 22%),radial-gradient(circle at 15% 0%,rgba(43,150,79,.38),transparent 35%),linear-gradient(125deg,#153d24,#0c1710 65%,#211b0b)}
+.hero::after{content:"";position:absolute;right:-30px;bottom:-55px;width:210px;height:210px;border-radius:50%;border:24px solid rgba(212,185,92,.14);box-shadow:0 0 0 18px rgba(255,255,255,.025)}
+.hero-copy{position:relative;z-index:2;padding:22px 20px 18px;max-width:68%}.eyebrow{font-size:10px;text-transform:uppercase;letter-spacing:.16em;color:#cfe7d4;font-weight:900}.hero h2{margin:6px 0 7px;font-size:30px;line-height:1.02}.hero p{margin:0;color:#b9c6bd;font-size:13px;line-height:1.42}.test-chip{display:inline-block;margin-top:14px;padding:7px 10px;border-radius:999px;background:#4a3b13;border:1px solid #7b6321;color:#f5de88;font-size:10px;font-weight:900}
+.section{margin-top:18px}.section-head{display:flex;align-items:end;justify-content:space-between;padding:0 14px 9px;gap:10px}.section h3{margin:0;font-size:20px;letter-spacing:.01em}.section-note{font-size:10px;color:#85928a;white-space:nowrap}
+.game-row{display:flex;gap:11px;overflow-x:auto;padding:0 14px 8px;scroll-snap-type:x proximity;scrollbar-width:none}.game-row::-webkit-scrollbar{display:none}
+.game-card{flex:0 0 215px;text-decoration:none;color:#fff;background:#111813;border:1px solid #29372e;border-radius:14px;overflow:hidden;box-shadow:0 8px 20px rgba(0,0,0,.22);scroll-snap-align:start;transition:transform .15s ease,border-color .15s ease}.game-card:active{transform:scale(.985)}
+.art{height:128px;position:relative;overflow:hidden}.art::after{content:"";position:absolute;inset:auto 0 0;height:46%;background:linear-gradient(transparent,rgba(0,0,0,.5))}
+.blackjack-art{background:radial-gradient(circle at 65% 35%,rgba(255,219,110,.28),transparent 26%),linear-gradient(145deg,#0c5a2b,#092b19 70%)}
+.blackjack-art::before{content:"A♠   K♥";position:absolute;left:28px;top:25px;font-size:36px;font-weight:900;letter-spacing:8px;color:#fff;text-shadow:0 4px 14px #000;transform:rotate(-6deg)}
+.roulette-art{background:radial-gradient(circle at 50% 52%,#0b0b0b 0 20%,#bb2d38 21% 27%,#151515 28% 35%,#c29b45 36% 39%,#112e1b 40% 100%)}
+.roulette-art::before{content:"0 32 15 19 4 21 2";position:absolute;left:8px;right:8px;top:53px;text-align:center;font-size:10px;font-weight:900;letter-spacing:2px;color:#f6e6a3;transform:rotate(-9deg)}
+.baccarat-art{background:linear-gradient(135deg,#7f151d,#3a080d 67%,#180608)}
+.baccarat-art::before{content:"PLAYER      BANKER";position:absolute;left:18px;right:18px;top:22px;color:#f1d17f;font-size:14px;font-weight:900;letter-spacing:.08em;border-bottom:2px solid rgba(241,209,127,.45);padding-bottom:12px}
+.baccarat-art::after{content:"A♦          K♣";position:absolute;left:30px;right:30px;top:66px;height:auto;background:none;color:#fff;font-size:31px;font-weight:900;letter-spacing:5px;text-shadow:0 3px 12px #000}
+.slots-art{background:radial-gradient(circle at 50% 0,rgba(255,204,84,.45),transparent 28%),linear-gradient(145deg,#39135d,#17104a 58%,#0c0a1f)}
+.slots-art::before{content:"7   🍒   💎";position:absolute;left:14px;right:14px;top:42px;padding:14px 8px;text-align:center;border:3px solid #d6b34c;border-radius:11px;background:linear-gradient(#f7f3e7,#d7dde8);color:#9b121c;font-size:29px;font-weight:900;box-shadow:0 0 20px rgba(231,192,68,.38)}
+.game-info{padding:11px 12px 12px}.game-title{font-size:16px;font-weight:900}.game-meta{margin-top:4px;color:#94a198;font-size:10px}.play-row{display:flex;justify-content:space-between;align-items:center;margin-top:9px}.status{padding:5px 7px;border-radius:999px;background:#153d22;border:1px solid #2e7040;color:#bfe9c8;font-size:9px;font-weight:900}.play{font-size:11px;font-weight:900;color:#f2db88}
+.feature-strip{margin:20px 14px 0;border:1px solid #5f4e1e;border-radius:15px;background:linear-gradient(100deg,#3c2f0e,#16140c 56%,#0d1810);padding:14px 15px;display:flex;justify-content:space-between;align-items:center;gap:14px}.feature-strip strong{font-size:15px}.feature-strip span{display:block;margin-top:3px;color:#b8b39b;font-size:10px}.feature-badge{flex:0 0 auto;padding:8px 10px;border-radius:10px;background:#6a5418;color:#f7e399;font-size:10px;font-weight:900}
+@media(max-width:480px){.nav{grid-template-columns:repeat(2,1fr)}.hero{min-height:148px}.hero-copy{max-width:78%;padding:18px 16px}.hero h2{font-size:27px}.game-card{flex-basis:205px}.art{height:122px}}
 </style>
 </head>
 <body>
-<header><h1>GameDay Casino</h1><div class="sub">Test casino • shared GameDay wallet</div><div class="nav"><a href="gameday-sportsbook.html">Sportsbook</a><a class="active" href="gameday-casino-v2.html">Casino</a><a href="gameday-my-bets.html">My Bets</a><a href="gameday-auth.html">Account</a></div></header>
+<header>
+  <div class="topbar">
+    <div class="brand"><h1>GameDay Casino</h1><div class="sub">Test casino • shared GameDay wallet</div></div>
+    <div class="wallet-pill"><span class="label">Test Wallet</span><strong id="wallet">—</strong></div>
+  </div>
+  <div class="nav"><a href="gameday-sportsbook.html">Sportsbook</a><a class="active" href="gameday-casino-v2.html">Casino</a><a href="gameday-my-bets.html">My Bets</a><a href="gameday-auth.html">Account</a></div>
+  <div class="categories" aria-label="Casino categories">
+    <a class="cat active" href="#featured">Featured</a>
+    <a class="cat" href="#table-games">Table Games</a>
+    <a class="cat" href="#slots">Slots</a>
+    <a class="cat" href="gameday-blackjack.html">Blackjack</a>
+    <a class="cat" href="gameday-roulette.html">Roulette</a>
+  </div>
+</header>
 <main>
-<div class="hero"><h2>Casino</h2><p>Play the GameDay casino games that are currently connected and working.</p></div>
-<div class="notice">TEST MODE — GameDay uses test credits only. No real-money gambling is enabled.</div>
-<div class="games">
-<a class="game" href="gameday-blackjack.html"><div><div class="icon">🃏</div><div class="name">Blackjack</div><div class="copy">Deal, Hit and Stand with the shared GameDay test wallet.</div></div><div class="status">CONNECTED</div></a>
-<a class="game" href="gameday-roulette.html"><div><div class="icon">🎡</div><div class="name">Roulette</div><div class="copy">Numbers, colors, odd/even and range wagers.</div></div><div class="status">CONNECTED</div></a>
-<a class="game" href="gameday-baccarat.html"><div><div class="icon">🂡</div><div class="name">Baccarat</div><div class="copy">Player, Banker and Tie test wagering.</div></div><div class="status">CONNECTED</div></a>
-<a class="game" href="gameday-slots.html"><div><div class="icon">🎰</div><div class="name">Slots</div><div class="copy">Spin the GameDay test slot machine.</div></div><div class="status">CONNECTED</div></a>
-</div>
-<div class="wallet"><div class="row"><div><div class="small">GameDay Test Wallet</div><div id="wallet" class="big">—</div></div><div><div class="small">Status</div><strong>Development</strong></div></div></div>
+  <section class="hero">
+    <div class="hero-copy">
+      <div class="eyebrow">GameDay Originals</div>
+      <h2>Pick a game.<br>Play instantly.</h2>
+      <p>Fast access to GameDay’s connected casino games with one shared test wallet.</p>
+      <div class="test-chip">TEST MODE • NO REAL MONEY</div>
+    </div>
+  </section>
+
+  <section id="featured" class="section">
+    <div class="section-head"><h3>Featured Games</h3><div class="section-note">Swipe to browse</div></div>
+    <div class="game-row">
+      <a class="game-card" href="gameday-blackjack.html"><div class="art blackjack-art"></div><div class="game-info"><div class="game-title">GameDay Blackjack</div><div class="game-meta">Deal • Hit • Stand</div><div class="play-row"><span class="status">CONNECTED</span><span class="play">PLAY ›</span></div></div></a>
+      <a class="game-card" href="gameday-roulette.html"><div class="art roulette-art"></div><div class="game-info"><div class="game-title">GameDay Roulette</div><div class="game-meta">0–36 • Red/Black • Wheel</div><div class="play-row"><span class="status">CONNECTED</span><span class="play">PLAY ›</span></div></div></a>
+      <a class="game-card" href="gameday-baccarat.html"><div class="art baccarat-art"></div><div class="game-info"><div class="game-title">GameDay Baccarat</div><div class="game-meta">Player • Banker • Tie</div><div class="play-row"><span class="status">CONNECTED</span><span class="play">PLAY ›</span></div></div></a>
+      <a class="game-card" href="gameday-slots.html"><div class="art slots-art"></div><div class="game-info"><div class="game-title">GameDay Jackpot</div><div class="game-meta">Animated reels • Instant result</div><div class="play-row"><span class="status">CONNECTED</span><span class="play">PLAY ›</span></div></div></a>
+    </div>
+  </section>
+
+  <section id="table-games" class="section">
+    <div class="section-head"><h3>Table Games</h3><div class="section-note">GameDay casino</div></div>
+    <div class="game-row">
+      <a class="game-card" href="gameday-blackjack.html"><div class="art blackjack-art"></div><div class="game-info"><div class="game-title">Blackjack</div><div class="game-meta">Classic GameDay table</div><div class="play-row"><span class="status">TEST MODE</span><span class="play">OPEN ›</span></div></div></a>
+      <a class="game-card" href="gameday-roulette.html"><div class="art roulette-art"></div><div class="game-info"><div class="game-title">Roulette</div><div class="game-meta">Wheel, ball and full board</div><div class="play-row"><span class="status">TEST MODE</span><span class="play">OPEN ›</span></div></div></a>
+      <a class="game-card" href="gameday-baccarat.html"><div class="art baccarat-art"></div><div class="game-info"><div class="game-title">Baccarat</div><div class="game-meta">Player, Banker and Tie</div><div class="play-row"><span class="status">TEST MODE</span><span class="play">OPEN ›</span></div></div></a>
+    </div>
+  </section>
+
+  <section id="slots" class="section">
+    <div class="section-head"><h3>Slots</h3><div class="section-note">GameDay original</div></div>
+    <div class="game-row">
+      <a class="game-card" href="gameday-slots.html"><div class="art slots-art"></div><div class="game-info"><div class="game-title">GameDay Jackpot</div><div class="game-meta">3 reels • Quick spin</div><div class="play-row"><span class="status">CONNECTED</span><span class="play">SPIN ›</span></div></div></a>
+    </div>
+  </section>
+
+  <div class="feature-strip"><div><strong>GameDay Test Casino</strong><span>All casino play uses test credits only. No real-money gambling is enabled.</span></div><div class="feature-badge">TEST MODE</div></div>
 </main>
 <script type="module">
-import{createClient}from"https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/+esm";const supabase=createClient("https://qsvrvhcklnsbekxblpfo.supabase.co","sb_publishable_-yCYGvDqIzVFgu90lgoVpw_uoWnYmO0");const wallet=document.getElementById('wallet');function money(v){return '$'+Number(v||0).toFixed(2)}async function load(){const{data,error}=await supabase.auth.getSession();if(error||!data.session){wallet.textContent='Sign in required';return}const{data:w,error:e}=await supabase.from('wallets').select('balance').eq('user_id',data.session.user.id).single();wallet.textContent=e?'Unavailable':money(w.balance)}supabase.auth.onAuthStateChange(load);await load();
+import{createClient}from"https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/+esm";
+const supabase=createClient("https://qsvrvhcklnsbekxblpfo.supabase.co","sb_publishable_-yCYGvDqIzVFgu90lgoVpw_uoWnYmO0");
+const wallet=document.getElementById('wallet');
+function money(v){return '$'+Number(v||0).toFixed(2)}
+async function load(){const{data,error}=await supabase.auth.getSession();if(error||!data.session){wallet.textContent='Sign in';return}const{data:w,error:e}=await supabase.from('wallets').select('balance').eq('user_id',data.session.user.id).single();wallet.textContent=e?'—':money(w.balance)}
+supabase.auth.onAuthStateChange(load);await load();
 </script>
-
 <script src="gameday-app.js" defer></script>
-</body></html>
+</body>
+</html>
