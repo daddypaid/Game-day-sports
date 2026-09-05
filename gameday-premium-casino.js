@@ -1,5 +1,15 @@
 (() => {
   const path = location.pathname.split('/').pop() || '';
+
+  function loadV2Styles(){
+    if(document.querySelector('link[data-gameday-premium-v2]')) return;
+    const link=document.createElement('link');
+    link.rel='stylesheet';
+    link.href='gameday-premium-casino-v2.css';
+    link.dataset.gamedayPremiumV2='true';
+    document.head.appendChild(link);
+  }
+
   const slotMap = {
     '💎':'diamond',
     '7️⃣':'seven',
@@ -10,6 +20,7 @@
   };
 
   function enhanceBlackjack(){
+    loadV2Styles();
     document.body.classList.add('gameday-premium-blackjack');
     const table = document.querySelector('.table');
     if(table && !table.querySelector('.gd-blackjack-rules')){
@@ -28,6 +39,7 @@
   }
 
   function enhanceSlots(){
+    loadV2Styles();
     document.body.classList.add('gameday-premium-slots');
     const reels=[document.getElementById('reel1'),document.getElementById('reel2'),document.getElementById('reel3')].filter(Boolean);
     reels.forEach(r=>{
