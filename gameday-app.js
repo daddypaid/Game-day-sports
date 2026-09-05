@@ -20,7 +20,8 @@
     'gameday-baccarat.html':'casino-game',
     'gameday-slots.html':'casino-game',
     'gameday-poker.html':'poker',
-    'gameday-video-poker.html':'poker-game'
+    'gameday-video-poker.html':'poker-game',
+    'gameday-three-card-poker.html':'poker-game'
   };
   const gameMap = {
     'gameday-blackjack.html':'blackjack',
@@ -280,7 +281,7 @@
   }
 
   let activeHref = path;
-  if (['gameday-blackjack.html','gameday-roulette.html','gameday-baccarat.html','gameday-slots.html','gameday-poker.html','gameday-video-poker.html'].includes(path)) activeHref = 'gameday-casino-v2.html';
+  if (['gameday-blackjack.html','gameday-roulette.html','gameday-baccarat.html','gameday-slots.html','gameday-poker.html','gameday-video-poker.html','gameday-three-card-poker.html'].includes(path)) activeHref = 'gameday-casino-v2.html';
   const nav = document.createElement('nav');
   nav.className = 'gameday-app-nav';
   nav.setAttribute('aria-label','GameDay app navigation');
