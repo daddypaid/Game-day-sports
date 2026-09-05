@@ -1,0 +1,24 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1600 900">
+<defs>
+ <linearGradient id="bg" x1="0" y1="0" x2="0" y2="1"><stop stop-color="#160b06"/><stop offset=".45" stop-color="#070807"/><stop offset="1" stop-color="#020302"/></linearGradient>
+ <linearGradient id="gold"><stop stop-color="#fff1a7"/><stop offset=".5" stop-color="#d59b2d"/><stop offset="1" stop-color="#684109"/></linearGradient>
+ <radialGradient id="felt"><stop stop-color="#155b35"/><stop offset="1" stop-color="#052815"/></radialGradient>
+ <radialGradient id="lamp"><stop stop-color="#ffd574" stop-opacity=".85"/><stop offset="1" stop-color="#ffd574" stop-opacity="0"/></radialGradient>
+ <filter id="b"><feGaussianBlur stdDeviation="22"/></filter>
+</defs>
+<rect width="1600" height="900" fill="url(#bg)"/>
+<ellipse cx="800" cy="140" rx="620" ry="180" fill="url(#lamp)" opacity=".2" filter="url(#b)"/>
+<g fill="#0d0d0b" stroke="#825a17" stroke-width="4"><rect x="60" y="80" width="280" height="560" rx="26"/><rect x="1260" y="80" width="280" height="560" rx="26"/></g>
+<g fill="#dcb14c"><text x="200" y="185" text-anchor="middle" font-family="Georgia" font-size="38" font-weight="700">POKER</text><text x="1400" y="185" text-anchor="middle" font-family="Georgia" font-size="38" font-weight="700">ROOM</text></g>
+<g opacity=".7" fill="#f5d477"><circle cx="145" cy="250" r="8"/><circle cx="255" cy="250" r="8"/><circle cx="1345" cy="250" r="8"/><circle cx="1455" cy="250" r="8"/></g>
+<ellipse cx="800" cy="650" rx="590" ry="205" fill="url(#felt)" stroke="url(#gold)" stroke-width="14"/>
+<ellipse cx="800" cy="645" rx="470" ry="150" fill="none" stroke="#c38c27" stroke-width="4" opacity=".55"/>
+<g transform="translate(610 520) rotate(-8)"><rect width="135" height="190" rx="14" fill="#fffdf7" stroke="#d4c9ae" stroke-width="5"/><text x="20" y="44" font-family="Arial" font-size="34" font-weight="700" fill="#111">A</text><text x="67" y="125" text-anchor="middle" font-family="Arial" font-size="72" fill="#111">♠</text></g>
+<g transform="translate(735 505) rotate(1)"><rect width="135" height="190" rx="14" fill="#fffdf7" stroke="#d4c9ae" stroke-width="5"/><text x="20" y="44" font-family="Arial" font-size="34" font-weight="700" fill="#b21d2b">K</text><text x="67" y="125" text-anchor="middle" font-family="Arial" font-size="72" fill="#b21d2b">♥</text></g>
+<g transform="translate(860 515) rotate(8)"><rect width="135" height="190" rx="14" fill="#fffdf7" stroke="#d4c9ae" stroke-width="5"/><text x="20" y="44" font-family="Arial" font-size="34" font-weight="700" fill="#111">Q</text><text x="67" y="125" text-anchor="middle" font-family="Arial" font-size="72" fill="#111">♣</text></g>
+<g fill="#111" stroke="url(#gold)" stroke-width="6"><circle cx="470" cy="720" r="58"/><circle cx="1130" cy="720" r="58"/><circle cx="380" cy="760" r="42"/><circle cx="1220" cy="760" r="42"/></g>
+<text x="800" y="175" text-anchor="middle" font-family="Georgia" font-size="74" font-weight="700" fill="#f4d578">GAMEDAY POKER</text>
+<text x="800" y="220" text-anchor="middle" font-family="Arial" font-size="19" font-weight="700" letter-spacing="8" fill="#c9b889">VIDEO • CASINO • PLAYER POKER</text>
+<g fill="#0b0d0c" stroke="#745018" stroke-width="3" opacity=".86"><rect x="450" y="275" width="210" height="100" rx="18"/><rect x="695" y="275" width="210" height="100" rx="18"/><rect x="940" y="275" width="210" height="100" rx="18"/></g>
+<g font-family="Georgia" font-size="26" font-weight="700" fill="#efd06e" text-anchor="middle"><text x="555" y="332">VIDEO POKER</text><text x="800" y="332">CASINO POKER</text><text x="1045" y="332">HOLD'EM</text></g>
+</svg>
