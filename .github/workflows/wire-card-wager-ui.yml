@@ -1,0 +1,31 @@
+name: One-time card and wager UI wiring
+
+on:
+  push:
+    paths:
+      - '.card-wager-ui-trigger'
+
+permissions:
+  contents: write
+
+jobs:
+  patch:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+      - name: Wire shared card and wager UI
+        run: python .github/scripts/wire_card_wager_ui.py
+      - name: Commit changes
+        run: |
+          set -e
+          if git diff --quiet; then
+            echo "No changes needed"
+            exit 0
+          fi
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add gameday-blackjack.html gameday-roulette.html gameday-baccarat.html gameday-slots.html gameday-video-poker.html gameday-bonus-poker.html gameday-deuces-wild.html gameday-three-card-poker.html gameday-ultimate-texas-holdem.html gameday-caribbean-stud.html sw.js
+          git commit -m "Wire detailed cards and custom wagers into GameDay"
+          git push
