@@ -54,6 +54,10 @@ jobs:
             grep -q 'TEST MODE' "$file"
           done
 
+          grep -q 'async function resumeActiveHand()' gameday-blackjack.html
+          grep -q 'action:"resume"' gameday-blackjack.html
+          test "$(grep -c 'await resumeActiveHand();' gameday-blackjack.html)" -eq 2
+
           if grep -RInE \
             --include='*.html' --include='*.js' --include='*.css' \
             'SUPABASE_SERVICE_ROLE_KEY|SUPABASE_SECRET_KEYS|API_SPORTS_KEY|ODDS_API_KEY|sb_secret_[A-Za-z0-9_-]+' .; then
