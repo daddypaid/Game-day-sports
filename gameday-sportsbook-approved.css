@@ -1,0 +1,36 @@
+/* Sportsbook proof-page override: uses the exact approved hero artwork asset. */
+body.gd-art-sportsbook .gd-premium-hero{
+  min-height:0!important;
+  aspect-ratio:720/146!important;
+  margin:0 0 10px!important;
+  border:1px solid #d2a33a!important;
+  border-radius:8px!important;
+  background:#030403 url('art/gameday-sportsbook-approved-hero.jpg') center/cover no-repeat!important;
+  box-shadow:0 14px 38px rgba(0,0,0,.72),0 0 24px rgba(218,172,55,.18)!important;
+}
+body.gd-art-sportsbook .gd-premium-hero:before,
+body.gd-art-sportsbook .gd-premium-hero:after,
+body.gd-art-sportsbook .gd-premium-hero .copy>*{display:none!important}
+body.gd-art-sportsbook .gd-premium-hero .copy{display:block!important;padding:0!important;height:100%!important}
+
+/* Make the controls directly below the hero read like the approved sportsbook board. */
+body.gd-art-sportsbook .featured{margin-top:0!important}
+body.gd-art-sportsbook .section{color:#e7c55b!important}
+body.gd-art-sportsbook .views{border-color:#6e521d!important;box-shadow:inset 0 1px 0 rgba(255,255,255,.025)!important}
+body.gd-art-sportsbook #content:before{color:#f5d066!important;border-color:#75561c!important}
+body.gd-art-sportsbook .card{border-color:#5d471c!important}
+body.gd-art-sportsbook .odd{border-color:#50401f!important}
+body.gd-art-sportsbook .odd-price{color:#f3d16b!important}
+
+@media(min-width:900px){
+  body.gd-art-sportsbook main{padding-top:8px!important}
+}
+@media(max-width:899px){
+  body.gd-art-sportsbook .gd-premium-hero{
+    width:100%!important;
+    aspect-ratio:720/146!important;
+    min-height:76px!important;
+    background-size:cover!important;
+    background-position:center!important;
+  }
+}
