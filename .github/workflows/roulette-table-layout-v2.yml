@@ -1,0 +1,89 @@
+name: Roulette table redesign once
+on:
+  push:
+    paths:
+      - '.github/workflows/roulette-table-layout-v2.yml'
+permissions:
+  contents: write
+jobs:
+  redesign:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Redesign Roulette
+        shell: bash
+        run: |
+          set -euo pipefail
+          python - <<'PY'
+          from pathlib import Path
+          p=Path('gameday-roulette.html')
+          s=p.read_text()
+
+          css='''
+/* GameDay roulette cabinet layout */
+.roulette-stage{display:grid;grid-template-rows:auto 1fr;gap:6px}
+.roulette-table-shell{display:grid;grid-template-columns:54px 1fr;gap:5px;align-items:stretch;min-height:0}
+.outside-rail{display:grid;grid-template-rows:repeat(6,1fr);gap:2px;min-height:0}
+.outside-rail .bet-button{min-height:0;padding:3px 2px;font-size:10px;writing-mode:vertical-rl;transform:rotate(180deg);border-radius:2px}
+.number-grid{grid-template-columns:repeat(3,1fr)!important;grid-auto-rows:minmax(24px,1fr);gap:2px!important;min-height:0}
+.number{min-height:24px!important;border-radius:2px!important;font-size:12px!important;border:1px solid rgba(255,255,255,.38)!important}
+.number.zero{grid-column:1/-1!important;min-height:28px!important;background:#12672e!important}
+.wheel{width:min(45vw,184px)!important;height:min(45vw,184px)!important;margin:2px auto 3px!important}
+.wheel-label{font-size:6px!important}
+.roulette-ball{width:9px!important;height:9px!important;margin-left:-4.5px!important;margin-top:-4.5px!important}
+.wheel-result{width:64px!important;height:64px!important;font-size:25px!important}
+.result-text{font-size:12px!important;margin:0 0 4px!important}
+.control-card{padding:7px!important}
+.control-card>label,.control-card>input,.control-card>.chips,.control-card>.bet-title{display:none!important}
+.roulette-action-row{display:grid;grid-template-columns:68px 1fr 92px;gap:5px;align-items:center}
+.roulette-stake-box{display:flex;align-items:center;justify-content:center;min-height:38px;background:#0a110c;border:1px solid #34493b;border-radius:6px;font-weight:800;font-size:12px}
+.roulette-quick-row{display:grid;grid-template-columns:repeat(4,1fr);gap:3px}
+.roulette-quick-row button{min-height:38px!important;padding:2px!important;border-radius:20px!important;background:#202b24;color:#fff}
+.spin{margin-top:0!important;min-height:38px!important;font-size:12px!important}
+@media(max-width:430px){
+html[data-gameday-app="standalone"] body{overflow:hidden}
+html[data-gameday-app="standalone"] main{height:calc(100dvh - 145px - 72px - env(safe-area-inset-bottom));overflow:hidden;padding-top:4px!important}
+html[data-gameday-app="standalone"] .notice{display:none!important}
+html[data-gameday-app="standalone"] #message{position:absolute;left:10px;right:10px;top:70px;z-index:60;pointer-events:none}
+html[data-gameday-app="standalone"] .roulette-stage{height:100%;grid-template-rows:190px minmax(0,1fr)}
+html[data-gameday-app="standalone"] .control-card{height:100%;overflow:hidden;display:grid;grid-template-rows:1fr auto;gap:5px}
+html[data-gameday-app="standalone"] .history-title,html[data-gameday-app="standalone"] #history{display:none!important}
+}
+'''
+          if 'GameDay roulette cabinet layout' not in s:
+              s=s.replace('</style>',css+'\n</style>',1)
+
+          start='''<div class="wheel">\n<div id="wheelLabels" aria-hidden="true"></div>\n<div id="rouletteBall" class="roulette-ball" aria-hidden="true"></div>\n<div id="wheelResult" class="wheel-result green">?</div>\n</div>\n\n<div id="resultText" class="result-text">\nChoose a bet\n</div>\n\n<div class="control-card">'''
+          repl='''<div class="roulette-stage">\n<div class="roulette-stage-top">\n<div class="wheel">\n<div id="wheelLabels" aria-hidden="true"></div>\n<div id="rouletteBall" class="roulette-ball" aria-hidden="true"></div>\n<div id="wheelResult" class="wheel-result green">?</div>\n</div>\n<div id="resultText" class="result-text">Choose a bet</div>\n</div>\n<div class="control-card">'''
+          if start in s:
+              s=s.replace(start,repl,1)
+
+          a=s.index('<div class="outside">')
+          b=s.index('</div>\n\n<div class="history-title">',a)
+          new='''<div class="roulette-table-shell">\n<div class="outside-rail">\n<button class="bet-button" data-type="low">1–18</button>\n<button class="bet-button" data-type="even">EVEN</button>\n<button class="bet-button red-bet" data-type="red">RED</button>\n<button class="bet-button black-bet" data-type="black">BLACK</button>\n<button class="bet-button" data-type="odd">ODD</button>\n<button class="bet-button" data-type="high">19–36</button>\n</div>\n<div id="numbers" class="number-grid"></div>\n</div>\n<div class="roulette-action-row">\n<div class="roulette-stake-box" id="stakeDisplay">$25.00</div>\n<div class="roulette-quick-row">\n<button type="button" data-quick-chip="10">10</button>\n<button type="button" data-quick-chip="25">25</button>\n<button type="button" data-quick-chip="50">50</button>\n<button type="button" data-quick-chip="100">100</button>\n</div>\n<button id="spinBtn" class="spin">SPIN</button>\n</div>\n</div>\n</div>'''
+          s=s[:a]+new+s[b+6:]
+
+          marker='''document\n.querySelectorAll("[data-chip]")'''
+          helper='''const stakeDisplay=document.getElementById("stakeDisplay");\nfunction syncStakeDisplay(){if(stakeDisplay) stakeDisplay.textContent=money(stake.value);}\nstake.addEventListener("input",syncStakeDisplay);\ndocument.querySelectorAll("[data-quick-chip]").forEach(button=>{button.addEventListener("click",()=>{stake.value=button.dataset.quickChip;syncStakeDisplay();});});\nsyncStakeDisplay();\n\n'''
+          if 'function syncStakeDisplay' not in s:
+              s=s.replace(marker,helper+marker,1)
+
+          s=s.replace('spinBtn.textContent =\n"Spin Roulette";','spinBtn.textContent =\n"SPIN";',1)
+          p.write_text(s)
+          PY
+      - name: Verify
+        shell: bash
+        run: |
+          grep -q 'GameDay roulette cabinet layout' gameday-roulette.html
+          grep -q 'roulette-table-shell' gameday-roulette.html
+          grep -q 'outside-rail' gameday-roulette.html
+          grep -q 'roulette-action-row' gameday-roulette.html
+          grep -q 'data-quick-chip' gameday-roulette.html
+      - name: Commit
+        shell: bash
+        run: |
+          git config user.name 'daddypaid'
+          git config user.email 'daddypaid@gmail.com'
+          git add gameday-roulette.html
+          git commit -m 'Give GameDay Roulette a real casino-table feel'
+          git push origin main
