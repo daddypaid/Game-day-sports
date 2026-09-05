@@ -68,6 +68,16 @@ jobs:
           grep -q 'action:"resume"' gameday-blackjack.html
           test "$(grep -c 'await resumeActiveHand();' gameday-blackjack.html)" -eq 2
 
+          mobile_fit_pages=(gameday-blackjack.html gameday-video-poker.html gameday-three-card-poker.html)
+          for file in "${mobile_fit_pages[@]}"; do
+            grep -q 'iPhone compact play surface' "$file"
+            grep -q '@media(max-width:430px)' "$file"
+          done
+          grep -q '.table{min-height:0' gameday-blackjack.html
+          grep -q '.nav{display:none}' gameday-blackjack.html
+          grep -q '.card{height:72px' gameday-video-poker.html
+          grep -q '.card{height:64px' gameday-three-card-poker.html
+
           pwa_required=(
             manifest.webmanifest
             sw.js
