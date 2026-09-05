@@ -1,0 +1,62 @@
+/* GameDay premium casino presentation — original GameDay styling */
+:root{--gd-gold:#f4cf63;--gd-gold2:#9f741f;--gd-ink:#080a09;--gd-felt:#0d1d14;--gd-neon:#62ffd1;--gd-purple:#7e42ff}
+html[data-gameday-game="blackjack"] body,
+body.gameday-premium-blackjack{background:radial-gradient(circle at 50% 25%,#18261d 0,#0b100d 48%,#050706 100%)!important}
+html[data-gameday-game="blackjack"] .table,
+body.gameday-premium-blackjack .table{position:relative;overflow:hidden;background:radial-gradient(ellipse at 50% 42%,#18231d 0%,#0b100d 66%,#060806 100%)!important;border:3px solid #b18a35!important;box-shadow:inset 0 0 0 2px rgba(255,224,141,.12),inset 0 -36px 70px rgba(0,0,0,.5),0 14px 36px rgba(0,0,0,.38)!important}
+html[data-gameday-game="blackjack"] .table:before,
+body.gameday-premium-blackjack .table:before{content:"GAMEDAY BLACKJACK";position:absolute;left:50%;top:47%;transform:translate(-50%,-50%);font:900 clamp(18px,5vw,34px) Georgia,serif;letter-spacing:.08em;color:rgba(244,207,99,.10);white-space:nowrap;pointer-events:none}
+html[data-gameday-game="blackjack"] .table:after,
+body.gameday-premium-blackjack .table:after{content:"BLACKJACK PAYS 3 TO 2";position:absolute;left:50%;bottom:8px;transform:translateX(-50%);font:700 9px/1.1 Arial,sans-serif;letter-spacing:.16em;color:rgba(244,207,99,.72);white-space:nowrap;pointer-events:none}
+html[data-gameday-game="blackjack"] .table-label,
+body.gameday-premium-blackjack .table-label{color:var(--gd-gold)!important;font-family:Georgia,serif!important;font-size:12px!important;letter-spacing:.2em!important;text-shadow:0 0 16px rgba(244,207,99,.25)}
+html[data-gameday-game="blackjack"] .hand-title,
+body.gameday-premium-blackjack .hand-title{color:#f7e8b0!important;text-transform:uppercase;letter-spacing:.12em;font-size:10px!important}
+html[data-gameday-game="blackjack"] .card,
+body.gameday-premium-blackjack .card{background:linear-gradient(145deg,#fffef7,#ece6d5)!important;border:1px solid #d7bf79!important;box-shadow:0 5px 12px rgba(0,0,0,.42),inset 0 0 0 1px rgba(255,255,255,.7)!important}
+html[data-gameday-game="blackjack"] .card.hidden-card,
+body.gameday-premium-blackjack .card.hidden-card{background:linear-gradient(135deg,#111 0 24%,#8f681c 25% 28%,#111 29% 49%,#8f681c 50% 53%,#111 54% 74%,#8f681c 75% 78%,#111 79%)!important;border:2px solid #c69d44!important;box-shadow:0 5px 14px rgba(0,0,0,.5),inset 0 0 0 3px #171717!important}
+html[data-gameday-game="blackjack"] .control-card,
+body.gameday-premium-blackjack .control-card{background:linear-gradient(180deg,rgba(20,15,8,.98),rgba(7,8,7,.99))!important;border:1px solid #7d6128!important;box-shadow:0 -8px 28px rgba(0,0,0,.42),inset 0 1px 0 rgba(255,226,139,.08)!important}
+html[data-gameday-game="blackjack"] .quick-bets button,
+body.gameday-premium-blackjack .quick-bets button{aspect-ratio:1/1;min-height:0!important;border-radius:50%!important;border:3px dashed rgba(255,255,255,.62)!important;background:radial-gradient(circle at 35% 30%,#286d9c,#123950 72%)!important;box-shadow:0 3px 0 #07151f,0 5px 10px rgba(0,0,0,.45),inset 0 0 0 3px rgba(255,255,255,.14)!important;color:white!important;text-shadow:0 1px 2px #000}
+html[data-gameday-game="blackjack"] .quick-bets button:nth-child(2),body.gameday-premium-blackjack .quick-bets button:nth-child(2){background:radial-gradient(circle at 35% 30%,#d63a42,#7f1018 72%)!important}
+html[data-gameday-game="blackjack"] .quick-bets button:nth-child(3),body.gameday-premium-blackjack .quick-bets button:nth-child(3){background:radial-gradient(circle at 35% 30%,#3054a4,#16295c 72%)!important}
+html[data-gameday-game="blackjack"] .quick-bets button:nth-child(4),body.gameday-premium-blackjack .quick-bets button:nth-child(4){background:radial-gradient(circle at 35% 30%,#2f8c54,#14552f 72%)!important}
+html[data-gameday-game="blackjack"] .deal-btn,
+body.gameday-premium-blackjack .deal-btn{background:linear-gradient(#f7d96d,#a8791f)!important;color:#171006!important;border:1px solid #ffefad!important;box-shadow:0 0 18px rgba(244,207,99,.22)!important}
+html[data-gameday-game="blackjack"] .hit-btn,body.gameday-premium-blackjack .hit-btn{background:linear-gradient(#38a864,#176237)!important}
+html[data-gameday-game="blackjack"] .stand-btn,body.gameday-premium-blackjack .stand-btn{background:linear-gradient(#7f2f38,#4a141a)!important}
+
+html[data-gameday-game="slots"] body,
+body.gameday-premium-slots{background:radial-gradient(circle at 50% 20%,#182653 0,#090a18 46%,#040406 100%)!important}
+html[data-gameday-game="slots"] .machine,
+body.gameday-premium-slots .machine{position:relative;overflow:visible;background:linear-gradient(180deg,#17122d 0%,#090913 54%,#150b18 100%)!important;border:3px solid #f4ce62!important;border-radius:24px!important;box-shadow:0 0 0 3px #4c3510,0 0 28px rgba(126,66,255,.28),inset 0 0 45px rgba(0,0,0,.58)!important}
+html[data-gameday-game="slots"] .machine:before,
+body.gameday-premium-slots .machine:before{content:"GAMEDAY • NEON JACKPOT";display:block;margin:-4px -2px 10px;padding:8px 10px;text-align:center;border-radius:14px;background:linear-gradient(90deg,#31206c,#7f3dff 48%,#1fa884);border:1px solid #e9cd67;color:#fff8cf;font:900 12px/1 Arial,sans-serif;letter-spacing:.14em;text-shadow:0 0 8px #fff,0 0 18px #8f6aff;box-shadow:inset 0 0 18px rgba(255,255,255,.1),0 4px 14px rgba(0,0,0,.4)}
+html[data-gameday-game="slots"] .machine-title,
+body.gameday-premium-slots .machine-title{font-family:Georgia,serif!important;text-transform:uppercase;letter-spacing:.1em;color:#ffe58a!important;text-shadow:0 0 10px rgba(255,221,96,.45),0 2px 0 #3e2900}
+html[data-gameday-game="slots"] .reels,
+body.gameday-premium-slots .reels{position:relative;padding:8px;border:3px solid #d8b24d;border-radius:16px;background:linear-gradient(#0a0715,#2f1645 45%,#0a0715);box-shadow:inset 0 0 22px #000,0 0 20px rgba(138,71,255,.24)!important}
+html[data-gameday-game="slots"] .reel,
+body.gameday-premium-slots .reel{background:linear-gradient(180deg,#170c2c,#4a175e 47%,#120a20)!important;border:2px solid #f1d46c!important;color:#fff!important;text-shadow:0 0 10px rgba(255,255,255,.9),0 0 24px #bc63ff;box-shadow:inset 0 0 24px rgba(0,0,0,.48),0 0 10px rgba(245,212,108,.2)!important}
+html[data-gameday-game="slots"] .reel.gd-symbol-diamond,body.gameday-premium-slots .reel.gd-symbol-diamond{color:#65f7ff!important;text-shadow:0 0 10px #fff,0 0 28px #20cfff!important}
+html[data-gameday-game="slots"] .reel.gd-symbol-seven,body.gameday-premium-slots .reel.gd-symbol-seven{color:#ff4361!important;text-shadow:0 0 10px #fff,0 0 26px #ff2b4b!important}
+html[data-gameday-game="slots"] .reel.gd-symbol-star,body.gameday-premium-slots .reel.gd-symbol-star{color:#ffe05f!important;text-shadow:0 0 10px #fff,0 0 26px #ffd42e!important}
+html[data-gameday-game="slots"] .reel.gd-symbol-bell,body.gameday-premium-slots .reel.gd-symbol-bell{color:#ffb536!important;text-shadow:0 0 10px #fff,0 0 25px #ff9b1e!important}
+html[data-gameday-game="slots"] .result,body.gameday-premium-slots .result{color:#e8ddff!important;text-shadow:0 0 10px rgba(129,74,255,.35)}
+html[data-gameday-game="slots"] .controls,
+body.gameday-premium-slots .controls{background:linear-gradient(180deg,rgba(13,10,26,.98),rgba(5,6,9,.99))!important;border:1px solid #6d5225!important;box-shadow:0 -8px 28px rgba(0,0,0,.45)!important}
+html[data-gameday-game="slots"] .chips button,
+body.gameday-premium-slots .chips button{border-radius:999px!important;background:linear-gradient(#302650,#171427)!important;border:1px solid #8b6cdc!important;color:#f3edff!important}
+html[data-gameday-game="slots"] .spin,
+body.gameday-premium-slots .spin{width:76px!important;height:76px!important;min-height:76px!important;margin:2px auto!important;display:block!important;border-radius:50%!important;background:radial-gradient(circle at 35% 30%,#8affdf,#1ca57a 58%,#0a5b45)!important;border:4px solid #b9ffe9!important;box-shadow:0 0 0 4px #16352d,0 0 30px rgba(98,255,209,.58),inset 0 -8px 14px rgba(0,0,0,.25)!important;color:#02150f!important;font-size:13px!important;letter-spacing:.06em!important}
+html[data-gameday-game="slots"] .spin:active,body.gameday-premium-slots .spin:active{transform:scale(.96)}
+html[data-gameday-game="slots"] .gd-slot-hud,body.gameday-premium-slots .gd-slot-hud{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:7px;font-size:10px;text-transform:uppercase;letter-spacing:.08em;color:#bfb7d8}
+html[data-gameday-game="slots"] .gd-slot-hud strong,body.gameday-premium-slots .gd-slot-hud strong{display:block;color:white;font-size:14px;margin-top:2px}
+
+@media(max-width:430px){
+ html[data-gameday-game="blackjack"] .quick-bets button,body.gameday-premium-blackjack .quick-bets button{aspect-ratio:auto;border-radius:999px!important;border-width:2px!important}
+ html[data-gameday-game="slots"] .spin,body.gameday-premium-slots .spin{width:58px!important;height:58px!important;min-height:58px!important;font-size:10px!important}
+ html[data-gameday-game="slots"] .machine:before,body.gameday-premium-slots .machine:before{font-size:8px;padding:6px}
+}
