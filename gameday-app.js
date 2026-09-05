@@ -24,6 +24,7 @@
     'gameday-bonus-poker.html':'poker-game',
     'gameday-deuces-wild.html':'poker-game',
     'gameday-ultimate-texas-holdem.html':'poker-game',
+    'gameday-caribbean-stud.html':'poker-game',
     'gameday-three-card-poker.html':'poker-game'
   };
   const gameMap = {

@@ -1,4 +1,4 @@
-const CACHE='gameday-shell-v14';
+const CACHE='gameday-shell-v15';
 const SHELL=[
   './gameday-sportsbook.html',
   './gameday-casino-v2.html',
@@ -13,6 +13,7 @@ const SHELL=[
   './gameday-bonus-poker.html',
   './gameday-deuces-wild.html',
   './gameday-ultimate-texas-holdem.html',
+  './gameday-caribbean-stud.html',
   './gameday-three-card-poker.html',
   './offline.html',
   './manifest.webmanifest',
