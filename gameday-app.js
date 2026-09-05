@@ -64,14 +64,10 @@
     html[data-gameday-page="casino-game"] .account-row{margin-top:5px!important}
     html[data-gameday-page="casino-game"] main{height:calc(100dvh - 146px - env(safe-area-inset-bottom));overflow:hidden!important;padding-top:6px!important;padding-bottom:0!important}
     html[data-gameday-page="casino-game"] main>.notice{display:none!important}
-    html[data-gameday-page="casino-game"] .history-title,
-    html[data-gameday-page="casino-game"] #history{display:none!important}
+    html[data-gameday-page="casino-game"] .history-title,html[data-gameday-page="casino-game"] #history{display:none!important}
     html[data-gameday-page="casino-game"] #message{position:absolute;z-index:125;left:12px;right:12px;top:96px;pointer-events:none}
-    html[data-gameday-page="casino-game"] #message .notice,
-    html[data-gameday-page="casino-game"] #message .error,
-    html[data-gameday-page="casino-game"] #message .success{padding:8px 10px!important;margin:0!important;font-size:11px!important;line-height:1.25!important;box-shadow:0 7px 25px rgba(0,0,0,.35)}
-    html[data-gameday-page="casino-game"] .control-card,
-    html[data-gameday-page="casino-game"] .controls{position:fixed!important;z-index:130!important;left:10px!important;right:10px!important;bottom:calc(66px + env(safe-area-inset-bottom))!important;margin:0!important;padding:9px!important;border-radius:14px 14px 0 0!important;max-height:31dvh!important;overflow:hidden!important;background:rgba(13,20,15,.98)!important;backdrop-filter:blur(16px);-webkit-backdrop-filter:blur(16px);box-shadow:0 -8px 24px rgba(0,0,0,.32)}
+    html[data-gameday-page="casino-game"] #message .notice,html[data-gameday-page="casino-game"] #message .error,html[data-gameday-page="casino-game"] #message .success{padding:8px 10px!important;margin:0!important;font-size:11px!important;line-height:1.25!important;box-shadow:0 7px 25px rgba(0,0,0,.35)}
+    html[data-gameday-page="casino-game"] .control-card,html[data-gameday-page="casino-game"] .controls{position:fixed!important;z-index:130!important;left:10px!important;right:10px!important;bottom:calc(66px + env(safe-area-inset-bottom))!important;margin:0!important;padding:9px!important;border-radius:14px 14px 0 0!important;max-height:31dvh!important;overflow:hidden!important;background:rgba(13,20,15,.98)!important;backdrop-filter:blur(16px);-webkit-backdrop-filter:blur(16px);box-shadow:0 -8px 24px rgba(0,0,0,.32)}
     html[data-gameday-page="casino-game"] label{margin-bottom:3px!important;font-size:10px!important}
     html[data-gameday-page="casino-game"] input{padding:8px 10px!important;font-size:15px!important;min-height:36px!important}
     html[data-gameday-page="casino-game"] button{min-height:36px!important}
@@ -87,18 +83,28 @@
     html[data-gameday-game="blackjack"] .actions{margin-top:6px!important;gap:5px!important}
     html[data-gameday-game="blackjack"] .result-card{display:none!important}
 
-    html[data-gameday-game="roulette"] .wheel{width:148px!important;height:148px!important;margin:4px auto!important;border-width:5px!important}
-    html[data-gameday-game="roulette"] .wheel-result{width:52px!important;height:52px!important;font-size:22px!important;border-width:2px!important}
-    html[data-gameday-game="roulette"] .result-text{font-size:13px!important;margin:2px 0 5px!important}
-    html[data-gameday-game="roulette"] .control-card{max-height:43dvh!important;overflow:hidden!important}
-    html[data-gameday-game="roulette"] .chips{margin:4px 0 5px!important;gap:4px!important}
-    html[data-gameday-game="roulette"] .bet-title{margin:5px 0 4px!important;font-size:9px!important}
-    html[data-gameday-game="roulette"] .outside{grid-template-columns:repeat(6,1fr)!important;gap:3px!important;margin-bottom:4px!important}
-    html[data-gameday-game="roulette"] .bet-button{font-size:9px!important;padding:2px!important}
-    html[data-gameday-game="roulette"] .number-grid{grid-template-columns:repeat(12,1fr)!important;gap:2px!important}
-    html[data-gameday-game="roulette"] .number{min-height:25px!important;font-size:9px!important;border-radius:4px!important;padding:0!important}
-    html[data-gameday-game="roulette"] .number.zero{grid-column:1/-1!important;min-height:22px!important}
-    html[data-gameday-game="roulette"] .spin{margin-top:5px!important;min-height:38px!important;font-size:14px!important}
+    /* Roulette: wheel and full table stay visible together like a casino cabinet. */
+    html[data-gameday-game="roulette"] main{display:flex!important;flex-direction:column!important;height:calc(100dvh - 146px - env(safe-area-inset-bottom))!important;padding:3px 8px 0!important}
+    html[data-gameday-game="roulette"] .gameday-roulette-stage{display:grid!important;grid-template-rows:174px minmax(0,1fr)!important;gap:4px!important;min-height:0!important;height:100%!important}
+    html[data-gameday-game="roulette"] .gameday-roulette-top{min-height:0!important;position:relative!important}
+    html[data-gameday-game="roulette"] .wheel{width:164px!important;height:164px!important;margin:2px auto!important;border-width:5px!important}
+    html[data-gameday-game="roulette"] .wheel-label{font-size:6px!important;width:18px!important;height:13px!important;margin-left:-9px!important;margin-top:-6.5px!important}
+    html[data-gameday-game="roulette"] .roulette-ball{width:9px!important;height:9px!important;margin-left:-4.5px!important;margin-top:-4.5px!important}
+    html[data-gameday-game="roulette"] .wheel-result{width:54px!important;height:54px!important;font-size:22px!important;border-width:2px!important}
+    html[data-gameday-game="roulette"] .result-text{font-size:11px!important;margin:-1px 0 2px!important;line-height:1.15!important}
+    html[data-gameday-game="roulette"] .control-card{position:relative!important;left:auto!important;right:auto!important;bottom:auto!important;z-index:1!important;max-height:none!important;height:100%!important;overflow:hidden!important;padding:5px!important;border-radius:8px!important;box-shadow:none!important;display:grid!important;grid-template-rows:minmax(0,1fr) 40px!important;gap:4px!important;background:linear-gradient(#0e2d18,#09150d)!important;border:1px solid #2f6943!important}
+    html[data-gameday-game="roulette"] .control-card>label,html[data-gameday-game="roulette"] .control-card>input,html[data-gameday-game="roulette"] .control-card>.chips,html[data-gameday-game="roulette"] .control-card>.bet-title,html[data-gameday-game="roulette"] .control-card>.outside{display:none!important}
+    html[data-gameday-game="roulette"] .gameday-roulette-table{display:grid!important;grid-template-columns:52px minmax(0,1fr)!important;gap:3px!important;min-height:0!important;height:100%!important}
+    html[data-gameday-game="roulette"] .gameday-outside-rail{display:grid!important;grid-template-rows:repeat(6,1fr)!important;gap:2px!important;min-height:0!important}
+    html[data-gameday-game="roulette"] .gameday-outside-rail .bet-button{min-height:0!important;height:auto!important;padding:2px!important;font-size:10px!important;border-radius:2px!important;writing-mode:vertical-rl!important;transform:rotate(180deg)!important;border:1px solid rgba(255,255,255,.35)!important}
+    html[data-gameday-game="roulette"] .number-grid{display:grid!important;grid-template-columns:repeat(3,1fr)!important;grid-template-rows:30px repeat(12,minmax(0,1fr))!important;gap:2px!important;min-height:0!important;height:100%!important}
+    html[data-gameday-game="roulette"] .number{min-height:0!important;height:auto!important;font-size:12px!important;border-radius:1px!important;padding:0!important;border:1px solid rgba(255,255,255,.38)!important}
+    html[data-gameday-game="roulette"] .number.zero{grid-column:1/-1!important;min-height:0!important;background:#12672e!important}
+    html[data-gameday-game="roulette"] .gameday-roulette-actions{display:grid!important;grid-template-columns:70px 1fr 92px!important;gap:4px!important;align-items:center!important;min-height:40px!important}
+    html[data-gameday-game="roulette"] .gameday-stake-display{display:flex!important;align-items:center!important;justify-content:center!important;height:38px!important;background:#08110b!important;border:1px solid #365a42!important;border-radius:6px!important;font-size:11px!important;font-weight:800!important}
+    html[data-gameday-game="roulette"] .gameday-quick-chips{display:grid!important;grid-template-columns:repeat(4,1fr)!important;gap:3px!important}
+    html[data-gameday-game="roulette"] .gameday-quick-chips button{min-height:38px!important;height:38px!important;padding:0!important;border-radius:20px!important;background:#26312a!important;color:#fff!important;font-size:10px!important}
+    html[data-gameday-game="roulette"] .spin{margin:0!important;min-height:38px!important;height:38px!important;font-size:12px!important;border-radius:7px!important}
 
     html[data-gameday-game="baccarat"] .table{min-height:0!important;height:calc(69dvh - 92px)!important;padding:8px 10px!important;border-radius:20px!important;display:grid!important;grid-template-columns:1fr 1fr!important;grid-template-rows:auto 1fr auto!important;gap:4px 8px!important;align-items:center!important}
     html[data-gameday-game="baccarat"] .table-title{grid-column:1/-1!important}
@@ -125,9 +131,7 @@
     html[data-gameday-game="slots"] .spin{min-height:40px!important;font-size:15px!important}
     html[data-gameday-game="slots"] .paytable{display:none!important}
 
-    html[data-gameday-page="mybets"] header,
-    html[data-gameday-page="account"] header{padding-bottom:10px!important}
-
+    html[data-gameday-page="mybets"] header,html[data-gameday-page="account"] header{padding-bottom:10px!important}
     .gameday-app-nav{position:fixed;z-index:140;left:0;right:0;bottom:0;display:grid;grid-template-columns:repeat(4,1fr);gap:2px;padding:7px max(8px,env(safe-area-inset-right)) calc(7px + env(safe-area-inset-bottom)) max(8px,env(safe-area-inset-left));background:rgba(15,23,18,.97);border-top:1px solid #2b3a31;backdrop-filter:blur(18px);-webkit-backdrop-filter:blur(18px)}
     .gameday-app-nav a{min-width:0;text-decoration:none;color:#8fa096;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:3px;min-height:52px;border-radius:12px;font-size:10px;font-weight:700;letter-spacing:.01em}
     .gameday-app-nav a .gameday-nav-icon{font-size:20px;line-height:1}
@@ -157,9 +161,66 @@
     if (canonical.every(([,href]) => hrefs.includes(href))) nav.classList.add('gameday-legacy-nav');
   });
 
+  if (path === 'gameday-roulette.html') {
+    const main = document.querySelector('main');
+    const wheel = document.querySelector('.wheel');
+    const result = document.querySelector('.result-text');
+    const controls = document.querySelector('.control-card');
+    const outside = controls?.querySelector('.outside');
+    const numbers = controls?.querySelector('#numbers');
+    const spin = controls?.querySelector('#spinBtn');
+    const stake = controls?.querySelector('#stake');
+    if (main && wheel && result && controls && outside && numbers && spin && stake) {
+      const stage = document.createElement('section');
+      stage.className = 'gameday-roulette-stage';
+      const top = document.createElement('div');
+      top.className = 'gameday-roulette-top';
+      wheel.parentNode.insertBefore(stage, wheel);
+      stage.appendChild(top);
+      top.appendChild(wheel);
+      top.appendChild(result);
+      stage.appendChild(controls);
+
+      const table = document.createElement('div');
+      table.className = 'gameday-roulette-table';
+      const rail = document.createElement('div');
+      rail.className = 'gameday-outside-rail';
+      const ordered = ['low','even','red','black','odd','high'];
+      ordered.forEach(type => {
+        const button = outside.querySelector(`[data-type="${type}"]`);
+        if (button) rail.appendChild(button);
+      });
+      table.appendChild(rail);
+      table.appendChild(numbers);
+
+      const actions = document.createElement('div');
+      actions.className = 'gameday-roulette-actions';
+      const stakeDisplay = document.createElement('div');
+      stakeDisplay.className = 'gameday-stake-display';
+      const quick = document.createElement('div');
+      quick.className = 'gameday-quick-chips';
+      [10,25,50,100].forEach(value => {
+        const b = document.createElement('button');
+        b.type = 'button';
+        b.textContent = value;
+        b.addEventListener('click', () => {
+          stake.value = String(value);
+          stake.dispatchEvent(new Event('input', { bubbles:true }));
+        });
+        quick.appendChild(b);
+      });
+      const syncStake = () => { stakeDisplay.textContent = `$${Number(stake.value || 0).toFixed(0)}`; };
+      stake.addEventListener('input', syncStake);
+      syncStake();
+      spin.textContent = 'SPIN';
+      actions.append(stakeDisplay, quick, spin);
+      controls.append(table, actions);
+      outside.remove();
+    }
+  }
+
   let activeHref = path;
   if (['gameday-blackjack.html','gameday-roulette.html','gameday-baccarat.html','gameday-slots.html'].includes(path)) activeHref = 'gameday-casino-v2.html';
-
   const nav = document.createElement('nav');
   nav.className = 'gameday-app-nav';
   nav.setAttribute('aria-label','GameDay app navigation');
