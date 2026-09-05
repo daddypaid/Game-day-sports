@@ -250,6 +250,221 @@ body.gameday-premium-slots .paytable>strong{
   font-size:11px;
 }
 
+/* ---------------- LUCKY 7s CLASSIC CABINET ---------------- */
+body.gameday-lucky-7s{
+  background:
+    radial-gradient(circle at 50% 7%,rgba(145,0,0,.34),transparent 28%),
+    linear-gradient(180deg,#180607 0,#080505 46%,#030303 100%)!important;
+}
+body.gameday-lucky-7s header{
+  background:linear-gradient(180deg,#1c0808,#080505)!important;
+  border-bottom-color:#6f4413!important;
+}
+body.gameday-lucky-7s h1{
+  font-family:Georgia,serif;
+  color:#ffe6a0!important;
+  letter-spacing:.03em;
+  text-shadow:0 2px 0 #5d170f,0 0 15px rgba(255,198,61,.35)!important;
+}
+body.gameday-lucky-7s .machine{
+  position:relative;
+  overflow:visible!important;
+  padding:14px 16px 26px!important;
+  border-radius:28px 28px 18px 18px!important;
+  background:
+    linear-gradient(90deg,rgba(255,255,255,.08),transparent 12%,transparent 88%,rgba(255,255,255,.06)),
+    linear-gradient(180deg,#681213 0 15%,#320708 16% 38%,#130405 39% 100%)!important;
+  border:5px solid #c8952e!important;
+  box-shadow:
+    0 0 0 3px #4f2808,
+    0 0 0 7px #130b07,
+    0 22px 52px rgba(0,0,0,.62),
+    inset 0 0 45px rgba(0,0,0,.55),
+    inset 0 1px 0 rgba(255,237,169,.2)!important;
+}
+body.gameday-lucky-7s .machine:before{
+  content:"GAMEDAY • CLASSIC CASINO"!important;
+  display:block!important;
+  margin:0 0 8px!important;
+  padding:7px 10px!important;
+  border-radius:10px!important;
+  color:#fff1ae!important;
+  background:linear-gradient(180deg,#361b08,#140b05)!important;
+  border:1px solid #c08c2c!important;
+  box-shadow:inset 0 0 12px rgba(255,194,72,.09)!important;
+  font:900 9px/1 Arial,sans-serif!important;
+  letter-spacing:.16em!important;
+  text-align:center!important;
+  position:relative!important;
+}
+body.gameday-lucky-7s .gd-lucky-marquee{
+  position:relative;
+  margin:0 0 10px;
+  padding:10px 8px 8px;
+  border-radius:17px 17px 8px 8px;
+  text-align:center;
+  background:
+    radial-gradient(circle at 4% 10%,#fff5b1 0 2px,transparent 3px),
+    radial-gradient(circle at 15% 10%,#fff5b1 0 2px,transparent 3px),
+    radial-gradient(circle at 26% 10%,#fff5b1 0 2px,transparent 3px),
+    radial-gradient(circle at 37% 10%,#fff5b1 0 2px,transparent 3px),
+    radial-gradient(circle at 48% 10%,#fff5b1 0 2px,transparent 3px),
+    radial-gradient(circle at 59% 10%,#fff5b1 0 2px,transparent 3px),
+    radial-gradient(circle at 70% 10%,#fff5b1 0 2px,transparent 3px),
+    radial-gradient(circle at 81% 10%,#fff5b1 0 2px,transparent 3px),
+    radial-gradient(circle at 92% 10%,#fff5b1 0 2px,transparent 3px),
+    linear-gradient(180deg,#ad1117,#55060a 72%,#260305);
+  border:3px solid #e2b34a;
+  box-shadow:0 4px 0 #522508,0 0 22px rgba(255,178,31,.22),inset 0 0 20px rgba(255,206,82,.08);
+}
+body.gameday-lucky-7s .gd-lucky-marquee span{
+  display:block;
+  font:900 clamp(26px,8vw,42px)/.95 Georgia,serif;
+  color:#fff0a7;
+  letter-spacing:.05em;
+  text-shadow:0 3px 0 #861215,0 0 12px #ffbd35;
+}
+body.gameday-lucky-7s .gd-lucky-marquee small{
+  display:block;
+  margin-top:6px;
+  color:#f7d87a;
+  font-size:8px;
+  font-weight:900;
+  letter-spacing:.18em;
+}
+body.gameday-lucky-7s .machine-title{
+  display:none!important;
+}
+body.gameday-lucky-7s .reels{
+  position:relative!important;
+  overflow:hidden!important;
+  padding:10px!important;
+  gap:6px!important;
+  border-radius:14px!important;
+  background:linear-gradient(180deg,#1d1d1b,#090909)!important;
+  border:5px solid #b98b2e!important;
+  box-shadow:inset 0 0 0 2px #4f310c,inset 0 0 24px #000,0 6px 16px rgba(0,0,0,.48)!important;
+}
+body.gameday-lucky-7s .reel{
+  min-height:138px!important;
+  color:#b31318!important;
+  background:
+    linear-gradient(90deg,rgba(0,0,0,.06),transparent 22%,rgba(255,255,255,.75) 50%,transparent 78%,rgba(0,0,0,.06)),
+    linear-gradient(180deg,#e4dfd1 0,#fffef7 46%,#ded7c7 100%)!important;
+  border:2px solid #b7a170!important;
+  border-radius:5px!important;
+  text-shadow:none!important;
+  box-shadow:inset 0 18px 22px rgba(0,0,0,.12),inset 0 -18px 22px rgba(0,0,0,.12)!important;
+}
+body.gameday-lucky-7s .reel.gd-symbol-seven{
+  color:#cf151d!important;
+  text-shadow:0 2px 0 #fff,0 0 8px rgba(255,29,40,.3)!important;
+}
+body.gameday-lucky-7s .reel.gd-symbol-diamond{
+  color:#1c8ca8!important;
+  text-shadow:0 2px 0 #fff,0 0 8px rgba(39,190,220,.3)!important;
+}
+body.gameday-lucky-7s .reel.gd-symbol-bell,
+body.gameday-lucky-7s .reel.gd-symbol-star{
+  color:#c7921c!important;
+  text-shadow:0 2px 0 #fff!important;
+}
+body.gameday-lucky-7s .gd-payline{
+  position:absolute;
+  left:3px;
+  right:3px;
+  top:50%;
+  height:3px;
+  transform:translateY(-50%);
+  z-index:8;
+  background:linear-gradient(90deg,#ffce47,#ff3a2d 30%,#ff3a2d 70%,#ffce47);
+  box-shadow:0 0 8px rgba(255,48,38,.7);
+  pointer-events:none;
+}
+body.gameday-lucky-7s .result{
+  min-height:28px;
+  margin:11px 0 2px!important;
+  padding:6px 8px;
+  border-radius:5px;
+  color:#ffd85e!important;
+  background:#130303;
+  border:1px solid #702118;
+  font-family:monospace;
+  letter-spacing:.08em;
+  text-shadow:0 0 8px rgba(255,188,41,.55)!important;
+}
+body.gameday-lucky-7s .gd-slot-hud{
+  margin-top:8px;
+  border-radius:6px!important;
+  background:#080808!important;
+  border:1px solid #5d451b!important;
+  color:#9d8c62!important;
+}
+body.gameday-lucky-7s .gd-slot-hud strong{
+  color:#f3cf5e!important;
+  font-family:monospace;
+}
+body.gameday-lucky-7s .gd-coin-tray{
+  margin:9px auto -7px;
+  width:72%;
+  color:#7c6a49;
+  text-align:center;
+  font-size:6px;
+  font-weight:900;
+  letter-spacing:.18em;
+}
+body.gameday-lucky-7s .gd-coin-tray i{
+  display:block;
+  height:12px;
+  margin-top:3px;
+  border-radius:3px 3px 9px 9px;
+  background:linear-gradient(#030303,#151515 70%,#050505);
+  border:1px solid #5f4e2f;
+  box-shadow:inset 0 4px 8px #000;
+}
+body.gameday-lucky-7s .controls{
+  background:linear-gradient(180deg,#241407,#0c0907)!important;
+  border:2px solid #755019!important;
+  box-shadow:0 10px 24px rgba(0,0,0,.38)!important;
+}
+body.gameday-lucky-7s .chips button{
+  border:2px solid #d0a139!important;
+  border-radius:50%!important;
+  aspect-ratio:1/1;
+  min-height:0!important;
+  background:radial-gradient(circle at 35% 28%,#c71a22,#5a090d 68%)!important;
+  color:#fff3c4!important;
+  box-shadow:inset 0 0 0 3px rgba(255,239,171,.1),0 4px 0 #3c0709,0 7px 12px rgba(0,0,0,.4)!important;
+}
+body.gameday-lucky-7s .chips button:nth-child(2){background:radial-gradient(circle at 35% 28%,#2d72b8,#12355a 68%)!important}
+body.gameday-lucky-7s .chips button:nth-child(3){background:radial-gradient(circle at 35% 28%,#25834a,#0f4928 68%)!important}
+body.gameday-lucky-7s .chips button:nth-child(4){background:radial-gradient(circle at 35% 28%,#191919,#050505 68%)!important}
+body.gameday-lucky-7s .spin{
+  width:88px!important;
+  height:88px!important;
+  min-height:88px!important;
+  margin:0 auto!important;
+  border-radius:50%!important;
+  background:radial-gradient(circle at 35% 27%,#ff4a3c,#a40d13 56%,#520408)!important;
+  color:#fff4cd!important;
+  border:5px solid #d9a63c!important;
+  box-shadow:0 0 0 4px #4a220a,0 7px 0 #330509,0 12px 20px rgba(0,0,0,.45),inset 0 -11px 16px rgba(0,0,0,.28)!important;
+  font-size:13px!important;
+  letter-spacing:.08em!important;
+}
+body.gameday-lucky-7s .spin:before{
+  inset:8px!important;
+  border-color:rgba(255,241,190,.28)!important;
+}
+body.gameday-lucky-7s .paytable,
+body.gameday-lucky-7s .history-item{
+  background:linear-gradient(180deg,#170b08,#090706)!important;
+  border-color:#5f421a!important;
+}
+body.gameday-lucky-7s .paytable>strong{
+  color:#f3ce62!important;
+}
+
 @media(max-width:430px){
   body.gameday-premium-blackjack .table{border-width:3px!important;box-shadow:inset 0 0 0 1px #d4ad56,inset 0 0 0 4px rgba(49,27,7,.8),0 10px 24px rgba(0,0,0,.42)!important}
   body.gameday-premium-blackjack .control-card:before{margin:-1px 0 4px;font-size:6px}
@@ -261,4 +476,15 @@ body.gameday-premium-slots .paytable>strong{
   body.gameday-premium-slots .reel{min-height:88px!important;font-size:42px!important}
   body.gameday-premium-slots .gd-slot-hud{padding:5px 7px;margin-top:5px}
   body.gameday-premium-slots .controls{padding:5px!important}
+  body.gameday-lucky-7s .machine{padding:7px 7px 13px!important;border-radius:16px!important}
+  body.gameday-lucky-7s .machine:before{font-size:6px!important;padding:5px!important;margin-bottom:5px!important}
+  body.gameday-lucky-7s .gd-lucky-marquee{padding:7px 5px 5px;margin-bottom:6px;border-width:2px}
+  body.gameday-lucky-7s .gd-lucky-marquee span{font-size:24px}
+  body.gameday-lucky-7s .gd-lucky-marquee small{font-size:5px;margin-top:3px}
+  body.gameday-lucky-7s .reels{padding:5px!important;border-width:3px!important;gap:3px!important}
+  body.gameday-lucky-7s .reel{min-height:86px!important;font-size:40px!important}
+  body.gameday-lucky-7s .result{margin-top:5px!important;padding:4px!important;font-size:10px!important;min-height:20px}
+  body.gameday-lucky-7s .gd-coin-tray{margin-top:5px}
+  body.gameday-lucky-7s .chips button{aspect-ratio:auto;border-radius:999px!important;border-width:1px!important}
+  body.gameday-lucky-7s .spin{width:58px!important;height:58px!important;min-height:58px!important;border-width:3px!important;font-size:9px!important}
 }
