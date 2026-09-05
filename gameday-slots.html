@@ -160,6 +160,19 @@ main{
   justify-content:center;
   font-size:58px;
   color:#111;
+  overflow:hidden;
+  position:relative;
+  transform:translateZ(0);
+}
+
+.reel.spinning{
+  animation:reelPulse .16s linear infinite;
+}
+
+@keyframes reelPulse{
+  0%{transform:translateY(-5px) scale(1.02);filter:blur(.4px)}
+  50%{transform:translateY(5px) scale(.98);filter:blur(1px)}
+  100%{transform:translateY(-5px) scale(1.02);filter:blur(.4px)}
 }
 
 .result{
@@ -554,6 +567,24 @@ money(walletBalance);
 
 }
 
+const slotSymbols=["💎","7️⃣","⭐","🔔","🍒","🍋"];
+let slotTimer=null;
+function startSlotAnimation(){
+  const reels=[reel1,reel2,reel3];
+  reels.forEach(r=>r.classList.add("spinning"));
+  let tick=0;
+  slotTimer=setInterval(()=>{
+    tick++;
+    reels.forEach((r,i)=>{
+      r.textContent=slotSymbols[(tick+i*2)%slotSymbols.length];
+    });
+  },90);
+}
+function stopSlotAnimation(){
+  if(slotTimer){clearInterval(slotTimer);slotTimer=null;}
+  [reel1,reel2,reel3].forEach(r=>r.classList.remove("spinning"));
+}
+
 async function spin(){
 
 message.innerHTML = "";
@@ -596,9 +627,7 @@ spinBtn.textContent =
 result.textContent =
 "Spinning...";
 
-reel1.textContent = "🎰";
-reel2.textContent = "🎰";
-reel3.textContent = "🎰";
+startSlotAnimation();
 
 try{
 
@@ -625,6 +654,8 @@ throw new Error(data.error);
 
 const spinData =
 data.spin;
+
+stopSlotAnimation();
 
 reel1.textContent =
 spinData.reels[0];
@@ -669,6 +700,8 @@ showMessage(
 await loadHistory();
 
 }catch(error){
+
+stopSlotAnimation();
 
 showMessage(
 error.message ||

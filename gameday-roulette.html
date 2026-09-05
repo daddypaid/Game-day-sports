@@ -130,16 +130,45 @@ main{
 
 .wheel{
   background:
-    radial-gradient(circle,#174c2c 0%,#113820 55%,#0b2817 100%);
-  border:2px solid #346e45;
+    radial-gradient(circle at center,#163d22 0 24%,transparent 25%),
+    repeating-conic-gradient(#8f202a 0deg 9.73deg,#171717 9.73deg 19.46deg);
+  border:8px solid #8f7626;
   border-radius:50%;
-  width:210px;
-  height:210px;
+  width:250px;
+  height:250px;
+  position:relative;
   margin:15px auto;
   display:flex;
   align-items:center;
   justify-content:center;
-  box-shadow:inset 0 0 25px rgba(0,0,0,.4);
+  box-shadow:inset 0 0 30px rgba(0,0,0,.6),0 0 0 3px #2b3a31;
+}
+
+.wheel::before{
+  content:"▼";
+  position:absolute;
+  top:-24px;
+  left:50%;
+  transform:translateX(-50%);
+  color:#f1da88;
+  font-size:28px;
+  z-index:3;
+}
+
+.wheel.spinning{
+  animation:rouletteSpin .9s linear infinite;
+}
+
+@keyframes rouletteSpin{
+  to{transform:rotate(360deg)}
+}
+
+.wheel.spinning .wheel-result{
+  animation:counterSpin .9s linear infinite;
+}
+
+@keyframes counterSpin{
+  to{transform:rotate(-360deg)}
 }
 
 .wheel-result{
@@ -253,14 +282,15 @@ button{
 
 .number-grid{
   display:grid;
-  grid-template-columns:repeat(6,1fr);
+  grid-template-columns:repeat(3,1fr);
   gap:5px;
 }
 
 .number{
   color:#fff;
-  min-height:42px;
-  font-size:14px;
+  min-height:48px;
+  font-size:15px;
+  border:1px solid #d7c56f;
 }
 
 .number.red{
@@ -273,6 +303,10 @@ button{
 
 .number.green{
   background:#17743a;
+}
+
+.number.zero{
+  grid-column:1/-1;
 }
 
 .spin{
@@ -463,6 +497,9 @@ document.getElementById("stake");
 const message =
 document.getElementById("message");
 
+const wheel =
+document.querySelector(".wheel");
+
 const wheelResult =
 document.getElementById("wheelResult");
 
@@ -503,16 +540,15 @@ document.getElementById("numbers");
 
 let html = "";
 
-for(let n=0;n<=36;n++){
-
+const layout=[0,3,2,1,6,5,4,9,8,7,12,11,10,15,14,13,18,17,16,21,20,19,24,23,22,27,26,25,30,29,28,33,32,31,36,35,34];
+for(const n of layout){
 html +=
 `<button
-class="number ${numberColor(n)}"
+class="number ${numberColor(n)}${n===0?' zero':''}"
 data-type="number"
 data-value="${n}">
 ${n}
 </button>`;
-
 }
 
 box.innerHTML = html;
@@ -657,6 +693,9 @@ return;
 
 spinBtn.disabled = true;
 spinBtn.textContent = "Spinning...";
+wheel.classList.add("spinning");
+wheelResult.textContent="•";
+wheelResult.className="wheel-result green";
 
 try{
 
@@ -685,6 +724,8 @@ throw new Error(data.error);
 
 const spin =
 data.spin;
+
+wheel.classList.remove("spinning");
 
 walletBalance =
 Number(spin.balance);
@@ -724,6 +765,8 @@ showMessage(
 await loadHistory();
 
 }catch(err){
+
+wheel.classList.remove("spinning");
 
 showMessage(
 err.message ||
