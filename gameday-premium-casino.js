@@ -40,20 +40,54 @@
 
   function enhanceSlots(){
     loadV2Styles();
-    document.body.classList.add('gameday-premium-slots');
+    document.body.classList.add('gameday-premium-slots','gameday-lucky-7s');
+
+    const pageTitle=document.querySelector('h1');
+    if(pageTitle) pageTitle.textContent='GameDay Lucky 7s';
+    document.title='GameDay Lucky 7s';
+
+    const machine=document.querySelector('.machine');
+    const machineTitle=document.querySelector('.machine-title');
+    if(machineTitle) machineTitle.textContent='★ GAMEDAY LUCKY 7s ★';
+
+    if(machine && !machine.querySelector('.gd-lucky-marquee')){
+      const marquee=document.createElement('div');
+      marquee.className='gd-lucky-marquee';
+      marquee.setAttribute('aria-hidden','true');
+      marquee.innerHTML='<span>LUCKY 7s</span><small>CLASSIC • 3 REEL • SINGLE LINE</small>';
+      machine.insertBefore(marquee,machine.firstChild);
+    }
+
     const reels=[document.getElementById('reel1'),document.getElementById('reel2'),document.getElementById('reel3')].filter(Boolean);
     reels.forEach(r=>{
       decorateSlotReel(r);
       new MutationObserver(()=>decorateSlotReel(r)).observe(r,{childList:true,characterData:true,subtree:true});
     });
-    const machine=document.querySelector('.machine');
+
+    const reelBox=document.querySelector('.reels');
+    if(reelBox && !reelBox.querySelector('.gd-payline')){
+      const line=document.createElement('div');
+      line.className='gd-payline';
+      line.setAttribute('aria-hidden','true');
+      reelBox.appendChild(line);
+    }
+
+    if(machine && !machine.querySelector('.gd-coin-tray')){
+      const tray=document.createElement('div');
+      tray.className='gd-coin-tray';
+      tray.setAttribute('aria-hidden','true');
+      tray.innerHTML='<span>COIN TRAY</span><i></i>';
+      machine.appendChild(tray);
+    }
+
     const balance=document.getElementById('balance');
     const result=document.getElementById('result');
     if(machine && !machine.querySelector('.gd-slot-hud')){
       const hud=document.createElement('div');
       hud.className='gd-slot-hud';
       hud.innerHTML='<div>Balance<strong id="gdSlotHudBalance">—</strong></div><div>Result<strong id="gdSlotHudResult">Ready</strong></div>';
-      machine.appendChild(hud);
+      const tray=machine.querySelector('.gd-coin-tray');
+      if(tray) machine.insertBefore(hud,tray); else machine.appendChild(hud);
       const sync=()=>{
         const b=document.getElementById('gdSlotHudBalance');
         const r=document.getElementById('gdSlotHudResult');
