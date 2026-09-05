@@ -1,6 +1,12 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
+<link rel="manifest" href="manifest.webmanifest">
+<meta name="theme-color" content="#101712">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="GameDay">
+<link rel="apple-touch-icon" href="icons/gameday-192.png">
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1.0">
 <title>GameDay Sportsbook</title>
@@ -66,5 +72,7 @@ document.querySelectorAll('[data-view]').forEach(b=>b.onclick=()=>{view=b.datase
 $('sportSelect').onchange=()=>{if(!$('sportSelect').value)return;currentSport=$('sportSelect').value;document.querySelectorAll('[data-sport]').forEach(x=>x.classList.remove('active'));event=null;propMarkets=[];liveStates=[];loadView()};
 $('refresh').onclick=async()=>{await Promise.all([account(),loadView()])};$('openSlip').onclick=async()=>{$('panel').classList.add('open');await account();updateSlip()};$('closeSlip').onclick=()=>$('panel').classList.remove('open');$('single').onclick=()=>{betType='single';$('single').classList.add('active');$('parlay').classList.remove('active');updateSlip()};$('parlay').onclick=()=>{betType='parlay';$('parlay').classList.add('active');$('single').classList.remove('active');updateSlip()};$('stake').oninput=updateReturn;$('place').onclick=place;document.addEventListener('visibilitychange',()=>{if(!document.hidden&&view==='live')loadGames()});supabase.auth.onAuthStateChange(account);await account();await loadSports();await loadGames();updateSlip();
 </script>
+
+<script src="gameday-app.js" defer></script>
 </body>
 </html>
