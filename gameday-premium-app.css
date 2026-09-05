@@ -41,6 +41,23 @@ body.gd-premium .status{color:#d6d0bd}
 .gd-premium-hero::before{content:"";position:absolute;inset:0;background:linear-gradient(90deg,rgba(0,0,0,.04),rgba(0,0,0,.55));pointer-events:none}.gd-premium-hero .copy{position:relative;z-index:2;padding:24px;max-width:62%}.gd-premium-hero .kicker{color:#f0c75c;font-size:10px;font-weight:900;letter-spacing:.22em;text-transform:uppercase}.gd-premium-hero h2{margin:5px 0 8px;font:900 34px/1 Georgia,serif;color:#fff1b0;text-shadow:0 0 18px rgba(228,184,79,.22)}.gd-premium-hero p{margin:0;color:#cfc8b6;font-size:12px;line-height:1.5}.gd-athletes{display:flex;gap:6px;flex-wrap:wrap;margin-top:14px}.gd-athletes span{padding:6px 9px;border-radius:999px;background:#0d120f;border:1px solid #5b461d;color:#f2d577;font-size:9px;font-weight:900}.gd-hero-action{display:inline-block;margin-top:14px;text-decoration:none;padding:10px 15px;border-radius:10px;background:linear-gradient(180deg,#f7d76e,#b97a15);color:#170e03;font-size:11px;font-weight:900;box-shadow:0 0 18px rgba(228,184,79,.2)}
 .gd-page-banner{max-width:760px;margin:14px auto 0;padding:18px;border:1px solid #5d461b;border-radius:15px;background:radial-gradient(circle at 90% 0,rgba(228,184,79,.14),transparent 34%),linear-gradient(135deg,#151008,#080a08);box-shadow:var(--gd-shadow)}.gd-page-banner .eyebrow{font-size:9px;color:#e4ba51;letter-spacing:.2em;font-weight:900}.gd-page-banner h2{font:900 28px Georgia,serif;color:#fff0aa;margin:5px 0}.gd-page-banner p{margin:0;color:#a9a393;font-size:11px}
 
+/* Casino lobby production artwork */
+body.gd-premium .hero{background-image:linear-gradient(90deg,rgba(0,0,0,.12),rgba(0,0,0,.58)),url('assets/casino/gameday-casino-hero.svg')!important;background-size:cover!important;background-position:center!important;border-color:#c79d3d!important;min-height:220px!important;box-shadow:0 18px 44px rgba(0,0,0,.5),0 0 28px rgba(228,184,79,.08)!important}
+body.gd-premium .hero::after{display:none!important}
+body.gd-premium .hero-copy{background:linear-gradient(90deg,rgba(2,5,3,.82),rgba(2,5,3,.25),transparent);border-radius:16px;max-width:64%!important}
+body.gd-premium .art{background-color:#070907!important;background-size:cover!important;background-position:center!important;background-repeat:no-repeat!important}
+body.gd-premium .art::before,body.gd-premium .art::after{content:none!important}
+body.gd-premium .blackjack-art{background-image:url('assets/casino/blackjack-lobby.svg')!important}
+body.gd-premium .roulette-art{background-image:url('assets/casino/roulette-lobby.svg')!important}
+body.gd-premium .baccarat-art{background-image:url('assets/casino/baccarat-lobby.svg')!important}
+body.gd-premium .poker-art{background-image:url('assets/casino/poker-lobby.svg')!important}
+body.gd-premium .slots-art{background-image:url('assets/casino/lucky-7s-lobby.svg')!important}
+body.gd-premium a[href*='midnight-monsters'] .art{background-image:url('assets/casino/midnight-monsters-lobby.svg')!important}
+body.gd-premium a[href*='galactic-rebellion'] .art{background-image:url('assets/casino/galactic-rebellion-lobby.svg')!important}
+body.gd-premium a[href='gameday-slots.html'] .art{background-image:url('assets/casino/lucky-7s-lobby.svg')!important}
+body.gd-premium .game-card .art{height:148px!important;border-bottom:1px solid rgba(228,184,79,.28)!important}
+body.gd-premium .game-info{background:linear-gradient(180deg,rgba(14,16,13,.98),rgba(5,7,6,.99))!important}
+
 @media(min-width:900px){body.gd-premium.gd-with-side{padding-left:205px!important}.gd-side{display:block}.gd-with-side header{left:205px!important;width:calc(100% - 205px)!important}.gd-with-side .slipbar{left:205px!important}.gd-with-side .panel{left:205px!important}}
 @media(max-width:899px){.gd-premium-hero{margin-left:10px;margin-right:10px;min-height:165px}.gd-premium-hero .copy{max-width:82%;padding:18px}.gd-premium-hero h2{font-size:28px}}
-@media(max-width:480px){.gd-premium-hero .copy{max-width:100%}.gd-athletes span{font-size:8px}.gd-page-banner{margin:10px 10px 0}}
+@media(max-width:480px){.gd-premium-hero .copy{max-width:100%}.gd-athletes span{font-size:8px}.gd-page-banner{margin:10px 10px 0}body.gd-premium .hero{min-height:190px!important}body.gd-premium .hero-copy{max-width:82%!important}body.gd-premium .game-card .art{height:140px!important}}
