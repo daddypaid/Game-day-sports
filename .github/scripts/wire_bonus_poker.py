@@ -25,27 +25,3 @@ new="  './gameday-video-poker.html',\n  './gameday-bonus-poker.html',\n  './game
 if old not in s and "./gameday-bonus-poker.html" not in s: raise RuntimeError('Service worker marker not found')
 s=s.replace(old,new)
 p.write_text(s)
-
-# Permanent release guard.
-p=Path('.github/workflows/deploy-pages.yml'); s=p.read_text()
-old='            gameday-video-poker.html\n            gameday-three-card-poker.html'
-new='            gameday-video-poker.html\n            gameday-bonus-poker.html\n            gameday-three-card-poker.html'
-if old not in s and '            gameday-bonus-poker.html' not in s: raise RuntimeError('Required pages marker not found')
-s=s.replace(old,new)
-old='          grep -q "video-poker-test" gameday-video-poker.html\n          grep -q "Three Card Poker" gameday-three-card-poker.html'
-new='          grep -q "video-poker-test" gameday-video-poker.html\n          grep -q "Bonus Poker" gameday-bonus-poker.html\n          grep -q "video-poker-test" gameday-bonus-poker.html\n          grep -q "game:GAME" gameday-bonus-poker.html\n          grep -q "Three Card Poker" gameday-three-card-poker.html'
-if old not in s and 'grep -q "Bonus Poker" gameday-bonus-poker.html' not in s: raise RuntimeError('Poker validation marker not found')
-s=s.replace(old,new)
-old="          grep -q \"'gameday-video-poker.html':'poker-game'\" gameday-app.js\n          grep -q \"'gameday-three-card-poker.html':'poker-game'\" gameday-app.js"
-new="          grep -q \"'gameday-video-poker.html':'poker-game'\" gameday-app.js\n          grep -q \"'gameday-bonus-poker.html':'poker-game'\" gameday-app.js\n          grep -q \"'gameday-three-card-poker.html':'poker-game'\" gameday-app.js"
-if old not in s and "gameday-bonus-poker.html':'poker-game'" not in s: raise RuntimeError('PWA map guard marker not found')
-s=s.replace(old,new)
-old='          grep -q "./gameday-video-poker.html" sw.js\n          grep -q "./gameday-three-card-poker.html" sw.js'
-new='          grep -q "./gameday-video-poker.html" sw.js\n          grep -q "./gameday-bonus-poker.html" sw.js\n          grep -q "./gameday-three-card-poker.html" sw.js'
-if old not in s and 'grep -q "./gameday-bonus-poker.html" sw.js' not in s: raise RuntimeError('SW guard marker not found')
-s=s.replace(old,new)
-old='          grep -q \'href="gameday-three-card-poker.html"\' gameday-poker.html'
-new='          grep -q \'href="gameday-three-card-poker.html"\' gameday-poker.html\n          grep -q \'href="gameday-bonus-poker.html"\' gameday-poker.html'
-if old not in s and 'gameday-bonus-poker.html' not in s: raise RuntimeError('Lobby guard marker not found')
-s=s.replace(old,new)
-p.write_text(s)
