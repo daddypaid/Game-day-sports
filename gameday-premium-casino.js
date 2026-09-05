@@ -46,6 +46,24 @@
     if(pageTitle) pageTitle.textContent='GameDay Lucky 7s';
     document.title='GameDay Lucky 7s';
 
+    const nav=document.querySelector('.nav');
+    if(nav && !document.querySelector('.gd-slots-lobby-link')){
+      const lobby=document.createElement('a');
+      lobby.className='gd-slots-lobby-link';
+      lobby.href='gameday-slots-lobby.html';
+      lobby.textContent='‹ Slots Lobby';
+      nav.insertAdjacentElement('afterend',lobby);
+    } else if(!nav && !document.querySelector('.gd-slots-lobby-link')){
+      const main=document.querySelector('main');
+      if(main){
+        const lobby=document.createElement('a');
+        lobby.className='gd-slots-lobby-link';
+        lobby.href='gameday-slots-lobby.html';
+        lobby.textContent='‹ Slots Lobby';
+        main.insertBefore(lobby,main.firstChild);
+      }
+    }
+
     const machine=document.querySelector('.machine');
     const machineTitle=document.querySelector('.machine-title');
     if(machineTitle) machineTitle.textContent='★ GAMEDAY LUCKY 7s ★';
