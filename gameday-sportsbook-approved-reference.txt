@@ -1,0 +1,1 @@
+Reference marker: approved Sportsbook visual target supplied by the user. The live page must be validated visually against the user's approved screenshot before being called complete.
