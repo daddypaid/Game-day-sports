@@ -1,0 +1,84 @@
+name: Deploy Premium GameDay
+
+on:
+  push:
+    branches: ["main"]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+concurrency:
+  group: pages
+  cancel-in-progress: true
+
+jobs:
+  deploy:
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Validate premium GameDay build
+        shell: bash
+        run: |
+          set -euo pipefail
+          required=(
+            gameday-premium.html
+            gameday-live.html
+            gameday-sportsbook.html
+            gameday-casino-v2.html
+            gameday-blackjack.html
+            gameday-roulette.html
+            gameday-baccarat.html
+            gameday-slots-lobby.html
+            gameday-slots.html
+            gameday-midnight-monsters-v2.html
+            gameday-galactic-rebellion-v2.html
+            gameday-poker.html
+            gameday-video-poker.html
+            gameday-my-bets.html
+            gameday-auth.html
+            manifest.webmanifest
+            sw.js
+            gameday-premium-app.css
+            gameday-premium-game-art.css
+            gameday-premium-in-shell.css
+            gameday-themed-slots-premium-art.css
+          )
+          for file in "${required[@]}"; do
+            test -s "$file" || { echo "Missing or empty required file: $file"; exit 1; }
+          done
+
+          grep -q '"start_url": "./gameday-premium.html"' manifest.webmanifest
+          grep -q 'rel="manifest" href="manifest.webmanifest"' gameday-premium.html
+          grep -q "navigator.serviceWorker.register('./sw.js'" gameday-premium.html
+          grep -q "./gameday-premium.html" sw.js
+          grep -q "gameday-themed-slots-premium-art.css" sw.js
+          grep -q "gameday-premium-in-shell.css" gameday-premium.html
+          grep -q "gameday-sportsbook.html" gameday-premium.html
+          grep -q "gameday-casino-v2.html" gameday-premium.html
+
+          if grep -RInE \
+            --include='*.html' --include='*.js' --include='*.css' \
+            'SUPABASE_SERVICE_ROLE_KEY|SUPABASE_SECRET_KEYS|API_SPORTS_KEY|ODDS_API_KEY|sb_secret_[A-Za-z0-9_-]+' .; then
+            echo "Private backend credential reference detected in browser source."
+            exit 1
+          fi
+
+      - name: Configure Pages
+        uses: actions/configure-pages@v5
+
+      - name: Upload site
+        uses: actions/upload-pages-artifact@v3
+        with:
+          path: .
+
+      - name: Deploy to GitHub Pages
+        id: deployment
+        uses: actions/deploy-pages@v4
