@@ -39,6 +39,7 @@ jobs:
             gameday-slots.html
             gameday-poker.html
             gameday-video-poker.html
+            gameday-three-card-poker.html
           )
           for file in "${required[@]}"; do
             test -s "$file" || { echo "Missing or empty required page: $file"; exit 1; }
@@ -49,7 +50,10 @@ jobs:
           grep -q "GameDay Poker" gameday-poker.html
           grep -q "Jacks or Better" gameday-video-poker.html
           grep -q "video-poker-test" gameday-video-poker.html
+          grep -q "Three Card Poker" gameday-three-card-poker.html
+          grep -q "three-card-poker-test" gameday-three-card-poker.html
           grep -q 'href="gameday-poker.html">Poker</a>' gameday-casino-v2.html
+          grep -q 'href="gameday-three-card-poker.html"' gameday-poker.html
 
           casino_games=(gameday-blackjack.html gameday-roulette.html gameday-baccarat.html gameday-slots.html)
           for file in "${casino_games[@]}"; do
@@ -79,8 +83,10 @@ jobs:
           grep -q "navigator.serviceWorker.register('./sw.js'" gameday-app.js
           grep -q "'gameday-poker.html':'poker'" gameday-app.js
           grep -q "'gameday-video-poker.html':'poker-game'" gameday-app.js
+          grep -q "'gameday-three-card-poker.html':'poker-game'" gameday-app.js
           grep -q "./gameday-poker.html" sw.js
           grep -q "./gameday-video-poker.html" sw.js
+          grep -q "./gameday-three-card-poker.html" sw.js
           for file in "${required[@]}"; do
             grep -q 'rel="manifest" href="manifest.webmanifest"' "$file"
             grep -q 'src="gameday-app.js"' "$file"
