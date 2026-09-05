@@ -1,0 +1,70 @@
+name: One-time Blackjack card dealing animation
+
+on:
+  push:
+    branches: ["main"]
+
+permissions:
+  contents: write
+
+jobs:
+  upgrade:
+    if: github.event.head_commit.message == 'Add Blackjack card dealing animation'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Add dealing animation
+        shell: bash
+        run: |
+          set -euo pipefail
+          python - <<'PY'
+          from pathlib import Path
+
+          p=Path('gameday-blackjack.html')
+          s=p.read_text()
+
+          css_anchor='''.card.red{\n  color:#b11d2a;\n}\n'''
+          css_add='''.card.red{\n  color:#b11d2a;\n}\n\n.card.dealing{\n  animation:dealCard .38s cubic-bezier(.18,.82,.3,1) both;\n  transform-origin:center;\n}\n\n.card.revealing{\n  animation:revealCard .42s ease both;\n}\n\n@keyframes dealCard{\n  0%{opacity:0;transform:translate(95px,-115px) rotate(14deg) scale(.62)}\n  70%{opacity:1;transform:translate(-4px,4px) rotate(-2deg) scale(1.03)}\n  100%{opacity:1;transform:translate(0,0) rotate(0) scale(1)}\n}\n\n@keyframes revealCard{\n  0%{transform:rotateY(90deg) scale(.95);opacity:.35}\n  100%{transform:rotateY(0) scale(1);opacity:1}\n}\n'''
+          if '.card.dealing{' not in s:
+              s=s.replace(css_anchor,css_add,1)
+
+          marker='''function statusLabel(status){'''
+          helper='''function sleep(ms){\n  return new Promise(resolve=>setTimeout(resolve,ms));\n}\n\nfunction animatedCardHtml(card,kind="dealing"){\n  return cardHtml(card).replace('class="card','class="card '+kind);\n}\n\nasync function appendDealtCard(container,card,kind="dealing",delay=170){\n  container.insertAdjacentHTML("beforeend",animatedCardHtml(card,kind));\n  await sleep(delay);\n}\n\nasync function animateInitialDeal(hand){\n  const pc=hand.player_cards||[];\n  const dc=hand.dealer_cards||[];\n  dealerCards.innerHTML="";\n  playerCards.innerHTML="";\n  const rounds=Math.max(pc.length,dc.length);\n  for(let i=0;i<rounds;i++){\n    if(i<pc.length) await appendDealtCard(playerCards,pc[i]);\n    if(i<dc.length) await appendDealtCard(dealerCards,dc[i]);\n  }\n  renderHand(hand);\n}\n\nasync function animatePlayerHit(hand){\n  const oldCount=(currentHand?.player_cards||[]).length;\n  const next=hand.player_cards||[];\n  if(next.length>oldCount){\n    const oldDealer=dealerCards.innerHTML;\n    const oldPlayer=playerCards.innerHTML;\n    dealerCards.innerHTML=oldDealer;\n    playerCards.innerHTML=oldPlayer;\n    for(let i=oldCount;i<next.length;i++){\n      await appendDealtCard(playerCards,next[i]);\n    }\n    await sleep(120);\n  }\n  renderHand(hand);\n}\n\nasync function animateDealerFinish(hand){\n  const finalCards=hand.dealer_cards||[];\n  dealerCards.innerHTML="";\n  for(let i=0;i<finalCards.length;i++){\n    const kind=i===1?"revealing":"dealing";\n    await appendDealtCard(dealerCards,finalCards[i],kind,190);\n  }\n  await sleep(100);\n  renderHand(hand);\n}\n\n'''
+          if 'async function animateInitialDeal(hand)' not in s:
+              s=s.replace(marker,helper+marker,1)
+
+          s=s.replace('''    renderHand(\n      data.hand\n    );\n\n    if(\n      data.hand.status ===\n      "active"\n    ){''','''    await animateInitialDeal(\n      data.hand\n    );\n\n    if(\n      data.hand.status ===\n      "active"\n    ){''',1)
+
+          # Replace first renderHand in hit() after action:"hit"
+          hit_old='''    renderHand(\n      data.hand\n    );\n\n  }catch(error){'''
+          hit_new='''    await animatePlayerHit(\n      data.hand\n    );\n\n  }catch(error){'''
+          # At this point the start render was already replaced, so first remaining matching block is hit.
+          s=s.replace(hit_old,hit_new,1)
+
+          # Next remaining matching block is stand.
+          stand_new='''    await animateDealerFinish(\n      data.hand\n    );\n\n  }catch(error){'''
+          s=s.replace(hit_old,stand_new,1)
+
+          p.write_text(s)
+          PY
+
+      - name: Verify Blackjack animation wiring
+        shell: bash
+        run: |
+          set -euo pipefail
+          grep -q 'card.dealing' gameday-blackjack.html
+          grep -q 'async function animateInitialDeal' gameday-blackjack.html
+          grep -q 'await animateInitialDeal' gameday-blackjack.html
+          grep -q 'await animatePlayerHit' gameday-blackjack.html
+          grep -q 'await animateDealerFinish' gameday-blackjack.html
+
+      - name: Commit Blackjack dealing animation
+        shell: bash
+        run: |
+          set -euo pipefail
+          git config user.name "daddypaid"
+          git config user.email "daddypaid@gmail.com"
+          git add gameday-blackjack.html
+          git commit -m "Deal Blackjack cards onto the table"
+          git push origin main
