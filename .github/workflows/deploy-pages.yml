@@ -40,6 +40,7 @@ jobs:
             gameday-poker.html
             gameday-video-poker.html
             gameday-bonus-poker.html
+            gameday-deuces-wild.html
             gameday-three-card-poker.html
           )
           for file in "${required[@]}"; do
@@ -54,11 +55,15 @@ jobs:
           grep -q "Bonus Poker" gameday-bonus-poker.html
           grep -q "video-poker-test" gameday-bonus-poker.html
           grep -q "game:GAME" gameday-bonus-poker.html
+          grep -q "Deuces Wild" gameday-deuces-wild.html
+          grep -q "video-poker-test" gameday-deuces-wild.html
+          grep -q "game:GAME" gameday-deuces-wild.html
           grep -q "Three Card Poker" gameday-three-card-poker.html
           grep -q "three-card-poker-test" gameday-three-card-poker.html
           grep -q 'href="gameday-poker.html">Poker</a>' gameday-casino-v2.html
           grep -q 'href="gameday-three-card-poker.html"' gameday-poker.html
           grep -q 'href="gameday-bonus-poker.html"' gameday-poker.html
+          grep -q 'href="gameday-deuces-wild.html"' gameday-poker.html
 
           casino_games=(gameday-blackjack.html gameday-roulette.html gameday-baccarat.html gameday-slots.html)
           for file in "${casino_games[@]}"; do
@@ -73,7 +78,7 @@ jobs:
           grep -q 'action:"resume"' gameday-blackjack.html
           test "$(grep -c 'await resumeActiveHand();' gameday-blackjack.html)" -eq 2
 
-          mobile_fit_pages=(gameday-blackjack.html gameday-video-poker.html gameday-bonus-poker.html gameday-three-card-poker.html)
+          mobile_fit_pages=(gameday-blackjack.html gameday-video-poker.html gameday-bonus-poker.html gameday-deuces-wild.html gameday-three-card-poker.html)
           for file in "${mobile_fit_pages[@]}"; do
             grep -q 'iPhone compact play surface' "$file"
             grep -q '@media(max-width:430px)' "$file"
@@ -82,6 +87,7 @@ jobs:
           grep -q '.nav{display:none}' gameday-blackjack.html
           grep -q '.card{height:72px' gameday-video-poker.html
           grep -q '.card{height:72px' gameday-bonus-poker.html
+          grep -q '.card{height:72px' gameday-deuces-wild.html
           grep -q '.card{height:64px' gameday-three-card-poker.html
 
           compact_casino_pages=(gameday-roulette.html gameday-baccarat.html gameday-slots.html)
@@ -113,10 +119,12 @@ jobs:
           grep -q "'gameday-poker.html':'poker'" gameday-app.js
           grep -q "'gameday-video-poker.html':'poker-game'" gameday-app.js
           grep -q "'gameday-bonus-poker.html':'poker-game'" gameday-app.js
+          grep -q "'gameday-deuces-wild.html':'poker-game'" gameday-app.js
           grep -q "'gameday-three-card-poker.html':'poker-game'" gameday-app.js
           grep -q "./gameday-poker.html" sw.js
           grep -q "./gameday-video-poker.html" sw.js
           grep -q "./gameday-bonus-poker.html" sw.js
+          grep -q "./gameday-deuces-wild.html" sw.js
           grep -q "./gameday-three-card-poker.html" sw.js
           for file in "${required[@]}"; do
             grep -q 'rel="manifest" href="manifest.webmanifest"' "$file"
