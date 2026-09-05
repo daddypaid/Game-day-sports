@@ -83,7 +83,6 @@
     html[data-gameday-game="blackjack"] .actions{margin-top:6px!important;gap:5px!important}
     html[data-gameday-game="blackjack"] .result-card{display:none!important}
 
-    /* Roulette: wheel and full table stay visible together like a casino cabinet. */
     html[data-gameday-game="roulette"] main{display:flex!important;flex-direction:column!important;height:calc(100dvh - 146px - env(safe-area-inset-bottom))!important;padding:3px 8px 0!important}
     html[data-gameday-game="roulette"] .gameday-roulette-stage{display:grid!important;grid-template-rows:174px minmax(0,1fr)!important;gap:4px!important;min-height:0!important;height:100%!important}
     html[data-gameday-game="roulette"] .gameday-roulette-top{min-height:0!important;position:relative!important}
@@ -148,6 +147,65 @@
     }
   `;
   document.head.appendChild(style);
+
+  const immersiveStyle = document.createElement('style');
+  immersiveStyle.textContent = `
+    html[data-gameday-page="casino-game"] header{background:linear-gradient(180deg,rgba(18,18,18,.98),rgba(8,10,8,.96))!important;border-bottom:1px solid rgba(255,255,255,.14)!important}
+    html[data-gameday-page="casino-game"] header h1{letter-spacing:.01em;text-shadow:0 2px 8px rgba(0,0,0,.6)}
+    html[data-gameday-page="casino-game"] .badge{background:#3a2c0e!important;border-color:#9f7f22!important;color:#ffe68f!important}
+    html[data-gameday-page="casino-game"] .balance{background:rgba(5,55,27,.88)!important;border-color:#2b9a55!important;box-shadow:inset 0 0 12px rgba(0,0,0,.25)}
+    html[data-gameday-page="casino-game"] .account{opacity:.8}
+    html[data-gameday-page="casino-game"] .gameday-app-nav{background:rgba(4,8,5,.96)!important;border-top-color:rgba(255,255,255,.12)!important}
+
+    html[data-gameday-game="blackjack"] body{background:radial-gradient(circle at 50% 36%,#0c5a31 0,#073d23 35%,#031d11 72%,#020b07 100%)!important}
+    html[data-gameday-game="blackjack"] main{padding:4px 8px 0!important}
+    html[data-gameday-game="blackjack"] .table{background:radial-gradient(ellipse at center,#0e6a3a 0%,#064522 60%,#032616 100%)!important;border:3px solid #b6953e!important;border-radius:34px 34px 18px 18px!important;box-shadow:inset 0 0 45px rgba(0,0,0,.52),0 12px 30px rgba(0,0,0,.35)!important;position:relative!important}
+    html[data-gameday-game="blackjack"] .table::before{content:'BLACKJACK PAYS 3 TO 2';position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);font-size:11px;font-weight:800;letter-spacing:.18em;color:rgba(236,218,150,.45);white-space:nowrap}
+    html[data-gameday-game="blackjack"] .table-label{color:#e7d593!important;letter-spacing:.22em!important}
+    html[data-gameday-game="blackjack"] .hand-title{font-size:13px!important;letter-spacing:.08em;text-transform:uppercase;color:#f2e8c0!important}
+    html[data-gameday-game="blackjack"] .control-card{background:linear-gradient(180deg,rgba(13,22,16,.96),rgba(5,10,7,.99))!important;border:1px solid #8d7330!important;box-shadow:0 -12px 30px rgba(0,0,0,.5)!important}
+    html[data-gameday-game="blackjack"] .quick-bets button{border-radius:20px!important;background:radial-gradient(circle,#305a36,#17271b)!important;border:1px solid #b4943d!important}
+    html[data-gameday-game="blackjack"] .deal-btn{background:#f2e6b1!important}
+    html[data-gameday-game="blackjack"] .hit-btn{background:#166b39!important}
+    html[data-gameday-game="blackjack"] .stand-btn{background:#7c2b2b!important}
+
+    html[data-gameday-game="roulette"] body{background:radial-gradient(circle at 50% 18%,#183120 0,#07140c 50%,#030805 100%)!important}
+    html[data-gameday-game="roulette"] .gameday-roulette-top{background:radial-gradient(ellipse at center,#1c2d20 0%,#060b08 70%)!important;border-radius:12px!important;border:1px solid rgba(218,190,99,.4)!important;box-shadow:inset 0 0 25px rgba(0,0,0,.65)!important}
+    html[data-gameday-game="roulette"] .wheel{box-shadow:inset 0 0 34px rgba(0,0,0,.75),0 0 0 3px #463a1b,0 8px 18px rgba(0,0,0,.5)!important}
+    html[data-gameday-game="roulette"] .control-card{background:linear-gradient(180deg,#0c3b20,#04190d)!important;border-color:#b29236!important}
+    html[data-gameday-game="roulette"] .number,html[data-gameday-game="roulette"] .gameday-outside-rail .bet-button{font-weight:800!important;text-shadow:0 1px 2px #000}
+    html[data-gameday-game="roulette"] .spin{background:#f0df9b!important;box-shadow:inset 0 -3px 0 rgba(0,0,0,.2)!important}
+
+    html[data-gameday-game="baccarat"] body{background:radial-gradient(circle at 50% 32%,#7f1619 0,#4d0e10 40%,#210608 78%,#0b0203 100%)!important}
+    html[data-gameday-game="baccarat"] main{padding:4px 7px 0!important}
+    html[data-gameday-game="baccarat"] .table{height:calc(70dvh - 86px)!important;background:radial-gradient(ellipse at center,#9c2024 0%,#731418 58%,#480a0d 100%)!important;border:3px solid #c4a54d!important;border-radius:18px!important;box-shadow:inset 0 0 45px rgba(0,0,0,.38),0 12px 30px rgba(0,0,0,.38)!important;position:relative!important;overflow:hidden!important}
+    html[data-gameday-game="baccarat"] .table::before{content:'GAMEDAY BACCARAT';position:absolute;left:50%;top:16px;transform:translateX(-50%);font-size:10px;font-weight:900;letter-spacing:.24em;color:rgba(248,222,147,.58);white-space:nowrap}
+    html[data-gameday-game="baccarat"] .table-title{opacity:0!important}
+    html[data-gameday-game="baccarat"] .player-side,html[data-gameday-game="baccarat"] .banker-side{height:100%!important;display:flex!important;flex-direction:column!important;justify-content:center!important;border:2px solid rgba(224,190,91,.5)!important;border-radius:12px!important;padding:7px!important;box-shadow:inset 0 0 18px rgba(0,0,0,.2)!important}
+    html[data-gameday-game="baccarat"] .player-side{background:linear-gradient(180deg,rgba(22,55,132,.35),rgba(41,20,54,.14))!important}
+    html[data-gameday-game="baccarat"] .banker-side{background:linear-gradient(180deg,rgba(145,24,37,.36),rgba(65,12,19,.15))!important}
+    html[data-gameday-game="baccarat"] .side-title{font-size:18px!important;letter-spacing:.12em;text-transform:uppercase;color:#f7e8b8!important}
+    html[data-gameday-game="baccarat"] .result{background:rgba(0,0,0,.3)!important;border:1px solid rgba(236,210,122,.45)!important;border-radius:999px!important;padding:5px 10px!important;color:#ffe79a!important}
+    html[data-gameday-game="baccarat"] .controls{background:linear-gradient(180deg,rgba(47,8,10,.97),rgba(16,3,4,.99))!important;border:1px solid #b58e34!important;box-shadow:0 -12px 30px rgba(0,0,0,.5)!important}
+    html[data-gameday-game="baccarat"] .bet-btn{border:1px solid #d2b25b!important;border-radius:8px!important;font-weight:900!important;letter-spacing:.03em!important}
+    html[data-gameday-game="baccarat"] .player-btn{background:linear-gradient(#254f94,#173364)!important}
+    html[data-gameday-game="baccarat"] .banker-btn{background:linear-gradient(#9e2834,#65131c)!important}
+    html[data-gameday-game="baccarat"] .tie-btn{background:linear-gradient(#2a8147,#14532c)!important}
+    html[data-gameday-game="baccarat"] .play-btn{background:#f0df9c!important}
+
+    html[data-gameday-game="slots"] body{background:radial-gradient(circle at 50% 18%,#372256 0,#161128 38%,#070812 72%,#020207 100%)!important}
+    html[data-gameday-game="slots"] main{padding:3px 7px 0!important}
+    html[data-gameday-game="slots"] .machine{height:calc(73dvh - 90px)!important;display:flex!important;flex-direction:column!important;justify-content:center!important;background:linear-gradient(180deg,#3b205f 0%,#17122c 24%,#090b18 100%)!important;border:4px solid #d9af45!important;border-radius:22px!important;box-shadow:0 0 0 3px #4d2a72,0 0 24px rgba(213,86,255,.35),inset 0 0 35px rgba(0,0,0,.55)!important;position:relative!important;overflow:hidden!important}
+    html[data-gameday-game="slots"] .machine::before{content:'';position:absolute;inset:0;background:radial-gradient(circle at 10% 8%,rgba(255,209,83,.5) 0 2px,transparent 3px),radial-gradient(circle at 90% 8%,rgba(255,209,83,.5) 0 2px,transparent 3px),radial-gradient(circle at 10% 92%,rgba(255,209,83,.4) 0 2px,transparent 3px),radial-gradient(circle at 90% 92%,rgba(255,209,83,.4) 0 2px,transparent 3px);background-size:18px 18px;pointer-events:none;opacity:.7}
+    html[data-gameday-game="slots"] .machine-title{font-size:26px!important;text-transform:uppercase!important;letter-spacing:.06em!important;color:#ffe17b!important;text-shadow:0 0 10px rgba(255,206,61,.6),0 3px 0 #6b3f0b!important;z-index:1}
+    html[data-gameday-game="slots"] .reels{gap:5px!important;z-index:1;padding:8px;background:#070811;border:3px solid #d7b04d;border-radius:12px;box-shadow:inset 0 0 18px #000}
+    html[data-gameday-game="slots"] .reel{min-height:132px!important;font-size:60px!important;border:3px solid #b8a3d5!important;border-radius:8px!important;background:linear-gradient(180deg,#f8f7ff,#cbd6ee,#f8f7ff)!important;box-shadow:inset 0 0 16px rgba(58,52,107,.25)!important}
+    html[data-gameday-game="slots"] .result{z-index:1;background:rgba(0,0,0,.42);border:1px solid rgba(241,218,136,.45);border-radius:999px;padding:7px 12px!important;color:#ffe79a!important}
+    html[data-gameday-game="slots"] .controls{background:linear-gradient(180deg,rgba(15,12,27,.97),rgba(5,5,11,.99))!important;border:1px solid #9f7832!important;box-shadow:0 -12px 30px rgba(0,0,0,.55)!important}
+    html[data-gameday-game="slots"] .chips button{border-radius:18px!important;background:linear-gradient(#4b2e68,#261934)!important;border:1px solid #caa74e!important}
+    html[data-gameday-game="slots"] .spin{height:48px!important;border-radius:24px!important;background:radial-gradient(circle,#ffe373,#d5a826 70%,#8d6812)!important;color:#1b1200!important;font-size:18px!important;letter-spacing:.12em!important;box-shadow:0 0 16px rgba(255,205,45,.45),inset 0 -4px 0 rgba(0,0,0,.22)!important}
+  `;
+  document.head.appendChild(immersiveStyle);
 
   const canonical = [
     ['Sportsbook','gameday-sportsbook.html','◉'],
