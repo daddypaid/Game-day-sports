@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<link rel="manifest" href="manifest.webmanifest">
+<meta name="theme-color" content="#0b120e">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="GameDay">
+<link rel="apple-touch-icon" href="icons/gameday-192.png">
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1.0">
+<title>GameDay Poker</title>
+<style>
+*{box-sizing:border-box}:root{--bg:#090d0a;--panel:#121914;--line:#2a382f;--green:#174829;--gold:#d3b45b;--muted:#98a59d}
+body{margin:0;background:radial-gradient(circle at 50% -10%,#183522 0,#0b120e 35%,#070b08 100%);color:#fff;font-family:Arial,sans-serif;min-height:100vh;padding-bottom:100px}
+header{position:sticky;top:0;z-index:20;background:rgba(10,15,12,.97);border-bottom:1px solid var(--line);backdrop-filter:blur(14px);-webkit-backdrop-filter:blur(14px)}
+.top{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:13px 14px 9px}.brand h1{margin:0;font-size:26px}.brand div{margin-top:4px;color:var(--muted);font-size:11px}.wallet{background:#153f24;border:1px solid #2e7040;border-radius:12px;padding:7px 10px;text-align:right}.wallet span{font-size:9px;color:#a9cdb2;font-weight:800}.wallet strong{display:block;color:#d7f3dd;font-size:14px;margin-top:2px}
+.tabs{display:flex;gap:7px;overflow:auto;padding:8px 14px 11px;scrollbar-width:none}.tabs::-webkit-scrollbar{display:none}.tab{flex:0 0 auto;text-decoration:none;color:#d9e0db;background:#151d18;border:1px solid #2c3931;border-radius:999px;padding:8px 12px;font-size:11px;font-weight:800}.tab.active{background:#edf3ef;color:#0b120e}
+main{max-width:900px;margin:auto;padding:14px}.hero{border:1px solid #5a4a1b;background:radial-gradient(circle at 80% 20%,rgba(225,188,70,.24),transparent 25%),linear-gradient(130deg,#164025,#0c1710 62%,#241b09);border-radius:18px;padding:20px;min-height:150px}.eyebrow{font-size:10px;letter-spacing:.14em;color:#d4e8d8;font-weight:900}.hero h2{font-size:30px;line-height:1.02;margin:7px 0}.hero p{margin:0;color:#b4c0b8;font-size:13px;line-height:1.4;max-width:560px}.chip{display:inline-block;margin-top:12px;padding:7px 10px;border-radius:999px;background:#4b3b13;border:1px solid #785f1e;color:#f5de88;font-size:10px;font-weight:900}
+.section{margin-top:20px}.section h3{font-size:20px;margin:0 0 10px}.grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:11px}.card{background:#111813;border:1px solid #2a382f;border-radius:15px;overflow:hidden;min-height:182px;display:flex;flex-direction:column}.art{height:105px;display:flex;align-items:center;justify-content:center;position:relative;font-size:42px;font-weight:900;letter-spacing:4px;text-shadow:0 4px 14px #000}.video{background:radial-gradient(circle at 50% 25%,rgba(255,221,112,.25),transparent 30%),linear-gradient(145deg,#0b592b,#092b18)}.holdem{background:linear-gradient(145deg,#271248,#0b1738)}.omaha{background:linear-gradient(145deg,#5b1717,#26100c)}.stud{background:linear-gradient(145deg,#2e3849,#10151f)}.draw{background:linear-gradient(145deg,#59410d,#241a08)}.casino{background:linear-gradient(145deg,#1e4b44,#0b2420)}
+.info{padding:11px 12px 12px;flex:1;display:flex;flex-direction:column}.title{font-size:15px;font-weight:900}.meta{color:#929f97;font-size:10px;line-height:1.35;margin-top:4px;flex:1}.foot{display:flex;justify-content:space-between;align-items:center;margin-top:9px}.status{padding:5px 7px;border-radius:999px;background:#252c27;border:1px solid #39443c;color:#a9b5ad;font-size:9px;font-weight:900}.status.connected{background:#153d22;border-color:#2e7040;color:#c3eccb}.play{font-size:10px;font-weight:900;color:#f2db88;text-decoration:none}.disabled{opacity:.72}
+.note{margin-top:18px;background:#121813;border:1px solid #2a382f;border-radius:13px;padding:12px;color:#aab5ae;font-size:11px;line-height:1.45}
+@media(min-width:720px){.grid{grid-template-columns:repeat(3,1fr)}}
+</style>
+</head>
+<body>
+<header>
+<div class="top"><div class="brand"><h1>GameDay Poker</h1><div>All poker uses GameDay test credits</div></div><div class="wallet"><span>TEST WALLET</span><strong id="wallet">—</strong></div></div>
+<div class="tabs"><a class="tab" href="gameday-casino-v2.html">Casino</a><a class="tab active" href="gameday-poker.html">Poker</a><a class="tab" href="#player-poker">Player Poker</a><a class="tab" href="#casino-poker">Casino Poker</a><a class="tab" href="#video-poker">Video Poker</a></div>
+</header>
+<main>
+<section class="hero"><div class="eyebrow">GAMEDAY POKER ROOM</div><h2>One poker room.<br>Every major format.</h2><p>We’re building Poker as its own subsystem: video poker, casino table poker, then full player-style Hold’em, Omaha, Stud and tournament infrastructure.</p><div class="chip">TEST MODE • NO REAL MONEY</div></section>
+
+<section id="video-poker" class="section"><h3>Playable Now</h3><div class="grid">
+<a class="card" href="gameday-video-poker.html" style="text-decoration:none;color:inherit"><div class="art video">J♠ J♥ A♦</div><div class="info"><div class="title">Jacks or Better</div><div class="meta">Deal five cards, hold what you want, draw replacements and settle from a server-generated deck.</div><div class="foot"><span class="status connected">CONNECTED</span><span class="play">PLAY ›</span></div></div></a>
+</div></section>
+
+<section id="player-poker" class="section"><h3>Player Poker</h3><div class="grid">
+<div class="card disabled"><div class="art holdem">A♠ K♠</div><div class="info"><div class="title">Texas Hold’em</div><div class="meta">Blinds, community cards, betting streets and computer-opponent tables first; multiplayer later.</div><div class="foot"><span class="status">BUILDING</span></div></div></div>
+<div class="card disabled"><div class="art omaha">4 CARDS</div><div class="info"><div class="title">Omaha</div><div class="meta">Four hole cards with standard Omaha hand construction.</div><div class="foot"><span class="status">BUILDING</span></div></div></div>
+<div class="card disabled"><div class="art omaha">HI / LO</div><div class="info"><div class="title">Omaha Hi-Lo</div><div class="meta">Split-pot high and qualifying low hands.</div><div class="foot"><span class="status">BUILDING</span></div></div></div>
+<div class="card disabled"><div class="art stud">7 CARD</div><div class="info"><div class="title">Seven-Card Stud</div><div class="meta">Bring-in, exposed cards and five betting streets.</div><div class="foot"><span class="status">BUILDING</span></div></div></div>
+<div class="card disabled"><div class="art draw">5 DRAW</div><div class="info"><div class="title">Five-Card Draw</div><div class="meta">Classic draw poker with discard and redraw decisions.</div><div class="foot"><span class="status">BUILDING</span></div></div></div>
+</div></section>
+
+<section id="casino-poker" class="section"><h3>Casino Poker</h3><div class="grid">
+<div class="card disabled"><div class="art casino">3 CARD</div><div class="info"><div class="title">Three Card Poker</div><div class="meta">Ante/Play and Pair Plus style table structure.</div><div class="foot"><span class="status">NEXT</span></div></div></div>
+<div class="card disabled"><div class="art casino">UTH</div><div class="info"><div class="title">Ultimate Texas Hold’em</div><div class="meta">Heads-up casino Hold’em with staged betting decisions.</div><div class="foot"><span class="status">BUILDING</span></div></div></div>
+<div class="card disabled"><div class="art casino">C♠ STUD</div><div class="info"><div class="title">Caribbean Stud</div><div class="meta">Five-card dealer game with qualification rules.</div><div class="foot"><span class="status">BUILDING</span></div></div></div>
+<div class="card disabled"><div class="art casino">HOLD'EM</div><div class="info"><div class="title">Casino Hold’em</div><div class="meta">House-banked community-card poker.</div><div class="foot"><span class="status">BUILDING</span></div></div></div>
+</div></section>
+
+<section class="section"><h3>Video Poker Variants</h3><div class="grid">
+<div class="card disabled"><div class="art video">2 WILD</div><div class="info"><div class="title">Deuces Wild</div><div class="meta">Twos act as wild cards with a dedicated payout table.</div><div class="foot"><span class="status">BUILDING</span></div></div></div>
+<div class="card disabled"><div class="art video">BONUS</div><div class="info"><div class="title">Bonus Poker</div><div class="meta">Video poker with enhanced four-of-a-kind payouts.</div><div class="foot"><span class="status">BUILDING</span></div></div></div>
+</div></section>
+<div class="note">Poker is being added in controlled stages so every playable game has a real server-side deck/game engine and atomic test-wallet accounting. “Building” titles are visible for the roadmap but cannot take a wager yet.</div>
+</main>
+<script type="module">
+import{createClient}from"https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/+esm";
+const supabase=createClient("https://qsvrvhcklnsbekxblpfo.supabase.co","sb_publishable_-yCYGvDqIzVFgu90lgoVpw_uoWnYmO0");
+const wallet=document.getElementById('wallet');function money(v){return '$'+Number(v||0).toFixed(2)}
+async function load(){const{data,error}=await supabase.auth.getSession();if(error||!data.session){wallet.textContent='Sign in';return}const{data:w,error:e}=await supabase.from('wallets').select('balance').eq('user_id',data.session.user.id).single();wallet.textContent=e?'—':money(w.balance)}
+supabase.auth.onAuthStateChange(load);await load();
+</script>
+<script src="gameday-app.js" defer></script>
+</body>
+</html>
