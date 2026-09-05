@@ -1,0 +1,24 @@
+/* Premium Baccarat + connected poker surfaces */
+body.gd-art-baccarat{background:linear-gradient(rgba(2,4,3,.34),rgba(2,4,3,.78)),url('assets/gameday-baccarat-room.svg') center top/cover fixed no-repeat!important}
+body.gd-art-baccarat header{background:rgba(4,7,5,.9)!important;border-bottom:1px solid #9b762c!important}
+body.gd-art-baccarat main{max-width:820px!important}
+body.gd-art-baccarat .table{position:relative;overflow:hidden;background:linear-gradient(rgba(5,44,27,.78),rgba(3,31,19,.94)),url('assets/gameday-baccarat-room.svg') center 57%/cover no-repeat!important;border:3px solid #cba64d!important;box-shadow:0 18px 48px rgba(0,0,0,.6),inset 0 0 55px rgba(0,0,0,.48)!important}
+body.gd-art-baccarat .table::before{content:'BACCARAT';display:block;text-align:center;font:900 26px/1 Georgia,serif;color:#f6dc86;letter-spacing:.14em;text-shadow:0 0 18px rgba(220,180,70,.35);margin-bottom:8px}
+body.gd-art-baccarat .table-title{color:#ddc271!important;letter-spacing:.22em!important}
+body.gd-art-baccarat .player-side,body.gd-art-baccarat .banker-side{backdrop-filter:blur(8px);-webkit-backdrop-filter:blur(8px);box-shadow:inset 0 0 24px rgba(0,0,0,.3)}
+body.gd-art-baccarat .player-side{background:linear-gradient(180deg,rgba(29,78,139,.42),rgba(6,23,48,.48))!important;border-color:#6aa8ff!important}
+body.gd-art-baccarat .banker-side{background:linear-gradient(180deg,rgba(141,35,45,.42),rgba(48,7,13,.48))!important;border-color:#ee6b75!important}
+body.gd-art-baccarat .side-title{font-family:Georgia,serif;letter-spacing:.1em;color:#fff1c6}
+body.gd-art-baccarat .bet-btn{border:2px solid #ba9844!important;box-shadow:inset 0 0 18px rgba(255,255,255,.04),0 8px 18px rgba(0,0,0,.25)}
+body.gd-art-baccarat .play-btn{background:linear-gradient(180deg,#f6d66f,#b77a18)!important;border:1px solid #ffe6a0!important;color:#160e04!important;box-shadow:0 0 22px rgba(219,176,60,.25)}
+
+body.gd-art-poker-game{background:linear-gradient(rgba(3,3,3,.25),rgba(2,3,2,.82)),url('assets/gameday-poker-table-room.svg') center top/cover fixed no-repeat!important}
+body.gd-art-poker-game header{background:rgba(5,6,5,.92)!important;border-bottom:1px solid #8c611e!important}
+body.gd-art-poker-game main{max-width:820px!important}
+body.gd-art-poker-game .table,body.gd-art-poker-game .game,body.gd-art-poker-game .board,body.gd-art-poker-game .poker-table{background:linear-gradient(rgba(10,48,30,.78),rgba(4,28,17,.92)),url('assets/gameday-poker-table-room.svg') center 58%/cover no-repeat!important;border-color:#c89b3f!important;box-shadow:0 18px 50px rgba(0,0,0,.62),inset 0 0 38px rgba(0,0,0,.36)!important}
+body.gd-art-poker-game .controls,body.gd-art-poker-game .control-card{background:linear-gradient(180deg,rgba(14,15,13,.96),rgba(6,7,6,.98))!important;border-color:#72541b!important;box-shadow:0 14px 34px rgba(0,0,0,.45)}
+body.gd-art-poker-game button:not(:disabled){box-shadow:inset 0 1px rgba(255,255,255,.08)}
+body.gd-art-poker-game .deal,body.gd-art-poker-game .deal-btn,body.gd-art-poker-game .play-btn,body.gd-art-poker-game #deal,body.gd-art-poker-game #dealBtn{background:linear-gradient(180deg,#f5d36a,#aa7016)!important;color:#150d03!important;border:1px solid #ffe49a!important}
+body.gd-art-poker-game .hold.active,body.gd-art-poker-game .selected{box-shadow:0 0 20px rgba(239,201,89,.45)!important;border-color:#f1cd62!important}
+
+@media(max-width:430px){body.gd-art-baccarat .table::before{font-size:17px;margin-bottom:3px}body.gd-art-baccarat .table{background-position:center 62%!important}body.gd-art-poker-game{background-attachment:scroll!important}body.gd-art-poker-game .table,body.gd-art-poker-game .game,body.gd-art-poker-game .board,body.gd-art-poker-game .poker-table{background-position:center 62%!important}}
