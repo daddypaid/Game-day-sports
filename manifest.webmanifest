@@ -1,0 +1,26 @@
+{
+  "name": "GameDay Sports",
+  "short_name": "GameDay",
+  "description": "GameDay Sports TEST MODE sportsbook and casino app.",
+  "start_url": "./gameday-sportsbook.html",
+  "scope": "./",
+  "display": "standalone",
+  "orientation": "portrait-primary",
+  "background_color": "#090e0b",
+  "theme_color": "#101712",
+  "categories": ["sports", "entertainment"],
+  "icons": [
+    {
+      "src": "./icons/gameday-192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "./icons/gameday-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any maskable"
+    }
+  ]
+}
