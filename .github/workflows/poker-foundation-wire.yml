@@ -1,0 +1,57 @@
+name: One-time GameDay Poker foundation wiring
+
+on:
+  push:
+    branches: ["main"]
+
+permissions:
+  contents: write
+
+jobs:
+  wire:
+    if: github.event.head_commit.message == 'Wire Poker into GameDay casino'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Wire Poker lobby and app shell
+        shell: bash
+        run: |
+          set -euo pipefail
+          python - <<'PY'
+          from pathlib import Path
+
+          casino=Path('gameday-casino-v2.html')
+          s=casino.read_text()
+          s=s.replace('<a class="cat" href="#slots">Slots</a>', '<a class="cat" href="#slots">Slots</a>\n    <a class="cat" href="gameday-poker.html">Poker</a>',1)
+          css='.poker-art{background:radial-gradient(circle at 50% 25%,rgba(231,199,91,.24),transparent 28%),linear-gradient(145deg,#164528,#0a2315 60%,#211807)}\n.poker-art::before{content:"A♠  K♥  Q♣";position:absolute;left:18px;right:18px;top:40px;text-align:center;color:#fff;font-size:28px;font-weight:900;letter-spacing:4px;text-shadow:0 4px 12px #000}'
+          anchor='.slots-art::before{content:"7   🍒   💎";position:absolute;left:14px;right:14px;top:42px;padding:14px 8px;text-align:center;border:3px solid #d6b34c;border-radius:11px;background:linear-gradient(#f7f3e7,#d7dde8);color:#9b121c;font-size:29px;font-weight:900;box-shadow:0 0 20px rgba(231,192,68,.38)}'
+          if css not in s:
+              s=s.replace(anchor,anchor+'\n'+css,1)
+          poker_section='''\n  <section id="poker" class="section">\n    <div class="section-head"><h3>Poker</h3><div class="section-note">GameDay Poker Room</div></div>\n    <div class="game-row">\n      <a class="game-card" href="gameday-poker.html"><div class="art poker-art"></div><div class="game-info"><div class="game-title">GameDay Poker</div><div class="game-meta">Hold’em • Omaha • Stud • Casino Poker • Video Poker</div><div class="play-row"><span class="status">POKER ROOM</span><span class="play">OPEN ›</span></div></div></a>\n      <a class="game-card" href="gameday-video-poker.html"><div class="art poker-art"></div><div class="game-info"><div class="game-title">Jacks or Better</div><div class="game-meta">Deal • Hold • Draw</div><div class="play-row"><span class="status">CONNECTED</span><span class="play">PLAY ›</span></div></div></a>\n    </div>\n  </section>\n'''
+          if 'id="poker" class="section"' not in s:
+              s=s.replace('  <section id="slots" class="section">',poker_section+'\n  <section id="slots" class="section">',1)
+          casino.write_text(s)
+
+          app=Path('gameday-app.js')
+          a=app.read_text()
+          a=a.replace("    'gameday-slots.html':'casino-game'\n", "    'gameday-slots.html':'casino-game',\n    'gameday-poker.html':'poker',\n    'gameday-video-poker.html':'poker-game'\n",1)
+          a=a.replace("['gameday-blackjack.html','gameday-roulette.html','gameday-baccarat.html','gameday-slots.html'].includes(path)", "['gameday-blackjack.html','gameday-roulette.html','gameday-baccarat.html','gameday-slots.html','gameday-poker.html','gameday-video-poker.html'].includes(path)",1)
+          app.write_text(a)
+          PY
+      - name: Verify Poker wiring
+        shell: bash
+        run: |
+          set -euo pipefail
+          grep -q 'href="gameday-poker.html">Poker</a>' gameday-casino-v2.html
+          grep -q 'id="poker" class="section"' gameday-casino-v2.html
+          grep -q "'gameday-poker.html':'poker'" gameday-app.js
+          grep -q "'gameday-video-poker.html':'poker-game'" gameday-app.js
+      - name: Commit Poker wiring
+        shell: bash
+        run: |
+          set -euo pipefail
+          git config user.name "daddypaid"
+          git config user.email "daddypaid@gmail.com"
+          git add gameday-casino-v2.html gameday-app.js
+          git commit -m "Add Poker room to GameDay casino"
+          git push origin main
