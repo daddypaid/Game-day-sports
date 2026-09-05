@@ -9,7 +9,7 @@ permissions:
 
 jobs:
   migrate:
-    if: github.event.head_commit.message == 'Fix Blackjack resume migration'
+    if: github.event.head_commit.message == 'Repair Blackjack resume migration'
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
@@ -23,80 +23,22 @@ jobs:
           from pathlib import Path
           path = Path('gameday-blackjack.html')
           text = path.read_text()
-
           marker = 'function cardHtml(card){'
           if marker not in text:
               raise SystemExit('Blackjack cardHtml marker not found')
-          resume = '''async function resumeActiveHand(){
-
-  if(!currentUser){
-    return;
-  }
-
-  try{
-
-    const data =
-    await blackjackApi({
-      action:"resume"
-    });
-
-    if(data?.hand){
-
-      renderHand(
-        data.hand
-      );
-
-      showMessage(
-        "Active Blackjack hand restored. Continue with Hit or Stand.",
-        "success"
-      );
-
-    }
-
-  }catch(error){
-
-    showMessage(
-      error.message ||
-      "Unable to restore active Blackjack hand.",
-      "error"
-    );
-
-  }
-
-}
-
-'''
+          resume = "async function resumeActiveHand(){\n\n  if(!currentUser){\n    return;\n  }\n\n  try{\n\n    const data =\n    await blackjackApi({\n      action:\"resume\"\n    });\n\n    if(data?.hand){\n\n      renderHand(\n        data.hand\n      );\n\n      showMessage(\n        \"Active Blackjack hand restored. Continue with Hit or Stand.\",\n        \"success\"\n      );\n\n    }\n\n  }catch(error){\n\n    showMessage(\n      error.message ||\n      \"Unable to restore active Blackjack hand.\",\n      \"error\"\n    );\n\n  }\n\n}\n\n"
           if 'async function resumeActiveHand()' not in text:
               text = text.replace(marker, resume + marker, 1)
-
-          old = '''      await Promise.all([
-        loadWallet(),
-        loadHistory()
-      ]);'''
-          new = '''      await Promise.all([
-        loadWallet(),
-        loadHistory()
-      ]);
-
-      await resumeActiveHand();'''
+          old = "      await Promise.all([\n        loadWallet(),\n        loadHistory()\n      ]);"
+          new = "      await Promise.all([\n        loadWallet(),\n        loadHistory()\n      ]);\n\n      await resumeActiveHand();"
           if text.count(old) != 1:
               raise SystemExit(f'Expected one auth-state load block, found {text.count(old)}')
           text = text.replace(old, new, 1)
-
-          old2 = '''  await Promise.all([
-    loadWallet(),
-    loadHistory()
-  ]);'''
-          new2 = '''  await Promise.all([
-    loadWallet(),
-    loadHistory()
-  ]);
-
-  await resumeActiveHand();'''
+          old2 = "  await Promise.all([\n    loadWallet(),\n    loadHistory()\n  ]);"
+          new2 = "  await Promise.all([\n    loadWallet(),\n    loadHistory()\n  ]);\n\n  await resumeActiveHand();"
           if text.count(old2) != 1:
               raise SystemExit(f'Expected one initial load block, found {text.count(old2)}')
           text = text.replace(old2, new2, 1)
-
           path.write_text(text)
           PY
 
