@@ -45,6 +45,7 @@
   function enhanceSlots(){
     loadV2Styles();
     loadStyleOnce('gameday-lucky7s.css','gameday-lucky7s');
+    loadStyleOnce('gameday-premium-spin.css','gameday-premium-spin');
     document.body.classList.add('gameday-premium-slots','gameday-lucky-7s');
 
     const pageTitle=document.querySelector('h1');
