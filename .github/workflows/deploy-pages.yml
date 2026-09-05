@@ -58,6 +58,25 @@ jobs:
           grep -q 'action:"resume"' gameday-blackjack.html
           test "$(grep -c 'await resumeActiveHand();' gameday-blackjack.html)" -eq 2
 
+          pwa_required=(
+            manifest.webmanifest
+            sw.js
+            gameday-app.js
+            offline.html
+            icons/gameday-192.png
+            icons/gameday-512.png
+          )
+          for file in "${pwa_required[@]}"; do
+            test -s "$file" || { echo "Missing or empty PWA file: $file"; exit 1; }
+          done
+          grep -q '"start_url": "./gameday-sportsbook.html"' manifest.webmanifest
+          grep -q "navigator.serviceWorker.register('./sw.js'" gameday-app.js
+          for file in "${required[@]}"; do
+            grep -q 'rel="manifest" href="manifest.webmanifest"' "$file"
+            grep -q 'src="gameday-app.js"' "$file"
+            grep -q 'apple-mobile-web-app-capable' "$file"
+          done
+
           if grep -RInE \
             --include='*.html' --include='*.js' --include='*.css' \
             'SUPABASE_SERVICE_ROLE_KEY|SUPABASE_SECRET_KEYS|API_SPORTS_KEY|ODDS_API_KEY|sb_secret_[A-Za-z0-9_-]+' .; then
