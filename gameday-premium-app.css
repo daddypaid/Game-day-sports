@@ -58,6 +58,15 @@ body.gd-premium a[href='gameday-slots.html'] .art{background-image:url('assets/c
 body.gd-premium .game-card .art{height:148px!important;border-bottom:1px solid rgba(228,184,79,.28)!important}
 body.gd-premium .game-info{background:linear-gradient(180deg,rgba(14,16,13,.98),rgba(5,7,6,.99))!important}
 
+/* Premium shell owns the chrome when these pages are framed. */
+body.gd-premium>header{display:none!important}
+body.gd-premium .gameday-app-nav{display:none!important}
+body.gd-premium main{padding-top:12px!important}
+body.gd-premium .wrap{padding-top:10px!important}
+body.gd-premium .gd-slots-lobby-link{margin-top:2px!important}
+body.gd-premium .slipbar{bottom:0!important}
+body.gd-premium .panel-head{top:0!important}
+
 @media(min-width:900px){body.gd-premium.gd-with-side{padding-left:205px!important}.gd-side{display:block}.gd-with-side header{left:205px!important;width:calc(100% - 205px)!important}.gd-with-side .slipbar{left:205px!important}.gd-with-side .panel{left:205px!important}}
-@media(max-width:899px){.gd-premium-hero{margin-left:10px;margin-right:10px;min-height:165px}.gd-premium-hero .copy{max-width:82%;padding:18px}.gd-premium-hero h2{font-size:28px}}
+@media(max-width:899px){.gd-premium-hero{margin-left:10px;margin-right:10px;min-height:165px}.gd-premium-hero .copy{max-width:82%;padding:18px}.gd-premium-hero h2{font-size:28px}body.gd-premium{padding-bottom:18px!important}body.gd-premium main{padding-top:8px!important}.gd-premium .wrap{padding-top:7px!important}}
 @media(max-width:480px){.gd-premium-hero .copy{max-width:100%}.gd-athletes span{font-size:8px}.gd-page-banner{margin:10px 10px 0}body.gd-premium .hero{min-height:190px!important}body.gd-premium .hero-copy{max-width:82%!important}body.gd-premium .game-card .art{height:140px!important}}
