@@ -795,6 +795,44 @@ async function blackjackApi(
 
 }
 
+async function resumeActiveHand(){
+
+  if(!currentUser){
+    return;
+  }
+
+  try{
+
+    const data =
+    await blackjackApi({
+      action:"resume"
+    });
+
+    if(data?.hand){
+
+      renderHand(
+        data.hand
+      );
+
+      showMessage(
+        "Active Blackjack hand restored. Continue with Hit or Stand.",
+        "success"
+      );
+
+    }
+
+  }catch(error){
+
+    showMessage(
+      error.message ||
+      "Unable to restore active Blackjack hand.",
+      "error"
+    );
+
+  }
+
+}
+
 function cardHtml(card){
 
   if(
@@ -1371,6 +1409,8 @@ supabase.auth.onAuthStateChange(
         loadHistory()
       ]);
 
+      await resumeActiveHand();
+
     }else{
 
       currentUser =
@@ -1398,6 +1438,8 @@ if(
     loadWallet(),
     loadHistory()
   ]);
+
+  await resumeActiveHand();
 
 }
 
