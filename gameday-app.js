@@ -22,6 +22,7 @@
     'gameday-poker.html':'poker',
     'gameday-video-poker.html':'poker-game',
     'gameday-bonus-poker.html':'poker-game',
+    'gameday-deuces-wild.html':'poker-game',
     'gameday-three-card-poker.html':'poker-game'
   };
   const gameMap = {
