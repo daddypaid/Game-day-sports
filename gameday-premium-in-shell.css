@@ -1,3 +1,4 @@
+@import url('gameday-sportsbook-approved.css');
 /* GameDay Premium — framed-page cleanup. Applied only inside gameday-premium.html. */
 body.gd-premium.gd-in-shell{padding-top:0!important;padding-bottom:18px!important;min-height:100%!important;overflow-x:hidden!important}
 body.gd-premium.gd-in-shell>header{display:none!important}
