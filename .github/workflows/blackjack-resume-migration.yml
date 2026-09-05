@@ -1,0 +1,120 @@
+name: One-time Blackjack resume migration
+
+on:
+  push:
+    branches: ["main"]
+
+permissions:
+  contents: write
+
+jobs:
+  migrate:
+    if: github.event.head_commit.message == 'Add Blackjack resume migration'
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Add active-hand recovery
+        shell: python
+        run: |
+          from pathlib import Path
+          path = Path('gameday-blackjack.html')
+          text = path.read_text()
+
+          marker = '''function cardHtml(card){'''
+          if marker not in text:
+              raise SystemExit('Blackjack cardHtml marker not found')
+          resume = '''async function resumeActiveHand(){
+
+  if(!currentUser){
+    return;
+  }
+
+  try{
+
+    const data =
+    await blackjackApi({
+      action:"resume"
+    });
+
+    if(data?.hand){
+
+      renderHand(
+        data.hand
+      );
+
+      showMessage(
+        "Active Blackjack hand restored. Continue with Hit or Stand.",
+        "success"
+      );
+
+    }
+
+  }catch(error){
+
+    showMessage(
+      error.message ||
+      "Unable to restore active Blackjack hand.",
+      "error"
+    );
+
+  }
+
+}
+
+'''
+          if 'async function resumeActiveHand()' not in text:
+              text = text.replace(marker, resume + marker, 1)
+
+          old = '''      await Promise.all([
+        loadWallet(),
+        loadHistory()
+      ]);'''
+          new = '''      await Promise.all([
+        loadWallet(),
+        loadHistory()
+      ]);
+
+      await resumeActiveHand();'''
+          count = text.count(old)
+          if count != 1:
+              raise SystemExit(f'Expected one auth-state load block, found {count}')
+          text = text.replace(old, new, 1)
+
+          old2 = '''  await Promise.all([
+    loadWallet(),
+    loadHistory()
+  ]);'''
+          new2 = '''  await Promise.all([
+    loadWallet(),
+    loadHistory()
+  ]);
+
+  await resumeActiveHand();'''
+          count2 = text.count(old2)
+          if count2 != 1:
+              raise SystemExit(f'Expected one initial load block, found {count2}')
+          text = text.replace(old2, new2, 1)
+
+          path.write_text(text)
+
+      - name: Verify recovery wiring
+        shell: bash
+        run: |
+          set -euo pipefail
+          grep -q 'async function resumeActiveHand()' gameday-blackjack.html
+          grep -q 'action:"resume"' gameday-blackjack.html
+          test "$(grep -c 'await resumeActiveHand();' gameday-blackjack.html)" -eq 2
+          grep -q 'TEST MODE' gameday-blackjack.html
+          grep -q 'href="gameday-my-bets.html">My Bets</a>' gameday-blackjack.html
+
+      - name: Commit Blackjack recovery
+        shell: bash
+        run: |
+          set -euo pipefail
+          git config user.name "daddypaid"
+          git config user.email "daddypaid@gmail.com"
+          git add gameday-blackjack.html
+          git commit -m "Restore active Blackjack hands after reload"
+          git push origin main
