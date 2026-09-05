@@ -739,8 +739,7 @@ async function checkAccount(){
   data.session.user;
 
   accountStatus.textContent =
-  currentUser.email ||
-  "GameDay user";
+  "Signed in";
 
   return true;
 
@@ -1480,8 +1479,7 @@ supabase.auth.onAuthStateChange(
       session.user;
 
       accountStatus.textContent =
-      currentUser.email ||
-      "GameDay user";
+      "Signed in";
 
       await Promise.all([
         loadWallet(),
