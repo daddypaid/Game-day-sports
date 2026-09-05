@@ -1,4 +1,4 @@
-const CACHE='gameday-shell-v20';
+const CACHE='gameday-shell-v21';
 const SHELL=[
   './gameday-premium.html',
   './gameday-live.html',
@@ -38,7 +38,28 @@ const SHELL=[
   './gameday-premium-in-shell.css',
   './gameday-premium-spin.css',
   './gameday-themed-slots.css',
+  './gameday-themed-slots-premium-art.css',
   './gameday-lucky7s.css',
+  './art/gameday-sportsbook-hero.svg',
+  './assets/gameday-blackjack-table-premium.svg',
+  './assets/gameday-video-poker-premium.svg',
+  './assets/gameday-roulette-room.svg',
+  './assets/gameday-poker-room.svg',
+  './assets/gameday-baccarat-room.svg',
+  './assets/gameday-poker-table-room.svg',
+  './assets/gameday-my-bets-premium.svg',
+  './assets/gameday-account-premium.svg',
+  './assets/midnight-monsters-card.svg',
+  './assets/galactic-rebellion-card.svg',
+  './assets/lucky-7s-card.svg',
+  './assets/casino/gameday-casino-hero.svg',
+  './assets/casino/blackjack-lobby.svg',
+  './assets/casino/roulette-lobby.svg',
+  './assets/casino/baccarat-lobby.svg',
+  './assets/casino/poker-lobby.svg',
+  './assets/casino/midnight-monsters-lobby.svg',
+  './assets/casino/galactic-rebellion-lobby.svg',
+  './assets/casino/lucky-7s-lobby.svg',
   './icons/gameday-192.png',
   './icons/gameday-512.png'
 ];
@@ -71,5 +92,9 @@ self.addEventListener('fetch',event=>{
     return;
   }
 
-  event.respondWith(caches.match(req).then(hit=>hit||fetch(req)));
+  event.respondWith(caches.match(req).then(hit=>hit||fetch(req).then(res=>{
+    const copy=res.clone();
+    caches.open(CACHE).then(cache=>cache.put(req,copy));
+    return res;
+  })));
 });
