@@ -24,6 +24,27 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v4
 
+      - name: Validate canonical GameDay pages
+        shell: bash
+        run: |
+          set -euo pipefail
+          required=(
+            gameday-sportsbook.html
+            gameday-casino-v2.html
+            gameday-my-bets.html
+            gameday-auth.html
+            gameday-blackjack.html
+            gameday-roulette.html
+            gameday-baccarat.html
+            gameday-slots.html
+          )
+          for file in "${required[@]}"; do
+            test -s "$file" || { echo "Missing or empty required page: $file"; exit 1; }
+          done
+          grep -q "GameDay Sports" gameday-sportsbook.html
+          grep -q "TEST MODE" gameday-sportsbook.html
+          grep -q "Test Wallet" gameday-auth.html
+
       - name: Configure Pages
         uses: actions/configure-pages@v5
 
