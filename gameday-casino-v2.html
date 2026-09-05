@@ -36,7 +36,7 @@ main{max-width:900px;margin:auto;padding:12px 0 110px}
 .baccarat-art::before{content:"PLAYER      BANKER";position:absolute;left:18px;right:18px;top:22px;color:#f1d17f;font-size:14px;font-weight:900;letter-spacing:.08em;border-bottom:2px solid rgba(241,209,127,.45);padding-bottom:12px}
 .baccarat-art::after{content:"A♦          K♣";position:absolute;left:30px;right:30px;top:66px;height:auto;background:none;color:#fff;font-size:31px;font-weight:900;letter-spacing:5px;text-shadow:0 3px 12px #000}
 .slots-art{background:radial-gradient(circle at 50% 0,rgba(255,204,84,.45),transparent 28%),linear-gradient(145deg,#39135d,#17104a 58%,#0c0a1f)}
-.slots-art::before{content:"7   🍒   💎";position:absolute;left:14px;right:14px;top:42px;padding:14px 8px;text-align:center;border:3px solid #d6b34c;border-radius:11px;background:linear-gradient(#f7f3e7,#d7dde8);color:#9b121c;font-size:29px;font-weight:900;box-shadow:0 0 20px rgba(231,192,68,.38)}
+.slots-art::before{content:"7   20×   WILD";position:absolute;left:14px;right:14px;top:42px;padding:14px 8px;text-align:center;border:3px solid #d6b34c;border-radius:11px;background:linear-gradient(#f7f3e7,#d7dde8);color:#6d164c;font-size:20px;font-weight:900;box-shadow:0 0 20px rgba(231,192,68,.38)}
 .poker-art{background:radial-gradient(circle at 50% 25%,rgba(231,199,91,.24),transparent 28%),linear-gradient(145deg,#164528,#0a2315 60%,#211807)}
 .poker-art::before{content:"A♠  K♥  Q♣";position:absolute;left:18px;right:18px;top:40px;text-align:center;color:#fff;font-size:28px;font-weight:900;letter-spacing:4px;text-shadow:0 4px 12px #000}
 .game-info{padding:11px 12px 12px}.game-title{font-size:16px;font-weight:900}.game-meta{margin-top:4px;color:#94a198;font-size:10px}.play-row{display:flex;justify-content:space-between;align-items:center;margin-top:9px}.status{padding:5px 7px;border-radius:999px;background:#153d22;border:1px solid #2e7040;color:#bfe9c8;font-size:9px;font-weight:900}.play{font-size:11px;font-weight:900;color:#f2db88}
@@ -54,7 +54,7 @@ main{max-width:900px;margin:auto;padding:12px 0 110px}
   <div class="categories" aria-label="Casino categories">
     <a class="cat active" href="#featured">Featured</a>
     <a class="cat" href="#table-games">Table Games</a>
-    <a class="cat" href="#slots">Slots</a>
+    <a class="cat" href="gameday-slots-lobby.html">Slots</a>
     <a class="cat" href="gameday-poker.html">Poker</a>
     <a class="cat" href="gameday-blackjack.html">Blackjack</a>
     <a class="cat" href="gameday-roulette.html">Roulette</a>
@@ -76,7 +76,7 @@ main{max-width:900px;margin:auto;padding:12px 0 110px}
       <a class="game-card" href="gameday-blackjack.html"><div class="art blackjack-art"></div><div class="game-info"><div class="game-title">GameDay Blackjack</div><div class="game-meta">Deal • Hit • Stand</div><div class="play-row"><span class="status">CONNECTED</span><span class="play">PLAY ›</span></div></div></a>
       <a class="game-card" href="gameday-roulette.html"><div class="art roulette-art"></div><div class="game-info"><div class="game-title">GameDay Roulette</div><div class="game-meta">0–36 • Red/Black • Wheel</div><div class="play-row"><span class="status">CONNECTED</span><span class="play">PLAY ›</span></div></div></a>
       <a class="game-card" href="gameday-baccarat.html"><div class="art baccarat-art"></div><div class="game-info"><div class="game-title">GameDay Baccarat</div><div class="game-meta">Player • Banker • Tie</div><div class="play-row"><span class="status">CONNECTED</span><span class="play">PLAY ›</span></div></div></a>
-      <a class="game-card" href="gameday-slots.html"><div class="art slots-art"></div><div class="game-info"><div class="game-title">GameDay Jackpot</div><div class="game-meta">Animated reels • Instant result</div><div class="play-row"><span class="status">CONNECTED</span><span class="play">PLAY ›</span></div></div></a>
+      <a class="game-card" href="gameday-slots-lobby.html"><div class="art slots-art"></div><div class="game-info"><div class="game-title">GameDay Slots</div><div class="game-meta">3 machines • Classic + 20-line video slots</div><div class="play-row"><span class="status">CONNECTED</span><span class="play">BROWSE ›</span></div></div></a>
     </div>
   </section>
 
@@ -89,7 +89,6 @@ main{max-width:900px;margin:auto;padding:12px 0 110px}
     </div>
   </section>
 
-
   <section id="poker" class="section">
     <div class="section-head"><h3>Poker</h3><div class="section-note">GameDay Poker Room</div></div>
     <div class="game-row">
@@ -99,9 +98,9 @@ main{max-width:900px;margin:auto;padding:12px 0 110px}
   </section>
 
   <section id="slots" class="section">
-    <div class="section-head"><h3>Slots</h3><div class="section-note">GameDay original</div></div>
+    <div class="section-head"><h3>Slots</h3><div class="section-note">3 connected GameDay machines</div></div>
     <div class="game-row">
-      <a class="game-card" href="gameday-slots.html"><div class="art slots-art"></div><div class="game-info"><div class="game-title">GameDay Jackpot</div><div class="game-meta">3 reels • Quick spin</div><div class="play-row"><span class="status">CONNECTED</span><span class="play">SPIN ›</span></div></div></a>
+      <a class="game-card" href="gameday-slots-lobby.html"><div class="art slots-art"></div><div class="game-info"><div class="game-title">GameDay Slots Lobby</div><div class="game-meta">Lucky 7s • Midnight Monsters • Galactic Rebellion</div><div class="play-row"><span class="status">CONNECTED</span><span class="play">OPEN ›</span></div></div></a>
     </div>
   </section>
 
