@@ -37,8 +37,10 @@
     .gameday-custom-wager-input{border-color:#b99a42!important;box-shadow:0 0 0 1px rgba(215,189,98,.22)!important;font-weight:900!important}
     .gameday-custom-hint{margin-top:2px;color:#d9c36f;font-size:8px;font-weight:900;letter-spacing:.04em;text-transform:uppercase;white-space:nowrap}
     .gameday-custom-button{border:1px solid #8f7630!important;background:#342a10!important;color:#f5df8e!important;font-weight:900!important}
+    .gameday-custom-button:disabled{opacity:.38!important;cursor:not-allowed!important}
     .gameday-stake-display.gameday-custom-ready{cursor:pointer!important;border-color:#9e873f!important;color:#f5df8e!important;position:relative!important}
     .gameday-stake-display.gameday-custom-ready::after{content:'CUSTOM';position:absolute;right:4px;top:2px;font-size:6px;letter-spacing:.04em;color:#cdb65f}
+    .gameday-stake-display.gameday-custom-ready[aria-disabled="true"]{opacity:.5!important;cursor:not-allowed!important;pointer-events:none!important}
 
     @media(max-width:430px){
       .gameday-detailed-card::before,.gameday-detailed-card::after{font-size:8px;left:2px;right:auto;top:3px;bottom:auto}.gameday-detailed-card::after{left:auto;right:2px;top:auto;bottom:3px}
@@ -96,6 +98,10 @@
     return /stake|bet|ante|wager|amount/.test(key) || wagerPages.has(path);
   }
 
+  function inputLocked(input){
+    return !input || input.disabled || input.readOnly || input.getAttribute('aria-disabled') === 'true';
+  }
+
   function normalizeAmount(input){
     const n = Number(input.value);
     if (!Number.isFinite(n)) return;
@@ -132,12 +138,26 @@
     return [...document.querySelectorAll('input[type="number"]')].find(looksLikeWagerInput) || null;
   }
 
+  function syncCustomLock(){
+    const input = primaryWagerInput();
+    const locked = inputLocked(input);
+    document.querySelectorAll('.gameday-custom-button').forEach(button=>{
+      button.disabled = locked;
+      button.setAttribute('aria-disabled', locked ? 'true' : 'false');
+    });
+    document.querySelectorAll('.gameday-stake-display.gameday-custom-ready').forEach(el=>{
+      el.setAttribute('aria-disabled', locked ? 'true' : 'false');
+      el.tabIndex = locked ? -1 : 0;
+    });
+  }
+
   function setCustomAmount(){
     const input = primaryWagerInput();
-    if (!input) return;
+    if (inputLocked(input)) return;
     const current = input.value || '25';
     const raw = window.prompt('Enter custom whole-dollar bet', current);
     if (raw === null) return;
+    if (inputLocked(input)) return;
     const n = Number(raw);
     if (!Number.isFinite(n) || n <= 0) return;
     input.value = String(Math.round(n));
@@ -154,10 +174,9 @@
       el.dataset.gdCustomBound='1';
       el.classList.add('gameday-custom-ready');
       el.setAttribute('role','button');
-      el.setAttribute('tabindex','0');
       el.setAttribute('aria-label','Set custom bet amount');
       el.addEventListener('click',setCustomAmount);
-      el.addEventListener('keydown',e=>{if(e.key==='Enter'||e.key===' '){e.preventDefault();setCustomAmount()}});
+      el.addEventListener('keydown',e=>{if((e.key==='Enter'||e.key===' ') && el.getAttribute('aria-disabled')!=='true'){e.preventDefault();setCustomAmount()}});
     });
     root.querySelectorAll?.('.gameday-quick-chips').forEach(group=>{
       if (group.querySelector('.gameday-custom-button')) return;
@@ -169,12 +188,14 @@
       group.appendChild(b);
       group.style.gridTemplateColumns='repeat(5,1fr)';
     });
+    syncCustomLock();
   }
 
   function refresh(root=document){
     decorateCards(root);
     enhanceInputs(root);
     enhanceCompactCustom(root);
+    syncCustomLock();
   }
 
   let queued=false;
@@ -195,12 +216,12 @@
   if (document.readyState === 'loading') {
     document.addEventListener('DOMContentLoaded',()=>{
       refresh(document);
-      observer.observe(document.body,{childList:true,subtree:true});
+      observer.observe(document.body,{childList:true,subtree:true,attributes:true,attributeFilter:['disabled','readonly','aria-disabled']});
       setTimeout(()=>refresh(document),500);
     },{once:true});
   } else {
     refresh(document);
-    observer.observe(document.body,{childList:true,subtree:true});
+    observer.observe(document.body,{childList:true,subtree:true,attributes:true,attributeFilter:['disabled','readonly','aria-disabled']});
     setTimeout(()=>refresh(document),500);
   }
 })();
