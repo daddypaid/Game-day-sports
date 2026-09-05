@@ -21,6 +21,22 @@ main{max-width:760px;margin:auto;padding:10px 12px}.status{min-height:34px;borde
 .paytable{margin-top:12px;background:rgba(8,18,11,.68);border:1px solid rgba(255,255,255,.12);border-radius:11px;padding:9px}.payrow{display:flex;justify-content:space-between;font-size:10px;padding:3px 2px;color:#c7d2ca}.payrow strong{color:#f0d985}.controls{margin-top:10px;background:#111914;border:1px solid #2c3b31;border-radius:14px;padding:10px}.stake-row{display:grid;grid-template-columns:1fr auto;gap:8px;align-items:end}.stake-row label{font-size:10px;color:#9eaaa2;display:block;margin-bottom:4px}.stake-row input{width:100%;background:#08100b;color:#fff;border:1px solid #34493b;border-radius:9px;padding:10px;font-size:16px}.chips{display:grid;grid-template-columns:repeat(4,1fr);gap:5px}.chips button,.actions button{border:0;border-radius:9px;font-weight:900;min-height:38px}.chips button{background:#202b24;color:#fff}.actions{display:grid;grid-template-columns:1fr 1fr;gap:7px;margin-top:8px}.deal{background:#edf4ef;color:#08100b}.draw{background:#d7bd62;color:#1b1605}.actions button:disabled{opacity:.38}.result{margin-top:8px;text-align:center;font-size:17px;font-weight:900;color:#f2dd8b;min-height:22px}
 .back{display:inline-block;margin:10px 0 0;color:#c5d0c8;text-decoration:none;font-size:11px;font-weight:800}
 @media(max-width:430px){.card{height:105px;padding:4px}.rank{font-size:13px}.suit{font-size:25px}.cards{gap:4px}.hold{min-height:30px;font-size:9px}.marquee{font-size:16px}.table{padding-left:7px;padding-right:7px}}
+
+/* iPhone compact play surface */
+@media(max-width:430px){
+  body{padding-bottom:70px;min-height:0} header{position:relative}
+  .top{padding:7px 9px 6px;gap:6px}.title h1{font-size:18px}.title div{font-size:9px;margin-top:2px}
+  .wallet{padding:5px 7px;border-radius:9px}.wallet span{font-size:8px}.wallet strong{font-size:12px;margin-top:1px}
+  main{padding:5px 6px}.status{min-height:24px;padding:5px 7px;margin-bottom:4px;font-size:9px;border-radius:7px}
+  .table{padding:6px 5px 7px;border-width:2px;border-radius:15px}.marquee{font-size:12px}.sub{display:none}
+  .cards{gap:3px;margin-top:6px}.card{height:72px;padding:3px;border-radius:6px;border-width:1px;box-shadow:none}
+  .rank{font-size:10px}.suit{font-size:19px}.hold{min-height:25px;margin-top:3px;font-size:8px;border-radius:6px}
+  .result{font-size:12px;min-height:15px;margin-top:4px}.paytable{margin-top:4px;padding:4px 6px;border-radius:7px;display:grid;grid-template-columns:1fr 1fr;column-gap:10px}
+  .payrow{font-size:8px;padding:1px 0}.payrow:last-child{grid-column:1/-1}
+  .controls{margin-top:4px;padding:5px;border-radius:9px}.stake-row{gap:4px;grid-template-columns:72px 1fr}.stake-row label{display:none}.stake-row input{padding:6px;font-size:16px;border-radius:7px;height:34px}
+  .chips{gap:3px}.chips button,.actions button{min-height:34px;border-radius:7px;font-size:10px}.actions{gap:4px;margin-top:4px}.back{margin-top:4px;font-size:9px}
+}
+
 </style>
 </head>
 <body>
