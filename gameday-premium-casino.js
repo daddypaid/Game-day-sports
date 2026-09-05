@@ -1,13 +1,17 @@
 (() => {
   const path = location.pathname.split('/').pop() || '';
 
-  function loadV2Styles(){
-    if(document.querySelector('link[data-gameday-premium-v2]')) return;
+  function loadStyleOnce(href,key){
+    if(document.querySelector(`link[data-${key}]`)) return;
     const link=document.createElement('link');
     link.rel='stylesheet';
-    link.href='gameday-premium-casino-v2.css';
-    link.dataset.gamedayPremiumV2='true';
+    link.href=href;
+    link.setAttribute(`data-${key}`,'true');
     document.head.appendChild(link);
+  }
+
+  function loadV2Styles(){
+    loadStyleOnce('gameday-premium-casino-v2.css','gameday-premium-v2');
   }
 
   const slotMap = {
@@ -40,6 +44,7 @@
 
   function enhanceSlots(){
     loadV2Styles();
+    loadStyleOnce('gameday-lucky7s.css','gameday-lucky7s');
     document.body.classList.add('gameday-premium-slots','gameday-lucky-7s');
 
     const pageTitle=document.querySelector('h1');
