@@ -1,0 +1,31 @@
+name: One-time live score clock wiring
+
+on:
+  push:
+    paths:
+      - '.live-clock-trigger'
+
+permissions:
+  contents: write
+
+jobs:
+  patch:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+      - name: Wire live score and clock refresh
+        run: python .github/scripts/wire_live_clock.py
+      - name: Commit changes
+        run: |
+          set -e
+          if git diff --quiet; then
+            echo "No changes needed"
+            exit 0
+          fi
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add gameday-sportsbook.html sw.js
+          git commit -m "Improve GameDay live score and clock refresh"
+          git push
