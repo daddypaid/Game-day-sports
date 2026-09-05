@@ -1,0 +1,59 @@
+/* GameDay production game-art layer */
+body.gd-art-blackjack{background:#030504!important}
+body.gd-art-blackjack main{max-width:860px!important;padding-top:8px!important}
+body.gd-art-blackjack .notice{display:none!important}
+body.gd-art-blackjack .table{position:relative!important;min-height:610px!important;border:8px solid #b98a2c!important;border-radius:36px!important;padding:205px 24px 28px!important;background:
+ linear-gradient(rgba(2,7,4,.18),rgba(2,7,4,.18)),
+ url('assets/gameday-blackjack-table-premium.svg') center 12%/cover no-repeat!important;
+ box-shadow:0 0 0 2px #3a2608,0 22px 60px rgba(0,0,0,.72),inset 0 0 55px rgba(0,0,0,.4),0 0 30px rgba(229,183,66,.15)!important;overflow:hidden!important}
+body.gd-art-blackjack .table::before{content:'♠  BLACKJACK  ♠';position:absolute;top:46px;left:0;right:0;text-align:center;font:900 38px/1 Georgia,serif;color:#ffe79a;text-shadow:0 2px 0 #5d3909,0 0 22px rgba(255,213,91,.28);letter-spacing:.08em}
+body.gd-art-blackjack .table::after{content:'BLACKJACK PAYS 3 TO 2  •  DEALER STANDS ON 17';position:absolute;top:103px;left:12%;right:12%;padding:10px;border-top:1px solid rgba(255,225,139,.55);border-bottom:1px solid rgba(255,225,139,.55);text-align:center;color:#f4df9d;font:800 12px Arial,sans-serif;letter-spacing:.14em}
+body.gd-art-blackjack .table-label{position:absolute!important;top:150px;left:0;right:0;color:#f8dd83!important;font:800 11px Arial,sans-serif!important;letter-spacing:.28em!important}
+body.gd-art-blackjack .hand-area{min-height:150px!important;padding:8px 0!important;background:radial-gradient(circle at 50% 50%,rgba(13,98,50,.34),rgba(3,30,16,.12) 70%)!important;border-radius:28px!important}
+body.gd-art-blackjack .hand-title{font:900 18px Georgia,serif!important;color:#ffe79f!important;letter-spacing:.12em!important;text-shadow:0 2px 8px #000!important}
+body.gd-art-blackjack .cards{gap:10px!important}
+body.gd-art-blackjack .card{width:76px!important;height:108px!important;border-radius:10px!important;box-shadow:0 8px 20px rgba(0,0,0,.42)!important}
+body.gd-art-blackjack .total{padding:7px 14px!important;border:1px solid rgba(225,192,104,.36)!important;border-radius:999px!important;background:rgba(1,11,6,.58)!important;color:#fff1bd!important}
+body.gd-art-blackjack .divider{background:linear-gradient(90deg,transparent,#c79a3c,transparent)!important;height:2px!important}
+body.gd-art-blackjack .control-card{background:linear-gradient(180deg,#10120f,#050706)!important;border:2px solid #8e6a27!important;border-radius:18px!important;box-shadow:0 14px 36px rgba(0,0,0,.52)!important}
+body.gd-art-blackjack .quick-bets button{background:radial-gradient(circle at 35% 30%,#fff3ad,#b68720 42%,#392309 75%)!important;color:#160d02!important;border:2px solid #f0d27b!important;border-radius:999px!important;box-shadow:inset 0 0 0 3px #5a3f15,0 4px 10px rgba(0,0,0,.34)!important}
+body.gd-art-blackjack .deal-btn{background:linear-gradient(180deg,#fff1ad,#c79227)!important;color:#140d04!important;border:1px solid #ffe9a1!important}
+body.gd-art-blackjack .hit-btn{background:linear-gradient(180deg,#19b75b,#087331)!important;color:#fff!important}
+body.gd-art-blackjack .stand-btn{background:linear-gradient(180deg,#c73833,#741512)!important;color:#fff!important}
+
+body.gd-art-video-poker{background:radial-gradient(circle at 50% -5%,#4b090c,#09090b 40%,#020202 100%)!important}
+body.gd-art-video-poker main{max-width:850px!important;padding-top:10px!important}
+body.gd-art-video-poker .status{background:#080909!important;border:1px solid #7b5a1d!important;color:#e8d28d!important;box-shadow:inset 0 0 22px rgba(255,188,53,.04)!important}
+body.gd-art-video-poker .table{position:relative!important;padding:265px 18px 20px!important;border:8px solid #b98526!important;border-radius:36px!important;background:
+ linear-gradient(rgba(0,0,0,.18),rgba(0,0,0,.2)),
+ url('assets/gameday-video-poker-premium.svg') center 0/cover no-repeat!important;
+ box-shadow:0 0 0 2px #3c2608,0 24px 68px rgba(0,0,0,.74),0 0 34px rgba(196,22,26,.16)!important;overflow:hidden!important}
+body.gd-art-video-poker .marquee{position:absolute!important;top:48px;left:0;right:0;font:900 32px Georgia,serif!important;color:#ffe59b!important;text-shadow:0 2px 0 #7a150f,0 0 22px rgba(255,34,34,.42)!important;letter-spacing:.05em!important}
+body.gd-art-video-poker .sub{position:absolute!important;top:94px;left:0;right:0;color:#ffcc63!important;letter-spacing:.22em!important;font-weight:800!important}
+body.gd-art-video-poker .cards{gap:8px!important;margin-top:14px!important;padding:14px 10px!important;border:2px solid #3165d8!important;border-radius:16px!important;background:linear-gradient(180deg,#061532,#040914)!important;box-shadow:inset 0 0 30px rgba(26,90,255,.18),0 0 18px rgba(36,101,255,.2)!important}
+body.gd-art-video-poker .card{height:144px!important;border:2px solid #e0e0dc!important;border-radius:10px!important;box-shadow:0 6px 15px rgba(0,0,0,.42)!important}
+body.gd-art-video-poker .hold{background:linear-gradient(180deg,#191919,#080808)!important;border:2px solid #9d6d20!important;color:#f8e3a0!important;border-radius:9px!important;box-shadow:inset 0 0 12px rgba(255,203,82,.05)!important}
+body.gd-art-video-poker .hold.active{background:linear-gradient(180deg,#f6cf52,#9d6815)!important;color:#160d02!important;border-color:#fff1a4!important;box-shadow:0 0 18px rgba(244,198,62,.36)!important}
+body.gd-art-video-poker .paytable{background:linear-gradient(180deg,#070b14,#03050a)!important;border:2px solid #ab7a24!important;border-radius:14px!important;box-shadow:inset 0 0 20px rgba(255,197,71,.04)!important}
+body.gd-art-video-poker .payrow{border-bottom:1px solid rgba(199,154,58,.18)!important;padding:6px 4px!important;font-size:11px!important}
+body.gd-art-video-poker .payrow strong{color:#ffd969!important}
+body.gd-art-video-poker .controls{background:linear-gradient(180deg,#141414,#050505)!important;border:2px solid #9a6f25!important;border-radius:18px!important;box-shadow:0 16px 40px rgba(0,0,0,.55)!important}
+body.gd-art-video-poker .chips button{background:linear-gradient(180deg,#282828,#111)!important;border:1px solid #73551e!important;color:#f4df9c!important}
+body.gd-art-video-poker .deal{background:linear-gradient(180deg,#3bdb5f,#13802f)!important;color:white!important;border:1px solid #8bff9d!important;box-shadow:0 0 20px rgba(54,226,99,.18)!important}
+body.gd-art-video-poker .draw{background:linear-gradient(180deg,#f2c44f,#a76d16)!important;color:#140d02!important;border:1px solid #ffe999!important}
+body.gd-art-video-poker .result{color:#ffe17d!important;text-shadow:0 0 13px rgba(255,188,47,.24)!important}
+
+@media(max-width:430px){
+ body.gd-art-blackjack .table{padding:145px 9px 12px!important;min-height:580px!important;border-width:5px!important;border-radius:26px!important;background-size:auto 100%!important;background-position:center top!important}
+ body.gd-art-blackjack .table::before{top:28px;font-size:24px!important}
+ body.gd-art-blackjack .table::after{top:68px;left:7%;right:7%;font-size:8px!important;letter-spacing:.08em!important}
+ body.gd-art-blackjack .table-label{top:112px!important;font-size:8px!important}
+ body.gd-art-blackjack .hand-area{min-height:122px!important}
+ body.gd-art-blackjack .card{width:52px!important;height:76px!important}
+ body.gd-art-video-poker .table{padding:175px 8px 12px!important;border-width:5px!important;border-radius:26px!important;background-size:auto 100%!important;background-position:center top!important}
+ body.gd-art-video-poker .marquee{top:30px!important;font-size:22px!important}
+ body.gd-art-video-poker .sub{top:66px!important;font-size:8px!important}
+ body.gd-art-video-poker .cards{padding:8px 5px!important;gap:4px!important}
+ body.gd-art-video-poker .card{height:92px!important}
+ body.gd-art-video-poker .payrow{font-size:8px!important;padding:3px 2px!important}
+}
