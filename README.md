@@ -17,6 +17,7 @@ GameDay Sports is a TEST MODE sportsbook and casino platform hosted on GitHub Pa
 - `gameday-control-center.html` — protected operator dashboard with aggregate platform metrics
 - `gameday-operator-analytics.html` — protected buyer-facing sportsbook, casino, and wallet activity analytics
 - `gameday-system-health.html` — protected system-health, provider freshness, cache, ledger, sportsbook, and casino activity monitoring
+- `gameday-admin-takeover.html` — buyer/operator takeover sequence covering due diligence, infrastructure transfer, credential rotation, deployment validation, and TEST MODE safeguards
 - `ACQUISITION-OVERVIEW.md` — buyer-ready product overview
 - `ACQUISITION-HANDOFF.md` — technical transfer and due-diligence guide
 
@@ -53,6 +54,8 @@ Older wallet, betslip, settlement, live, v2/v3/v4, wager, and casino routes are 
 - Test wallet-ledger activity
 - Sportsbook test-wager activity
 - Casino test-round/spin activity
+
+`gameday-admin-takeover.html` gives an acquiring buyer or replacement operator a structured handoff sequence: review the product, verify health, review test analytics, transfer source/infrastructure, rotate credentials, revalidate deployment/jobs, and keep real-money operation disabled until all required legal and operational controls are completed.
 
 The operator pages are intended for test-mode platform demonstration, technical review, and buyer due diligence. They do not indicate licensure or real-money production readiness.
 
