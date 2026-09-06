@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1.0,viewport-fit=cover">
+<meta name="theme-color" content="#07100a">
+<title>GameDay Operator Analytics</title>
+<style>
+*{box-sizing:border-box}body{margin:0;background:radial-gradient(circle at 15% 0,#183c25 0,#09110c 34%,#050806 100%);color:#fff;font-family:Inter,Arial,sans-serif;min-height:100vh}a{text-decoration:none;color:inherit}.shell{max-width:1240px;margin:auto;padding:16px}.top{display:flex;justify-content:space-between;align-items:center;gap:12px;border:1px solid #2b3c31;background:rgba(9,16,11,.92);border-radius:18px;padding:16px 18px;position:sticky;top:8px;z-index:20;backdrop-filter:blur(16px)}.brand{display:flex;align-items:center;gap:11px}.logo{width:42px;height:42px;border-radius:12px;background:linear-gradient(145deg,#f2f6f3,#86b991);display:grid;place-items:center;color:#07100a;font-weight:900}.brand h1{margin:0;font-size:18px}.sub{font-size:10px;color:#94a198;margin-top:3px}.test{padding:7px 10px;border-radius:999px;border:1px solid #7c3843;background:#32191d;color:#ffb7c0;font-size:10px;font-weight:900}.nav{display:flex;gap:7px;overflow:auto;margin:14px 0}.nav a{white-space:nowrap;padding:10px 12px;border:1px solid #27382d;background:#111913;border-radius:10px;color:#b4c0b8;font-size:11px;font-weight:800}.nav a.active{background:#edf4ef;color:#07100a}.hero{padding:22px;border:1px solid #31473a;background:linear-gradient(135deg,#16311f,#0b120e 65%);border-radius:20px}.hero h2{margin:0 0 7px;font-size:28px}.hero p{margin:0;color:#9eaca3;line-height:1.5;max-width:760px}.metrics{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:11px;margin-top:12px}.card,.panel{border:1px solid #26382d;background:#101712;border-radius:15px;padding:16px}.k{font-size:10px;color:#8b9a91;text-transform:uppercase;letter-spacing:.08em}.v{font-size:27px;font-weight:900;margin-top:6px}.tiny{font-size:10px;color:#718178;margin-top:5px}.section{display:flex;justify-content:space-between;gap:10px;align-items:end;margin:22px 2px 9px}.section h3{margin:0;font-size:15px}.section span{font-size:10px;color:#718178}.two{display:grid;grid-template-columns:1fr 1fr;gap:11px}.rows{display:grid;gap:7px;margin-top:8px}.row{display:flex;justify-content:space-between;gap:12px;padding:10px 0;border-bottom:1px solid #202d24;font-size:12px}.row:last-child{border:0}.good{color:#9aebb0}.warn{color:#efcf7b}.barrow{display:grid;grid-template-columns:110px 1fr 35px;gap:9px;align-items:center;margin:10px 0;font-size:11px}.bar{height:8px;background:#1a271e;border-radius:999px;overflow:hidden}.fill{height:100%;background:linear-gradient(90deg,#55c976,#d9f6e0);border-radius:999px}.notice{margin-top:13px;padding:13px;border:1px solid #5c4d25;background:#241f10;color:#e6d58e;border-radius:13px;font-size:11px;line-height:1.5}.error{color:#ffb4bd}@media(max-width:850px){.metrics{grid-template-columns:repeat(2,1fr)}.two{grid-template-columns:1fr}}@media(max-width:460px){.shell{padding:9px}.top{padding:13px}.brand .sub{display:none}.hero{padding:18px}.hero h2{font-size:24px}.metrics{grid-template-columns:1fr 1fr}.v{font-size:22px}.barrow{grid-template-columns:90px 1fr 28px}}
+</style>
+</head>
+<body>
+<div class="shell">
+  <div class="top"><div class="brand"><div class="logo">GD</div><div><h1>GameDay Operator Analytics</h1><div class="sub">Buyer-facing test activity • sportsbook • casino • wallet</div></div></div><div class="test">TEST MODE</div></div>
+  <div class="nav"><a href="gameday-control-center.html">Overview</a><a class="active" href="gameday-operator-analytics.html">Analytics</a><a href="gameday-system-health.html">System Health</a><a href="gameday-sportsbook.html">Sportsbook</a><a href="gameday-casino-v2.html">Casino</a></div>
+  <section class="hero"><h2>Platform Activity</h2><p>Aggregate demonstration metrics from the GameDay test environment. These figures show system usage and simulation behavior only; they are not real-money gambling revenue.</p></section>
+
+  <div class="section"><h3>Sportsbook</h3><span id="updated">Loading...</span></div>
+  <div class="metrics">
+    <div class="card"><div class="k">Test Wagers</div><div id="wagers" class="v">—</div><div class="tiny">All test sportsbook wagers</div></div>
+    <div class="card"><div class="k">Simulated Handle</div><div id="sportsHandle" class="v">—</div><div class="tiny">Sum of test stakes</div></div>
+    <div class="card"><div class="k">Potential Return</div><div id="potential" class="v">—</div><div class="tiny">Quoted potential returns</div></div>
+    <div class="card"><div class="k">Wagers • 7 Days</div><div id="recentWagers" class="v">—</div><div class="tiny">Recent test placement activity</div></div>
+  </div>
+
+  <div class="section"><h3>Casino</h3><span>Server-generated test rounds</span></div>
+  <div class="metrics">
+    <div class="card"><div class="k">Casino Rounds</div><div id="casinoRounds" class="v">—</div><div class="tiny">Recorded test rounds</div></div>
+    <div class="card"><div class="k">Simulated Handle</div><div id="casinoHandle" class="v">—</div><div class="tiny">Test casino stakes</div></div>
+    <div class="card"><div class="k">Simulated Payouts</div><div id="casinoPayout" class="v">—</div><div class="tiny">Test payout total</div></div>
+    <div class="card"><div class="k">Simulated Net</div><div id="casinoNet" class="v">—</div><div class="tiny">Handle minus payouts</div></div>
+  </div>
+
+  <div class="section"><h3>Activity Mix</h3><span>What buyers can inspect</span></div>
+  <div class="two">
+    <div class="panel"><div class="k">Sports by selections</div><div id="sportsMix" class="rows"><div class="tiny">Loading...</div></div></div>
+    <div class="panel"><div class="k">Casino game mix</div><div id="casinoMix" class="rows"><div class="tiny">Loading...</div></div></div>
+  </div>
+
+  <div class="section"><h3>Wallet Ledger</h3><span>Test-credit movement</span></div>
+  <div class="two">
+    <div class="panel"><div class="rows"><div class="row"><span>Ledger transactions</span><strong id="txCount">—</strong></div><div class="row"><span>Sportsbook debits</span><strong id="debits">—</strong></div><div class="row"><span>Sportsbook credits</span><strong id="credits">—</strong></div><div class="row"><span>Refunds</span><strong id="refunds">—</strong></div></div></div>
+    <div class="panel"><div class="rows"><div class="row"><span>Debit amount</span><strong id="debitAmt">—</strong></div><div class="row"><span>Credit amount</span><strong id="creditAmt">—</strong></div><div class="row"><span>Refund amount</span><strong id="refundAmt">—</strong></div><div class="row"><span>Environment</span><strong class="warn">TEST ONLY</strong></div></div></div>
+  </div>
+  <div class="notice">Acquisition note: analytics are deliberately aggregate and test-only. A production operator would need to replace demo reporting with licensed, compliant operational reporting appropriate to its jurisdiction and payment stack.</div>
+</div>
+<script type="module">
+import{createClient}from"https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/+esm";
+const URL='https://qsvrvhcklnsbekxblpfo.supabase.co',KEY='sb_publishable_-yCYGvDqIzVFgu90lgoVpw_uoWnYmO0',supabase=createClient(URL,KEY);
+const money=v=>'$'+Number(v||0).toLocaleString('en-US',{minimumFractionDigits:2,maximumFractionDigits:2});
+const num=v=>Number(v||0).toLocaleString('en-US');
+function mix(el,rows){if(!rows?.length){el.innerHTML='<div class="tiny">No activity recorded yet.</div>';return}const max=Math.max(...rows.map(x=>x.count),1);el.innerHTML=rows.map(x=>`<div class="barrow"><span>${String(x.name||'Unknown').replaceAll('_',' ')}</span><div class="bar"><div class="fill" style="width:${Math.max(6,(x.count/max)*100)}%"></div></div><strong>${num(x.count)}</strong></div>`).join('')}
+async function load(){const {data:{session}}=await supabase.auth.getSession();if(!session){document.getElementById('updated').textContent='Sign in required';document.getElementById('updated').className='error';return}try{const r=await fetch(URL+'/functions/v1/gameday-operator-analytics',{headers:{Authorization:'Bearer '+session.access_token,apikey:KEY}});const d=await r.json();if(!r.ok)throw new Error(d.error||'Analytics unavailable');
+ document.getElementById('wagers').textContent=num(d.sportsbook.wagers);document.getElementById('sportsHandle').textContent=money(d.sportsbook.handle);document.getElementById('potential').textContent=money(d.sportsbook.potential_return);document.getElementById('recentWagers').textContent=num(d.sportsbook.recent_7d);
+ document.getElementById('casinoRounds').textContent=num(d.casino.rounds);document.getElementById('casinoHandle').textContent=money(d.casino.handle);document.getElementById('casinoPayout').textContent=money(d.casino.payout);document.getElementById('casinoNet').textContent=money(d.casino.simulated_net);
+ mix(document.getElementById('sportsMix'),d.sportsbook.top_sports);mix(document.getElementById('casinoMix'),d.casino.game_mix);
+ document.getElementById('txCount').textContent=num(d.wallet.transactions);document.getElementById('debits').textContent=num(d.wallet.wager_debits);document.getElementById('credits').textContent=num(d.wallet.wager_credits);document.getElementById('refunds').textContent=num(d.wallet.refunds);document.getElementById('debitAmt').textContent=money(d.wallet.wager_debit_amount);document.getElementById('creditAmt').textContent=money(d.wallet.wager_credit_amount);document.getElementById('refundAmt').textContent=money(d.wallet.refund_amount);document.getElementById('updated').textContent='Updated '+new Date(d.generated_at).toLocaleTimeString([], {hour:'numeric',minute:'2-digit'});
+}catch(e){document.getElementById('updated').textContent='Analytics unavailable';document.getElementById('updated').className='error';console.error(e)}}load();
+</script>
+</body>
+</html>
