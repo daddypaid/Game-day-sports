@@ -1,0 +1,43 @@
+name: Centralize Baccarat and Slots
+
+on:
+  push:
+    branches: ["main"]
+    paths:
+      - "scripts/centralize-baccarat-slots.mjs"
+      - ".github/workflows/centralize-baccarat-slots.yml"
+
+permissions:
+  contents: write
+
+jobs:
+  migrate:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+      - name: Apply guarded migration
+        run: node scripts/centralize-baccarat-slots.mjs
+      - name: Verify only intended casino wiring changed
+        run: |
+          set -euo pipefail
+          grep -q 'gameday-config.js' gameday-baccarat.html
+          grep -q 'GAMEDAY_CONFIG.functions.baccarat' gameday-baccarat.html
+          grep -q 'gameday-config.js' gameday-slots.html
+          grep -q 'GAMEDAY_CONFIG.functions.slots' gameday-slots.html
+          if grep -q 'qsvrvhcklnsbekxblpfo' gameday-baccarat.html gameday-slots.html; then
+            echo 'Legacy project reference remains'
+            exit 1
+          fi
+      - name: Commit migration
+        run: |
+          set -euo pipefail
+          if git diff --quiet -- gameday-baccarat.html gameday-slots.html; then
+            echo 'No migration changes needed.'
+            exit 0
+          fi
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add gameday-baccarat.html gameday-slots.html
+          git commit -m 'Centralize Baccarat and Slots public backend configuration'
+          git push
