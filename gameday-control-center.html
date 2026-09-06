@@ -19,11 +19,15 @@
     <aside class="side">
       <div class="label">Control Center</div>
       <a class="active" href="gameday-control-center.html">Overview</a>
+      <a href="gameday-operator-analytics.html">Analytics</a>
+      <a href="gameday-system-health.html">System Health</a>
+      <a href="gameday-config-check.html">Configuration</a>
       <a href="gameday-sportsbook.html">Sportsbook</a>
       <a href="gameday-casino-v2.html">Casino</a>
       <a href="gameday-my-bets.html">Wagers</a>
       <a href="gameday-auth.html">Accounts</a>
-      <div class="label">Buyer Demo</div>
+      <div class="label">Buyer</div>
+      <a href="gameday-admin-takeover.html">Admin Takeover</a>
       <a href="README.md">Architecture</a>
     </aside>
     <main class="main">
@@ -31,14 +35,12 @@
         <div><h2>Platform Overview</h2><p>Live operational snapshot of the GameDay test environment. Aggregate metrics only — no private customer data is exposed here.</p></div>
         <div class="status"><span class="dot"></span><span id="sysStatus">Checking system...</span></div>
       </section>
-
       <div class="metrics">
         <div class="card"><div class="k">Sports Events</div><div class="v" id="sports_events">—</div><div class="tiny">Server-managed event records</div></div>
         <div class="card"><div class="k">Markets</div><div class="v" id="sports_markets">—</div><div class="tiny">Current sportsbook markets</div></div>
         <div class="card"><div class="k">Outcomes</div><div class="v" id="sports_outcomes">—</div><div class="tiny">Available pricing outcomes</div></div>
         <div class="card"><div class="k">Line History</div><div class="v" id="line_history">—</div><div class="tiny">Immutable movement records</div></div>
       </div>
-
       <div class="section-title"><h3>Test Activity</h3><span id="generated">Live snapshot</span></div>
       <div class="metrics">
         <div class="card"><div class="k">Test Users</div><div class="v" id="users">—</div><div class="tiny">Authenticated profiles</div></div>
@@ -46,26 +48,17 @@
         <div class="card"><div class="k">Casino Rounds</div><div class="v" id="casino_rounds">—</div><div class="tiny">Server-generated game rounds</div></div>
         <div class="card"><div class="k">Wallet Transactions</div><div class="v" id="wallet_transactions">—</div><div class="tiny">Test-credit ledger entries</div></div>
       </div>
-
       <div class="section-title"><h3>Infrastructure</h3><span>Buyer-facing operational summary</span></div>
       <div class="two">
-        <div class="panel">
-          <div class="rows">
-            <div class="row"><span>Sports data layer</span><strong class="good">Operational</strong></div>
-            <div class="row"><span>Provider snapshots</span><strong id="provider_snapshots">—</strong></div>
-            <div class="row"><span>Odds cache records</span><strong id="odds_cache_records">—</strong></div>
-            <div class="row"><span>Wager selections</span><strong id="wager_selections">—</strong></div>
-            <div class="row"><span>Wallet accounts</span><strong id="wallets">—</strong></div>
-          </div>
-        </div>
-        <div class="panel">
-          <div class="k">Platform readiness</div>
-          <div class="v" style="font-size:23px">Commercial Demo</div>
-          <div class="bar"><div class="fill" id="readyBar"></div></div>
-          <div class="tiny" style="margin-top:10px">Customer flows, wallet ledger, test wagering, automatic settlement and server-side casino results are implemented. Real-money compliance remains outside this test build.</div>
-        </div>
+        <div class="panel"><div class="rows">
+          <div class="row"><span>Sports data layer</span><strong class="good">Operational</strong></div>
+          <div class="row"><span>Provider snapshots</span><strong id="provider_snapshots">—</strong></div>
+          <div class="row"><span>Odds cache records</span><strong id="odds_cache_records">—</strong></div>
+          <div class="row"><span>Wager selections</span><strong id="wager_selections">—</strong></div>
+          <div class="row"><span>Wallet accounts</span><strong id="wallets">—</strong></div>
+        </div></div>
+        <div class="panel"><div class="k">Platform readiness</div><div class="v" style="font-size:23px">Commercial Demo</div><div class="bar"><div class="fill" id="readyBar"></div></div><div class="tiny" style="margin-top:10px">Customer flows, wallet ledger, test wagering, automatic settlement and server-side casino results are implemented. Real-money compliance remains outside this test build.</div></div>
       </div>
-
       <div class="section-title"><h3>Launch Buyer Demo</h3><span>Quick access</span></div>
       <div class="links">
         <a class="quick" href="gameday-sportsbook.html"><strong>Open Sportsbook</strong><span>Live odds, props, futures and bet slip</span></a>
@@ -73,23 +66,24 @@
         <a class="quick" href="gameday-my-bets.html"><strong>Review Wagers</strong><span>Open and settled test activity</span></a>
         <a class="quick" href="gameday-auth.html"><strong>Account & Wallet</strong><span>Authentication and test-credit ledger</span></a>
       </div>
-
       <div class="notice">GameDay remains TEST MODE software. This dashboard is for development, demonstration and acquisition review. It does not represent a licensed real-money sportsbook or casino operation.</div>
     </main>
   </div>
 </div>
 <script type="module">
 import{createClient}from"https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/+esm";
-const URL='https://qsvrvhcklnsbekxblpfo.supabase.co';
-const KEY='sb_publishable_-yCYGvDqIzVFgu90lgoVpw_uoWnYmO0';
+import{GAMEDAY_CONFIG,functionUrl,assertGameDayConfig}from'./gameday-config.js';
+const configCheck=assertGameDayConfig();
+const URL=GAMEDAY_CONFIG.supabaseUrl,KEY=GAMEDAY_CONFIG.supabasePublishableKey;
 const supabase=createClient(URL,KEY);
 const ids=['sports_events','sports_markets','sports_outcomes','line_history','users','wagers','casino_rounds','wallet_transactions','provider_snapshots','odds_cache_records','wager_selections','wallets'];
 const fmt=v=>new Intl.NumberFormat('en-US').format(Number(v||0));
 async function load(){
+  if(!configCheck.ok){document.getElementById('sysStatus').textContent='Configuration invalid';document.getElementById('sysStatus').className='error';return;}
   const {data:{session}}=await supabase.auth.getSession();
   if(!session){document.getElementById('sysStatus').textContent='Sign in required';document.getElementById('sysStatus').className='error';return;}
   try{
-    const r=await fetch(URL+'/functions/v1/gameday-operator-metrics',{headers:{Authorization:'Bearer '+session.access_token,apikey:KEY}});
+    const r=await fetch(functionUrl('operatorMetrics'),{headers:{Authorization:'Bearer '+session.access_token,apikey:KEY}});
     const d=await r.json();
     if(!r.ok)throw new Error(d.error||'Metrics unavailable');
     ids.forEach(id=>{const el=document.getElementById(id);if(el)el.textContent=fmt(d[id])});
