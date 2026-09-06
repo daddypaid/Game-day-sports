@@ -10,7 +10,11 @@ export const GAMEDAY_CONFIG = Object.freeze({
     operatorAnalytics: 'gameday-operator-analytics',
     operatorHealth: 'gameday-operator-health',
     refillTestWallet: 'refill-test-wallet',
-    placeTestWager: 'place-test-wager'
+    placeTestWager: 'place-test-wager',
+    blackjack: 'blackjack-test',
+    roulette: 'roulette-test',
+    baccarat: 'baccarat-test',
+    slots: 'slots-test'
   }),
   routes: Object.freeze({
     home: 'index.html',
@@ -18,6 +22,12 @@ export const GAMEDAY_CONFIG = Object.freeze({
     casino: 'gameday-casino-v2.html',
     myBets: 'gameday-my-bets.html',
     account: 'gameday-auth.html',
+    blackjack: 'gameday-blackjack.html',
+    roulette: 'gameday-roulette.html',
+    baccarat: 'gameday-baccarat.html',
+    slots: 'gameday-slots.html',
+    slotsLobby: 'gameday-slots-lobby.html',
+    poker: 'gameday-poker.html',
     controlCenter: 'gameday-control-center.html',
     analytics: 'gameday-operator-analytics.html',
     systemHealth: 'gameday-system-health.html',
