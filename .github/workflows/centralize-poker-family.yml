@@ -1,0 +1,50 @@
+name: Centralize Poker Family
+
+on:
+  push:
+    branches: ["main"]
+    paths:
+      - "scripts/centralize-poker-family.mjs"
+      - ".github/workflows/centralize-poker-family.yml"
+
+permissions:
+  contents: write
+
+jobs:
+  migrate:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+      - name: Apply guarded migration
+        run: node scripts/centralize-poker-family.mjs
+      - name: Verify poker-family wiring
+        run: |
+          set -euo pipefail
+          files=(gameday-video-poker.html gameday-bonus-poker.html gameday-deuces-wild.html gameday-three-card-poker.html gameday-ultimate-texas-holdem.html gameday-caribbean-stud.html)
+          for file in "${files[@]}"; do
+            grep -q 'gameday-config.js' "$file"
+            if grep -q 'qsvrvhcklnsbekxblpfo' "$file"; then
+              echo "Legacy project reference remains in $file"
+              exit 1
+            fi
+          done
+          grep -q 'GAMEDAY_CONFIG.functions.videoPoker' gameday-video-poker.html
+          grep -q 'GAMEDAY_CONFIG.functions.videoPoker' gameday-bonus-poker.html
+          grep -q 'GAMEDAY_CONFIG.functions.videoPoker' gameday-deuces-wild.html
+          grep -q 'GAMEDAY_CONFIG.functions.threeCardPoker' gameday-three-card-poker.html
+          grep -q 'GAMEDAY_CONFIG.functions.ultimateTexasHoldem' gameday-ultimate-texas-holdem.html
+          grep -q 'GAMEDAY_CONFIG.functions.caribbeanStud' gameday-caribbean-stud.html
+      - name: Commit migration
+        run: |
+          set -euo pipefail
+          files=(gameday-video-poker.html gameday-bonus-poker.html gameday-deuces-wild.html gameday-three-card-poker.html gameday-ultimate-texas-holdem.html gameday-caribbean-stud.html)
+          if git diff --quiet -- "${files[@]}"; then
+            echo 'No migration changes needed.'
+            exit 0
+          fi
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add "${files[@]}"
+          git commit -m 'Centralize poker-family public backend configuration'
+          git push
