@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1.0,viewport-fit=cover">
+<meta name="theme-color" content="#07100a">
+<title>GameDay Platform Architecture</title>
+<style>
+*{box-sizing:border-box}body{margin:0;background:radial-gradient(circle at top,#17311f 0,#09110c 36%,#050806 100%);color:#fff;font-family:Inter,Arial,sans-serif;min-height:100vh}.wrap{max-width:1180px;margin:auto;padding:18px}.top{display:flex;justify-content:space-between;align-items:center;gap:12px;padding:18px;border:1px solid #2d4034;background:#0d1510;border-radius:18px}.brand{display:flex;align-items:center;gap:12px}.mark{width:44px;height:44px;border-radius:13px;background:linear-gradient(145deg,#eff6f0,#89b692);color:#07100a;display:grid;place-items:center;font-weight:900}.top h1{font-size:19px;margin:0}.sub{font-size:11px;color:#91a198;margin-top:4px}.mode{padding:7px 10px;border-radius:999px;background:#32191d;color:#ffc0c8;border:1px solid #763742;font-size:10px;font-weight:900}.hero{margin-top:16px;padding:22px;border-radius:20px;border:1px solid #36513f;background:linear-gradient(135deg,#173b24,#0b120d 70%)}.hero h2{margin:0 0 8px;font-size:28px}.hero p{margin:0;color:#aab8af;line-height:1.55;font-size:12px;max-width:840px}.layer{margin-top:14px;padding:16px;border-radius:16px;border:1px solid #293a2f;background:#101712}.layer h3{margin:0 0 11px;font-size:13px;color:#c7e5cf;text-transform:uppercase;letter-spacing:.08em}.nodes{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:10px}.node{padding:13px;border-radius:12px;border:1px solid #2c4033;background:#0b120d}.node strong{display:block;font-size:12px}.node span{display:block;margin-top:5px;color:#839289;font-size:10px;line-height:1.45}.arrow{text-align:center;color:#7fb68c;font-size:20px;padding:5px 0}.flows{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-top:14px}.flow{padding:16px;border:1px solid #293a2f;background:#101712;border-radius:16px}.flow h3{margin:0 0 10px;font-size:14px}.flow ol{margin:0;padding-left:18px;color:#aab8af;font-size:11px;line-height:1.6}.guard{margin-top:14px;display:grid;grid-template-columns:repeat(3,1fr);gap:10px}.guard div{padding:14px;border-radius:13px;background:#121b15;border:1px solid #2d4034}.guard strong{font-size:11px}.guard span{display:block;margin-top:5px;color:#87968d;font-size:10px;line-height:1.45}.notice{margin-top:15px;padding:14px;border:1px solid #5a4d29;background:#241f10;color:#e8da9d;border-radius:14px;font-size:11px;line-height:1.55}.links{display:grid;grid-template-columns:repeat(5,1fr);gap:9px;margin-top:14px}.links a{text-decoration:none;color:#fff;padding:12px;border:1px solid #2d4034;background:#121b15;border-radius:11px;font-size:10px;font-weight:800;text-align:center}@media(max-width:850px){.nodes{grid-template-columns:1fr 1fr}.flows{grid-template-columns:1fr}.guard{grid-template-columns:1fr}.links{grid-template-columns:1fr 1fr}}@media(max-width:480px){.wrap{padding:10px}.nodes{grid-template-columns:1fr}.links{grid-template-columns:1fr}.hero h2{font-size:23px}}
+</style>
+</head>
+<body><div class="wrap">
+<div class="top"><div class="brand"><div class="mark">GD</div><div><h1>GameDay Platform Architecture</h1><div class="sub">Buyer due diligence • system boundaries • TEST MODE</div></div></div><div class="mode">TEST MODE</div></div>
+<section class="hero"><h2>One connected sportsbook + casino stack.</h2><p>GameDay separates the browser experience from trusted backend execution. Public pages use one shared browser-safe configuration module; authentication, wager validation, wallet mutation, casino results, settlement, provider credentials, and operational data remain on the server side.</p></section>
+
+<section class="layer"><h3>1 · Customer & buyer experience</h3><div class="nodes">
+<div class="node"><strong>Sportsbook</strong><span>Pregame, live, props, futures display, test bet slip.</span></div>
+<div class="node"><strong>Casino</strong><span>Blackjack, Roulette, Baccarat, Slots and poker-family experiences.</span></div>
+<div class="node"><strong>Account + My Bets</strong><span>Authentication, test wallet, ledger history, open and settled wagers.</span></div>
+<div class="node"><strong>Buyer / Operator Suite</strong><span>Control Center, Analytics, System Health, Readiness and transfer checks.</span></div>
+</div></section>
+<div class="arrow">↓</div>
+<section class="layer"><h3>2 · Shared public configuration</h3><div class="nodes">
+<div class="node"><strong>gameday-config.js</strong><span>Browser-safe project URL, publishable key, routes and Edge Function slugs.</span></div>
+<div class="node"><strong>Configuration Check</strong><span>Validates buyer-controlled public project settings.</span></div>
+<div class="node"><strong>Transfer Audit</strong><span>Checks centralized configuration adoption and legacy project references.</span></div>
+<div class="node"><strong>Transferability CI</strong><span>Prevents regression of TEST MODE, shared config and browser-secret safeguards.</span></div>
+</div></section>
+<div class="arrow">↓</div>
+<section class="layer"><h3>3 · Supabase trusted application layer</h3><div class="nodes">
+<div class="node"><strong>Authentication</strong><span>User sessions protect account, wallet, wager and casino operations.</span></div>
+<div class="node"><strong>Sports Edge Functions</strong><span>Odds, live state, fresh-quote wager placement and operator endpoints.</span></div>
+<div class="node"><strong>Casino Edge Functions</strong><span>Authenticated server-side result generation for connected games.</span></div>
+<div class="node"><strong>Scheduled Jobs</strong><span>Automatic test-wager settlement every 5 minutes and daily retention cleanup.</span></div>
+</div></section>
+<div class="arrow">↓</div>
+<section class="layer"><h3>4 · PostgreSQL + RLS data layer</h3><div class="nodes">
+<div class="node"><strong>Sports Data</strong><span>Events, markets, outcomes, provider snapshots and odds cache.</span></div>
+<div class="node"><strong>Wagering</strong><span>Wagers, selections, atomic placement and deterministic supported settlement.</span></div>
+<div class="node"><strong>Wallet Ledger</strong><span>Test debits, wins, refunds and test-credit adjustments with server-side mutation.</span></div>
+<div class="node"><strong>Casino Records</strong><span>Server-persisted rounds, hands and spins for connected casino engines.</span></div>
+</div></section>
+<div class="arrow">↓</div>
+<section class="layer"><h3>5 · External provider boundary</h3><div class="nodes">
+<div class="node"><strong>Sports Data Providers</strong><span>Upstream credentials remain server-side; browser customers see GameDay-branded data.</span></div>
+<div class="node"><strong>Provider Cache</strong><span>Shared caching reduces quota use and supports stale-cache fallback where designed.</span></div>
+<div class="node"><strong>Buyer-Owned Accounts</strong><span>A buyer must supply or transfer permitted provider accounts, rights and credentials.</span></div>
+<div class="node"><strong>No Browser Secrets</strong><span>Service-role and provider credentials are not part of the public client configuration.</span></div>
+</div></section>
+
+<div class="flows">
+<section class="flow"><h3>Sportsbook TEST MODE flow</h3><ol><li>Customer opens GameDay Sportsbook.</li><li>Browser requests controlled odds/live data.</li><li>Customer selects a supported market.</li><li>Server revalidates a fresh quote.</li><li>Atomic placement records wager, selections and test-wallet debit.</li><li>Scheduled settlement grades supported markets and applies any test-wallet credit.</li></ol></section>
+<section class="flow"><h3>Casino TEST MODE flow</h3><ol><li>Signed-in customer opens a connected casino game.</li><li>Browser invokes the authenticated game Edge Function.</li><li>Trusted server logic determines the game result.</li><li>Server-side wallet logic applies the test debit/payout atomically.</li><li>Round/hand/spin history is persisted for the authenticated user.</li><li>Operator analytics consume aggregate activity without presenting it as real revenue.</li></ol></section>
+</div>
+
+<div class="guard">
+<div><strong>Security boundary</strong><span>Browser roles do not receive service-role keys or upstream provider secrets.</span></div>
+<div><strong>Transfer boundary</strong><span>Customer-facing public configuration can be replaced centrally while privileged backend configuration is rotated separately.</span></div>
+<div><strong>Commercial boundary</strong><span>Current architecture demonstrates working TEST MODE software; regulated real-money operation is a separate buyer responsibility.</span></div>
+</div>
+
+<div class="notice"><strong>Real-money boundary:</strong> This architecture page documents the current TEST MODE software asset. It does not represent licensing, gaming-payment approval, KYC/AML, geolocation, responsible-gaming certification, or authorization to accept real-money wagers.</div>
+<div class="links"><a href="gameday-admin-takeover.html">Admin Takeover</a><a href="gameday-buyer-readiness.html">Buyer Readiness</a><a href="gameday-control-center.html">Control Center</a><a href="gameday-system-health.html">System Health</a><a href="gameday-buyer-demo.html">Buyer Demo</a></div>
+</div></body>
+</html>
