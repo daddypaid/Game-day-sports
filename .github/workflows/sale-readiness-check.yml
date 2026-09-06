@@ -1,0 +1,127 @@
+name: Final Sale Readiness Check
+
+on:
+  push:
+    branches: ["main"]
+  pull_request:
+    branches: ["main"]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  sale-readiness:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Validate sale package
+        shell: bash
+        run: |
+          set -euo pipefail
+          required=(
+            README.md
+            BUYER-OVERVIEW.md
+            SALE-LISTING.md
+            ASSET-INVENTORY.md
+            DUE-DILIGENCE-DISCLOSURES.md
+            ACQUISITION-HANDOFF.md
+            HANDOFF-REHEARSAL.md
+            BUYER-RELEASE-CHECKLIST.md
+            FINAL-SALE-READINESS.md
+            gameday-buyer-demo.html
+            gameday-buyer-readiness.html
+            gameday-platform-architecture.html
+            gameday-admin-takeover.html
+            gameday-config-check.html
+            gameday-transfer-audit.html
+            gameday-config.js
+          )
+          for file in "${required[@]}"; do
+            test -s "$file"
+          done
+
+          grep -q 'TEST MODE' SALE-LISTING.md
+          grep -q 'TEST MODE' DUE-DILIGENCE-DISCLOSURES.md
+          grep -q 'TEST MODE' FINAL-SALE-READINESS.md
+          grep -q "environment: 'TEST'" gameday-config.js
+          grep -q "buyerReadiness: 'gameday-buyer-readiness.html'" gameday-config.js
+          grep -q "platformArchitecture: 'gameday-platform-architecture.html'" gameday-config.js
+
+      - name: Validate canonical product surfaces
+        shell: bash
+        run: |
+          set -euo pipefail
+          pages=(
+            index.html
+            gameday-sportsbook.html
+            gameday-casino-v2.html
+            gameday-my-bets.html
+            gameday-auth.html
+            gameday-blackjack.html
+            gameday-roulette.html
+            gameday-baccarat.html
+            gameday-slots.html
+            gameday-video-poker.html
+            gameday-bonus-poker.html
+            gameday-deuces-wild.html
+            gameday-three-card-poker.html
+            gameday-ultimate-texas-holdem.html
+            gameday-caribbean-stud.html
+          )
+          for file in "${pages[@]}"; do
+            test -s "$file"
+          done
+
+      - name: Validate buyer navigation
+        shell: bash
+        run: |
+          set -euo pipefail
+          grep -q 'gameday-buyer-readiness.html' gameday-admin-takeover.html
+          grep -q 'gameday-platform-architecture.html' gameday-admin-takeover.html
+          grep -q 'BUYER-OVERVIEW.md' gameday-admin-takeover.html
+          grep -q 'gameday-buyer-readiness.html' gameday-platform-architecture.html
+          grep -q 'gameday-admin-takeover.html' gameday-platform-architecture.html
+
+      - name: Validate artwork inventory roots
+        shell: bash
+        run: |
+          set -euo pipefail
+          test -d art
+          test -d assets
+          test -s art/gameday-sportsbook-approved-hero.jpg
+          test -s art/gameday-sportsbook-hero.svg
+          test -s assets/gameday-blackjack-table-premium.svg
+          test -s assets/gameday-roulette-room.svg
+          test -s assets/gameday-baccarat-room.svg
+
+      - name: Block private credentials in browser source
+        shell: bash
+        run: |
+          set -euo pipefail
+          if grep -RInE \
+            --include='*.html' --include='*.js' --include='*.css' \
+            'SUPABASE_SERVICE_ROLE_KEY|SUPABASE_SECRET_KEYS|API_SPORTS_KEY|ODDS_API_KEY|sb_secret_[A-Za-z0-9_-]+' .; then
+            echo 'Private backend credential reference detected in browser source.'
+            exit 1
+          fi
+
+      - name: Validate PWA registration and transfer utility
+        shell: bash
+        run: |
+          set -euo pipefail
+          grep -q "serviceWorker.register('./sw.js'" gameday-app.js
+          test -s sw.js
+          test -s manifest.webmanifest
+          test -s scripts/gameday-transfer-config.mjs
+          node --check scripts/gameday-transfer-config.mjs
+
+      - name: Confirm no real-money enablement claim
+        shell: bash
+        run: |
+          set -euo pipefail
+          grep -q 'no real-money deposits' README.md
+          grep -q 'does not currently accept or enable real-money deposits' SALE-LISTING.md
+          grep -q 'does not enable real-money deposits' DUE-DILIGENCE-DISCLOSURES.md
