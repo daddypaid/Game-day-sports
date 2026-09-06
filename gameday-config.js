@@ -42,7 +42,7 @@ export const GAMEDAY_CONFIG = Object.freeze({
     analytics: 'gameday-operator-analytics.html',
     systemHealth: 'gameday-system-health.html',
     buyerDemo: 'gameday-buyer-demo.html',
-    buyerReadiness: 'gameday-release-readiness.html',
+    buyerReadiness: 'gameday-buyer-readiness.html',
     adminTakeover: 'gameday-admin-takeover.html',
     configCheck: 'gameday-config-check.html',
     transferAudit: 'gameday-transfer-audit.html'
