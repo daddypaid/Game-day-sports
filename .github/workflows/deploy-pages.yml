@@ -29,8 +29,6 @@ jobs:
         run: |
           set -euo pipefail
           required=(
-            index.html
-            gameday-config.js
             gameday-sportsbook.html
             gameday-casino-v2.html
             gameday-my-bets.html
@@ -50,6 +48,8 @@ jobs:
           for file in "${required[@]}"; do
             test -s "$file" || { echo "Missing or empty required page: $file"; exit 1; }
           done
+          test -s index.html
+          test -s gameday-config.js
           grep -q "GameDay Sports" gameday-sportsbook.html
           grep -q "TEST MODE" gameday-sportsbook.html
           grep -q "gameday-config.js" gameday-sportsbook.html
