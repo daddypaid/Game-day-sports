@@ -536,12 +536,9 @@ Loading...
 import {
   createClient
 } from "https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/+esm";
+import{GAMEDAY_CONFIG}from"./gameday-config.js";
 
-const supabase =
-createClient(
-  "https://qsvrvhcklnsbekxblpfo.supabase.co",
-  "sb_publishable_-yCYGvDqIzVFgu90lgoVpw_uoWnYmO0"
-);
+const supabase = createClient(GAMEDAY_CONFIG.supabaseUrl,GAMEDAY_CONFIG.supabasePublishableKey);
 
 let currentUser = null;
 let walletBalance = 0;
@@ -867,7 +864,7 @@ async function playBaccarat(){
       error
     } =
     await supabase.functions.invoke(
-      "baccarat-test",
+      GAMEDAY_CONFIG.functions.baccarat,
       {
         body:{
           stake:amount,

@@ -444,12 +444,9 @@ Loading...
 import {
 createClient
 } from "https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/+esm";
+import{GAMEDAY_CONFIG}from"./gameday-config.js";
 
-const supabase =
-createClient(
-"https://qsvrvhcklnsbekxblpfo.supabase.co",
-"sb_publishable_-yCYGvDqIzVFgu90lgoVpw_uoWnYmO0"
-);
+const supabase = createClient(GAMEDAY_CONFIG.supabaseUrl,GAMEDAY_CONFIG.supabasePublishableKey);
 
 let user = null;
 let walletBalance = 0;
@@ -648,7 +645,7 @@ data,
 error
 } =
 await supabase.functions.invoke(
-"slots-test",
+GAMEDAY_CONFIG.functions.slots,
 {
 body:{
 stake:amount
