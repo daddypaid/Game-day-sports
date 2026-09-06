@@ -1,6 +1,6 @@
 # GameDay Sports
 
-GameDay Sports is a TEST MODE sportsbook and casino platform hosted on GitHub Pages with Supabase providing authentication, database storage, Edge Functions, test-wallet accounting, scheduled settlement jobs, operator metrics, and system-health monitoring.
+GameDay Sports is a TEST MODE sportsbook and casino platform hosted on GitHub Pages with Supabase providing authentication, database storage, Edge Functions, test-wallet accounting, scheduled settlement jobs, operator metrics, analytics, and system-health monitoring.
 
 ## Current status
 
@@ -15,6 +15,7 @@ GameDay Sports is a TEST MODE sportsbook and casino platform hosted on GitHub Pa
 - `index.html` — premium GameDay product hub
 - `gameday-buyer-demo.html` — guided acquisition/buyer walkthrough
 - `gameday-control-center.html` — protected operator dashboard with aggregate platform metrics
+- `gameday-operator-analytics.html` — protected buyer-facing sportsbook, casino, and wallet activity analytics
 - `gameday-system-health.html` — protected system-health, provider freshness, cache, ledger, sportsbook, and casino activity monitoring
 - `ACQUISITION-OVERVIEW.md` — buyer-ready product overview
 - `ACQUISITION-HANDOFF.md` — technical transfer and due-diligence guide
@@ -40,6 +41,8 @@ Older wallet, betslip, settlement, live, v2/v3/v4, wager, and casino routes are 
 ## Operator tooling
 
 `gameday-operator-metrics` is a protected Supabase Edge Function that exposes aggregate platform totals for the Control Center without exposing service credentials in the browser.
+
+`gameday-operator-analytics` is a protected Supabase Edge Function that exposes TEST MODE aggregate analytics for buyer due diligence, including sportsbook wager count and simulated handle, casino round count and simulated handle/payouts, activity mix by sport and casino game, recent activity, and wallet-ledger movement. These figures are simulation metrics and are not real-money revenue.
 
 `gameday-operator-health` is a protected Supabase Edge Function that evaluates:
 
