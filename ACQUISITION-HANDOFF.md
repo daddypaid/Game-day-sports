@@ -22,6 +22,7 @@ GameDay is software/IP in TEST MODE. It is not represented as a licensed real-mo
 - `gameday-config-check.html` — buyer-facing public configuration validation
 - `gameday-transfer-audit.html` — browser-facing transferability audit
 - `BUYER-OVERVIEW.md` — buyer-facing product overview
+- `BUYER-RELEASE-CHECKLIST.md` — buyer technical acceptance record and release checklist
 
 ## Casino surfaces
 
@@ -95,6 +96,7 @@ The Supabase publishable browser key is intentionally client-visible; privileged
 13. Connect buyer-owned sports-data provider accounts.
 14. Run end-to-end TEST MODE validation for account, wallet, sportsbook, settlement and casino flows.
 15. Configure buyer-controlled domain, deployment and monitoring.
+16. Complete `BUYER-RELEASE-CHECKLIST.md` and record the accepted repository commit, environment, deployment, configuration check, transfer audit, and CI result.
 
 ## Real-money production blockers
 
@@ -117,6 +119,7 @@ A technical buyer should review:
 
 - `README.md`
 - `BUYER-OVERVIEW.md`
+- `BUYER-RELEASE-CHECKLIST.md`
 - `gameday-buyer-readiness.html`
 - `gameday-admin-takeover.html`
 - `gameday-config.js`
