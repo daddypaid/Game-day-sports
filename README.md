@@ -23,6 +23,7 @@ GameDay Sports is a TEST MODE sportsbook and casino platform hosted on GitHub Pa
 - `gameday-config-check.html` — public configuration validation page for buyer-controlled Supabase settings
 - `BUYER-OVERVIEW.md` — buyer-ready product overview
 - `ACQUISITION-HANDOFF.md` — technical transfer and due-diligence guide
+- `BUYER-RELEASE-CHECKLIST.md` — buyer technical acceptance checklist for source, configuration, backend takeover, TEST MODE functionality, deployment, and handoff records
 
 The installable PWA opens the premium hub and includes shortcuts to Sportsbook, Casino, My Bets, and Control Center.
 
