@@ -18,7 +18,10 @@ GameDay Sports is a TEST MODE sportsbook and casino platform hosted on GitHub Pa
 - `gameday-operator-analytics.html` — protected buyer-facing sportsbook, casino, and wallet activity analytics
 - `gameday-system-health.html` — protected system-health, provider freshness, cache, ledger, sportsbook, and casino activity monitoring
 - `gameday-admin-takeover.html` — buyer/operator takeover sequence covering due diligence, infrastructure transfer, credential rotation, deployment validation, and TEST MODE safeguards
-- `ACQUISITION-OVERVIEW.md` — buyer-ready product overview
+- `gameday-buyer-readiness.html` — buyer readiness scorecard separating transferable TEST MODE software from buyer-owned infrastructure work and regulated real-money requirements
+- `gameday-transfer-audit.html` — browser-facing audit of centralized public configuration across supported customer pages
+- `gameday-config-check.html` — public configuration validation page for buyer-controlled Supabase settings
+- `BUYER-OVERVIEW.md` — buyer-ready product overview
 - `ACQUISITION-HANDOFF.md` — technical transfer and due-diligence guide
 
 The installable PWA opens the premium hub and includes shortcuts to Sportsbook, Casino, My Bets, and Control Center.
@@ -55,9 +58,17 @@ Older wallet, betslip, settlement, live, v2/v3/v4, wager, and casino routes are 
 - Sportsbook test-wager activity
 - Casino test-round/spin activity
 
-`gameday-admin-takeover.html` gives an acquiring buyer or replacement operator a structured handoff sequence: review the product, verify health, review test analytics, transfer source/infrastructure, rotate credentials, revalidate deployment/jobs, and keep real-money operation disabled until all required legal and operational controls are completed.
+`gameday-admin-takeover.html` gives an acquiring buyer or replacement operator a structured handoff sequence: review the product, review the Buyer Readiness scorecard, verify health, review test analytics, run the Transfer Audit and Configuration Check, transfer source/infrastructure, rotate credentials, revalidate deployment/jobs, and keep real-money operation disabled until all required legal and operational controls are completed.
 
 The operator pages are intended for test-mode platform demonstration, technical review, and buyer due diligence. They do not indicate licensure or real-money production readiness.
+
+## Transferability architecture
+
+`gameday-config.js` is the canonical browser-safe configuration module for the supported customer-facing platform. It centralizes the Supabase project URL, publishable browser key, Edge Function slugs, route names, brand, and TEST environment marker.
+
+The supported sportsbook, account, core casino, and poker-family customer pages use this shared public configuration rather than embedding the current GameDay Supabase project reference directly in each page. `gameday-transfer-audit.html` verifies that browser-facing centralization, while the permanent `GameDay Transferability Check` GitHub Actions workflow prevents regression of the shared configuration and buyer handoff surfaces.
+
+Backend-only secrets remain server-side and are not part of the browser configuration module.
 
 ## Sportsbook architecture
 
