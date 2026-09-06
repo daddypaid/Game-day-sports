@@ -29,6 +29,8 @@ jobs:
         run: |
           set -euo pipefail
           required=(
+            index.html
+            gameday-config.js
             gameday-sportsbook.html
             gameday-casino-v2.html
             gameday-my-bets.html
@@ -50,6 +52,10 @@ jobs:
           done
           grep -q "GameDay Sports" gameday-sportsbook.html
           grep -q "TEST MODE" gameday-sportsbook.html
+          grep -q "gameday-config.js" gameday-sportsbook.html
+          grep -q "gameday-config.js" gameday-casino-v2.html
+          grep -q "gameday-config.js" gameday-my-bets.html
+          grep -q "gameday-config.js" gameday-auth.html
           grep -q "Test Wallet" gameday-auth.html
           grep -q "GameDay Poker" gameday-poker.html
           grep -q "Jacks or Better" gameday-video-poker.html
@@ -126,6 +132,8 @@ jobs:
           grep -q "input.step = '1'" gameday-card-wager-ui.js
 
           pwa_required=(
+            index.html
+            gameday-config.js
             manifest.webmanifest
             sw.js
             gameday-app.js
@@ -137,8 +145,10 @@ jobs:
           for file in "${pwa_required[@]}"; do
             test -s "$file" || { echo "Missing or empty PWA file: $file"; exit 1; }
           done
-          grep -q '"start_url": "./gameday-sportsbook.html"' manifest.webmanifest
+          grep -q '"start_url": "./index.html"' manifest.webmanifest
           grep -q "navigator.serviceWorker.register('./sw.js'" gameday-app.js
+          grep -q "./index.html" sw.js
+          grep -q "./gameday-config.js" sw.js
           grep -q "'gameday-poker.html':'poker'" gameday-app.js
           grep -q "'gameday-video-poker.html':'poker-game'" gameday-app.js
           grep -q "'gameday-bonus-poker.html':'poker-game'" gameday-app.js
