@@ -1,0 +1,71 @@
+name: GameDay Transferability Check
+
+on:
+  push:
+    branches: ["main"]
+  pull_request:
+    branches: ["main"]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  transferability:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Validate shared public configuration
+        shell: bash
+        run: |
+          set -euo pipefail
+          test -s gameday-config.js
+          test -s gameday-transfer-audit.html
+          test -s gameday-config-check.html
+          test -s scripts/gameday-transfer-config.mjs
+
+          grep -q "environment: 'TEST'" gameday-config.js
+          grep -q "blackjack: 'blackjack-test'" gameday-config.js
+          grep -q "roulette: 'roulette-test'" gameday-config.js
+          grep -q "baccarat: 'baccarat-test'" gameday-config.js
+          grep -q "slots: 'slots-test'" gameday-config.js
+
+          node --check scripts/gameday-transfer-config.mjs
+
+      - name: Validate centralized core pages
+        shell: bash
+        run: |
+          set -euo pipefail
+          centralized=(
+            gameday-sportsbook.html
+            gameday-casino-v2.html
+            gameday-my-bets.html
+            gameday-auth.html
+            gameday-control-center.html
+            gameday-operator-analytics.html
+            gameday-system-health.html
+          )
+          for file in "${centralized[@]}"; do
+            test -s "$file"
+            grep -q 'gameday-config.js' "$file"
+          done
+
+      - name: Block private browser credentials
+        shell: bash
+        run: |
+          set -euo pipefail
+          if grep -RInE \
+            --include='*.html' --include='*.js' --include='*.css' \
+            'SUPABASE_SERVICE_ROLE_KEY|SUPABASE_SECRET_KEYS|API_SPORTS_KEY|ODDS_API_KEY|sb_secret_[A-Za-z0-9_-]+' .; then
+            echo 'Private backend credential reference detected in browser source.'
+            exit 1
+          fi
+
+      - name: Confirm transfer tooling remains test-mode only
+        shell: bash
+        run: |
+          set -euo pipefail
+          grep -q 'Public browser configuration only' scripts/gameday-transfer-config.mjs
+          grep -q 'TEST MODE' gameday-transfer-audit.html
