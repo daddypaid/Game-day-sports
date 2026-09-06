@@ -15,11 +15,14 @@ GameDay is software/IP in TEST MODE. It is not represented as a licensed real-mo
 - `gameday-auth.html` — authentication, recovery, wallet and transaction history
 - `gameday-buyer-demo.html` — guided acquisition walkthrough
 - `gameday-control-center.html` — operator/buyer metrics dashboard
+- `gameday-operator-analytics.html` — TEST MODE activity analytics
+- `gameday-system-health.html` — protected operational health checks
 - `gameday-config-check.html` — buyer-facing public configuration validation
+- `gameday-transfer-audit.html` — browser-facing transferability audit
 
 ## Casino surfaces
 
-The repository includes connected GameDay casino experiences including Blackjack, Roulette, Baccarat, Slots, Poker and additional casino-poker variants. Canonical lobby links should be treated as the supported navigation path during buyer review.
+The repository includes connected GameDay casino experiences including Blackjack, Roulette, Baccarat, Slots, Poker, Video Poker, Bonus Poker, Deuces Wild, Three Card Poker, Ultimate Texas Hold'em and Caribbean Stud. Canonical lobby links should be treated as the supported navigation path during buyer review.
 
 ## Backend
 
@@ -54,11 +57,13 @@ Connected casino games use server-side Edge Functions for result generation and 
 
 ## Configuration and secrets
 
-`gameday-config.js` is the canonical public client-configuration module for the buyer-handoff architecture. It contains only browser-safe settings such as the Supabase URL, publishable key, shared function slugs, route names, brand, and TEST environment marker.
+`gameday-config.js` is the canonical public client-configuration module for the current buyer-handoff architecture. It contains only browser-safe settings such as the Supabase URL, publishable key, shared function slugs, route names, brand, and TEST environment marker.
 
-`gameday-config-check.html` validates that public configuration and checks whether the configured Supabase project is reachable. A buyer should use it after replacing public project settings.
+The current customer-facing transfer set is centralized on `gameday-config.js`, including the sportsbook, casino lobby, My Bets, account/test wallet, Blackjack, Roulette, Baccarat, Slots, Video Poker, Bonus Poker, Deuces Wild, Three Card Poker, Ultimate Texas Hold'em and Caribbean Stud. The operator Control Center, Operator Analytics and System Health pages use the same public configuration module.
 
-Some legacy customer pages still contain embedded public Supabase settings and should be migrated to `gameday-config.js` during the buyer-controlled frontend consolidation. This is a transferability improvement in progress, not a claim that every legacy page has already been converted.
+`gameday-config-check.html` validates the configured public project settings and project reachability. `gameday-transfer-audit.html` independently checks the browser-facing customer pages for shared-config adoption and legacy embedded project references. GitHub's `GameDay Transferability Check` workflow provides an additional repository-level CI guard.
+
+A buyer therefore has one canonical browser-configuration file to update for the current supported customer-facing platform. Backend-only credentials remain separate and must be transferred or rotated through secure server-side configuration.
 
 Never commit backend-only credentials to GitHub. A buyer must replace all environment-specific values and secrets, including as applicable:
 
@@ -80,10 +85,11 @@ The Supabase publishable browser key is intentionally client-visible; privileged
 6. Recreate scheduled settlement and retention jobs.
 7. Update `gameday-config.js` with the buyer's browser-safe Supabase URL and publishable key.
 8. Open `gameday-config-check.html` and verify the new project is reachable.
-9. Migrate any remaining legacy frontend pages that still embed public Supabase settings to the shared config module.
-10. Connect buyer-owned sports-data provider accounts.
-11. Run end-to-end TEST MODE validation for account, wallet, sportsbook, settlement and casino flows.
-12. Configure buyer-controlled domain, deployment and monitoring.
+9. Open `gameday-transfer-audit.html` and confirm the supported customer-facing pages report centralized configuration with no legacy embedded project reference.
+10. Run the `GameDay Transferability Check` workflow and confirm it passes.
+11. Connect buyer-owned sports-data provider accounts.
+12. Run end-to-end TEST MODE validation for account, wallet, sportsbook, settlement and casino flows.
+13. Configure buyer-controlled domain, deployment and monitoring.
 
 ## Real-money production blockers
 
@@ -107,6 +113,7 @@ A technical buyer should review:
 - `README.md`
 - `gameday-config.js`
 - `gameday-config-check.html`
+- `gameday-transfer-audit.html`
 - Supabase migrations
 - Edge Functions
 - RLS policies
@@ -114,7 +121,7 @@ A technical buyer should review:
 - Wager placement and settlement functions
 - Casino server-result functions
 - Provider integration boundaries
-- GitHub Actions deployment workflows
+- GitHub Actions deployment and transferability workflows
 - PWA manifest and install behavior
 
 ## Transfer principle
