@@ -31,6 +31,7 @@ jobs:
             HANDOFF-REHEARSAL.md
             BUYER-RELEASE-CHECKLIST.md
             FINAL-SALE-READINESS.md
+            gameday-sale-room.html
             gameday-buyer-demo.html
             gameday-buyer-readiness.html
             gameday-platform-architecture.html
@@ -46,9 +47,11 @@ jobs:
           grep -q 'TEST MODE' SALE-LISTING.md
           grep -q 'TEST MODE' DUE-DILIGENCE-DISCLOSURES.md
           grep -q 'TEST MODE' FINAL-SALE-READINESS.md
+          grep -q 'TEST MODE' gameday-sale-room.html
           grep -q "environment: 'TEST'" gameday-config.js
           grep -q "buyerReadiness: 'gameday-buyer-readiness.html'" gameday-config.js
           grep -q "platformArchitecture: 'gameday-platform-architecture.html'" gameday-config.js
+          grep -q "saleRoom: 'gameday-sale-room.html'" gameday-config.js
 
       - name: Validate canonical product surfaces
         shell: bash
@@ -84,6 +87,10 @@ jobs:
           grep -q 'BUYER-OVERVIEW.md' gameday-admin-takeover.html
           grep -q 'gameday-buyer-readiness.html' gameday-platform-architecture.html
           grep -q 'gameday-admin-takeover.html' gameday-platform-architecture.html
+          grep -q 'SALE-LISTING.md' gameday-sale-room.html
+          grep -q 'ASSET-INVENTORY.md' gameday-sale-room.html
+          grep -q 'DUE-DILIGENCE-DISCLOSURES.md' gameday-sale-room.html
+          grep -q 'FINAL-SALE-READINESS.md' gameday-sale-room.html
 
       - name: Validate artwork inventory roots
         shell: bash
