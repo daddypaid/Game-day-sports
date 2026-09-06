@@ -59,19 +59,23 @@ jobs:
           grep -q "Test Wallet" gameday-auth.html
           grep -q "GameDay Poker" gameday-poker.html
           grep -q "Jacks or Better" gameday-video-poker.html
-          grep -q "video-poker-test" gameday-video-poker.html
+          grep -q "GAMEDAY_CONFIG.functions.videoPoker" gameday-video-poker.html
           grep -q "Bonus Poker" gameday-bonus-poker.html
-          grep -q "video-poker-test" gameday-bonus-poker.html
+          grep -q "GAMEDAY_CONFIG.functions.videoPoker" gameday-bonus-poker.html
           grep -q "game:GAME" gameday-bonus-poker.html
           grep -q "Deuces Wild" gameday-deuces-wild.html
-          grep -q "video-poker-test" gameday-deuces-wild.html
+          grep -q "GAMEDAY_CONFIG.functions.videoPoker" gameday-deuces-wild.html
           grep -q "game:GAME" gameday-deuces-wild.html
           grep -q "Three Card Poker" gameday-three-card-poker.html
-          grep -q "three-card-poker-test" gameday-three-card-poker.html
+          grep -q "GAMEDAY_CONFIG.functions.threeCardPoker" gameday-three-card-poker.html
           grep -q "Ultimate Texas Hold'em" gameday-ultimate-texas-holdem.html
-          grep -q "ultimate-texas-holdem-test" gameday-ultimate-texas-holdem.html
+          grep -q "GAMEDAY_CONFIG.functions.ultimateTexasHoldem" gameday-ultimate-texas-holdem.html
           grep -q "Caribbean Stud" gameday-caribbean-stud.html
-          grep -q "caribbean-stud-test" gameday-caribbean-stud.html
+          grep -q "GAMEDAY_CONFIG.functions.caribbeanStud" gameday-caribbean-stud.html
+          grep -q "videoPoker: 'video-poker-test'" gameday-config.js
+          grep -q "threeCardPoker: 'three-card-poker-test'" gameday-config.js
+          grep -q "ultimateTexasHoldem: 'ultimate-texas-holdem-test'" gameday-config.js
+          grep -q "caribbeanStud: 'caribbean-stud-test'" gameday-config.js
           grep -q 'href="gameday-poker.html">Poker</a>' gameday-casino-v2.html
           grep -q 'href="gameday-three-card-poker.html"' gameday-poker.html
           grep -q 'href="gameday-bonus-poker.html"' gameday-poker.html
