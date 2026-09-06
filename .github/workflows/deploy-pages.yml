@@ -90,7 +90,7 @@ jobs:
 
           grep -q 'async function resumeActiveHand()' gameday-blackjack.html
           grep -q 'action:"resume"' gameday-blackjack.html
-          test "$(grep -c 'await resumeActiveHand();' gameday-blackjack.html)" -eq 2
+          test "$(grep -o 'await resumeActiveHand()' gameday-blackjack.html | wc -l)" -eq 2
 
           mobile_fit_pages=(gameday-blackjack.html gameday-video-poker.html gameday-bonus-poker.html gameday-deuces-wild.html gameday-three-card-poker.html gameday-ultimate-texas-holdem.html gameday-caribbean-stud.html)
           for file in "${mobile_fit_pages[@]}"; do
