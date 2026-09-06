@@ -1,14 +1,21 @@
 {
+  "id": "gameday-sports-casino",
   "name": "GameDay Sports & Casino",
   "short_name": "GameDay",
-  "description": "GameDay Sports & Casino TEST MODE app.",
-  "start_url": "./gameday-premium.html",
+  "description": "GameDay Sports & Casino TEST MODE platform with sportsbook, casino, wallet, wager history, and operator tools.",
+  "start_url": "./index.html",
   "scope": "./",
   "display": "standalone",
   "orientation": "portrait-primary",
   "background_color": "#050706",
   "theme_color": "#050706",
   "categories": ["sports", "entertainment"],
+  "shortcuts": [
+    {"name":"Sportsbook","short_name":"Sportsbook","url":"./gameday-sportsbook.html"},
+    {"name":"Casino","short_name":"Casino","url":"./gameday-casino-v2.html"},
+    {"name":"My Bets","short_name":"My Bets","url":"./gameday-my-bets.html"},
+    {"name":"Control Center","short_name":"Control","url":"./gameday-control-center.html"}
+  ],
   "icons": [
     {
       "src": "./icons/gameday-192.png",
