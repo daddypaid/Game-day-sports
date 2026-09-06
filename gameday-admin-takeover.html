@@ -22,19 +22,21 @@
   </div>
 
   <section class="section"><h3>Buyer takeover sequence</h3><div class="steps">
-    <div class="step"><div class="num">1</div><div><strong>Review the product</strong><span>Walk through the premium hub, sportsbook, casino, account, My Bets, and buyer demo.</span></div><div class="tag">DISCOVERY</div></div>
-    <div class="step"><div class="num">2</div><div><strong>Review platform architecture</strong><span>Use Platform Architecture to understand the browser, shared config, Supabase, database, provider, sportsbook, casino, and operator boundaries.</span></div><div class="tag">ARCHITECTURE</div></div>
-    <div class="step"><div class="num">3</div><div><strong>Verify platform health</strong><span>Use System Health to review database reachability, provider freshness, odds cache, ledger activity, sportsbook activity, and casino activity.</span></div><div class="tag">DUE DILIGENCE</div></div>
-    <div class="step"><div class="num">4</div><div><strong>Review test analytics</strong><span>Use Operator Analytics to understand sportsbook handle, casino rounds, wallet movement, and product usage without presenting simulated data as revenue.</span></div><div class="tag">ANALYTICS</div></div>
-    <div class="step"><div class="num">5</div><div><strong>Check buyer readiness</strong><span>Use Buyer Readiness to separate acquisition-ready software from buyer-owned infrastructure work and regulated real-money requirements.</span></div><div class="tag">READINESS</div></div>
-    <div class="step"><div class="num">6</div><div><strong>Transfer source and infrastructure</strong><span>Transfer GitHub ownership/access and either transfer or recreate the Supabase project under the buyer's organization.</span></div><div class="tag">TRANSFER</div></div>
-    <div class="step"><div class="num">7</div><div><strong>Rotate every credential</strong><span>Replace provider secrets, service-role credentials, deployment credentials, and any buyer-specific keys before operational use.</span></div><div class="tag">SECURITY</div></div>
-    <div class="step"><div class="num">8</div><div><strong>Update shared public configuration</strong><span>Set the buyer's browser-safe Supabase URL and publishable key in gameday-config.js, then run Configuration Check and Transfer Audit.</span></div><div class="tag">CONFIG</div></div>
-    <div class="step"><div class="num">9</div><div><strong>Revalidate deployment and jobs</strong><span>Confirm Pages deployment, Edge Functions, scheduled settlement, retention jobs, authentication redirects, RLS, and test-wallet integrity.</span></div><div class="tag">VALIDATION</div></div>
-    <div class="step"><div class="num">10</div><div><strong>Keep real-money mode disabled</strong><span>Licensing, KYC/AML, geolocation, responsible-gaming controls, payments, fraud/risk controls, and data rights must be completed separately.</span></div><div class="tag">REQUIRED</div></div>
+    <div class="step"><div class="num">1</div><div><strong>Review the sale room</strong><span>Start with the Sale Room for pricing, asset inventory, disclosures, architecture and the complete buyer-document package.</span></div><div class="tag">SALE ROOM</div></div>
+    <div class="step"><div class="num">2</div><div><strong>Review the product</strong><span>Walk through the premium hub, sportsbook, casino, account, My Bets, and buyer demo.</span></div><div class="tag">DISCOVERY</div></div>
+    <div class="step"><div class="num">3</div><div><strong>Review platform architecture</strong><span>Use Platform Architecture to understand the browser, shared config, Supabase, database, provider, sportsbook, casino, and operator boundaries.</span></div><div class="tag">ARCHITECTURE</div></div>
+    <div class="step"><div class="num">4</div><div><strong>Verify platform health</strong><span>Use System Health to review database reachability, provider freshness, odds cache, ledger activity, sportsbook activity, and casino activity.</span></div><div class="tag">DUE DILIGENCE</div></div>
+    <div class="step"><div class="num">5</div><div><strong>Review test analytics</strong><span>Use Operator Analytics to understand sportsbook handle, casino rounds, wallet movement, and product usage without presenting simulated data as revenue.</span></div><div class="tag">ANALYTICS</div></div>
+    <div class="step"><div class="num">6</div><div><strong>Check buyer readiness</strong><span>Use Buyer Readiness to separate acquisition-ready software from buyer-owned infrastructure work and regulated real-money requirements.</span></div><div class="tag">READINESS</div></div>
+    <div class="step"><div class="num">7</div><div><strong>Transfer source and infrastructure</strong><span>Transfer GitHub ownership/access and either transfer or recreate the Supabase project under the buyer's organization.</span></div><div class="tag">TRANSFER</div></div>
+    <div class="step"><div class="num">8</div><div><strong>Rotate every credential</strong><span>Replace provider secrets, service-role credentials, deployment credentials, and any buyer-specific keys before operational use.</span></div><div class="tag">SECURITY</div></div>
+    <div class="step"><div class="num">9</div><div><strong>Update shared public configuration</strong><span>Set the buyer's browser-safe Supabase URL and publishable key in gameday-config.js, then run Configuration Check and Transfer Audit.</span></div><div class="tag">CONFIG</div></div>
+    <div class="step"><div class="num">10</div><div><strong>Revalidate deployment and jobs</strong><span>Confirm Pages deployment, Edge Functions, scheduled settlement, retention jobs, authentication redirects, RLS, and test-wallet integrity.</span></div><div class="tag">VALIDATION</div></div>
+    <div class="step"><div class="num">11</div><div><strong>Keep real-money mode disabled</strong><span>Licensing, KYC/AML, geolocation, responsible-gaming controls, payments, fraud/risk controls, and data rights must be completed separately.</span></div><div class="tag">REQUIRED</div></div>
   </div></section>
 
   <section class="section"><h3>Operator suite</h3><div class="links">
+    <a class="quick" href="gameday-sale-room.html"><strong>Sale Room</strong><span>Price, package, disclosures and diligence</span></a>
     <a class="quick" href="gameday-platform-architecture.html"><strong>Platform Architecture</strong><span>System layers and trusted boundaries</span></a>
     <a class="quick" href="gameday-control-center.html"><strong>Control Center</strong><span>Aggregate platform metrics</span></a>
     <a class="quick" href="gameday-operator-analytics.html"><strong>Operator Analytics</strong><span>Test sportsbook/casino activity</span></a>
@@ -45,10 +47,14 @@
   </div></section>
 
   <section class="section"><h3>Handoff documents</h3><div class="links">
+    <a class="quick" href="SALE-LISTING.md"><strong>Sale Listing</strong><span>Offering, price and suggested deal structure</span></a>
+    <a class="quick" href="ASSET-INVENTORY.md"><strong>Asset Inventory</strong><span>Included surfaces and transfer boundaries</span></a>
+    <a class="quick" href="DUE-DILIGENCE-DISCLOSURES.md"><strong>Disclosures</strong><span>Known limitations and third-party rights</span></a>
     <a class="quick" href="BUYER-OVERVIEW.md"><strong>Buyer Overview</strong><span>What is included in the software asset</span></a>
     <a class="quick" href="ACQUISITION-HANDOFF.md"><strong>Technical Handoff</strong><span>Infrastructure and transfer notes</span></a>
-    <a class="quick" href="README.md"><strong>Platform README</strong><span>Architecture and current status</span></a>
-    <a class="quick" href="gameday-buyer-demo.html"><strong>Buyer Demo</strong><span>Guided product walkthrough</span></a>
+    <a class="quick" href="HANDOFF-REHEARSAL.md"><strong>Handoff Rehearsal</strong><span>Buyer-controlled TEST MODE acceptance path</span></a>
+    <a class="quick" href="BUYER-RELEASE-CHECKLIST.md"><strong>Release Checklist</strong><span>Technical acceptance and closing record</span></a>
+    <a class="quick" href="FINAL-SALE-READINESS.md"><strong>Sale Readiness</strong><span>Final technical sale-ready record</span></a>
   </div></section>
 
   <div class="notice">GameDay remains TEST MODE software. This takeover workflow is for acquisition review and technical handoff only. It does not confer a gambling license or authorize real-money wagering.</div>
