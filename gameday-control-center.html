@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1.0,viewport-fit=cover">
+<meta name="theme-color" content="#07100a">
+<title>GameDay Control Center</title>
+<style>
+*{box-sizing:border-box}body{margin:0;background:radial-gradient(circle at top,#17311f 0,#09110c 36%,#050806 100%);color:#fff;font-family:Inter,Arial,sans-serif;min-height:100vh}a{color:inherit;text-decoration:none}.shell{max-width:1280px;margin:auto;padding:18px}.topbar{display:flex;justify-content:space-between;gap:16px;align-items:center;padding:18px 20px;border:1px solid #2a3c30;background:rgba(10,18,13,.92);border-radius:20px;position:sticky;top:10px;z-index:20;backdrop-filter:blur(16px)}.brand{display:flex;gap:12px;align-items:center}.mark{width:44px;height:44px;border-radius:13px;background:linear-gradient(145deg,#f0f5f1,#8bb894);color:#07100a;display:grid;place-items:center;font-weight:900;font-size:18px;box-shadow:0 0 28px rgba(138,220,156,.22)}h1{font-size:19px;margin:0}.sub{color:#98a99e;font-size:11px;margin-top:3px}.mode{padding:8px 11px;border-radius:999px;background:#31191c;color:#ffb4bf;border:1px solid #7a3742;font-size:11px;font-weight:800}.grid{display:grid;grid-template-columns:240px 1fr;gap:18px;margin-top:18px}.side{background:rgba(11,17,13,.95);border:1px solid #26352b;border-radius:18px;padding:14px;height:max-content;position:sticky;top:104px}.side a{display:block;padding:12px 13px;border-radius:11px;color:#aebbb2;font-size:13px;font-weight:700;margin:4px 0}.side a.active,.side a:hover{background:#eaf3ec;color:#07100a}.side .label{font-size:10px;color:#68766e;text-transform:uppercase;letter-spacing:.12em;padding:10px 12px 5px}.main{min-width:0}.hero{border:1px solid #31463a;background:linear-gradient(135deg,rgba(24,51,32,.9),rgba(9,15,11,.96));border-radius:22px;padding:22px;display:flex;justify-content:space-between;gap:18px;align-items:flex-end}.hero h2{font-size:30px;margin:0 0 7px}.hero p{margin:0;color:#aeb9b1;max-width:700px;line-height:1.5}.status{display:flex;gap:8px;align-items:center;color:#bfeec8;font-size:12px;font-weight:800}.dot{width:9px;height:9px;border-radius:50%;background:#68db83;box-shadow:0 0 16px #68db83}.metrics{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:12px;margin-top:14px}.card{border:1px solid #26392d;background:#101712;border-radius:16px;padding:17px}.k{color:#8fa096;font-size:11px;text-transform:uppercase;letter-spacing:.08em}.v{font-size:30px;font-weight:900;margin-top:7px}.tiny{font-size:11px;color:#75857b;margin-top:4px}.section-title{display:flex;justify-content:space-between;align-items:center;margin:24px 2px 10px}.section-title h3{margin:0;font-size:15px}.section-title span{color:#75857c;font-size:11px}.two{display:grid;grid-template-columns:1.25fr .75fr;gap:12px}.panel{border:1px solid #26392d;background:#0e1510;border-radius:17px;padding:17px}.bar{height:10px;background:#1b281f;border-radius:999px;overflow:hidden;margin-top:10px}.fill{height:100%;background:linear-gradient(90deg,#6bdb86,#d8f6df);width:0;transition:.6s}.rows{display:grid;gap:10px}.row{display:flex;justify-content:space-between;gap:14px;padding:10px 0;border-bottom:1px solid #1f2b23;font-size:12px}.row:last-child{border:0}.good{color:#8ee4a2}.muted{color:#7f8d84}.links{display:grid;grid-template-columns:repeat(4,1fr);gap:10px}.quick{padding:14px;border:1px solid #2d4034;background:#121b15;border-radius:14px}.quick strong{display:block;font-size:13px}.quick span{display:block;color:#84938a;font-size:11px;margin-top:5px}.notice{margin-top:14px;padding:14px 16px;border:1px solid #5a4d28;background:#241f10;border-radius:14px;color:#eadb9b;font-size:12px;line-height:1.5}.error{color:#ffb1ba}.loading{opacity:.6}@media(max-width:900px){.grid{grid-template-columns:1fr}.side{position:static;display:flex;overflow:auto;gap:5px}.side .label{display:none}.side a{white-space:nowrap}.metrics{grid-template-columns:repeat(2,1fr)}.two{grid-template-columns:1fr}.links{grid-template-columns:repeat(2,1fr)}}@media(max-width:520px){.shell{padding:10px}.topbar{padding:14px}.hero{align-items:flex-start;flex-direction:column}.hero h2{font-size:25px}.metrics{grid-template-columns:1fr 1fr}.v{font-size:24px}.links{grid-template-columns:1fr}.brand .sub{display:none}}
+</style>
+</head>
+<body>
+<div class="shell">
+  <div class="topbar">
+    <div class="brand"><div class="mark">GD</div><div><h1>GameDay Control Center</h1><div class="sub">Operator dashboard • buyer demo • system overview</div></div></div>
+    <div class="mode">TEST MODE</div>
+  </div>
+  <div class="grid">
+    <aside class="side">
+      <div class="label">Control Center</div>
+      <a class="active" href="gameday-control-center.html">Overview</a>
+      <a href="gameday-sportsbook.html">Sportsbook</a>
+      <a href="gameday-casino-v2.html">Casino</a>
+      <a href="gameday-my-bets.html">Wagers</a>
+      <a href="gameday-auth.html">Accounts</a>
+      <div class="label">Buyer Demo</div>
+      <a href="README.md">Architecture</a>
+    </aside>
+    <main class="main">
+      <section class="hero">
+        <div><h2>Platform Overview</h2><p>Live operational snapshot of the GameDay test environment. Aggregate metrics only — no private customer data is exposed here.</p></div>
+        <div class="status"><span class="dot"></span><span id="sysStatus">Checking system...</span></div>
+      </section>
+
+      <div class="metrics">
+        <div class="card"><div class="k">Sports Events</div><div class="v" id="sports_events">—</div><div class="tiny">Server-managed event records</div></div>
+        <div class="card"><div class="k">Markets</div><div class="v" id="sports_markets">—</div><div class="tiny">Current sportsbook markets</div></div>
+        <div class="card"><div class="k">Outcomes</div><div class="v" id="sports_outcomes">—</div><div class="tiny">Available pricing outcomes</div></div>
+        <div class="card"><div class="k">Line History</div><div class="v" id="line_history">—</div><div class="tiny">Immutable movement records</div></div>
+      </div>
+
+      <div class="section-title"><h3>Test Activity</h3><span id="generated">Live snapshot</span></div>
+      <div class="metrics">
+        <div class="card"><div class="k">Test Users</div><div class="v" id="users">—</div><div class="tiny">Authenticated profiles</div></div>
+        <div class="card"><div class="k">Test Wagers</div><div class="v" id="wagers">—</div><div class="tiny">Sportsbook test wagers</div></div>
+        <div class="card"><div class="k">Casino Rounds</div><div class="v" id="casino_rounds">—</div><div class="tiny">Server-generated game rounds</div></div>
+        <div class="card"><div class="k">Wallet Transactions</div><div class="v" id="wallet_transactions">—</div><div class="tiny">Test-credit ledger entries</div></div>
+      </div>
+
+      <div class="section-title"><h3>Infrastructure</h3><span>Buyer-facing operational summary</span></div>
+      <div class="two">
+        <div class="panel">
+          <div class="rows">
+            <div class="row"><span>Sports data layer</span><strong class="good">Operational</strong></div>
+            <div class="row"><span>Provider snapshots</span><strong id="provider_snapshots">—</strong></div>
+            <div class="row"><span>Odds cache records</span><strong id="odds_cache_records">—</strong></div>
+            <div class="row"><span>Wager selections</span><strong id="wager_selections">—</strong></div>
+            <div class="row"><span>Wallet accounts</span><strong id="wallets">—</strong></div>
+          </div>
+        </div>
+        <div class="panel">
+          <div class="k">Platform readiness</div>
+          <div class="v" style="font-size:23px">Commercial Demo</div>
+          <div class="bar"><div class="fill" id="readyBar"></div></div>
+          <div class="tiny" style="margin-top:10px">Customer flows, wallet ledger, test wagering, automatic settlement and server-side casino results are implemented. Real-money compliance remains outside this test build.</div>
+        </div>
+      </div>
+
+      <div class="section-title"><h3>Launch Buyer Demo</h3><span>Quick access</span></div>
+      <div class="links">
+        <a class="quick" href="gameday-sportsbook.html"><strong>Open Sportsbook</strong><span>Live odds, props, futures and bet slip</span></a>
+        <a class="quick" href="gameday-casino-v2.html"><strong>Open Casino</strong><span>Server-controlled casino test games</span></a>
+        <a class="quick" href="gameday-my-bets.html"><strong>Review Wagers</strong><span>Open and settled test activity</span></a>
+        <a class="quick" href="gameday-auth.html"><strong>Account & Wallet</strong><span>Authentication and test-credit ledger</span></a>
+      </div>
+
+      <div class="notice">GameDay remains TEST MODE software. This dashboard is for development, demonstration and acquisition review. It does not represent a licensed real-money sportsbook or casino operation.</div>
+    </main>
+  </div>
+</div>
+<script type="module">
+import{createClient}from"https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/+esm";
+const URL='https://qsvrvhcklnsbekxblpfo.supabase.co';
+const KEY='sb_publishable_-yCYGvDqIzVFgu90lgoVpw_uoWnYmO0';
+const supabase=createClient(URL,KEY);
+const ids=['sports_events','sports_markets','sports_outcomes','line_history','users','wagers','casino_rounds','wallet_transactions','provider_snapshots','odds_cache_records','wager_selections','wallets'];
+const fmt=v=>new Intl.NumberFormat('en-US').format(Number(v||0));
+async function load(){
+  const {data:{session}}=await supabase.auth.getSession();
+  if(!session){document.getElementById('sysStatus').textContent='Sign in required';document.getElementById('sysStatus').className='error';return;}
+  try{
+    const r=await fetch(URL+'/functions/v1/gameday-operator-metrics',{headers:{Authorization:'Bearer '+session.access_token,apikey:KEY}});
+    const d=await r.json();
+    if(!r.ok)throw new Error(d.error||'Metrics unavailable');
+    ids.forEach(id=>{const el=document.getElementById(id);if(el)el.textContent=fmt(d[id])});
+    document.getElementById('sysStatus').textContent='Operational';
+    document.getElementById('generated').textContent='Updated '+new Date(d.generated_at).toLocaleTimeString([], {hour:'numeric',minute:'2-digit'});
+    document.getElementById('readyBar').style.width='82%';
+  }catch(e){document.getElementById('sysStatus').textContent='Metrics unavailable';document.getElementById('sysStatus').className='error';console.error(e)}
+}
+load();
+</script>
+</body>
+</html>
