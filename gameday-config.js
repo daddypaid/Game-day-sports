@@ -9,7 +9,8 @@ export const GAMEDAY_CONFIG = Object.freeze({
     operatorMetrics: 'gameday-operator-metrics',
     operatorAnalytics: 'gameday-operator-analytics',
     operatorHealth: 'gameday-operator-health',
-    refillTestWallet: 'refill-test-wallet'
+    refillTestWallet: 'refill-test-wallet',
+    placeTestWager: 'place-test-wager'
   }),
   routes: Object.freeze({
     home: 'index.html',
