@@ -24,7 +24,8 @@
 </main>
 <script type="module">
 import{createClient}from"https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.115.0/+esm";
-const supabase=createClient("https://qsvrvhcklnsbekxblpfo.supabase.co","sb_publishable_-yCYGvDqIzVFgu90lgoVpw_uoWnYmO0");
+import{GAMEDAY_CONFIG}from"./gameday-config.js";
+const supabase=createClient(GAMEDAY_CONFIG.supabaseUrl,GAMEDAY_CONFIG.supabasePublishableKey);
 const statusEl=document.getElementById('status'),openEl=document.getElementById('openBets'),settledEl=document.getElementById('settledBets'),refreshBtn=document.getElementById('refresh');
 let refreshTimer=null,loading=false;
 function money(v){return '$'+Number(v||0).toFixed(2)}
