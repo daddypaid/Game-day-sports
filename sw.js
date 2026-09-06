@@ -1,5 +1,6 @@
-const CACHE='gameday-shell-v24';
+const CACHE='gameday-shell-v25';
 const SHELL=[
+  './index.html',
   './gameday-premium.html',
   './gameday-live.html',
   './gameday-sportsbook.html',
@@ -20,8 +21,15 @@ const SHELL=[
   './gameday-ultimate-texas-holdem.html',
   './gameday-caribbean-stud.html',
   './gameday-three-card-poker.html',
+  './gameday-control-center.html',
+  './gameday-operator-analytics.html',
+  './gameday-system-health.html',
+  './gameday-buyer-demo.html',
+  './gameday-admin-takeover.html',
+  './gameday-config-check.html',
   './offline.html',
   './manifest.webmanifest',
+  './gameday-config.js',
   './gameday-app.js',
   './gameday-card-wager-ui.js',
   './gameday-live-clock.js',
@@ -88,7 +96,7 @@ self.addEventListener('fetch',event=>{
         return res;
       }).catch(async()=>{
         const cached=await caches.match(req);
-        return cached||caches.match('./gameday-premium.html')||caches.match('./offline.html');
+        return cached||caches.match('./index.html')||caches.match('./offline.html');
       })
     );
     return;
