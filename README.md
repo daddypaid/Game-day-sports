@@ -1,6 +1,6 @@
 # GameDay Sports
 
-GameDay Sports is a TEST MODE sportsbook and casino prototype hosted on GitHub Pages with Supabase providing authentication, database storage, Edge Functions, test-wallet accounting, and scheduled settlement jobs.
+GameDay Sports is a TEST MODE sportsbook and casino platform hosted on GitHub Pages with Supabase providing authentication, database storage, Edge Functions, test-wallet accounting, scheduled settlement jobs, operator metrics, and system-health monitoring.
 
 ## Current status
 
@@ -9,6 +9,17 @@ GameDay Sports is a TEST MODE sportsbook and casino prototype hosted on GitHub P
 - Third-party provider credentials stay server-side in Supabase secrets and must never be committed to this repository.
 - New test accounts receive $1,000 in test credits.
 - A signed-in tester can refill a balance below $25 back to $1,000 at most once every 24 hours.
+
+## Premium entry and buyer-facing pages
+
+- `index.html` — premium GameDay product hub
+- `gameday-buyer-demo.html` — guided acquisition/buyer walkthrough
+- `gameday-control-center.html` — protected operator dashboard with aggregate platform metrics
+- `gameday-system-health.html` — protected system-health, provider freshness, cache, ledger, sportsbook, and casino activity monitoring
+- `ACQUISITION-OVERVIEW.md` — buyer-ready product overview
+- `ACQUISITION-HANDOFF.md` — technical transfer and due-diligence guide
+
+The installable PWA opens the premium hub and includes shortcuts to Sportsbook, Casino, My Bets, and Control Center.
 
 ## Canonical customer pages
 
@@ -24,7 +35,23 @@ Working casino games:
 - `gameday-baccarat.html`
 - `gameday-slots.html`
 
-Older `index`, wallet, betslip, settlement, live, v2/v3/v4, wager, and casino routes are redirect shims only. Do not rebuild independent wagering logic in those files.
+Older wallet, betslip, settlement, live, v2/v3/v4, wager, and casino routes are redirect shims only. Do not rebuild independent wagering logic in those files.
+
+## Operator tooling
+
+`gameday-operator-metrics` is a protected Supabase Edge Function that exposes aggregate platform totals for the Control Center without exposing service credentials in the browser.
+
+`gameday-operator-health` is a protected Supabase Edge Function that evaluates:
+
+- Core database reachability
+- Sports-data activity
+- Provider snapshot freshness
+- Odds-cache freshness
+- Test wallet-ledger activity
+- Sportsbook test-wager activity
+- Casino test-round/spin activity
+
+The operator pages are intended for test-mode platform demonstration, technical review, and buyer due diligence. They do not indicate licensure or real-money production readiness.
 
 ## Sportsbook architecture
 
