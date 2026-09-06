@@ -69,7 +69,6 @@ main{max-width:900px;margin:auto;padding:12px 0 110px}
       <div class="test-chip">TEST MODE • NO REAL MONEY</div>
     </div>
   </section>
-
   <section id="featured" class="section">
     <div class="section-head"><h3>Featured Games</h3><div class="section-note">Swipe to browse</div></div>
     <div class="game-row">
@@ -79,7 +78,6 @@ main{max-width:900px;margin:auto;padding:12px 0 110px}
       <a class="game-card" href="gameday-slots-lobby.html"><div class="art slots-art"></div><div class="game-info"><div class="game-title">GameDay Slots</div><div class="game-meta">3 machines • Classic + 20-line video slots</div><div class="play-row"><span class="status">CONNECTED</span><span class="play">BROWSE ›</span></div></div></a>
     </div>
   </section>
-
   <section id="table-games" class="section">
     <div class="section-head"><h3>Table Games</h3><div class="section-note">GameDay casino</div></div>
     <div class="game-row">
@@ -88,7 +86,6 @@ main{max-width:900px;margin:auto;padding:12px 0 110px}
       <a class="game-card" href="gameday-baccarat.html"><div class="art baccarat-art"></div><div class="game-info"><div class="game-title">Baccarat</div><div class="game-meta">Player, Banker and Tie</div><div class="play-row"><span class="status">TEST MODE</span><span class="play">OPEN ›</span></div></div></a>
     </div>
   </section>
-
   <section id="poker" class="section">
     <div class="section-head"><h3>Poker</h3><div class="section-note">GameDay Poker Room</div></div>
     <div class="game-row">
@@ -96,19 +93,18 @@ main{max-width:900px;margin:auto;padding:12px 0 110px}
       <a class="game-card" href="gameday-video-poker.html"><div class="art poker-art"></div><div class="game-info"><div class="game-title">Jacks or Better</div><div class="game-meta">Deal • Hold • Draw</div><div class="play-row"><span class="status">CONNECTED</span><span class="play">PLAY ›</span></div></div></a>
     </div>
   </section>
-
   <section id="slots" class="section">
     <div class="section-head"><h3>Slots</h3><div class="section-note">3 connected GameDay machines</div></div>
     <div class="game-row">
       <a class="game-card" href="gameday-slots-lobby.html"><div class="art slots-art"></div><div class="game-info"><div class="game-title">GameDay Slots Lobby</div><div class="game-meta">Lucky 7s • Midnight Monsters • Galactic Rebellion</div><div class="play-row"><span class="status">CONNECTED</span><span class="play">OPEN ›</span></div></div></a>
     </div>
   </section>
-
   <div class="feature-strip"><div><strong>GameDay Test Casino</strong><span>All casino play uses test credits only. No real-money gambling is enabled.</span></div><div class="feature-badge">TEST MODE</div></div>
 </main>
 <script type="module">
 import{createClient}from"https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/+esm";
-const supabase=createClient("https://qsvrvhcklnsbekxblpfo.supabase.co","sb_publishable_-yCYGvDqIzVFgu90lgoVpw_uoWnYmO0");
+import{GAMEDAY_CONFIG}from'./gameday-config.js';
+const supabase=createClient(GAMEDAY_CONFIG.supabaseUrl,GAMEDAY_CONFIG.supabasePublishableKey);
 const wallet=document.getElementById('wallet');
 function money(v){return '$'+Number(v||0).toFixed(2)}
 async function load(){const{data,error}=await supabase.auth.getSession();if(error||!data.session){wallet.textContent='Sign in';return}const{data:w,error:e}=await supabase.from('wallets').select('balance').eq('user_id',data.session.user.id).single();wallet.textContent=e?'—':money(w.balance)}
