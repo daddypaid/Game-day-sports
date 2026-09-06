@@ -29,6 +29,7 @@ jobs:
         run: |
           set -euo pipefail
           required=(
+            index.html
             gameday-premium.html
             gameday-live.html
             gameday-sportsbook.html
@@ -44,6 +45,8 @@ jobs:
             gameday-video-poker.html
             gameday-my-bets.html
             gameday-auth.html
+            gameday-config.js
+            gameday-config-check.html
             manifest.webmanifest
             sw.js
             gameday-premium-app.css
@@ -55,14 +58,15 @@ jobs:
             test -s "$file" || { echo "Missing or empty required file: $file"; exit 1; }
           done
 
-          grep -q '"start_url": "./gameday-premium.html"' manifest.webmanifest
-          grep -q 'rel="manifest" href="manifest.webmanifest"' gameday-premium.html
-          grep -q "navigator.serviceWorker.register('./sw.js'" gameday-premium.html
-          grep -q "./gameday-premium.html" sw.js
+          grep -q '"start_url": "./index.html"' manifest.webmanifest
+          grep -q 'rel="manifest" href="manifest.webmanifest"' index.html
+          grep -q "./index.html" sw.js
+          grep -q "./gameday-config.js" sw.js
           grep -q "gameday-themed-slots-premium-art.css" sw.js
-          grep -q "gameday-premium-in-shell.css" gameday-premium.html
-          grep -q "gameday-sportsbook.html" gameday-premium.html
-          grep -q "gameday-casino-v2.html" gameday-premium.html
+          grep -q "gameday-sportsbook.html" index.html
+          grep -q "gameday-casino-v2.html" index.html
+          grep -q "GAMEDAY_CONFIG" gameday-sportsbook.html
+          grep -q "GAMEDAY_CONFIG" gameday-casino-v2.html
 
           if grep -RInE \
             --include='*.html' --include='*.js' --include='*.css' \
