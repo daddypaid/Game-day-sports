@@ -15,6 +15,7 @@ GameDay is software/IP in TEST MODE. It is not represented as a licensed real-mo
 - `gameday-auth.html` — authentication, recovery, wallet and transaction history
 - `gameday-buyer-demo.html` — guided acquisition walkthrough
 - `gameday-control-center.html` — operator/buyer metrics dashboard
+- `gameday-config-check.html` — buyer-facing public configuration validation
 
 ## Casino surfaces
 
@@ -53,6 +54,12 @@ Connected casino games use server-side Edge Functions for result generation and 
 
 ## Configuration and secrets
 
+`gameday-config.js` is the canonical public client-configuration module for the buyer-handoff architecture. It contains only browser-safe settings such as the Supabase URL, publishable key, shared function slugs, route names, brand, and TEST environment marker.
+
+`gameday-config-check.html` validates that public configuration and checks whether the configured Supabase project is reachable. A buyer should use it after replacing public project settings.
+
+Some legacy customer pages still contain embedded public Supabase settings and should be migrated to `gameday-config.js` during the buyer-controlled frontend consolidation. This is a transferability improvement in progress, not a claim that every legacy page has already been converted.
+
 Never commit backend-only credentials to GitHub. A buyer must replace all environment-specific values and secrets, including as applicable:
 
 - Supabase service-role credentials
@@ -71,10 +78,12 @@ The Supabase publishable browser key is intentionally client-visible; privileged
 4. Deploy Edge Functions to the buyer-controlled Supabase project.
 5. Configure backend secrets.
 6. Recreate scheduled settlement and retention jobs.
-7. Update frontend Supabase URL/publishable-key configuration.
-8. Connect buyer-owned sports-data provider accounts.
-9. Run end-to-end TEST MODE validation for account, wallet, sportsbook, settlement and casino flows.
-10. Configure buyer-controlled domain, deployment and monitoring.
+7. Update `gameday-config.js` with the buyer's browser-safe Supabase URL and publishable key.
+8. Open `gameday-config-check.html` and verify the new project is reachable.
+9. Migrate any remaining legacy frontend pages that still embed public Supabase settings to the shared config module.
+10. Connect buyer-owned sports-data provider accounts.
+11. Run end-to-end TEST MODE validation for account, wallet, sportsbook, settlement and casino flows.
+12. Configure buyer-controlled domain, deployment and monitoring.
 
 ## Real-money production blockers
 
@@ -96,6 +105,8 @@ A buyer must not enable real-money wagering solely by replacing the TEST MODE wa
 A technical buyer should review:
 
 - `README.md`
+- `gameday-config.js`
+- `gameday-config-check.html`
 - Supabase migrations
 - Edge Functions
 - RLS policies
