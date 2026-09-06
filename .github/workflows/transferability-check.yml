@@ -24,6 +24,7 @@ jobs:
           test -s gameday-config.js
           test -s gameday-transfer-audit.html
           test -s gameday-config-check.html
+          test -s gameday-buyer-readiness.html
           test -s scripts/gameday-transfer-config.mjs
 
           grep -q "environment: 'TEST'" gameday-config.js
@@ -35,6 +36,7 @@ jobs:
           grep -q "threeCardPoker: 'three-card-poker-test'" gameday-config.js
           grep -q "ultimateTexasHoldem: 'ultimate-texas-holdem-test'" gameday-config.js
           grep -q "caribbeanStud: 'caribbean-stud-test'" gameday-config.js
+          grep -q "buyerReadiness: 'gameday-buyer-readiness.html'" gameday-config.js
 
           node --check scripts/gameday-transfer-config.mjs
 
@@ -85,6 +87,19 @@ jobs:
           grep -q 'GAMEDAY_CONFIG.functions.ultimateTexasHoldem' gameday-ultimate-texas-holdem.html
           grep -q 'GAMEDAY_CONFIG.functions.caribbeanStud' gameday-caribbean-stud.html
 
+      - name: Validate buyer handoff surfaces
+        shell: bash
+        run: |
+          set -euo pipefail
+          test -s gameday-admin-takeover.html
+          test -s gameday-buyer-readiness.html
+          test -s ACQUISITION-HANDOFF.md
+          test -s BUYER-OVERVIEW.md
+          grep -q 'Buyer Readiness' gameday-admin-takeover.html
+          grep -q 'gameday-buyer-readiness.html' gameday-admin-takeover.html
+          grep -q 'TEST MODE' gameday-buyer-readiness.html
+          grep -q 'BUYER-OVERVIEW.md' gameday-admin-takeover.html
+
       - name: Block private browser credentials
         shell: bash
         run: |
@@ -102,3 +117,4 @@ jobs:
           set -euo pipefail
           grep -q 'Public browser configuration only' scripts/gameday-transfer-config.mjs
           grep -q 'TEST MODE' gameday-transfer-audit.html
+          grep -q 'TEST MODE' gameday-buyer-readiness.html
