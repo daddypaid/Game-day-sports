@@ -27,6 +27,7 @@ GameDay is prepared to be marketed as a **TEST MODE sportsbook + casino software
 - Baccarat present
 - Slots present
 - Poker-family customer pages present
+- V5 buyer-facing interactive demo present and intentionally isolated from backend wager creation
 
 ### Transferability
 
@@ -39,15 +40,45 @@ GameDay is prepared to be marketed as a **TEST MODE sportsbook + casino software
 
 ### Backend
 
-- Supabase TEST MODE project connected
+Supabase project `qsvrvhcklnsbekxblpfo` was directly inspected on **2026-09-08** and reported `ACTIVE_HEALTHY`.
+
+Verified backend evidence:
+
+- All public GameDay tables inspected have RLS enabled
+- Anonymous users have no direct SELECT access to inspected GameDay tables
+- Ownership-based RLS exists for intended client-readable user data such as profiles, wagers, wager selections, wallets, wallet transactions and supported casino history tables
+- `current_gameday_lines` uses `security_invoker=true` and has no direct anonymous/authenticated SELECT grant
+- Privileged atomic wager, wallet, settlement and casino routines are `SECURITY DEFINER` but their EXECUTE ACLs are restricted to `postgres` and `service_role`
+- `odds-engine` is gateway-JWT-disabled by design but separately requires the private `x-gameday-internal` service-role-derived header
+- `auto-settle-test-wagers` is gateway-JWT-disabled by design but separately requires the private `x-gameday-job-token` stored in `internal_job_secrets`
+- `gameday-odds` and `gameday-live-state` are intentionally public read wrappers; service/provider credentials remain server-side
 - Sportsbook placement and settlement functions active
 - Casino result functions active
 - Operator metrics/health/analytics functions active
 - Scheduled settlement/data-retention architecture documented
-- Actionable themed-slot RLS/index performance advisor findings corrected before final sale package
+
+Verified database footprint on 2026-09-08:
+
+- 551 sports events
+- 1,593 sports markets
+- 3,356 sports outcomes
+- 3,697 sports line-history records
+- 2 TEST MODE wagers
+- 1 TEST MODE wallet
+
+### Supabase advisor status
+
+Security advisor findings reviewed on 2026-09-08:
+
+- No critical/high-severity database exposure was identified in the reviewed boundary
+- 11 RLS-enabled tables currently have no policies; these are presently backend-only/deny-by-default surfaces and are not directly selectable by anonymous users
+- `pg_net` remains installed in the `public` schema; this warning remains intentionally disclosed because scheduled/background architecture may depend on it
+- Supabase leaked-password protection remains disabled and is documented as a production hardening item
+- Performance advisor reports currently unused indexes; these are not treated as a TEST MODE sale blocker
 
 ### Buyer package
 
+- V5 Buyer Sales Pack
 - Buyer Overview
 - Sale Listing
 - Asset Inventory
@@ -58,6 +89,7 @@ GameDay is prepared to be marketed as a **TEST MODE sportsbook + casino software
 - Acquisition Handoff Guide
 - Handoff Rehearsal
 - Buyer Release Checklist
+- Sale Room now starts buyers with the V5 interactive demo and exposes the V5 sales pack directly
 
 ## Known disclosures that remain intentionally open
 
@@ -70,7 +102,7 @@ These items do not prevent sale as a TEST MODE software asset, but must remain d
 - Live Dealer is not operational
 - Current data-provider limitations may leave some player props view-only
 - Operator tools are authenticated but not represented as a full role-based enterprise admin system
-- Supabase `pg_net` public-schema advisor warning remains documented because the working scheduler depends on it
+- Supabase `pg_net` public-schema advisor warning remains documented because the working scheduler may depend on it
 - Supabase leaked-password protection remains a production hardening item
 - Third-party data, marks, likenesses, artwork and service accounts transfer only where rights permit
 
