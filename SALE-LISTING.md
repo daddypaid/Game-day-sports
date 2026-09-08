@@ -4,23 +4,22 @@
 
 GameDay Sports & Casino is offered as a **TEST MODE sportsbook + casino software/IP asset**. The sale is for the software platform and agreed transferable assets — not for a licensed gambling operation, gambling license, regulated payment account, or guaranteed right to operate real-money wagering.
 
-## V5 sales demo
-
-GameDay V5 adds an account-free interactive buyer demo at `gameday-v5.html`. A prospective buyer can tap sample sportsbook lines, build a single or parlay demo bet slip, enter a demo stake, see the calculated potential return, and generate a clearly labeled demo receipt before entering the connected TEST MODE platform. The V5 demo does not create a backend wager, debit a wallet, accept payment, or consume live sports-data provider quota.
-
 ## What the buyer receives
 
 Subject to the final asset purchase agreement and ownership confirmation, the intended transfer package includes:
 
 - GameDay source repository and customer-facing web/PWA code
-- V5 interactive buyer demo and acquisition walkthrough
 - Sportsbook TEST MODE experience with pregame, live, props/futures display, bet slip, single/parlay test wagering, fresh-quote validation and automated supported settlement
 - Casino TEST MODE experiences including Blackjack, Roulette, Baccarat, Slots and poker-family games
 - Supabase-backed authentication, Postgres schema, RLS, Edge Functions, test-wallet ledger, wager records, casino records, provider cache and scheduled jobs
 - Buyer/operator surfaces: Control Center, Operator Analytics, System Health, Buyer Readiness, Transfer Audit, Configuration Check, Admin Takeover and Platform Architecture
 - Centralized browser-safe configuration through `gameday-config.js`
-- Buyer handoff documentation, transfer checklist, release acceptance checklist and `V5-BUYER-SALES-PACK.md`
+- Buyer handoff documentation, transfer checklist and release acceptance checklist
 - Repository artwork/assets only to the extent the seller confirms ownership and transfer rights
+
+## V5 buyer demonstration
+
+`gameday-v5.html` is the current buyer-facing V5 demonstration surface. It is designed to let a prospective buyer review the premium presentation and interact with a self-contained demo bet slip without creating an account or mutating the production TEST wallet. It is a demonstration surface only; canonical authenticated sportsbook wagering remains in `gameday-sportsbook.html`.
 
 ## Current operating state
 
@@ -37,8 +36,8 @@ GameDay does not currently accept or enable real-money deposits, withdrawals or 
 - Scheduled automatic settlement for supported sportsbook markets
 - Shared odds/live-state caching and controlled provider boundary
 - Centralized buyer-transfer configuration
-- Permanent GitHub Actions checks for deployment, transferability and final sale readiness
-- Buyer-facing architecture, takeover, readiness, acceptance and V5 sales-demo materials
+- Permanent GitHub Actions checks for deployment and transferability
+- Buyer-facing architecture, takeover, readiness and acceptance materials
 
 ## Suggested commercial positioning
 
@@ -58,16 +57,32 @@ This is a seller-side starting point for negotiation, not an independent apprais
 - 14 calendar days of reasonable technical handoff support after closing is a suggested default, unless the purchase agreement states otherwise
 - Third-party accounts, data licenses and services transfer only where their provider terms permit transfer
 
+## Transfer-at-closing package
+
+At closing, the seller should transfer or deliver only the items specifically listed in the signed asset purchase agreement. The default technical handoff package should include:
+
+1. The accepted `main` branch commit for the GameDay repository.
+2. A repository export/archive and the GitHub repository transfer itself if included in the transaction.
+3. The buyer-facing documentation set, including `BUYER-OVERVIEW.md`, `V5-BUYER-SALES-PACK.md`, `ASSET-INVENTORY.md`, `DUE-DILIGENCE-DISCLOSURES.md`, `ACQUISITION-HANDOFF.md`, `BUYER-RELEASE-CHECKLIST.md`, and `FINAL-SALE-READINESS.md`.
+4. The shared public configuration map in `gameday-config.js` and the documented process for replacing the seller-controlled Supabase project with buyer-controlled infrastructure.
+5. Backend schema, Edge Functions, migrations, scheduler/job configuration, and other Supabase materials that the seller owns and the agreement includes.
+6. Repository artwork and media only where ownership and transfer rights are confirmed.
+7. A credential-rotation checklist. Privileged credentials should be rotated by the buyer rather than delivered as permanent seller credentials.
+8. A written inventory of third-party dependencies and any services that require the buyer to establish its own account, subscription, license, API key, or commercial agreement.
+9. A final acceptance record showing the agreed repository commit and the latest passing sale-readiness and transferability checks.
+
+The transfer package should **not** be represented as including gambling licensure, payment processing approval, sportsbook/casino operating rights, sports-data licenses, provider contracts, or third-party accounts unless the signed agreement expressly states that they are transferable and included.
+
 ## Buyer review path
 
-1. Open `gameday-v5.html` for the instant interactive demo.
-2. Review `V5-BUYER-SALES-PACK.md`.
-3. Open `gameday-buyer-demo.html`.
-4. Review the connected TEST MODE sportsbook and casino.
-5. Open `gameday-platform-architecture.html` and `gameday-buyer-readiness.html`.
+1. Review `BUYER-OVERVIEW.md`.
+2. Open `gameday-v5.html` for the current premium buyer demo.
+3. Open `gameday-buyer-demo.html` for the guided acquisition walkthrough.
+4. Open `gameday-platform-architecture.html`.
+5. Open `gameday-buyer-readiness.html`.
 6. Review `DUE-DILIGENCE-DISCLOSURES.md` and `ASSET-INVENTORY.md`.
 7. Review `ACQUISITION-HANDOFF.md` and `BUYER-RELEASE-CHECKLIST.md`.
-8. Run the repository deployment, transferability and final sale-readiness checks.
+8. Run the repository deployment, sale-readiness and transferability checks.
 9. Complete buyer technical diligence and negotiate the asset purchase agreement.
 
 ## Important
