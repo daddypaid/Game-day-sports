@@ -25,12 +25,14 @@ jobs:
             README.md
             BUYER-OVERVIEW.md
             SALE-LISTING.md
+            V5-BUYER-SALES-PACK.md
             ASSET-INVENTORY.md
             DUE-DILIGENCE-DISCLOSURES.md
             ACQUISITION-HANDOFF.md
             HANDOFF-REHEARSAL.md
             BUYER-RELEASE-CHECKLIST.md
             FINAL-SALE-READINESS.md
+            gameday-v5.html
             gameday-sale-room.html
             gameday-buyer-demo.html
             gameday-buyer-readiness.html
@@ -45,8 +47,12 @@ jobs:
           done
 
           grep -q 'TEST MODE' SALE-LISTING.md
+          grep -q 'TEST MODE' V5-BUYER-SALES-PACK.md
           grep -q 'TEST MODE' DUE-DILIGENCE-DISCLOSURES.md
           grep -q 'TEST MODE' FINAL-SALE-READINESS.md
+          grep -q 'TEST MODE' gameday-v5.html
+          grep -q 'No backend wager' gameday-v5.html
+          grep -q 'gameday-v5.html' gameday-buyer-demo.html
           grep -q 'TEST MODE' gameday-sale-room.html
           grep -q "environment: 'TEST'" gameday-config.js
           grep -q "buyerReadiness: 'gameday-buyer-readiness.html'" gameday-config.js
@@ -82,6 +88,7 @@ jobs:
         shell: bash
         run: |
           set -euo pipefail
+          grep -q 'gameday-v5.html' gameday-buyer-demo.html
           grep -q 'gameday-buyer-readiness.html' gameday-admin-takeover.html
           grep -q 'gameday-platform-architecture.html' gameday-admin-takeover.html
           grep -q 'BUYER-OVERVIEW.md' gameday-admin-takeover.html
