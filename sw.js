@@ -1,4 +1,4 @@
-const CACHE='gameday-shell-v31';
+const CACHE='gameday-shell-v32';
 const SHELL=[
   './index.html',
   './gameday-premium.html',
@@ -33,7 +33,7 @@ const SHELL=[
   './gameday-app.js',
   './gameday-card-wager-ui.js?v=28',
   './gameday-live-clock.js',
-  './gameday-themed-slots.js?v=28',
+  './gameday-themed-slots.js?v=30',
   './gameday-premium-casino.css',
   './gameday-premium-casino-v2.css',
   './gameday-premium-casino.js',
@@ -48,6 +48,7 @@ const SHELL=[
   './gameday-premium-spin.css',
   './gameday-themed-slots.css',
   './gameday-themed-slots-premium-art.css',
+  './gameday-midnight-monsters-premium.css?v=3',
   './gameday-lucky7s.css',
   './art/gameday-sportsbook-hero.svg',
   './art/gameday-sportsbook-approved-hero.jpg',
@@ -85,6 +86,15 @@ const SHELL=[
   './assets/casino-premium/casino-lobby-hero.webp',
   './assets/casino-premium/poker-hero.webp',
   './assets/casino-premium/slots-hero.webp',
+  './assets/midnight-monsters/castle-background.webp',
+  './assets/midnight-monsters/vampire.webp',
+  './assets/midnight-monsters/werewolf.webp',
+  './assets/midnight-monsters/zombie.webp',
+  './assets/midnight-monsters/potion.webp',
+  './assets/midnight-monsters/bat.webp',
+  './assets/midnight-monsters/candle.webp',
+  './assets/midnight-monsters/wild.webp',
+  './assets/midnight-monsters/scatter.webp',
   './assets/casino/lucky-7s-lobby.svg',
   './icons/gameday-192.png',
   './icons/gameday-512.png'
