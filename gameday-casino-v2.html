@@ -21,9 +21,8 @@ header{position:sticky;top:0;z-index:30;background:rgba(12,18,14,.97);border-bot
 .nav{display:grid;grid-template-columns:repeat(4,1fr);gap:7px;padding:0 14px 10px}.nav a{text-decoration:none;text-align:center;padding:9px 5px;border-radius:9px;background:#1d2721;color:#fff;font-weight:700;font-size:11px}.nav a.active{background:#eef5f0;color:#07100a}
 .categories{display:flex;gap:7px;overflow-x:auto;padding:9px 14px 11px;border-top:1px solid rgba(255,255,255,.025);scrollbar-width:none}.categories::-webkit-scrollbar{display:none}.cat{flex:0 0 auto;text-decoration:none;color:#d6ddd8;background:#151d18;border:1px solid #2c3931;padding:8px 12px;border-radius:999px;font-size:11px;font-weight:800;white-space:nowrap}.cat.active{background:#edf3ef;color:#0b120e;border-color:#edf3ef}
 main{max-width:900px;margin:auto;padding:12px 0 110px}
-.hero{margin:0 14px 15px;border-radius:18px;min-height:160px;overflow:hidden;position:relative;border:1px solid #3c5f48;background:radial-gradient(circle at 82% 24%,rgba(211,183,82,.28),transparent 22%),radial-gradient(circle at 15% 0%,rgba(43,150,79,.38),transparent 35%),linear-gradient(125deg,#153d24,#0c1710 65%,#211b0b)}
-.hero::after{content:"";position:absolute;right:-30px;bottom:-55px;width:210px;height:210px;border-radius:50%;border:24px solid rgba(212,185,92,.14);box-shadow:0 0 0 18px rgba(255,255,255,.025)}
-.hero-copy{position:relative;z-index:2;padding:22px 20px 18px;max-width:68%}.eyebrow{font-size:10px;text-transform:uppercase;letter-spacing:.16em;color:#cfe7d4;font-weight:900}.hero h2{margin:6px 0 7px;font-size:30px;line-height:1.02}.hero p{margin:0;color:#b9c6bd;font-size:13px;line-height:1.42}.test-chip{display:inline-block;margin-top:14px;padding:7px 10px;border-radius:999px;background:#4a3b13;border:1px solid #7b6321;color:#f5de88;font-size:10px;font-weight:900}
+.hero{width:min(calc(100% - 28px),520px);margin:0 auto 18px;border-radius:18px;overflow:hidden;border:1px solid #8c7130;background:#07120b;box-shadow:0 16px 38px rgba(0,0,0,.32)}
+.hero img{display:block;width:100%;height:auto;aspect-ratio:960/1219;object-fit:contain}
 .section{margin-top:18px}.section-head{display:flex;align-items:end;justify-content:space-between;padding:0 14px 9px;gap:10px}.section h3{margin:0;font-size:20px;letter-spacing:.01em}.section-note{font-size:10px;color:#85928a;white-space:nowrap}
 .game-row{display:flex;gap:11px;overflow-x:auto;padding:0 14px 8px;scroll-snap-type:x proximity;scrollbar-width:none}.game-row::-webkit-scrollbar{display:none}
 .game-card{flex:0 0 215px;text-decoration:none;color:#fff;background:#111813;border:1px solid #29372e;border-radius:14px;overflow:hidden;box-shadow:0 8px 20px rgba(0,0,0,.22);scroll-snap-align:start;transition:transform .15s ease,border-color .15s ease}.game-card:active{transform:scale(.985)}
@@ -41,7 +40,7 @@ main{max-width:900px;margin:auto;padding:12px 0 110px}
 .poker-art::before{content:"A♠  K♥  Q♣";position:absolute;left:18px;right:18px;top:40px;text-align:center;color:#fff;font-size:28px;font-weight:900;letter-spacing:4px;text-shadow:0 4px 12px #000}
 .game-info{padding:11px 12px 12px}.game-title{font-size:16px;font-weight:900}.game-meta{margin-top:4px;color:#94a198;font-size:10px}.play-row{display:flex;justify-content:space-between;align-items:center;margin-top:9px}.status{padding:5px 7px;border-radius:999px;background:#153d22;border:1px solid #2e7040;color:#bfe9c8;font-size:9px;font-weight:900}.play{font-size:11px;font-weight:900;color:#f2db88}
 .feature-strip{margin:20px 14px 0;border:1px solid #5f4e1e;border-radius:15px;background:linear-gradient(100deg,#3c2f0e,#16140c 56%,#0d1810);padding:14px 15px;display:flex;justify-content:space-between;align-items:center;gap:14px}.feature-strip strong{font-size:15px}.feature-strip span{display:block;margin-top:3px;color:#b8b39b;font-size:10px}.feature-badge{flex:0 0 auto;padding:8px 10px;border-radius:10px;background:#6a5418;color:#f7e399;font-size:10px;font-weight:900}
-@media(max-width:480px){.nav{grid-template-columns:repeat(2,1fr)}.hero{min-height:148px}.hero-copy{max-width:78%;padding:18px 16px}.hero h2{font-size:27px}.game-card{flex-basis:205px}.art{height:122px}}
+@media(max-width:480px){.nav{grid-template-columns:repeat(2,1fr)}.hero{border-radius:16px}.game-card{flex-basis:205px}.art{height:122px}}
 .art{background-size:cover!important;background-position:center!important}.art::after{content:""!important;height:32%!important;background:linear-gradient(transparent,rgba(0,0,0,.28))!important}.blackjack-art::before,.roulette-art::before,.baccarat-art::before,.slots-art::before,.poker-art::before{content:none!important}.blackjack-art{background-image:url('assets/casino-premium/blackjack.webp')}.roulette-art{background-image:url('assets/casino-premium/roulette.webp')}.baccarat-art{background-image:url('assets/casino-premium/baccarat.webp')}.video-poker-art{background-image:url('assets/casino-premium/video-poker.webp')}.three-card-art{background-image:url('assets/casino-premium/three-card-poker.webp')}.ultimate-art{background-image:url('assets/casino-premium/ultimate-holdem.webp')}.caribbean-art{background-image:url('assets/casino-premium/caribbean-stud.webp')}.midnight-art{background-image:url('assets/casino-premium/midnight-monsters.webp')}.galactic-art{background-image:url('assets/casino-premium/galactic-rebellion.webp')}.poker-room-art{background-image:url('assets/casino-premium/poker-room.webp')}.slots-art{background-image:url('assets/casino-premium/lucky-7s.webp')}
 </style>
 </head>
@@ -62,13 +61,8 @@ main{max-width:900px;margin:auto;padding:12px 0 110px}
   </div>
 </header>
 <main>
-  <section class="hero">
-    <div class="hero-copy">
-      <div class="eyebrow">GameDay Originals</div>
-      <h2>Pick a game.<br>Play instantly.</h2>
-      <p>Fast access to GameDay’s connected casino games with one shared test wallet.</p>
-      <div class="test-chip">TEST MODE • NO REAL MONEY</div>
-    </div>
+  <section class="hero" aria-label="GameDay Originals casino games">
+    <img src="assets/casino-premium/casino-lobby-hero.webp" width="960" height="1219" alt="GameDay Originals. Pick a game. Play instantly. Test mode, no real money." fetchpriority="high">
   </section>
   <section id="featured" class="section">
     <div class="section-head"><h3>Featured Games</h3><div class="section-note">Swipe to browse</div></div>
