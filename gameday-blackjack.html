@@ -78,7 +78,7 @@ document.querySelectorAll("[data-bet]").forEach(button=>button.addEventListener(
 supabase.auth.onAuthStateChange(async(event,session)=>{if(session?.user){currentUser=session.user;accountStatus.textContent="Signed in";await Promise.all([loadWallet(),loadHistory()]);await resumeActiveHand()}else{currentUser=null;accountStatus.textContent="Not signed in";headerBalance.textContent="Balance: —"}});
 const signedIn=await checkAccount();if(signedIn){await Promise.all([loadWallet(),loadHistory()]);await resumeActiveHand()}
 </script>
-<script src="gameday-card-wager-ui.js" defer></script>
+<script src="gameday-card-wager-ui.js?v=27" defer></script>
 <script src="gameday-premium-casino.js" defer></script>
 <script src="gameday-app.js" defer></script>
 </body>
