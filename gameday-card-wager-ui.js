@@ -80,6 +80,7 @@
   }
 
   function centerMarkup(rank,suit){
+    if (rank === 'A' && suit === '♠') return `<div class="gd-card-center"><div class="gd-card-ace gd-signature-ace"><small>♛</small>G</div></div>`;
     if (rank === 'A') return `<div class="gd-card-center"><div class="gd-card-ace">${suit}</div></div>`;
     if (rank === 'J' || rank === 'Q' || rank === 'K') {
       return `<div class="gd-card-center"><div class="gd-card-face"><div class="gd-court">${rank}<small>${suit}</small></div></div></div>`;

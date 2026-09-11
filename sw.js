@@ -1,4 +1,4 @@
-const CACHE='gameday-shell-v37';
+const CACHE='gameday-shell-v38';
 const SHELL=[
   './index.html',
   './gameday-premium.html',
@@ -31,7 +31,9 @@ const SHELL=[
   './manifest.webmanifest',
   './gameday-config.js',
   './gameday-app.js',
-  './gameday-card-wager-ui.js?v=28',
+  './gameday-card-wager-ui.js?v=29',
+  './gameday-live-card-tables.js?v=1',
+  './gameday-live-card-tables.css?v=1',
   './gameday-live-clock.js',
   './gameday-themed-slots.js?v=31',
   './gameday-premium-casino.css',
@@ -85,6 +87,12 @@ const SHELL=[
   './assets/casino-premium/deuces-wild.webp',
   './assets/casino-premium/bonus-poker.webp',
   './assets/casino-premium/poker-room.webp',
+  './assets/card-tables/blackjack.webp',
+  './assets/card-tables/three-card-poker.webp',
+  './assets/card-tables/baccarat.webp',
+  './assets/card-tables/video-poker.webp',
+  './assets/card-tables/ultimate-holdem.webp',
+  './assets/card-tables/caribbean-stud.webp',
   './assets/casino-premium/casino-lobby-hero.webp',
   './assets/casino-premium/poker-hero.webp',
   './assets/casino-premium/slots-hero.webp',
