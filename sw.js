@@ -33,7 +33,7 @@ const SHELL=[
   './gameday-app.js',
   './gameday-card-wager-ui.js?v=29',
   './gameday-live-card-tables.js?v=1',
-  './gameday-live-card-tables.css?v=2',
+  './gameday-live-card-tables.css?v=3',
   './gameday-live-clock.js',
   './gameday-themed-slots.js?v=31',
   './gameday-premium-casino.css',
