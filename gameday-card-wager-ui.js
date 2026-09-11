@@ -30,7 +30,7 @@
     .gameday-detailed-card .gd-card-pips span:nth-child(3n+2){transform:scale(.9)}
     .gameday-detailed-card .gd-card-ace{font-size:clamp(20px,9vw,42px);font-weight:900;text-shadow:0 1px 0 #fff}
     .gameday-detailed-card .gd-card-face{display:grid;place-items:center;width:82%;height:78%;border:1px solid currentColor;border-radius:4px;background:linear-gradient(145deg,rgba(212,180,91,.22),rgba(255,255,255,.72));box-shadow:inset 0 0 0 2px rgba(255,255,255,.55)}
-    .gameday-detailed-card .gd-card-face strong{font:900 clamp(16px,7vw,30px)/1 Arial,sans-serif;letter-spacing:-.08em}
+    .gameday-detailed-card .gd-card-face strong{font:900 clamp(16px,7vw,30px)/1 Arial,sans-serif;letter-spacing:-.04em}
     .gameday-detailed-card .gd-card-face span{font-size:clamp(12px,5vw,22px);margin-top:-3px}
     .gameday-detailed-card.hidden-card,.gameday-detailed-card.empty{background:repeating-linear-gradient(45deg,#173b25,#173b25 6px,#244f32 6px,#244f32 12px)!important;color:#fff!important}
 
@@ -69,8 +69,7 @@
   function centerMarkup(rank,suit){
     if (rank === 'A') return `<div class="gd-card-center"><div class="gd-card-ace">${suit}</div></div>`;
     if (rank === 'J' || rank === 'Q' || rank === 'K') {
-      const emblem = rank === 'K' ? '♛' : rank === 'Q' ? '✦' : '◆';
-      return `<div class="gd-card-center"><div class="gd-card-face"><strong>${rank}${emblem}</strong><span>${suit}</span></div></div>`;
+      return `<div class="gd-card-center"><div class="gd-card-face"><strong>${rank}</strong><span>${suit}</span></div></div>`;
     }
     const count = rankToPips[rank] || 0;
     const pips = Array.from({length:count},()=>`<span>${suit}</span>`).join('');
