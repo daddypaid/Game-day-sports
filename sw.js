@@ -1,4 +1,4 @@
-const CACHE='gameday-shell-v34';
+const CACHE='gameday-shell-v35';
 const SHELL=[
   './index.html',
   './gameday-premium.html',
@@ -52,6 +52,7 @@ const SHELL=[
   './gameday-lucky7s.css',
   './art/gameday-sportsbook-hero.svg',
   './art/gameday-sportsbook-approved-hero.jpg',
+  './assets/homepage/gameday-home-hero.webp',
   './assets/gameday-blackjack-table-premium.svg',
   './assets/gameday-video-poker-premium.svg',
   './assets/gameday-roulette-room.svg',
