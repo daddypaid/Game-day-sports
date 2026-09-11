@@ -1,127 +1,77 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width,initial-scale=1.0,viewport-fit=cover">
-<meta name="theme-color" content="#050505">
-<link rel="manifest" href="manifest.webmanifest">
-<meta name="apple-mobile-web-app-capable" content="yes">
-<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-<meta name="apple-mobile-web-app-title" content="GameDay">
-<link rel="apple-touch-icon" href="icons/gameday-192.png">
-<title>GameDay Sports & Casino</title>
-<style>
-:root{--bg:#050505;--panel:#0b0d0b;--panel2:#11130f;--gold:#f2c14e;--gold2:#b98420;--line:#4c3b18;--muted:#9b9b93;--green:#13351d}
-*{box-sizing:border-box}html{background:#000}body{margin:0;background:radial-gradient(circle at 70% 0,rgba(190,136,31,.10),transparent 25%),linear-gradient(180deg,#030403,#090b08 42%,#020302);color:#fff;font-family:Inter,Arial,sans-serif;min-height:100vh}a{text-decoration:none;color:inherit}button{font:inherit}.app{display:grid;grid-template-columns:185px minmax(0,1fr);min-height:100vh;max-width:1500px;margin:auto;background:#050505;box-shadow:0 0 80px #000}.sidebar{position:sticky;top:0;height:100vh;border-right:1px solid #2e2a20;background:linear-gradient(180deg,#050505,#070907);padding:18px 12px;display:flex;flex-direction:column;z-index:50}.brand{display:flex;align-items:center;gap:9px;padding:6px 8px 20px}.crown{font-size:28px;color:var(--gold);filter:drop-shadow(0 0 10px rgba(242,193,78,.35))}.brand-text strong{display:block;color:var(--gold);font-size:18px;letter-spacing:.04em}.brand-text span{display:block;font-size:9px;color:#d9c789;letter-spacing:.08em;margin-top:2px}.nav{display:grid;gap:4px}.nav a{display:flex;align-items:center;gap:10px;padding:11px 10px;border-radius:9px;color:#d7d7d2;font-size:12px;border:1px solid transparent}.nav a:hover,.nav a.active{background:linear-gradient(90deg,rgba(166,111,18,.38),rgba(81,57,12,.18));border-color:#5e461a;color:#fff}.nav .ico{width:21px;text-align:center;font-size:17px;color:var(--gold)}.side-foot{margin-top:auto;padding:12px 10px;border:1px solid #5a4318;border-radius:10px;color:#e9cc7d;font-size:11px;text-align:center;background:#0d0d0b}.content{min-width:0}.topbar{min-height:64px;display:flex;align-items:center;gap:15px;padding:10px 18px;border-bottom:1px solid #201f1a;background:rgba(3,4,3,.94);position:sticky;top:0;z-index:40;backdrop-filter:blur(10px)}.search{flex:1;max-width:620px;margin:auto;display:flex;align-items:center;gap:8px;border:1px solid #3d3525;background:#050606;border-radius:999px;padding:10px 15px;color:#777;font-size:12px}.wallet-pill{white-space:nowrap;border:1px solid #3b3423;background:#090a08;border-radius:999px;padding:9px 13px;font-weight:800;color:#f1f1eb}.mode-pill{font-size:9px;font-weight:900;color:#f5d47b;border:1px solid #5d4519;border-radius:999px;padding:8px 10px;white-space:nowrap}.main{padding:0 16px 26px}.hero{position:relative;min-height:340px;overflow:hidden;border:1px solid #4a3917;border-radius:0 0 18px 18px;background:linear-gradient(90deg,rgba(0,0,0,.38),rgba(0,0,0,.05)),url('assets/homepage/gameday-home-hero.webp') center/cover no-repeat;display:flex;align-items:center;justify-content:center;text-align:center}.hero:after{content:"";position:absolute;inset:auto 0 0;height:120px;background:linear-gradient(transparent,rgba(0,0,0,.78))}.hero-copy{position:relative;z-index:2;max-width:680px;padding:30px 18px}.hero-crown{font-size:52px;line-height:1;color:var(--gold);text-shadow:0 0 24px rgba(242,193,78,.5)}.hero h1{margin:0;color:#f5d67a;font-size:clamp(42px,7vw,82px);line-height:.85;letter-spacing:-.05em;text-shadow:0 8px 20px #000}.hero h2{margin:8px 0 0;color:#f0c252;font-size:clamp(20px,3vw,34px);letter-spacing:.04em}.hero p{margin:9px 0 20px;font-size:15px;font-weight:800;letter-spacing:.06em;text-shadow:0 2px 10px #000}.gold-btn{display:inline-flex;align-items:center;justify-content:center;padding:12px 32px;border-radius:999px;background:linear-gradient(#ffe187,#d79a26);color:#171108;font-weight:1000;border:1px solid #f6d575;box-shadow:0 6px 18px rgba(179,116,17,.24)}.section{margin-top:14px}.section-title{display:flex;justify-content:space-between;align-items:center;gap:12px;margin:0 2px 9px}.section-title h3{margin:0;color:#f3cb68;font-size:17px;letter-spacing:.04em}.section-title a,.section-title span{font-size:10px;color:#c2b893}.sports-row{display:grid;grid-template-columns:repeat(13,minmax(78px,1fr));gap:7px;overflow-x:auto;padding-bottom:5px;scrollbar-width:none}.sport{min-height:92px;border:1px solid #60481c;border-radius:8px;background:linear-gradient(180deg,#11120f,#080908);display:flex;flex-direction:column;align-items:center;justify-content:center;gap:8px;padding:8px;text-align:center;transition:.15s ease}.sport:hover{transform:translateY(-2px);border-color:#c18d29;box-shadow:0 0 20px rgba(190,139,38,.12)}.sport .symbol{font-size:30px;line-height:1}.sport strong{font-size:10px}.feature-grid{display:grid;grid-template-columns:1.2fr 1fr 1fr;gap:10px;margin-top:14px}.feature{min-height:116px;border:1px solid #634919;border-radius:8px;padding:16px;background:linear-gradient(110deg,rgba(20,20,16,.93),rgba(7,8,7,.97)),radial-gradient(circle at 15% 70%,rgba(202,148,37,.18),transparent 35%);display:flex;flex-direction:column;justify-content:center;text-align:center}.feature strong{font-size:20px;color:#f0ca69}.feature span{font-size:10px;color:#ddd7c5;margin:4px 0 12px}.feature .mini{align-self:center;font-size:10px;padding:8px 18px}.casino-wrap{margin-top:16px;border-top:1px solid #3b311c;padding-top:10px}.casino-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:8px}.game{position:relative;overflow:hidden;min-height:138px;border:1px solid #624919;border-radius:9px;background:#080808}.game img{width:100%;height:100%;object-fit:cover;position:absolute;inset:0;transition:transform .2s ease}.game:after{content:"";position:absolute;inset:0;background:linear-gradient(transparent 38%,rgba(0,0,0,.88))}.game:hover img{transform:scale(1.035)}.game-name{position:absolute;z-index:2;left:10px;right:10px;bottom:10px;text-align:center;color:#f3cc6b;font-weight:1000;font-size:15px;text-shadow:0 2px 6px #000}.trustbar{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin-top:15px;padding:14px;border-top:1px solid #322918}.trust{display:flex;align-items:center;justify-content:center;gap:8px;color:#d7d4c8;font-size:10px}.trust b{color:var(--gold);font-size:25px}.test{color:#f1c860;font-weight:1000;font-size:13px}.test small{display:block;color:#ddd;font-size:9px;font-weight:600;margin-top:3px}.mobile-menu{display:none}
-.top-title{flex:1;color:#d9c789;font-weight:900;letter-spacing:.08em;font-size:13px}.nav a{font-size:14px}.sport strong{font-size:12px}.hero{background-image:linear-gradient(90deg,rgba(0,0,0,.38),rgba(0,0,0,.05)),url('assets/homepage/gameday-home-hero.webp')}.hero:before{content:"";position:absolute;inset:0;background:radial-gradient(circle at center,rgba(0,0,0,.10),rgba(0,0,0,.56) 78%)}.casino-grid{grid-template-columns:repeat(20,1fr)}.game{grid-column:span 5}.game:nth-child(n+5){grid-column:span 4}.game-name{bottom:30px}.game-status{position:absolute;z-index:3;left:10px;right:10px;bottom:8px;display:flex;justify-content:space-between;color:#baf5ca;font-size:11px;font-weight:900;letter-spacing:.04em}.game-status span:last-child{color:#f3cc6b}.nav-shortcut{border:1px solid #493817;border-radius:10px;min-height:62px;padding:10px;font-size:12px}.nav-shortcut:hover{border-color:#b98420;background:#111008}
-.sidebar{overflow-y:auto}.sports-row{-webkit-overflow-scrolling:touch;scroll-snap-type:x proximity}.sport{scroll-snap-align:start}
-@media(max-width:1050px){.app{grid-template-columns:160px minmax(0,1fr)}.sports-row{grid-template-columns:repeat(13,84px)}}
-@media(max-width:760px){.app{display:block}.sidebar{position:fixed;left:0;top:0;bottom:0;width:230px;transform:translateX(-102%);transition:.2s;height:100vh;box-shadow:18px 0 40px rgba(0,0,0,.65);padding-top:max(18px,env(safe-area-inset-top))}body.menu-open .sidebar{transform:translateX(0)}body.menu-open:after{content:"";position:fixed;inset:0;z-index:45;background:rgba(0,0,0,.64)}.mobile-menu{display:block;background:none;border:0;color:var(--gold);font-size:24px;min-width:44px;min-height:44px}.topbar{padding:9px 10px;padding-top:max(9px,env(safe-area-inset-top))}.search{display:none}.top-title{font-size:11px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.wallet-pill{margin-left:auto;font-size:12px}.main{padding:0 9px}.hero{min-height:300px;border-radius:0 0 14px 14px;background-position:center}.hero-copy{padding:25px 10px}.feature-grid{grid-template-columns:1fr}.casino-grid{grid-template-columns:repeat(2,1fr)}.game,.game:nth-child(n+5){grid-column:span 1;min-height:118px}.trustbar{grid-template-columns:repeat(2,1fr)}}
-@media(max-width:430px){.hero{min-height:270px}.hero h1{font-size:48px}.hero h2{font-size:22px}.hero p{font-size:11px}.sports-row{grid-template-columns:repeat(13,76px)}.sport{min-height:82px}.sport .symbol{font-size:25px}.casino-grid{gap:6px}.game{min-height:103px}.game-name{font-size:12px}.mode-pill{display:none}.trustbar{padding:12px 4px}.trust{font-size:9px}}
-</style>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+  <meta name="theme-color" content="#000000">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <meta name="apple-mobile-web-app-title" content="GameDay">
+  <link rel="manifest" href="manifest.webmanifest">
+  <link rel="apple-touch-icon" href="icons/gameday-192.png">
+  <title>GameDay Sports &amp; Casino</title>
+  <style>
+    *{box-sizing:border-box}
+    html,body{margin:0;min-height:100%;background:#000;color:#fff}
+    body{display:flex;justify-content:center;align-items:flex-start;font-family:Arial,sans-serif}
+    .homepage{position:relative;width:min(100vw,960px);aspect-ratio:960/1001;background:#000;overflow:hidden}
+    .homepage>img{display:block;width:100%;height:100%;object-fit:contain;object-position:top center}
+    .hotspot{position:absolute;display:block;border-radius:8px;color:transparent;font-size:0;-webkit-tap-highlight-color:rgba(242,193,78,.24)}
+    .hotspot:focus-visible{outline:3px solid #f2c14e;outline-offset:-3px;background:rgba(242,193,78,.12)}
+  </style>
 </head>
 <body>
-<div class="app">
-  <aside class="sidebar" id="sidebar">
-    <div class="brand"><div class="crown">♛</div><div class="brand-text"><strong>GAMEDAY</strong><span>SPORTS & CASINO</span></div></div>
-    <nav class="nav">
-      <a class="active" href="index.html"><span class="ico">⌂</span>Home</a>
-      <a href="gameday-sportsbook.html"><span class="ico">🏆</span>Sportsbook</a>
-      <a href="gameday-sportsbook.html?view=live"><span class="ico">◉</span>Live Betting</a>
-      <a href="gameday-sportsbook.html?view=props"><span class="ico">▥</span>Player Props</a>
-      <a href="gameday-sportsbook.html?view=futures"><span class="ico">▥</span>Futures</a>
-      <a href="gameday-sportsbook.html#sportSelect"><span class="ico">◎</span>Worldwide Sports</a>
-      <a href="gameday-casino-v2.html"><span class="ico">777</span>Casino</a>
-      <a href="gameday-wallet.html"><span class="ico">▣</span>Wallet</a>
-      <a href="gameday-my-bets.html"><span class="ico">↻</span>History</a>
-      <a href="gameday-auth.html"><span class="ico">●</span>Account</a>
-      <a href="gameday-auth.html#accountPanel"><span class="ico">⚙</span>Settings</a>
-    </nav>
-    <div class="side-foot">TEST MODE<br><small>NO REAL MONEY</small></div>
-  </aside>
+  <main class="homepage" aria-label="GameDay Sports and Casino homepage">
+    <img src="assets/homepage/gameday-homepage-approved.jpeg" alt="GameDay Sports and Casino premium dashboard with featured sports and casino games">
 
-  <div class="content">
-    <header class="topbar">
-      <button class="mobile-menu" id="menuBtn" aria-label="Open menu">☰</button>
-      <div class="top-title">GAMEDAY SPORTS &amp; CASINO</div>
-      <a class="wallet-pill" id="homeWallet" href="gameday-wallet.html">TEST WALLET</a>
-      <div class="mode-pill">TEST MODE</div>
-    </header>
+    <a class="hotspot" style="left:0%;top:14.5%;width:15.8%;height:4%" href="index.html" aria-label="Home">Home</a>
+    <a class="hotspot" style="left:0%;top:18.3%;width:15.8%;height:4%" href="gameday-sportsbook.html" aria-label="Sportsbook">Sportsbook</a>
+    <a class="hotspot" style="left:0%;top:22.1%;width:15.8%;height:3.8%" href="gameday-sportsbook.html?view=live" aria-label="Live Betting">Live Betting</a>
+    <a class="hotspot" style="left:0%;top:25.9%;width:15.8%;height:3.8%" href="gameday-sportsbook.html?view=props" aria-label="Player Props">Player Props</a>
+    <a class="hotspot" style="left:0%;top:29.7%;width:15.8%;height:3.8%" href="gameday-sportsbook.html?view=futures" aria-label="Futures">Futures</a>
+    <a class="hotspot" style="left:0%;top:33.5%;width:15.8%;height:3.8%" href="gameday-sportsbook.html#sportSelect" aria-label="Worldwide Sports">Worldwide Sports</a>
+    <a class="hotspot" style="left:0%;top:37.3%;width:15.8%;height:3.8%" href="gameday-casino-v2.html" aria-label="Casino">Casino</a>
+    <a class="hotspot" style="left:0%;top:41.1%;width:15.8%;height:3.8%" href="gameday-wallet.html" aria-label="Wallet">Wallet</a>
+    <a class="hotspot" style="left:0%;top:48.8%;width:15.8%;height:3.8%" href="gameday-my-bets.html" aria-label="History">History</a>
+    <a class="hotspot" style="left:0%;top:52.6%;width:15.8%;height:3.8%" href="gameday-auth.html" aria-label="Account">Account</a>
+    <a class="hotspot" style="left:0%;top:56.4%;width:15.8%;height:3.8%" href="gameday-auth.html#accountPanel" aria-label="Settings">Settings</a>
+    <a class="hotspot" style="left:0%;top:61.1%;width:15.8%;height:5%" href="gameday-wallet.html" aria-label="Test wallet">Test wallet</a>
 
-    <main class="main">
-      <section class="hero">
-        <div class="hero-copy">
-          <div class="hero-crown">♛</div>
-          <h1>GAMEDAY</h1>
-          <h2>SPORTS & CASINO</h2>
-          <p>BET THE GAME. LIVE THE ACTION.</p>
-          <a class="gold-btn" href="gameday-sportsbook.html">BET NOW ›</a>
-        </div>
-      </section>
+    <a class="hotspot" style="left:41%;top:29%;width:18%;height:5%" href="gameday-sportsbook.html" aria-label="Bet now">Bet now</a>
+    <a class="hotspot" style="left:73.4%;top:6.8%;width:14%;height:4%" href="gameday-wallet.html" aria-label="Wallet balance">Wallet balance</a>
+    <a class="hotspot" style="left:92%;top:6.5%;width:6%;height:5%" href="gameday-auth.html" aria-label="Account">Account</a>
 
-      <section class="section">
-        <div class="section-title"><h3>FEATURED SPORTS</h3><a href="gameday-sportsbook.html">ALL SPORTS ›</a></div>
-        <div class="sports-row">
-          <a class="sport" href="gameday-sportsbook.html?sport=nfl"><span class="symbol">🏈</span><strong>NFL</strong></a>
-          <a class="sport" href="gameday-sportsbook.html?sport=nba"><span class="symbol">🏀</span><strong>NBA</strong></a>
-          <a class="sport" href="gameday-sportsbook.html?sport=wnba"><span class="symbol">🏀</span><strong>WNBA</strong></a>
-          <a class="sport" href="gameday-sportsbook.html?sport=mlb"><span class="symbol">⚾</span><strong>MLB</strong></a>
-          <a class="sport" href="gameday-sportsbook.html?sport=nhl"><span class="symbol">🏒</span><strong>NHL</strong></a>
-          <a class="sport" href="gameday-sportsbook.html?sport=ncaaf"><span class="symbol">🏈</span><strong>NCAAF</strong></a>
-          <a class="sport" href="gameday-sportsbook.html?sport=ncaab"><span class="symbol">🏀</span><strong>NCAAB</strong></a>
-          <a class="sport" href="gameday-sportsbook.html?sport=mls"><span class="symbol">⚽</span><strong>MLS</strong></a>
-          <a class="sport" href="gameday-sportsbook.html?sport=epl"><span class="symbol">⚽</span><strong>EPL</strong></a>
-          <a class="sport" href="gameday-sportsbook.html?sport=ucl"><span class="symbol">⚽</span><strong>UCL</strong></a>
-          <a class="sport" href="gameday-sportsbook.html?sport=boxing_boxing"><span class="symbol">🥊</span><strong>BOXING</strong></a>
-          <a class="sport" href="gameday-sportsbook.html?sport=mma_mixed_martial_arts"><span class="symbol">🥋</span><strong>UFC / MMA</strong></a>
-          <a class="sport" href="gameday-sportsbook.html#sportSelect"><span class="symbol">🌐</span><strong>WORLDWIDE</strong></a>
-        </div>
-      </section>
+    <a class="hotspot" style="left:16.9%;top:40.5%;width:6.1%;height:8.2%" href="gameday-sportsbook.html?sport=nfl" aria-label="NFL">NFL</a>
+    <a class="hotspot" style="left:23.2%;top:40.5%;width:6.1%;height:8.2%" href="gameday-sportsbook.html?sport=nba" aria-label="NBA">NBA</a>
+    <a class="hotspot" style="left:29.5%;top:40.5%;width:6.1%;height:8.2%" href="gameday-sportsbook.html?sport=wnba" aria-label="WNBA">WNBA</a>
+    <a class="hotspot" style="left:35.8%;top:40.5%;width:6.1%;height:8.2%" href="gameday-sportsbook.html?sport=mlb" aria-label="MLB">MLB</a>
+    <a class="hotspot" style="left:42.1%;top:40.5%;width:6.1%;height:8.2%" href="gameday-sportsbook.html?sport=nhl" aria-label="NHL">NHL</a>
+    <a class="hotspot" style="left:48.4%;top:40.5%;width:6.1%;height:8.2%" href="gameday-sportsbook.html?sport=ncaaf" aria-label="NCAAF">NCAAF</a>
+    <a class="hotspot" style="left:54.7%;top:40.5%;width:6.1%;height:8.2%" href="gameday-sportsbook.html?sport=ncaab" aria-label="NCAAB">NCAAB</a>
+    <a class="hotspot" style="left:61%;top:40.5%;width:6.1%;height:8.2%" href="gameday-sportsbook.html?sport=mls" aria-label="MLS">MLS</a>
+    <a class="hotspot" style="left:67.3%;top:40.5%;width:6.1%;height:8.2%" href="gameday-sportsbook.html?sport=epl" aria-label="EPL">EPL</a>
+    <a class="hotspot" style="left:73.6%;top:40.5%;width:6.1%;height:8.2%" href="gameday-sportsbook.html?sport=ucl" aria-label="UCL">UCL</a>
+    <a class="hotspot" style="left:79.9%;top:40.5%;width:6.1%;height:8.2%" href="gameday-sportsbook.html?sport=boxing_boxing" aria-label="Boxing">Boxing</a>
+    <a class="hotspot" style="left:86.2%;top:40.5%;width:6.1%;height:8.2%" href="gameday-sportsbook.html?sport=mma_mixed_martial_arts" aria-label="UFC and MMA">UFC and MMA</a>
+    <a class="hotspot" style="left:92.5%;top:40.5%;width:6.1%;height:8.2%" href="gameday-sportsbook.html#sportSelect" aria-label="Worldwide Sports">Worldwide Sports</a>
 
-      <section class="feature-grid">
-        <a class="feature" href="gameday-sportsbook.html"><strong>SPORTSBOOK</strong><span>GAME LINES • PLAYER PROPS • FUTURES • LIVE BETTING</span><div class="gold-btn mini">BET NOW</div></a>
-        <a class="feature" href="gameday-sportsbook.html?view=props"><strong>PLAYER PROPS</strong><span>MORE WAYS TO WIN</span><div class="gold-btn mini">BET PROPS</div></a>
-        <a class="feature" href="gameday-sportsbook.html?view=futures"><strong>FUTURES</strong><span>SEASON LONG ODDS</span><div class="gold-btn mini">VIEW ODDS</div></a>
-      </section>
+    <a class="hotspot" style="left:16.9%;top:50%;width:26%;height:11%" href="gameday-sportsbook.html" aria-label="Sportsbook">Sportsbook</a>
+    <a class="hotspot" style="left:43.7%;top:50%;width:27.8%;height:11%" href="gameday-sportsbook.html?view=props" aria-label="Player Props">Player Props</a>
+    <a class="hotspot" style="left:72.2%;top:50%;width:26.5%;height:11%" href="gameday-sportsbook.html?view=futures" aria-label="Futures">Futures</a>
+    <a class="hotspot" style="left:86%;top:62.1%;width:12.5%;height:3.2%" href="gameday-casino-v2.html" aria-label="All casino games">All casino games</a>
 
-      <section class="casino-wrap">
-        <div class="section-title"><h3>♛ GAMEDAY CASINO</h3><a href="gameday-casino-v2.html">ALL GAMES ›</a></div>
-        <div class="casino-grid">
-          <a class="game" href="gameday-midnight-monsters-v2.html"><img src="assets/casino-premium/midnight-monsters.webp" alt="Midnight Monsters"><div class="game-name">MIDNIGHT MONSTERS</div><div class="game-status"><span>CONNECTED</span><span>PLAY ›</span></div></a>
-          <a class="game" href="gameday-galactic-rebellion-v2.html"><img src="assets/casino-premium/galactic-rebellion.webp" alt="Galactic Rebellion"><div class="game-name">GALACTIC REBELLION</div><div class="game-status"><span>CONNECTED</span><span>PLAY ›</span></div></a>
-          <a class="game" href="gameday-blackjack.html"><img src="assets/casino-premium/blackjack.webp" alt="GameDay Blackjack"><div class="game-name">BLACKJACK</div><div class="game-status"><span>CONNECTED</span><span>PLAY ›</span></div></a>
-          <a class="game" href="gameday-roulette.html"><img src="assets/casino-premium/roulette.webp" alt="GameDay Roulette"><div class="game-name">ROULETTE</div><div class="game-status"><span>CONNECTED</span><span>PLAY ›</span></div></a>
-          <a class="game" href="gameday-baccarat.html"><img src="assets/casino-premium/baccarat.webp" alt="GameDay Baccarat"><div class="game-name">BACCARAT</div><div class="game-status"><span>CONNECTED</span><span>PLAY ›</span></div></a>
-          <a class="game" href="gameday-video-poker.html"><img src="assets/casino-premium/video-poker.webp" alt="GameDay Video Poker"><div class="game-name">VIDEO POKER</div><div class="game-status"><span>CONNECTED</span><span>PLAY ›</span></div></a>
-          <a class="game" href="gameday-three-card-poker.html"><img src="assets/casino-premium/three-card-poker.webp" alt="GameDay Three Card Poker"><div class="game-name">THREE CARD POKER</div><div class="game-status"><span>CONNECTED</span><span>PLAY ›</span></div></a>
-          <a class="game" href="gameday-ultimate-texas-holdem.html"><img src="assets/casino-premium/ultimate-holdem.webp" alt="GameDay Ultimate Texas Holdem"><div class="game-name">ULTIMATE TEXAS HOLD'EM</div><div class="game-status"><span>CONNECTED</span><span>PLAY ›</span></div></a>
-          <a class="game" href="gameday-caribbean-stud.html"><img src="assets/casino-premium/caribbean-stud.webp" alt="GameDay Caribbean Stud"><div class="game-name">CARIBBEAN STUD</div><div class="game-status"><span>CONNECTED</span><span>PLAY ›</span></div></a>
-        </div>
-      </section>
-
-      <section class="trustbar">
-        <a class="trust nav-shortcut" href="gameday-wallet.html"><b>▣</b><span>WALLET</span></a>
-        <a class="trust nav-shortcut" href="gameday-my-bets.html"><b>↻</b><span>HISTORY</span></a>
-        <a class="trust nav-shortcut" href="gameday-auth.html"><b>●</b><span>ACCOUNT &amp; SETTINGS</span></a>
-        <div class="trust test">♛ <span>TEST MODE<small>NO REAL MONEY</small></span></div>
-      </section>
-    </main>
-  </div>
-</div>
-<script>
-const menuBtn=document.getElementById('menuBtn');
-menuBtn?.addEventListener('click',()=>document.body.classList.toggle('menu-open'));
-document.addEventListener('click',e=>{if(window.innerWidth<=760&&document.body.classList.contains('menu-open')&&!e.target.closest('#sidebar')&&!e.target.closest('#menuBtn'))document.body.classList.remove('menu-open')});
-</script>
-<script type="module">
-import{createClient}from"https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/+esm";
-import{GAMEDAY_CONFIG}from"./gameday-config.js";
-const homeWallet=document.getElementById('homeWallet'),supabase=createClient(GAMEDAY_CONFIG.supabaseUrl,GAMEDAY_CONFIG.supabasePublishableKey);
-const showWallet=async()=>{try{const{data}=await supabase.auth.getSession(),user=data.session?.user;if(!user){homeWallet.textContent='TEST WALLET';return}const{data:wallet,error}=await supabase.from('wallets').select('balance').eq('user_id',user.id).single();homeWallet.textContent=error?'TEST WALLET':`TEST $${Number(wallet?.balance||0).toFixed(2)}`}catch{homeWallet.textContent='TEST WALLET'}};
-supabase.auth.onAuthStateChange(showWallet);await showWallet();
-</script>
-<script>
-if('serviceWorker' in navigator){window.addEventListener('load',()=>navigator.serviceWorker.register('./sw.js',{scope:'./'}).catch(()=>{}))}
-</script>
+    <a class="hotspot" style="left:16.9%;top:65.6%;width:18.7%;height:10%" href="gameday-midnight-monsters-v2.html" aria-label="Midnight Monsters">Midnight Monsters</a>
+    <a class="hotspot" style="left:36.1%;top:65.6%;width:19.8%;height:10%" href="gameday-galactic-rebellion-v2.html" aria-label="Galactic Rebellion">Galactic Rebellion</a>
+    <a class="hotspot" style="left:56.4%;top:65.6%;width:20.4%;height:10%" href="gameday-blackjack.html" aria-label="Blackjack">Blackjack</a>
+    <a class="hotspot" style="left:77.2%;top:65.6%;width:21.5%;height:10%" href="gameday-roulette.html" aria-label="Roulette">Roulette</a>
+    <a class="hotspot" style="left:16.9%;top:76.3%;width:14.4%;height:9.6%" href="gameday-baccarat.html" aria-label="Baccarat">Baccarat</a>
+    <a class="hotspot" style="left:31.8%;top:76.3%;width:14.4%;height:9.6%" href="gameday-video-poker.html" aria-label="Video Poker">Video Poker</a>
+    <a class="hotspot" style="left:46.6%;top:76.3%;width:14.7%;height:9.6%" href="gameday-three-card-poker.html" aria-label="Three Card Poker">Three Card Poker</a>
+    <a class="hotspot" style="left:61.7%;top:76.3%;width:15.7%;height:9.6%" href="gameday-ultimate-texas-holdem.html" aria-label="Ultimate Texas Holdem">Ultimate Texas Holdem</a>
+    <a class="hotspot" style="left:77.8%;top:76.3%;width:20.9%;height:9.6%" href="gameday-caribbean-stud.html" aria-label="Caribbean Stud">Caribbean Stud</a>
+  </main>
+  <script>
+    if('serviceWorker' in navigator){window.addEventListener('load',()=>navigator.serviceWorker.register('./sw.js',{scope:'./'}).catch(()=>{}))}
+  </script>
 </body>
 </html>
