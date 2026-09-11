@@ -22,7 +22,7 @@
     .gameday-detailed-card{position:relative!important;overflow:hidden!important;background:linear-gradient(145deg,#fffefa 0%,#f4f0e6 68%,#e8e1d2 100%)!important;border:1px solid #d6cfbf!important;box-shadow:0 3px 10px rgba(0,0,0,.3),inset 0 0 0 1px rgba(255,255,255,.75)!important;color:#111!important;font-family:Georgia,'Times New Roman',serif!important}
     .gameday-detailed-card.gd-red{color:#b41427!important}
     .gameday-detailed-card .rank,.gameday-detailed-card .suit,.gameday-detailed-card .card-rank,.gameday-detailed-card .card-suit{visibility:hidden!important}
-    .gameday-detailed-card::before,.gameday-detailed-card::after{position:absolute;z-index:3;content:attr(data-gd-rank) '\A' attr(data-gd-suit);white-space:pre;line-height:.82;text-align:center;font-weight:900;font-family:Arial,sans-serif;font-size:clamp(8px,2.7vw,12px)}
+    .gameday-detailed-card::before,.gameday-detailed-card::after{position:absolute;z-index:3;content:attr(data-gd-rank) attr(data-gd-suit);white-space:nowrap;line-height:1;text-align:center;font-weight:900;font-family:Arial,sans-serif;font-size:clamp(8px,2.7vw,12px)}
     .gameday-detailed-card::before{left:3px;top:4px}
     .gameday-detailed-card::after{right:3px;bottom:4px;transform:rotate(180deg)}
     .gameday-detailed-card .gd-card-center{position:absolute;inset:14% 15%;display:grid;place-items:center;z-index:2;font-family:Georgia,'Times New Roman',serif}
