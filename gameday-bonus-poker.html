@@ -48,9 +48,9 @@ async function dealHand(){const amount=Number(stake.value);if(!Number.isFinite(a
 async function drawHand(){if(!currentHand)return;draw.disabled=true;setStatus('Drawing…');try{const data=await api({action:'draw',hand_id:currentHand.id,holds:[...holds]});currentHand=null;holds.clear();balance=Number(data.balance);wallet.textContent=money(balance);render(data.hand.final_hand,false);result.textContent=`${data.hand.result} • ${data.hand.multiplier}× • Return ${money(data.hand.payout)}`;setStatus(data.hand.payout>0?'Winning hand':'Hand complete',data.hand.payout>0?'win':'');deal.disabled=false;stake.disabled=false;draw.disabled=true}catch(e){draw.disabled=false;setStatus(e.message||'Unable to draw','error')}}
 document.querySelectorAll('[data-chip]').forEach(b=>b.onclick=()=>{if(!stake.disabled)stake.value=b.dataset.chip});deal.onclick=dealHand;draw.onclick=drawHand;
 const{data,error}=await supabase.auth.getSession();if(error||!data.session){setStatus('Sign in to your GameDay account before playing','error');wallet.textContent='Sign in';render([],false);deal.disabled=true}else{user=data.session.user;await walletLoad();await resume()}
-supabase.auth.onAuthStateChange(async(_e,s)=>{user=s?.user||null;if(!user){wallet.textContent='Sign in';setStatus('Sign in to play','error');deal.disabled=true}else{await walletLoad();await resume()}});
+supabase.auth.onAuthStateChange((_e,s)=>{user=s?.user||null;if(!user){wallet.textContent='Sign in';setStatus('Sign in to play','error');deal.disabled=true;return}setTimeout(async()=>{await walletLoad();await resume()},0)});
 </script>
-<script src="gameday-card-wager-ui.js?v=27" defer></script>
+<script src="gameday-card-wager-ui.js?v=28" defer></script>
 <script src="gameday-app.js" defer></script>
 </body>
 </html>

@@ -15,6 +15,7 @@ export const GAMEDAY_CONFIG = Object.freeze({
     roulette: 'roulette-test',
     baccarat: 'baccarat-test',
     slots: 'slots-test',
+    themedSlots: 'themed-slots-test',
     videoPoker: 'video-poker-test',
     threeCardPoker: 'three-card-poker-test',
     ultimateTexasHoldem: 'ultimate-texas-holdem-test',
