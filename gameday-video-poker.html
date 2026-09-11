@@ -77,7 +77,7 @@ document.querySelectorAll('[data-chip]').forEach(b=>b.onclick=()=>{if(!stake.dis
 const{data,error}=await supabase.auth.getSession();if(error||!data.session){setStatus('Sign in to your GameDay account before playing','error');wallet.textContent='Sign in';render([],false);deal.disabled=true}else{user=data.session.user;await walletLoad();await resume()}
 supabase.auth.onAuthStateChange((_e,s)=>{user=s?.user||null;if(!user){wallet.textContent='Sign in';setStatus('Sign in to play','error');deal.disabled=true;return}setTimeout(async()=>{await walletLoad();await resume()},0)});
 </script>
-<link rel="stylesheet" href="gameday-live-card-tables.css?v=3">
+<link rel="stylesheet" href="gameday-live-card-tables.css?v=4">
 <script src="gameday-card-wager-ui.js?v=29" defer></script>
 <script src="gameday-live-card-tables.js?v=1" defer></script>
 <script src="gameday-app.js" defer></script>
