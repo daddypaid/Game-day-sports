@@ -19,20 +19,23 @@
 
   const style = document.createElement('style');
   style.textContent = `
-    .gameday-detailed-card{position:relative!important;overflow:hidden!important;background:linear-gradient(145deg,#fffefa 0%,#f4f0e6 68%,#e8e1d2 100%)!important;border:1px solid #d6cfbf!important;box-shadow:0 3px 10px rgba(0,0,0,.3),inset 0 0 0 1px rgba(255,255,255,.75)!important;color:#111!important;font-family:Georgia,'Times New Roman',serif!important}
-    .gameday-detailed-card.gd-red{color:#b41427!important}
+    .gameday-detailed-card{position:relative!important;overflow:hidden!important;aspect-ratio:5/7;background:linear-gradient(145deg,#fff 0%,#fdfcf9 72%,#f2efe8 100%)!important;border:1px solid #c9c6bd!important;box-shadow:0 3px 10px rgba(0,0,0,.32),inset 0 0 0 1px #fff!important;color:#111!important;font-family:Georgia,'Times New Roman',serif!important;-webkit-font-smoothing:antialiased;text-rendering:geometricPrecision}
+    .gameday-detailed-card.gd-red{color:#c0182b!important}
     .gameday-detailed-card .rank,.gameday-detailed-card .suit,.gameday-detailed-card .card-rank,.gameday-detailed-card .card-suit{visibility:hidden!important}
-    .gameday-detailed-card::before,.gameday-detailed-card::after{position:absolute;z-index:3;content:attr(data-gd-rank) attr(data-gd-suit);white-space:nowrap;line-height:1;text-align:center;font-weight:900;font-family:Arial,sans-serif;font-size:clamp(8px,2.7vw,12px)}
-    .gameday-detailed-card::before{left:3px;top:4px}
-    .gameday-detailed-card::after{right:3px;bottom:4px;transform:rotate(180deg)}
-    .gameday-detailed-card .gd-card-center{position:absolute;inset:14% 15%;display:grid;place-items:center;z-index:2;font-family:Georgia,'Times New Roman',serif}
-    .gameday-detailed-card .gd-card-pips{width:100%;height:100%;display:grid;grid-template-columns:repeat(3,1fr);grid-auto-rows:1fr;align-items:center;justify-items:center;font-size:clamp(8px,4.6vw,18px);line-height:1}
-    .gameday-detailed-card .gd-card-pips span:nth-child(3n+2){transform:scale(.9)}
-    .gameday-detailed-card .gd-card-ace{font-size:clamp(20px,9vw,42px);font-weight:900;text-shadow:0 1px 0 #fff}
-    .gameday-detailed-card .gd-card-face{display:grid;place-items:center;width:82%;height:78%;border:1px solid currentColor;border-radius:4px;background:linear-gradient(145deg,rgba(212,180,91,.22),rgba(255,255,255,.72));box-shadow:inset 0 0 0 2px rgba(255,255,255,.55)}
-    .gameday-detailed-card .gd-card-face strong{font:900 clamp(16px,7vw,30px)/1 Arial,sans-serif;letter-spacing:-.04em}
-    .gameday-detailed-card .gd-card-face span{font-size:clamp(12px,5vw,22px);margin-top:-3px}
-    .gameday-detailed-card.hidden-card,.gameday-detailed-card.empty{background:repeating-linear-gradient(45deg,#173b25,#173b25 6px,#244f32 6px,#244f32 12px)!important;color:#fff!important}
+    .gameday-detailed-card::before,.gameday-detailed-card::after{position:absolute;z-index:5;content:attr(data-gd-rank)'\\A' attr(data-gd-suit);white-space:pre;line-height:.82;text-align:center;font-weight:900;font-family:Georgia,'Times New Roman',serif;font-size:clamp(9px,3vw,14px);letter-spacing:-.04em}
+    .gameday-detailed-card::before{left:4px;top:4px}
+    .gameday-detailed-card::after{right:4px;bottom:4px;transform:rotate(180deg)}
+    .gameday-detailed-card .gd-card-center{position:absolute;inset:15% 18%;z-index:2;font-family:Georgia,'Times New Roman',serif}
+    .gameday-detailed-card .gd-card-pips{position:relative;width:100%;height:100%;font-size:clamp(10px,4.8vw,21px);line-height:1}
+    .gameday-detailed-card .gd-pip{position:absolute;left:var(--x);top:var(--y);transform:translate(-50%,-50%) rotate(var(--r,0deg))}
+    .gameday-detailed-card .gd-card-ace{position:absolute;inset:0;display:grid;place-items:center;font-size:clamp(24px,10vw,48px);font-weight:900;text-shadow:0 1px 0 #fff}
+    .gameday-detailed-card .gd-card-face{position:absolute;inset:0;border:1px solid currentColor;background:linear-gradient(135deg,#fff 0 24%,#d8bd62 24% 28%,#173b25 28% 48%,#f7f4e9 48% 52%,#173b25 52% 72%,#d8bd62 72% 76%,#fff 76%);box-shadow:inset 0 0 0 2px #fff;overflow:hidden}
+    .gameday-detailed-card .gd-card-face::after{content:'';position:absolute;inset:12% 19%;border:1px solid currentColor;border-radius:50%;background:#f5dfb0}
+    .gameday-detailed-card .gd-court{position:absolute;z-index:2;inset:0;display:grid;place-items:center;text-align:center;font:900 clamp(14px,6vw,28px)/.78 Georgia,'Times New Roman',serif;text-shadow:0 1px #fff}
+    .gameday-detailed-card .gd-court small{display:block;font-size:.7em;margin-top:3px}
+    .gameday-card-back{position:relative!important;overflow:hidden!important;aspect-ratio:5/7;background:#123923!important;border:2px solid #d8bd62!important;box-shadow:0 3px 10px rgba(0,0,0,.35),inset 0 0 0 2px #f8f3df,inset 0 0 0 4px #123923!important;color:#f5df8e!important}
+    .gameday-card-back::before{content:'';position:absolute;inset:7px;border:1px solid rgba(255,255,255,.72);background:repeating-linear-gradient(45deg,transparent 0 4px,rgba(216,189,98,.22) 4px 6px),repeating-linear-gradient(-45deg,transparent 0 4px,rgba(255,255,255,.12) 4px 6px)}
+    .gameday-card-back::after{content:'GD';position:absolute;inset:25%;display:grid;place-items:center;border:1px solid #d8bd62;border-radius:50%;background:#123923;font:900 clamp(11px,4vw,20px)/1 Georgia,serif;letter-spacing:-.08em;color:#f5df8e;text-shadow:0 1px #000}
 
     .gameday-custom-wager-input{border-color:#b99a42!important;box-shadow:0 0 0 1px rgba(215,189,98,.22)!important;font-weight:900!important}
     .gameday-custom-hint{margin-top:2px;color:#d9c36f;font-size:8px;font-weight:900;letter-spacing:.04em;text-transform:uppercase;white-space:nowrap}
@@ -43,11 +46,11 @@
     .gameday-stake-display.gameday-custom-ready[aria-disabled="true"]{opacity:.5!important;cursor:not-allowed!important;pointer-events:none!important}
 
     @media(max-width:430px){
-      .gameday-detailed-card::before,.gameday-detailed-card::after{font-size:8px;left:2px;right:auto;top:3px;bottom:auto}.gameday-detailed-card::after{left:auto;right:2px;top:auto;bottom:3px}
-      .gameday-detailed-card .gd-card-center{inset:17% 17%}
-      .gameday-detailed-card .gd-card-pips{font-size:10px}
-      .gameday-detailed-card .gd-card-ace{font-size:23px}
-      .gameday-detailed-card .gd-card-face strong{font-size:16px}.gameday-detailed-card .gd-card-face span{font-size:12px}
+      .gameday-detailed-card::before,.gameday-detailed-card::after{font-size:9px}.gameday-detailed-card::before{left:3px;top:3px}.gameday-detailed-card::after{right:3px;bottom:3px}
+      .gameday-detailed-card .gd-card-center{inset:16% 18%}
+      .gameday-detailed-card .gd-card-pips{font-size:11px}
+      .gameday-detailed-card .gd-card-ace{font-size:25px}
+      .gameday-detailed-card .gd-court{font-size:15px}
       .gameday-custom-hint{font-size:7px}
     }
   `;
@@ -55,7 +58,17 @@
 
   const validSuits = new Set(['♠','♥','♦','♣']);
   const validRanks = new Set(['2','3','4','5','6','7','8','9','10','J','Q','K','A']);
-  const rankToPips = {2:2,3:3,4:4,5:5,6:6,7:7,8:8,9:9,10:10};
+  const pipLayouts = {
+    2:[[50,18,0],[50,82,180]],
+    3:[[50,18,0],[50,50,0],[50,82,180]],
+    4:[[24,20,0],[76,20,0],[24,80,180],[76,80,180]],
+    5:[[24,20,0],[76,20,0],[50,50,0],[24,80,180],[76,80,180]],
+    6:[[24,18,0],[76,18,0],[24,50,0],[76,50,0],[24,82,180],[76,82,180]],
+    7:[[24,16,0],[76,16,0],[50,34,0],[24,50,0],[76,50,0],[24,82,180],[76,82,180]],
+    8:[[24,16,0],[76,16,0],[50,32,0],[24,43,0],[76,43,0],[50,68,180],[24,84,180],[76,84,180]],
+    9:[[24,14,0],[76,14,0],[24,38,0],[76,38,0],[50,50,0],[24,62,180],[76,62,180],[24,86,180],[76,86,180]],
+    10:[[24,12,0],[76,12,0],[50,27,0],[24,36,0],[76,36,0],[24,64,180],[76,64,180],[50,73,180],[24,88,180],[76,88,180]]
+  };
 
   function getRankSuit(card){
     const rankEl = card.querySelector('.card-rank,.rank');
@@ -69,24 +82,30 @@
   function centerMarkup(rank,suit){
     if (rank === 'A') return `<div class="gd-card-center"><div class="gd-card-ace">${suit}</div></div>`;
     if (rank === 'J' || rank === 'Q' || rank === 'K') {
-      return `<div class="gd-card-center"><div class="gd-card-face"><strong>${rank}</strong><span>${suit}</span></div></div>`;
+      return `<div class="gd-card-center"><div class="gd-card-face"><div class="gd-court">${rank}<small>${suit}</small></div></div></div>`;
     }
-    const count = rankToPips[rank] || 0;
-    const pips = Array.from({length:count},()=>`<span>${suit}</span>`).join('');
+    const pips = (pipLayouts[rank] || []).map(([x,y,r])=>`<span class="gd-pip" style="--x:${x}%;--y:${y}%;--r:${r}deg">${suit}</span>`).join('');
     return `<div class="gd-card-center"><div class="gd-card-pips">${pips}</div></div>`;
   }
 
   function decorateCards(root=document){
     if (!cardPages.has(path)) return;
     root.querySelectorAll?.('.card').forEach(card => {
-      if (card.classList.contains('gameday-detailed-card')) return;
-      if (card.classList.contains('hidden-card') || card.classList.contains('empty')) return;
+      if (card.classList.contains('gameday-detailed-card') || card.classList.contains('gameday-card-back')) return;
+      if (card.classList.contains('hidden-card') || card.classList.contains('back')) {
+        card.classList.add('gameday-card-back');
+        card.textContent='';
+        card.setAttribute('aria-label','GameDay card back');
+        return;
+      }
+      if (card.classList.contains('empty')) return;
       const rs = getRankSuit(card);
       if (!rs) return;
       card.classList.add('gameday-detailed-card');
       if (rs.suit === '♥' || rs.suit === '♦') card.classList.add('gd-red');
       card.dataset.gdRank = rs.rank;
       card.dataset.gdSuit = rs.suit;
+      card.setAttribute('aria-label',`${rs.rank} of ${{'♠':'spades','♥':'hearts','♦':'diamonds','♣':'clubs'}[rs.suit]}`);
       card.insertAdjacentHTML('beforeend', centerMarkup(rs.rank,rs.suit));
     });
   }
