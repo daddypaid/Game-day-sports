@@ -1,4 +1,4 @@
-const CACHE='gameday-shell-v35';
+const CACHE='gameday-shell-v36';
 const SHELL=[
   './index.html',
   './gameday-premium.html',
