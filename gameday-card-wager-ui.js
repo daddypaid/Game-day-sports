@@ -15,7 +15,19 @@
     'gameday-roulette.html',
     'gameday-slots.html'
   ]);
+  const gameNavigation = {
+    'gameday-blackjack.html': { hub: 'gameday-casino-v2.html', hubLabel: 'Casino', previous: 'gameday-baccarat.html', next: 'gameday-baccarat.html' },
+    'gameday-baccarat.html': { hub: 'gameday-casino-v2.html', hubLabel: 'Casino', previous: 'gameday-blackjack.html', next: 'gameday-blackjack.html' },
+    'gameday-video-poker.html': { hub: 'gameday-poker.html', hubLabel: 'Poker Room', previous: 'gameday-caribbean-stud.html', next: 'gameday-bonus-poker.html' },
+    'gameday-bonus-poker.html': { hub: 'gameday-poker.html', hubLabel: 'Poker Room', previous: 'gameday-video-poker.html', next: 'gameday-deuces-wild.html' },
+    'gameday-deuces-wild.html': { hub: 'gameday-poker.html', hubLabel: 'Poker Room', previous: 'gameday-bonus-poker.html', next: 'gameday-three-card-poker.html' },
+    'gameday-three-card-poker.html': { hub: 'gameday-poker.html', hubLabel: 'Poker Room', previous: 'gameday-deuces-wild.html', next: 'gameday-ultimate-texas-holdem.html' },
+    'gameday-ultimate-texas-holdem.html': { hub: 'gameday-poker.html', hubLabel: 'Poker Room', previous: 'gameday-three-card-poker.html', next: 'gameday-caribbean-stud.html' },
+    'gameday-caribbean-stud.html': { hub: 'gameday-poker.html', hubLabel: 'Poker Room', previous: 'gameday-ultimate-texas-holdem.html', next: 'gameday-video-poker.html' }
+  };
+  const chipValues = [1, 5, 10, 25, 100, 500];
   if (!cardPages.has(path) && !wagerPages.has(path)) return;
+  if (cardPages.has(path)) document.body.classList.add('gd-card-wager-page');
 
   const style = document.createElement('style');
   style.textContent = `
@@ -39,11 +51,18 @@
 
     .gameday-custom-wager-input{border-color:#b99a42!important;box-shadow:0 0 0 1px rgba(215,189,98,.22)!important;font-weight:900!important}
     .gameday-custom-hint{margin-top:2px;color:#d9c36f;font-size:8px;font-weight:900;letter-spacing:.04em;text-transform:uppercase;white-space:nowrap}
-    .gameday-custom-button{border:1px solid #8f7630!important;background:#342a10!important;color:#f5df8e!important;font-weight:900!important}
-    .gameday-custom-button:disabled{opacity:.38!important;cursor:not-allowed!important}
-    .gameday-stake-display.gameday-custom-ready{cursor:pointer!important;border-color:#9e873f!important;color:#f5df8e!important;position:relative!important}
-    .gameday-stake-display.gameday-custom-ready::after{content:'CUSTOM';position:absolute;right:4px;top:2px;font-size:6px;letter-spacing:.04em;color:#cdb65f}
-    .gameday-stake-display.gameday-custom-ready[aria-disabled="true"]{opacity:.5!important;cursor:not-allowed!important;pointer-events:none!important}
+    .gd-game-navigation{display:flex;align-items:center;justify-content:space-between;gap:8px;padding:6px 9px;border-top:1px solid rgba(215,189,98,.35);background:rgba(2,4,3,.94);font:800 12px/1 Arial,sans-serif;letter-spacing:.02em}
+    .gd-game-navigation a{display:inline-flex;align-items:center;justify-content:center;min-height:30px;padding:0 10px;border:1px solid rgba(215,189,98,.7);border-radius:999px;color:#ffe5a0;text-decoration:none;background:rgba(19,48,30,.88);white-space:nowrap}
+    .gd-game-navigation .gd-game-pager{display:flex;gap:6px}.gd-game-navigation .gd-game-pager a{min-width:42px;padding:0 8px}
+    .gd-game-navigation a:focus-visible{outline:2px solid #fff;outline-offset:2px}
+    .chips button.gd-selected-chip,.quick-bets button.gd-selected-chip{outline:3px solid #fff!important;outline-offset:2px!important;box-shadow:0 0 0 3px #d7bd62,0 5px 14px rgba(0,0,0,.55)!important}
+    .gd-card-wager-page :is(.chips,.quick-bets) button[data-chip]{border:2px dashed #d7bd62!important;border-radius:999px!important;aspect-ratio:1;min-width:44px;color:#fff!important;font-weight:900!important;text-shadow:0 1px 2px #000!important}
+    .gd-card-wager-page :is(.chips,.quick-bets) button[data-chip="1"]{background:#f7f4ea!important;color:#111!important;text-shadow:none!important}
+    .gd-card-wager-page :is(.chips,.quick-bets) button[data-chip="5"]{background:#a91422!important}
+    .gd-card-wager-page :is(.chips,.quick-bets) button[data-chip="10"]{background:#1254a3!important}
+    .gd-card-wager-page :is(.chips,.quick-bets) button[data-chip="25"]{background:#087047!important}
+    .gd-card-wager-page :is(.chips,.quick-bets) button[data-chip="100"]{background:#111!important}
+    .gd-card-wager-page :is(.chips,.quick-bets) button[data-chip="500"]{background:#642090!important}
 
     @media(max-width:430px){
       .gameday-detailed-card::before,.gameday-detailed-card::after{font-size:9px}.gameday-detailed-card::before{left:3px;top:3px}.gameday-detailed-card::after{right:3px;bottom:3px}
@@ -52,6 +71,7 @@
       .gameday-detailed-card .gd-card-ace{font-size:25px}
       .gameday-detailed-card .gd-court{font-size:15px}
       .gameday-custom-hint{font-size:7px}
+      .gd-game-navigation{padding:4px 6px;font-size:11px}.gd-game-navigation a{min-height:28px;padding:0 8px}
     }
   `;
   document.head.appendChild(style);
@@ -157,64 +177,88 @@
     return [...document.querySelectorAll('input[type="number"]')].find(looksLikeWagerInput) || null;
   }
 
-  function syncCustomLock(){
-    const input = primaryWagerInput();
+  function wagerInputFor(group){
+    const panel = group.closest('.controls,.control-card,.decision,.stake,.stake-row') || document;
+    return panel.querySelector('input[type="number"]') || primaryWagerInput();
+  }
+
+  function syncChipGroup(group){
+    const input = wagerInputFor(group);
     const locked = inputLocked(input);
-    document.querySelectorAll('.gameday-custom-button').forEach(button=>{
+    const selected = Number(input?.value);
+    group.querySelectorAll('button[data-chip]').forEach(button=>{
+      const active = Number(button.dataset.chip) === selected;
       button.disabled = locked;
-      button.setAttribute('aria-disabled', locked ? 'true' : 'false');
-    });
-    document.querySelectorAll('.gameday-stake-display.gameday-custom-ready').forEach(el=>{
-      el.setAttribute('aria-disabled', locked ? 'true' : 'false');
-      el.tabIndex = locked ? -1 : 0;
+      button.classList.toggle('gd-selected-chip', active);
+      button.setAttribute('aria-pressed', active ? 'true' : 'false');
     });
   }
 
-  function setCustomAmount(){
-    const input = primaryWagerInput();
-    if (inputLocked(input)) return;
-    const current = input.value || '25';
-    const raw = window.prompt('Enter custom whole-dollar bet', current);
-    if (raw === null) return;
-    if (inputLocked(input)) return;
-    const n = Number(raw);
-    if (!Number.isFinite(n) || n <= 0) return;
-    input.value = String(Math.round(n));
-    normalizeAmount(input);
-    input.dispatchEvent(new Event('input',{bubbles:true}));
-    input.dispatchEvent(new Event('change',{bubbles:true}));
-    document.querySelectorAll('.gameday-stake-display').forEach(el=>{el.textContent=`$${Number(input.value).toFixed(0)}`});
+  function normalizeChipGroup(group){
+    if (!cardPages.has(path)) return;
+    if (group.dataset.gdChipSet !== '1') {
+      group.dataset.gdChipSet = '1';
+      group.replaceChildren(...chipValues.map(value=>{
+        const button = document.createElement('button');
+        button.type = 'button';
+        button.dataset.chip = String(value);
+        button.textContent = `$${value}`;
+        button.setAttribute('aria-label', `Set bet to $${value}`);
+        button.addEventListener('click',()=>{
+          const input = wagerInputFor(group);
+          if (inputLocked(input)) return;
+          input.value = String(value);
+          input.dispatchEvent(new Event('input',{bubbles:true}));
+          input.dispatchEvent(new Event('change',{bubbles:true}));
+          syncChipGroup(group);
+        });
+        return button;
+      }));
+      const input = wagerInputFor(group);
+      if (input && !input.dataset.gdChipSync) {
+        input.dataset.gdChipSync = '1';
+        input.addEventListener('input',()=>document.querySelectorAll('.chips,.quick-bets').forEach(syncChipGroup));
+        input.addEventListener('change',()=>document.querySelectorAll('.chips,.quick-bets').forEach(syncChipGroup));
+      }
+    }
+    syncChipGroup(group);
   }
 
-  function enhanceCompactCustom(root=document){
-    if (!wagerPages.has(path)) return;
-    root.querySelectorAll?.('.gameday-stake-display').forEach(el=>{
-      if (el.dataset.gdCustomBound) return;
-      el.dataset.gdCustomBound='1';
-      el.classList.add('gameday-custom-ready');
-      el.setAttribute('role','button');
-      el.setAttribute('aria-label','Set custom bet amount');
-      el.addEventListener('click',setCustomAmount);
-      el.addEventListener('keydown',e=>{if((e.key==='Enter'||e.key===' ') && el.getAttribute('aria-disabled')!=='true'){e.preventDefault();setCustomAmount()}});
-    });
-    root.querySelectorAll?.('.gameday-quick-chips').forEach(group=>{
-      if (group.querySelector('.gameday-custom-button')) return;
-      const b=document.createElement('button');
-      b.type='button';
-      b.className='gameday-custom-button';
-      b.textContent='Custom';
-      b.addEventListener('click',setCustomAmount);
-      group.appendChild(b);
-      group.style.gridTemplateColumns='repeat(5,1fr)';
-    });
-    syncCustomLock();
+  function normalizeCardChips(root=document){
+    root.querySelectorAll?.('.chips,.quick-bets').forEach(normalizeChipGroup);
+  }
+
+  function addGameNavigation(){
+    const config = gameNavigation[path];
+    const header = document.querySelector('header');
+    if (!config || !header || header.querySelector('.gd-game-navigation')) return;
+    const nav = document.createElement('nav');
+    nav.className = 'gd-game-navigation';
+    nav.setAttribute('aria-label','Game navigation');
+    const back = document.createElement('a');
+    back.className = 'gd-game-back';
+    back.href = config.hub;
+    back.textContent = `‹ Back to ${config.hubLabel}`;
+    const pager = document.createElement('div');
+    pager.className = 'gd-game-pager';
+    const previous = document.createElement('a');
+    previous.href = config.previous;
+    previous.setAttribute('aria-label','Previous game');
+    previous.textContent = '‹ Prev';
+    const next = document.createElement('a');
+    next.href = config.next;
+    next.setAttribute('aria-label','Next game');
+    next.textContent = 'Next ›';
+    pager.append(previous,next);
+    nav.append(back,pager);
+    header.append(nav);
   }
 
   function refresh(root=document){
     decorateCards(root);
     enhanceInputs(root);
-    enhanceCompactCustom(root);
-    syncCustomLock();
+    normalizeCardChips(root);
+    addGameNavigation();
   }
 
   let queued=false;

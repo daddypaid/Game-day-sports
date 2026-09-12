@@ -744,6 +744,8 @@ async function loadAccount(){
       "error"
     );
 
+    setBetEditing(false);
+
     return false;
 
   }
@@ -754,8 +756,18 @@ async function loadAccount(){
   account.textContent =
   "Signed in";
 
+  setBetEditing(true);
+
   return true;
 
+}
+
+function setBetEditing(enabled){
+  stake.disabled = !enabled;
+  dealBtn.disabled = !enabled;
+  document.querySelectorAll(".quick-bets button,[data-bet]").forEach(button => {
+    button.disabled = !enabled;
+  });
 }
 
 async function loadWallet(){
@@ -852,7 +864,7 @@ async function playBaccarat(){
 
   }
 
-  dealBtn.disabled = true;
+  setBetEditing(false);
 
   dealBtn.textContent =
   "Dealing...";
@@ -901,8 +913,7 @@ async function playBaccarat(){
 
   }finally{
 
-    dealBtn.disabled =
-    false;
+    setBetEditing(Boolean(currentUser));
 
     dealBtn.textContent =
     "Deal Baccarat";
@@ -1093,9 +1104,9 @@ if(signedIn){
 </script>
 
 
-<link rel="stylesheet" href="gameday-live-card-tables.css?v=4">
-<script src="gameday-card-wager-ui.js?v=29" defer></script>
-<script src="gameday-live-card-tables.js?v=1" defer></script>
+<link rel="stylesheet" href="gameday-live-card-tables.css?v=5">
+<script src="gameday-card-wager-ui.js?v=30" defer></script>
+<script src="gameday-live-card-tables.js?v=2" defer></script>
 <script src="gameday-app.js" defer></script>
 </body>
 </html>

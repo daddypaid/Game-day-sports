@@ -11,7 +11,6 @@
   const game = games[page];
   if (!game) return;
 
-  const chipValues = [1, 5, 10, 25, 100, 500];
   const body = document.body;
   body.classList.add('gd-live-card-game', `gd-game-${game}`);
 
@@ -22,40 +21,6 @@
     shoe.className = 'gd-shoe';
     shoe.setAttribute('aria-hidden', 'true');
     table.prepend(shoe);
-  }
-
-  function wagerInputFor(group) {
-    const panel = group.closest('.controls,.control-card,.decision,.stake,.stake-row') || document;
-    return panel.querySelector('input[type="number"]') || document.querySelector('input[type="number"]');
-  }
-
-  function normalizeChipGroup(group) {
-    if (group.dataset.gdChipSet === '1') return;
-    group.dataset.gdChipSet = '1';
-    group.classList.add('chips');
-    group.replaceChildren(...chipValues.map(value => {
-      const button = document.createElement('button');
-      button.type = 'button';
-      button.dataset.chip = String(value);
-      button.textContent = `$${value}`;
-      button.setAttribute('aria-label', `Select $${value} chip`);
-      button.addEventListener('click', () => {
-        const input = wagerInputFor(group);
-        if (input && !input.disabled && !input.readOnly) {
-          input.value = String(value);
-          input.dispatchEvent(new Event('input', { bubbles: true }));
-          input.dispatchEvent(new Event('change', { bubbles: true }));
-        }
-        button.classList.remove('gd-chip-pop');
-        requestAnimationFrame(() => button.classList.add('gd-chip-pop'));
-      });
-      button.addEventListener('animationend', () => button.classList.remove('gd-chip-pop'));
-      return button;
-    }));
-  }
-
-  function normalizeChips(root = document) {
-    root.querySelectorAll?.('.chips,.quick-bets').forEach(normalizeChipGroup);
   }
 
   const seenCards = new WeakSet();
@@ -72,7 +37,6 @@
 
   document.querySelectorAll('.card').forEach(card => seenCards.add(card));
   addShoe();
-  normalizeChips();
 
   let sequence = 0;
   new MutationObserver(records => {
@@ -94,7 +58,6 @@
     });
     sequence += cards.length;
     if (sequence > 1000) sequence = 0;
-    normalizeChips();
     addShoe();
   }).observe(document.body, { childList: true, subtree: true, attributes: true, attributeFilter: ['class'] });
 })();
