@@ -207,7 +207,7 @@
         button.addEventListener('click',()=>{
           const input = wagerInputFor(group);
           if (inputLocked(input)) return;
-          input.value = String(value);
+          input.value = String(path === 'gameday-blackjack.html' ? Math.min(Number(input.max || 10000), Math.max(0, Number(input.value) || 0) + value) : value);
           input.dispatchEvent(new Event('input',{bubbles:true}));
           input.dispatchEvent(new Event('change',{bubbles:true}));
           syncChipGroup(group);

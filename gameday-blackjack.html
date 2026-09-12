@@ -52,7 +52,7 @@ main{max-width:700px;margin:auto;padding:14px}.nav{display:grid;grid-template-co
 <div class="player-zone"><div id="playerTotal" class="total">Player —</div><div id="playerCards" class="cards"></div><div class="player-wager-circle"><output id="placedWager">$25</output></div></div>
 </section>
 <section class="control-card" aria-label="Blackjack controls">
-<label class="total-bet" for="stakeInput"><span>TOTAL BET</span><input id="stakeInput" type="number" min="1" max="10000" step="1" inputmode="numeric" value="25"></label>
+<label class="total-bet" for="stakeInput"><span>TOTAL BET</span><input id="stakeInput" type="number" min="0" max="10000" step="1" inputmode="numeric" value="0"></label>
 <div class="quick-bets" aria-label="Select chip value"><button data-bet="1">$1</button><button data-bet="5">$5</button><button data-bet="10">$10</button><button data-bet="25">$25</button><button data-bet="100">$100</button><button data-bet="500">$500</button></div>
 <div class="actions"><button id="hitBtn" class="hit-btn" disabled>HIT</button><button id="standBtn" class="stand-btn" disabled>STAND</button><button id="doubleBtn" class="double-btn" disabled title="Backend action not available">DOUBLE</button><button id="splitBtn" class="split-btn" disabled title="Backend action not available">SPLIT</button><button id="dealBtn" class="deal-btn">DEAL</button></div>
 </section>
@@ -94,8 +94,8 @@ supabase.auth.onAuthStateChange((event,session)=>{if(session?.user){currentUser=
 const signedIn=await checkAccount();if(signedIn){await Promise.all([loadWallet(),loadHistory()]);await resumeActiveHand()}
 </script>
 <link rel="stylesheet" href="gameday-live-card-tables.css?v=8">
-<link rel="stylesheet" href="gameday-blackjack-live.css?v=5">
-<script src="gameday-card-wager-ui.js?v=30" defer></script>
+<link rel="stylesheet" href="gameday-blackjack-live.css?v=6">
+<script src="gameday-card-wager-ui.js?v=31" defer></script>
 <script src="gameday-live-card-tables.js?v=2" defer></script>
 <script src="gameday-premium-casino.js" defer></script>
 <script src="gameday-app.js?v=4" defer></script>
