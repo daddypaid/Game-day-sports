@@ -1,4 +1,4 @@
-const CACHE='gameday-shell-v39';
+const CACHE='gameday-shell-v40';
 const SHELL=[
   './index.html',
   './gameday-premium.html',
@@ -31,9 +31,10 @@ const SHELL=[
   './manifest.webmanifest',
   './gameday-config.js',
   './gameday-app.js',
+  './gameday-app.js?v=2',
   './gameday-card-wager-ui.js?v=30',
   './gameday-live-card-tables.js?v=2',
-  './gameday-live-card-tables.css?v=5',
+  './gameday-live-card-tables.css?v=6',
   './gameday-live-clock.js',
   './gameday-themed-slots.js?v=31',
   './gameday-premium-casino.css',
@@ -135,6 +136,16 @@ self.addEventListener('fetch',event=>{
         return cached||caches.match('./index.html')||caches.match('./offline.html');
       })
     );
+    return;
+  }
+
+  const criticalRuntime=/\/(?:gameday-config|gameday-card-wager-ui|gameday-live-card-tables|gameday-app)\.(?:js|css)$/.test(url.pathname);
+  if(criticalRuntime){
+    event.respondWith(fetch(req).then(res=>{
+      const copy=res.clone();
+      caches.open(CACHE).then(cache=>cache.put(req,copy));
+      return res;
+    }).catch(()=>caches.match(req)));
     return;
   }
 

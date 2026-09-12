@@ -40,7 +40,7 @@ main{max-width:760px;margin:auto;padding:10px 12px}.status{min-height:34px;borde
 </style>
 </head>
 <body>
-<header><div class="top"><div class="title"><h1>Jacks or Better</h1><div>GameDay Video Poker • TEST MODE</div></div><div class="wallet"><span>TEST WALLET</span><strong id="wallet">—</strong></div></div></header>
+<header><div class="top"><div class="title"><h1>Jacks or Better</h1><div>GameDay Video Poker • TEST MODE</div></div><div class="wallet"><span>TEST WALLET</span><strong id="wallet">—</strong></div></div><nav class="gd-game-navigation" aria-label="Game navigation"><a class="gd-game-back" href="gameday-poker.html">‹ Back to Poker Room</a><div class="gd-game-pager"><a href="gameday-caribbean-stud.html" aria-label="Previous game">‹ Prev</a><a href="gameday-bonus-poker.html" aria-label="Next game">Next ›</a></div></nav></header>
 <main>
 <div id="status" class="status">Checking account…</div>
 <div class="table">
@@ -52,7 +52,7 @@ main{max-width:760px;margin:auto;padding:10px 12px}.status{min-height:34px;borde
 </div>
 </div>
 <div class="controls">
-<div class="stake-row"><div><label for="stake">Bet</label><input id="stake" type="number" min="1" max="1000" value="25"></div><div class="chips"><button data-chip="10">10</button><button data-chip="25">25</button><button data-chip="50">50</button><button data-chip="100">100</button></div></div>
+<div class="stake-row"><div><label for="stake">Bet</label><input id="stake" type="number" min="1" max="1000" step="1" inputmode="numeric" value="25"></div><div class="chips"><button data-chip="10">10</button><button data-chip="25">25</button><button data-chip="50">50</button><button data-chip="100">100</button></div></div>
 <div class="actions"><button id="deal" class="deal">DEAL</button><button id="draw" class="draw" disabled>DRAW</button></div>
 </div>
 <a class="back" href="gameday-poker.html">‹ Back to GameDay Poker</a>
@@ -71,15 +71,15 @@ function render(hand,active=true){cards.innerHTML=Array.from({length:5},(_,i)=>c
 async function walletLoad(){if(!user)return;const{data,error}=await supabase.from('wallets').select('balance').eq('user_id',user.id).single();if(!error){balance=Number(data.balance||0);wallet.textContent=money(balance)}}
 async function api(body){const{data,error}=await supabase.functions.invoke(GAMEDAY_CONFIG.functions.videoPoker,{body});if(error)throw error;if(data?.error)throw new Error(data.error);return data}
 async function resume(){try{const data=await api({action:'resume'});if(data.hand){currentHand=data.hand;holds.clear();result.textContent='Active hand restored — choose HOLD cards';render(currentHand.initial_hand,true);setStatus('Signed in • active hand restored')}else{currentHand=null;holds.clear();render([],false);deal.disabled=false;stake.disabled=false;result.textContent='Ready to Deal';setStatus('Signed in • ready to play')}}catch(e){setStatus(e.message||'Unable to resume hand','error')}}
-async function dealHand(){const amount=Number(stake.value);if(!Number.isFinite(amount)||amount<=0){setStatus('Enter a valid bet','error');return}deal.disabled=true;setStatus('Dealing…');try{const data=await api({action:'deal',stake:amount});currentHand=data.hand;holds.clear();balance=Number(data.balance);wallet.textContent=money(balance);result.textContent='Select cards to HOLD, then DRAW';render(currentHand.initial_hand,true);setStatus('Hand dealt • choose your holds')}catch(e){deal.disabled=false;setStatus(e.message||'Unable to deal','error')}}
+async function dealHand(){const amount=Number(stake.value);if(!Number.isInteger(amount)||amount<=0){setStatus('Enter a valid whole-dollar bet','error');return}deal.disabled=true;setStatus('Dealing…');try{const data=await api({action:'deal',stake:amount});currentHand=data.hand;holds.clear();balance=Number(data.balance);wallet.textContent=money(balance);result.textContent='Select cards to HOLD, then DRAW';render(currentHand.initial_hand,true);setStatus('Hand dealt • choose your holds')}catch(e){deal.disabled=false;setStatus(e.message||'Unable to deal','error')}}
 async function drawHand(){if(!currentHand)return;draw.disabled=true;setStatus('Drawing…');try{const data=await api({action:'draw',hand_id:currentHand.id,holds:[...holds]});currentHand=null;holds.clear();balance=Number(data.balance);wallet.textContent=money(balance);render(data.hand.final_hand,false);result.textContent=`${data.hand.result} • ${data.hand.multiplier}× • Return ${money(data.hand.payout)}`;setStatus(data.hand.payout>0?'Winning hand':'Hand complete',data.hand.payout>0?'win':'');deal.disabled=false;stake.disabled=false;draw.disabled=true}catch(e){draw.disabled=false;setStatus(e.message||'Unable to draw','error')}}
 document.querySelectorAll('[data-chip]').forEach(b=>b.onclick=()=>{if(!stake.disabled)stake.value=b.dataset.chip});deal.onclick=dealHand;draw.onclick=drawHand;
 const{data,error}=await supabase.auth.getSession();if(error||!data.session){setStatus('Sign in to your GameDay account before playing','error');wallet.textContent='Sign in';render([],false);deal.disabled=true}else{user=data.session.user;await walletLoad();await resume()}
 supabase.auth.onAuthStateChange((_e,s)=>{user=s?.user||null;if(!user){wallet.textContent='Sign in';setStatus('Sign in to play','error');deal.disabled=true;return}setTimeout(async()=>{await walletLoad();await resume()},0)});
 </script>
-<link rel="stylesheet" href="gameday-live-card-tables.css?v=5">
+<link rel="stylesheet" href="gameday-live-card-tables.css?v=6">
 <script src="gameday-card-wager-ui.js?v=30" defer></script>
 <script src="gameday-live-card-tables.js?v=2" defer></script>
-<script src="gameday-app.js" defer></script>
+<script src="gameday-app.js?v=2" defer></script>
 </body>
 </html>
