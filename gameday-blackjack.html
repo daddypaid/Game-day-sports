@@ -98,7 +98,7 @@ supabase.auth.onAuthStateChange((event,session)=>{if(session?.user){currentUser=
 const signedIn=await checkAccount();if(signedIn){await Promise.all([loadWallet(),loadHistory()]);await resumeActiveHand()}
 </script>
 <link rel="stylesheet" href="gameday-live-card-tables.css?v=8">
-<link rel="stylesheet" href="gameday-blackjack-live.css?v=11">
+<link rel="stylesheet" href="gameday-blackjack-live.css?v=12">
 <script src="gameday-card-wager-ui.js?v=32" defer></script>
 <script src="gameday-live-card-tables.js?v=2" defer></script>
 <script src="gameday-premium-casino.js" defer></script>
