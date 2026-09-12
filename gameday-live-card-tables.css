@@ -6,7 +6,7 @@ html{background:#000!important}
 .gd-game-navigation a:focus-visible{outline:2px solid #fff;outline-offset:2px}
 body.gd-live-card-game{margin:0!important;height:100dvh!important;min-height:0!important;overflow:hidden!important;padding:0!important;background:#000!important;color:#fff;font-family:Georgia,'Times New Roman',serif!important}
 body.gd-live-card-game::before{content:"";position:fixed;z-index:0;inset:0;background-image:linear-gradient(rgba(0,0,0,.08),rgba(0,0,0,.18)),var(--gd-table-art);background-position:center top;background-size:auto 100%;background-repeat:no-repeat;pointer-events:none}
-body.gd-game-blackjack{--gd-table-art:url('assets/card-tables/blackjack.webp')}
+body.gd-game-blackjack{--gd-table-art:none}
 body.gd-game-three-card-poker{--gd-table-art:url('assets/card-tables/three-card-poker.webp')}
 body.gd-game-baccarat{--gd-table-art:url('assets/card-tables/baccarat.webp')}
 body.gd-game-video-poker{--gd-table-art:url('assets/card-tables/video-poker.webp')}

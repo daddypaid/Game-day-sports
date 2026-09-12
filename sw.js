@@ -1,4 +1,4 @@
-const CACHE='gameday-shell-v41';
+const CACHE='gameday-shell-v42';
 const SHELL=[
   './index.html',
   './gameday-premium.html',
@@ -31,10 +31,11 @@ const SHELL=[
   './manifest.webmanifest',
   './gameday-config.js',
   './gameday-app.js',
-  './gameday-app.js?v=3',
+  './gameday-app.js?v=4',
   './gameday-card-wager-ui.js?v=30',
   './gameday-live-card-tables.js?v=2',
-  './gameday-live-card-tables.css?v=7',
+  './gameday-live-card-tables.css?v=8',
+  './gameday-blackjack-live.css?v=1',
   './gameday-live-clock.js',
   './gameday-themed-slots.js?v=31',
   './gameday-premium-casino.css',
