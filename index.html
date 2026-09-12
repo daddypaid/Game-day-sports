@@ -23,12 +23,13 @@
     .mobile-hotspot{display:none}
     @media(max-width:700px){
       html,body{width:100%;min-height:100dvh;overflow-x:hidden}
-      body{display:block}
-      body::before,body::after{display:none}
-      .homepage{width:100vw;min-height:100dvh;height:100dvh;aspect-ratio:auto;box-shadow:none;overflow:hidden}
-      .homepage>img{width:100%;height:100%;object-fit:cover;object-position:58% top}
-      .homepage>.hotspot:not(.mobile-hotspot){display:none}
-      .mobile-hotspot{display:block}
+      body{display:block;background:#020302}
+      body::before{display:block;background:#000 url("assets/homepage/gameday-homepage-approved.jpeg") center top/cover no-repeat;filter:blur(14px);transform:scale(1.04);opacity:.42}
+      body::after{display:block;background:linear-gradient(180deg,rgba(0,0,0,0) 0%,rgba(0,0,0,.24) 42%,rgba(0,0,0,.82) 100%)}
+      .homepage{width:100vw;max-width:100%;height:auto;min-height:100dvh;aspect-ratio:auto;box-shadow:none;overflow:hidden;background:transparent}
+      .homepage>img{width:100%;height:auto;object-fit:contain;object-position:top center}
+      .homepage>.hotspot:not(.mobile-hotspot){display:block}
+      .mobile-hotspot{display:none}
     }
   </style>
 </head>
