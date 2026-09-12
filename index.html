@@ -20,6 +20,16 @@
     .homepage>img{display:block;width:100%;height:100%;object-fit:contain;object-position:top center}
     .hotspot{position:absolute;display:block;border-radius:8px;color:transparent;font-size:0;-webkit-tap-highlight-color:rgba(242,193,78,.24)}
     .hotspot:focus-visible{outline:3px solid #f2c14e;outline-offset:-3px;background:rgba(242,193,78,.12)}
+    .mobile-hotspot{display:none}
+    @media(max-width:700px){
+      html,body{width:100%;min-height:100dvh;overflow-x:hidden}
+      body{display:block}
+      body::before,body::after{display:none}
+      .homepage{width:100vw;min-height:100dvh;height:100dvh;aspect-ratio:auto;box-shadow:none;overflow:hidden}
+      .homepage>img{width:100%;height:100%;object-fit:cover;object-position:58% top}
+      .homepage>.hotspot:not(.mobile-hotspot){display:none}
+      .mobile-hotspot{display:block}
+    }
   </style>
 </head>
 <body>
@@ -71,6 +81,27 @@
     <a class="hotspot" style="left:46.6%;top:76.3%;width:14.7%;height:9.6%" href="gameday-three-card-poker.html" aria-label="Three Card Poker">Three Card Poker</a>
     <a class="hotspot" style="left:61.7%;top:76.3%;width:15.7%;height:9.6%" href="gameday-ultimate-texas-holdem.html" aria-label="Ultimate Texas Holdem">Ultimate Texas Holdem</a>
     <a class="hotspot" style="left:77.8%;top:76.3%;width:20.9%;height:9.6%" href="gameday-caribbean-stud.html" aria-label="Caribbean Stud">Caribbean Stud</a>
+
+    <a class="hotspot mobile-hotspot" style="left:40%;top:28.5%;width:22%;height:5.5%" href="gameday-sportsbook.html" aria-label="Bet now">Bet now</a>
+    <a class="hotspot mobile-hotspot" style="left:16%;top:40%;width:10%;height:8.5%" href="gameday-sportsbook.html?sport=nfl" aria-label="NFL">NFL</a>
+    <a class="hotspot mobile-hotspot" style="left:27%;top:40%;width:10%;height:8.5%" href="gameday-sportsbook.html?sport=nba" aria-label="NBA">NBA</a>
+    <a class="hotspot mobile-hotspot" style="left:38%;top:40%;width:10%;height:8.5%" href="gameday-sportsbook.html?sport=mlb" aria-label="MLB">MLB</a>
+    <a class="hotspot mobile-hotspot" style="left:49%;top:40%;width:10%;height:8.5%" href="gameday-sportsbook.html?sport=nhl" aria-label="NHL">NHL</a>
+    <a class="hotspot mobile-hotspot" style="left:60%;top:40%;width:10%;height:8.5%" href="gameday-sportsbook.html?sport=ncaaf" aria-label="NCAAF">NCAAF</a>
+    <a class="hotspot mobile-hotspot" style="left:71%;top:40%;width:10%;height:8.5%" href="gameday-sportsbook.html?sport=mls" aria-label="MLS">MLS</a>
+    <a class="hotspot mobile-hotspot" style="left:82%;top:40%;width:12%;height:8.5%" href="gameday-sportsbook.html#sportSelect" aria-label="Worldwide Sports">Worldwide Sports</a>
+    <a class="hotspot mobile-hotspot" style="left:16%;top:50%;width:25%;height:10%" href="gameday-sportsbook.html" aria-label="Sportsbook">Sportsbook</a>
+    <a class="hotspot mobile-hotspot" style="left:42%;top:50%;width:27%;height:10%" href="gameday-sportsbook.html?view=props" aria-label="Player Props">Player Props</a>
+    <a class="hotspot mobile-hotspot" style="left:70%;top:50%;width:25%;height:10%" href="gameday-sportsbook.html?view=futures" aria-label="Futures">Futures</a>
+    <a class="hotspot mobile-hotspot" style="left:16%;top:65%;width:20%;height:10%" href="gameday-midnight-monsters-v2.html" aria-label="Midnight Monsters">Midnight Monsters</a>
+    <a class="hotspot mobile-hotspot" style="left:37%;top:65%;width:20%;height:10%" href="gameday-galactic-rebellion-v2.html" aria-label="Galactic Rebellion">Galactic Rebellion</a>
+    <a class="hotspot mobile-hotspot" style="left:58%;top:65%;width:19%;height:10%" href="gameday-blackjack.html" aria-label="Blackjack">Blackjack</a>
+    <a class="hotspot mobile-hotspot" style="left:78%;top:65%;width:20%;height:10%" href="gameday-roulette.html" aria-label="Roulette">Roulette</a>
+    <a class="hotspot mobile-hotspot" style="left:16%;top:76%;width:15%;height:9.5%" href="gameday-baccarat.html" aria-label="Baccarat">Baccarat</a>
+    <a class="hotspot mobile-hotspot" style="left:32%;top:76%;width:15%;height:9.5%" href="gameday-video-poker.html" aria-label="Video Poker">Video Poker</a>
+    <a class="hotspot mobile-hotspot" style="left:48%;top:76%;width:15%;height:9.5%" href="gameday-three-card-poker.html" aria-label="Three Card Poker">Three Card Poker</a>
+    <a class="hotspot mobile-hotspot" style="left:64%;top:76%;width:16%;height:9.5%" href="gameday-ultimate-texas-holdem.html" aria-label="Ultimate Texas Holdem">Ultimate Texas Holdem</a>
+    <a class="hotspot mobile-hotspot" style="left:81%;top:76%;width:17%;height:9.5%" href="gameday-caribbean-stud.html" aria-label="Caribbean Stud">Caribbean Stud</a>
   </main>
   <script>
     if('serviceWorker' in navigator){window.addEventListener('load',()=>navigator.serviceWorker.register('./sw.js?v=55',{scope:'./',updateViaCache:'none'}).then(registration=>registration.update()).catch(()=>{}))}
