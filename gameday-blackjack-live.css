@@ -86,6 +86,8 @@ body.blackjack-v2 .control-card{position:absolute!important;z-index:50!important
 body.blackjack-v2 .control-card .total-bet,body.blackjack-v2 .control-card .actions{display:none!important}
 body.blackjack-v2 .control-card .quick-bets{display:grid!important;grid-template-columns:repeat(6,minmax(0,1fr))!important;align-items:center!important;justify-items:center!important;gap:0!important;width:100%!important;margin:0!important;padding:0!important;overflow:visible!important}
 body.blackjack-v2.gd-card-wager-page .control-card .quick-bets button[data-chip]{display:block!important;width:14.6vw!important;max-width:70px!important;height:14.6vw!important;max-height:70px!important;min-width:0!important;min-height:0!important;margin:0!important;padding:0!important;border:0!important;border-radius:50%!important;background-position:center!important;background-repeat:no-repeat!important;background-size:cover!important;box-shadow:0 4px 8px rgba(0,0,0,.7)!important;overflow:hidden!important}
+body.blackjack-v2.gd-card-wager-page .control-card .quick-bets button[data-chip]:not(:disabled){opacity:1!important;filter:brightness(1.2) saturate(1.18) contrast(1.04)!important;cursor:pointer!important}
+body.blackjack-v2.gd-card-wager-page .control-card .quick-bets button[data-chip]:disabled{opacity:.42!important;filter:saturate(.55) brightness(.72)!important;cursor:not-allowed!important}
 body.blackjack-v2.gd-card-wager-page .control-card .quick-bets button.gd-selected-chip{outline:2px solid #fff!important;outline-offset:1px!important;box-shadow:0 0 0 3px #d8ad3e,0 4px 9px rgba(0,0,0,.75)!important}
 @media(min-width:700px){body.blackjack-v2 .control-card{top:1057px!important}}
 
@@ -99,6 +101,7 @@ body.blackjack-v2 .control-card .total-bet input{display:block!important;width:1
 body.blackjack-v2 .control-card .gameday-custom-hint{display:none!important}
 body.blackjack-v2 .control-card .actions{grid-area:actions!important;display:grid!important;grid-template-columns:repeat(5,minmax(0,1fr))!important;gap:4px!important;width:98%!important;height:auto!important;margin:0 auto!important}
 body.blackjack-v2 .control-card .actions button{display:block!important;width:100%!important;min-width:0!important;height:56px!important;min-height:56px!important;margin:0!important;padding:0 2px!important;border:2px solid #d6ae50!important;border-radius:20px!important;color:#fff5d0!important;font:700 10px/1 Georgia,serif!important;letter-spacing:0!important;text-shadow:0 1px 2px #000!important;box-shadow:inset 0 1px rgba(255,255,255,.3),inset 0 -9px 15px rgba(0,0,0,.28),0 4px 9px rgba(0,0,0,.7)!important}
+body.blackjack-v2 .control-card .actions button:not(:disabled){opacity:1!important;filter:none!important;cursor:pointer!important}
 body.blackjack-v2 .control-card .hit-btn{background:linear-gradient(#a8151d,#5a0207)!important}
 body.blackjack-v2 .control-card .stand-btn{background:linear-gradient(#ffe787,#ba7d13)!important;color:#161004!important}
 body.blackjack-v2 .control-card .double-btn{background:linear-gradient(#087044,#032f1c)!important}

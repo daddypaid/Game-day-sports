@@ -196,6 +196,7 @@
 
   function normalizeChipGroup(group){
     if (!cardPages.has(path)) return;
+    if (path === 'gameday-blackjack.html') return;
     if (group.dataset.gdChipSet !== '1') {
       group.dataset.gdChipSet = '1';
       group.replaceChildren(...chipValues.map(value=>{
