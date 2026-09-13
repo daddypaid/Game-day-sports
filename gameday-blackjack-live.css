@@ -140,3 +140,10 @@ body.blackjack-v2 .dealer-zone .card.revealing,body.blackjack-v2 .dealer-zone .c
 @keyframes gd-bj-deal-player{0%{opacity:0;transform:translate(43vw,-64vw) rotate(15deg) scale(.68)}72%{opacity:1;transform:translate(-4px,4px) rotate(-2deg) scale(1.025)}100%{opacity:1;transform:none}}
 @keyframes gd-bj-reveal{0%{opacity:.35;transform:rotateY(90deg) scale(.95)}100%{opacity:1;transform:rotateY(0) scale(1)}}
 @media(prefers-reduced-motion:reduce){body.blackjack-v2 .dealer-zone .card,body.blackjack-v2 .player-zone .card{animation-duration:.01ms!important;animation-delay:0ms!important}}
+
+/* Rejected Step 4 rollback: approved table, chips, and wager box only. */
+body.blackjack-v2 .blackjack-table>.dealer-zone,
+body.blackjack-v2 .blackjack-table>.player-zone,
+body.blackjack-v2 .control-card .actions{
+  display:none!important;
+}
