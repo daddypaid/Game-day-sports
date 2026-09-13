@@ -141,9 +141,8 @@ body.blackjack-v2 .dealer-zone .card.revealing,body.blackjack-v2 .dealer-zone .c
 @keyframes gd-bj-reveal{0%{opacity:.35;transform:rotateY(90deg) scale(.95)}100%{opacity:1;transform:rotateY(0) scale(1)}}
 @media(prefers-reduced-motion:reduce){body.blackjack-v2 .dealer-zone .card,body.blackjack-v2 .player-zone .card{animation-duration:.01ms!important;animation-delay:0ms!important}}
 
-/* Rejected Step 4 rollback: approved table, chips, and wager box only. */
+/* Current approval step: keep live cards hidden while restoring the five actions. */
 body.blackjack-v2 .blackjack-table>.dealer-zone,
-body.blackjack-v2 .blackjack-table>.player-zone,
-body.blackjack-v2 .control-card .actions{
+body.blackjack-v2 .blackjack-table>.player-zone{
   display:none!important;
 }
