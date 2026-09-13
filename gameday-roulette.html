@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" data-gameday-game="roulette">
 <head>
 <link rel="manifest" href="manifest.webmanifest">
 <meta name="theme-color" content="#101712">
@@ -48,7 +48,7 @@ async function spin(){message.innerHTML="";if(!selectedType){showMessage("Choose
 async function loadHistory(){if(!user)return;const{data,error}=await supabase.from("roulette_spins").select("stake,bet_type,bet_value,winning_number,winning_color,payout,result,created_at").order("created_at",{ascending:false}).limit(10);if(error){history.innerHTML='<div class="error">Unable to load Roulette history.</div>';return}if(!data?.length){history.innerHTML='<div class="notice">No Roulette spins yet.</div>';return}history.innerHTML=data.map(spin=>`<div class="history"><div class="history-row"><strong>${spin.result.toUpperCase()}</strong><strong>${money(spin.stake)}</strong></div><div class="history-row"><span>Bet: ${spin.bet_type==="number"?"Number "+spin.bet_value:spin.bet_type.toUpperCase()}</span><span>Result: ${spin.winning_number}</span></div><div class="small">${spin.winning_color.toUpperCase()} • Payout ${money(spin.payout)}</div></div>`).join("")}
 document.querySelectorAll("[data-chip]").forEach(button=>button.addEventListener("click",()=>{stake.value=button.dataset.chip;updateBetSummary()}));stake.addEventListener("input",updateBetSummary);document.addEventListener("click",event=>{const button=event.target.closest("[data-type]");if(button)selectBet(button)});spinBtn.addEventListener("click",spin);buildWheelLabels();renderNumbers();updateBetSummary();const signedIn=await loadAccount();if(signedIn)await Promise.all([loadWallet(),loadHistory()]);
 </script>
-<link rel="stylesheet" href="gameday-roulette-spinner.css?v=1">
+<link rel="stylesheet" href="gameday-roulette-spinner.css?v=2">
 <script src="gameday-card-wager-ui.js?v=28" defer></script>
 <script src="gameday-app.js" defer></script>
 </body>
