@@ -52,12 +52,12 @@ body.blackjack-v2 .total-bet{display:flex!important;align-items:center!important
 body.blackjack-v2 .total-bet input{width:94px!important;height:25px!important;min-height:25px!important;padding:2px 6px!important;border:1px solid #94732c!important;border-radius:6px!important;background:#030403!important;color:#fff!important;font:900 13px/1 Arial,sans-serif!important;text-align:center!important;box-shadow:inset 0 0 8px #000!important}
 body.blackjack-v2 .quick-bets{display:grid!important;grid-template-columns:repeat(6,minmax(0,1fr))!important;align-items:center!important;gap:3px!important;width:100%!important;margin:0!important;overflow:visible!important}
 body.blackjack-v2.gd-card-wager-page .quick-bets button[data-chip]{position:relative!important;justify-self:center!important;width:40px!important;height:40px!important;min-width:0!important;min-height:0!important;padding:0!important;border:0!important;border-radius:50%!important;background-color:transparent!important;background-position:center!important;background-repeat:no-repeat!important;background-size:cover!important;color:transparent!important;font-size:0!important;overflow:hidden!important;box-shadow:0 3px 7px rgba(0,0,0,.72)!important}
-body.blackjack-v2.gd-card-wager-page .quick-bets button[data-chip="1"]{background-image:url('assets/chips/gameday-1.webp')!important}
-body.blackjack-v2.gd-card-wager-page .quick-bets button[data-chip="5"]{background-image:url('assets/chips/gameday-5.webp')!important}
-body.blackjack-v2.gd-card-wager-page .quick-bets button[data-chip="10"]{background-image:url('assets/chips/gameday-10.webp')!important}
-body.blackjack-v2.gd-card-wager-page .quick-bets button[data-chip="25"]{background-image:url('assets/chips/gameday-25.webp')!important}
-body.blackjack-v2.gd-card-wager-page .quick-bets button[data-chip="100"]{background-image:url('assets/chips/gameday-100.webp')!important}
-body.blackjack-v2.gd-card-wager-page .quick-bets button[data-chip="500"]{background-image:url('assets/chips/gameday-500.webp')!important}
+body.blackjack-v2.gd-card-wager-page .quick-bets button[data-chip="1"]{background-image:url('assets/chips/gameday-1.webp?v=2')!important}
+body.blackjack-v2.gd-card-wager-page .quick-bets button[data-chip="5"]{background-image:url('assets/chips/gameday-5.webp?v=2')!important}
+body.blackjack-v2.gd-card-wager-page .quick-bets button[data-chip="10"]{background-image:url('assets/chips/gameday-10.webp?v=2')!important}
+body.blackjack-v2.gd-card-wager-page .quick-bets button[data-chip="25"]{background-image:url('assets/chips/gameday-25.webp?v=2')!important}
+body.blackjack-v2.gd-card-wager-page .quick-bets button[data-chip="100"]{background-image:url('assets/chips/gameday-100.webp?v=2')!important}
+body.blackjack-v2.gd-card-wager-page .quick-bets button[data-chip="500"]{background-image:url('assets/chips/gameday-500.webp?v=2')!important}
 body.blackjack-v2.gd-card-wager-page .quick-bets button[data-chip]::before,body.blackjack-v2.gd-card-wager-page .quick-bets button[data-chip]::after{content:none!important}
 body.blackjack-v2 .quick-bets button.gd-selected-chip{outline:2px solid #fff!important;outline-offset:1px!important;box-shadow:0 0 0 3px #d8ad3e,0 3px 9px #000!important}
 body.blackjack-v2 .actions{display:grid!important;grid-template-columns:repeat(5,minmax(0,1fr))!important;gap:4px!important;width:100%!important;margin:0!important}
