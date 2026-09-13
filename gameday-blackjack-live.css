@@ -106,5 +106,10 @@ body.blackjack-v2 .control-card .deal-btn{background:linear-gradient(180deg,#ffe
 body.blackjack-v2 .control-card .actions button:disabled{opacity:.4!important;filter:saturate(.55)!important;cursor:not-allowed!important}
 @media(min-width:700px){body.blackjack-v2 .control-card{top:950px!important}.blackjack-v2 .control-card .total-bet{height:67px!important}.blackjack-v2 .control-card .actions{gap:9px!important}.blackjack-v2 .control-card .actions button{height:82px!important}}
 
-/* Step 2 visibility lock: table and chips only. */
-body.blackjack-v2 .control-card .total-bet,body.blackjack-v2 .control-card .actions{display:none!important}
+/* Step 3 approval mode: table, chips, live wager, and five live actions only. */
+body.blackjack-v2 .control-card{left:0!important;width:100%!important;display:flex!important;flex-direction:column!important;align-items:center!important}
+body.blackjack-v2 .control-card .quick-bets{flex:0 0 auto!important;width:82%!important;margin:0 auto!important}
+body.blackjack-v2 .control-card .total-bet{position:relative!important;flex:0 0 auto!important;display:grid!important;width:62%!important;height:13vw!important;min-height:48px!important;max-height:62px!important;margin:4px auto 5px!important}
+body.blackjack-v2 .control-card .actions{flex:0 0 auto!important;display:grid!important;grid-template-columns:repeat(5,minmax(0,1fr))!important;width:96%!important;margin:0 auto!important;gap:1.3vw!important}
+body.blackjack-v2 .control-card .actions button{height:16vw!important;min-height:58px!important;max-height:76px!important;border-radius:clamp(14px,4vw,20px)!important}
+@media(min-width:700px){body.blackjack-v2 .control-card .quick-bets{width:82%!important}.blackjack-v2 .control-card .total-bet{height:62px!important}.blackjack-v2 .control-card .actions{width:96%!important;gap:9px!important}.blackjack-v2 .control-card .actions button{height:76px!important}}
