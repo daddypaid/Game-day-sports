@@ -105,3 +105,6 @@ body.blackjack-v2 .control-card .split-btn{background:linear-gradient(180deg,#28
 body.blackjack-v2 .control-card .deal-btn{background:linear-gradient(180deg,#ffe98c 0%,#e7b842 55%,#ad7014 100%)!important;color:#171005!important}
 body.blackjack-v2 .control-card .actions button:disabled{opacity:.4!important;filter:saturate(.55)!important;cursor:not-allowed!important}
 @media(min-width:700px){body.blackjack-v2 .control-card{top:950px!important}.blackjack-v2 .control-card .total-bet{height:67px!important}.blackjack-v2 .control-card .actions{gap:9px!important}.blackjack-v2 .control-card .actions button{height:82px!important}}
+
+/* Step 2 visibility lock: table and chips only. */
+body.blackjack-v2 .control-card .total-bet,body.blackjack-v2 .control-card .actions{display:none!important}
