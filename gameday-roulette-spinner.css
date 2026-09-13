@@ -1,10 +1,10 @@
 /* Approved roulette spinner pass: top-half wheel only. */
-html[data-gameday-game="roulette"] body .gameday-roulette-stage{
-  grid-template-rows:min(46dvh,390px) minmax(0,1fr)!important;
-}
 html[data-gameday-game="roulette"] body .gameday-roulette-top{
   display:grid!important;
   place-items:center!important;
+  position:relative!important;
+  min-height:min(46dvh,390px)!important;
+  margin:0 0 12px!important;
   overflow:hidden!important;
   background:radial-gradient(ellipse at 50% 42%,#17432d 0%,#092116 48%,#020503 79%)!important;
   border:1px solid rgba(229,187,74,.62)!important;
@@ -142,7 +142,7 @@ html[data-gameday-game="roulette"] body .result-text{
   color:#f8dfa0!important;
 }
 @media(max-height:740px){
-  html[data-gameday-game="roulette"] body .gameday-roulette-stage{grid-template-rows:min(42dvh,310px) minmax(0,1fr)!important}
+  html[data-gameday-game="roulette"] body .gameday-roulette-top{min-height:min(42dvh,310px)!important}
   html[data-gameday-game="roulette"] body .wheel{width:min(70vw,280px)!important;height:min(70vw,280px)!important;--roulette-label-offset:clamp(-116px,-27vw,-91px);--roulette-ball-offset:clamp(-99px,-23vw,-78px)}
 }
 @media(prefers-reduced-motion:reduce){
