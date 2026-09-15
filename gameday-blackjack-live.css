@@ -167,13 +167,14 @@ body.blackjack-v2 .blackjack-header>#headerBalance,
 html[data-gameday-game="blackjack"] body.blackjack-v2 .blackjack-header>#headerBalance{
   position:absolute!important;
   top:0!important;
+  left:auto!important;
   right:max(10px,env(safe-area-inset-right))!important;
   display:inline-flex!important;
   align-items:center!important;
   justify-content:center!important;
-  width:auto!important;
-  min-width:98px!important;
-  max-width:31vw!important;
+  width:104px!important;
+  min-width:104px!important;
+  max-width:104px!important;
   height:32px!important;
   margin:0!important;
   padding:0 8px!important;
