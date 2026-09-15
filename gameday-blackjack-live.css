@@ -133,3 +133,33 @@ html[data-gameday-page="casino-game"][data-gameday-game="blackjack"] body.blackj
   content:none!important;
   display:none!important;
 }
+
+/* Approved title-only header: expose the brand and nothing else. */
+body.blackjack-v2 .blackjack-header,
+html[data-gameday-game="blackjack"] body.blackjack-v2 .blackjack-header{
+  position:absolute!important;
+  z-index:90!important;
+  top:max(8px,env(safe-area-inset-top))!important;
+  left:50%!important;
+  right:auto!important;
+  display:flex!important;
+  align-items:center!important;
+  justify-content:center!important;
+  width:clamp(130px,42vw,180px)!important;
+  height:auto!important;
+  margin:0!important;
+  padding:0!important;
+  border:0!important;
+  background:transparent!important;
+  box-shadow:none!important;
+  transform:translateX(-50%)!important;
+  pointer-events:none!important;
+}
+body.blackjack-v2 .blackjack-header>*,
+html[data-gameday-game="blackjack"] body.blackjack-v2 .blackjack-header>*{
+  display:none!important;
+}
+body.blackjack-v2 .blackjack-header>.blackjack-brand,
+html[data-gameday-game="blackjack"] body.blackjack-v2 .blackjack-header>.blackjack-brand{
+  display:flex!important;
+}
