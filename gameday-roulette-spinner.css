@@ -22,8 +22,7 @@ html[data-gameday-game="roulette"] body .wheel{
   border:clamp(10px,3vw,14px) solid #4b210d!important;
   border-radius:50%!important;
   background:
-    radial-gradient(circle at 50% 50%,transparent 0 25%,#c59630 25.5% 27%,#111 27.5% 44%,#e1b54b 44.5% 46%,transparent 46.5%),
-    repeating-conic-gradient(from -4.865deg,#9f1117 0 4.86deg,#070706 4.86deg 9.73deg)!important;
+    radial-gradient(circle at 50% 50%,#120a04 0 46%,#d4a63f 46.5% 48%,#291006 48.5% 57%,#8b4a1d 65%,#321507 79%,#8a4317 91%,#251006 100%)!important;
   box-shadow:
     inset 0 0 0 4px #dcac46,
     inset 0 0 0 8px #2a1108,
@@ -50,11 +49,11 @@ html[data-gameday-game="roulette"] body .wheel::after{
   content:""!important;
   position:absolute!important;
   z-index:1!important;
-  inset:12%!important;
+  inset:10%!important;
   border:3px solid #dfb24b!important;
   border-radius:50%!important;
-  background:repeating-conic-gradient(from 0deg,rgba(238,193,79,.82) 0 1.1deg,transparent 1.1deg 9.73deg)!important;
-  box-shadow:inset 0 0 22px #000!important;
+  background:transparent!important;
+  box-shadow:inset 0 0 22px #000,0 0 0 3px #351407!important;
   pointer-events:none!important;
 }
 html[data-gameday-game="roulette"] body #wheelLabels{
@@ -62,8 +61,24 @@ html[data-gameday-game="roulette"] body #wheelLabels{
   z-index:5!important;
   inset:0!important;
   border-radius:50%!important;
+  overflow:hidden!important;
+  background:
+    radial-gradient(circle at 50% 50%,transparent 0 27%,#d9aa43 27.4% 28.2%,#090806 28.6% 43%,#e0b34d 43.4% 44.6%,transparent 45%),
+    repeating-conic-gradient(from -4.865deg,#a9141c 0 4.86deg,#080807 4.86deg 9.73deg)!important;
+  box-shadow:inset 0 0 0 5px #dda943,inset 0 0 0 9px #351507,inset 0 0 24px #000!important;
   transform:rotate(0deg);
   transform-origin:50% 50%!important;
+}
+html[data-gameday-game="roulette"] body #wheelLabels::before{
+  content:"";
+  position:absolute;
+  z-index:1;
+  inset:13%;
+  border:3px solid #dfb24b;
+  border-radius:50%;
+  background:repeating-conic-gradient(from 0deg,rgba(238,193,79,.86) 0 1.05deg,transparent 1.05deg 9.73deg);
+  box-shadow:inset 0 0 25px #000;
+  pointer-events:none;
 }
 html[data-gameday-game="roulette"] body .wheel-label{
   left:50%!important;
@@ -74,6 +89,7 @@ html[data-gameday-game="roulette"] body .wheel-label{
   margin-top:clamp(-15px,-3.5vw,-12px)!important;
   border:1px solid rgba(244,205,100,.78)!important;
   border-radius:2px!important;
+  z-index:6!important;
   color:#fff8df!important;
   font:700 clamp(8px,2.45vw,11px)/1 Georgia,serif!important;
   text-shadow:0 1px 2px #000!important;
@@ -119,7 +135,7 @@ html[data-gameday-game="roulette"] body .roulette-ball{
 }
 html[data-gameday-game="roulette"] body .wheel.spinning{animation:none!important}
 html[data-gameday-game="roulette"] body .wheel.spinning #wheelLabels{
-  animation:gd-approved-wheel-spin 2.7s cubic-bezier(.12,.72,.18,1) forwards!important;
+  animation:gd-approved-wheel-spin 2.7s cubic-bezier(.1,.69,.16,1) forwards!important;
 }
 html[data-gameday-game="roulette"] body .wheel.spinning .roulette-ball{
   animation:gd-approved-ball-spin 2.7s cubic-bezier(.08,.58,.2,1) forwards!important;
