@@ -37,8 +37,8 @@ main{max-width:700px;margin:auto;padding:14px}.nav{display:grid;grid-template-co
 </head>
 <body class="gd-live-card-game gd-game-blackjack blackjack-v2">
 <a class="return-btn" href="gameday-casino-v2.html" aria-label="Return to Casino">‹ BACK</a>
-<header class="blackjack-header">
 <div id="headerBalance" class="balance">Balance: —</div>
+<header class="blackjack-header">
 <div class="blackjack-brand"><span aria-hidden="true">♛</span><h1>GameDay</h1><strong>Blackjack</strong></div>
 <div class="badge">TEST</div><button class="settings-btn" type="button" aria-label="Account and settings" onclick="location.href='gameday-auth.html'">⚙</button>
 <div id="accountStatus" class="account">Checking account...</div>
@@ -98,10 +98,10 @@ supabase.auth.onAuthStateChange((event,session)=>{if(session?.user){currentUser=
 const signedIn=await checkAccount();if(signedIn){await Promise.all([loadWallet(),loadHistory()]);await resumeActiveHand()}
 </script>
 <link rel="stylesheet" href="gameday-live-card-tables.css?v=8">
-<link rel="stylesheet" href="gameday-blackjack-live.css?v=37">
+<link rel="stylesheet" href="gameday-blackjack-live.css?v=38">
 <script src="gameday-card-wager-ui.js?v=32" defer></script>
 <script src="gameday-live-card-tables.js?v=2" defer></script>
 <script src="gameday-premium-casino.js" defer></script>
-<script src="gameday-app.js?v=10" defer></script>
+<script src="gameday-app.js?v=11" defer></script>
 </body>
 </html>
