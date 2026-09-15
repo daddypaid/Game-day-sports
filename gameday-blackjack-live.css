@@ -163,10 +163,11 @@ body.blackjack-v2 .blackjack-header>.blackjack-brand,
 html[data-gameday-game="blackjack"] body.blackjack-v2 .blackjack-header>.blackjack-brand{
   display:flex!important;
 }
-body.blackjack-v2 .blackjack-header>.return-btn,
-html[data-gameday-game="blackjack"] body.blackjack-v2 .blackjack-header>.return-btn{
-  position:absolute!important;
-  top:2px!important;
+body.blackjack-v2>.return-btn,
+html[data-gameday-game="blackjack"] body.blackjack-v2>.return-btn{
+  position:fixed!important;
+  z-index:1000!important;
+  top:calc(env(safe-area-inset-top) + 10px)!important;
   left:max(10px,env(safe-area-inset-left))!important;
   display:inline-flex!important;
   align-items:center!important;
