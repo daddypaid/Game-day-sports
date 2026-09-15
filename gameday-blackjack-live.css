@@ -114,9 +114,8 @@ body.blackjack-v2 .control-card .actions{flex:0 0 auto!important;display:grid!im
 body.blackjack-v2 .control-card .actions button{height:16vw!important;min-height:58px!important;max-height:76px!important;border-radius:clamp(14px,4vw,20px)!important}
 @media(min-width:700px){body.blackjack-v2 .control-card .quick-bets{width:82%!important}.blackjack-v2 .control-card .total-bet{height:62px!important}.blackjack-v2 .control-card .actions{width:96%!important;gap:9px!important}.blackjack-v2 .control-card .actions button{height:76px!important}}
 
-/* Approved rollback state: table, six chips, and wager box only. */
+/* Approved action-row state: table, six chips, wager box, and five live actions only. */
 body.blackjack-v2 .blackjack-table>.dealer-zone,
-body.blackjack-v2 .blackjack-table>.player-zone,
-body.blackjack-v2 .control-card .actions{
+body.blackjack-v2 .blackjack-table>.player-zone{
   display:none!important;
 }
