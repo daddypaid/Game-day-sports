@@ -2,11 +2,8 @@
   const page = (location.pathname.split('/').pop() || '').toLowerCase();
   const games = {
     'gameday-blackjack.html': 'blackjack',
-    'gameday-three-card-poker.html': 'three-card-poker',
     'gameday-baccarat.html': 'baccarat',
     'gameday-video-poker.html': 'video-poker',
-    'gameday-ultimate-texas-holdem.html': 'ultimate-holdem',
-    'gameday-caribbean-stud.html': 'caribbean-stud'
   };
   const game = games[page];
   if (!game) return;
