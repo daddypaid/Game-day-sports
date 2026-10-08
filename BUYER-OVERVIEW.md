@@ -26,11 +26,6 @@ GameDay is **not** represented as a licensed real-money gambling operation. The 
 - Baccarat
 - Slots
 - Video Poker
-- Bonus Poker
-- Deuces Wild
-- Three Card Poker
-- Ultimate Texas Hold'em
-- Caribbean Stud
 - Shared GameDay test wallet
 
 ### Account system
