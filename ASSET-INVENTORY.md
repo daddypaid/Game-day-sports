@@ -28,11 +28,6 @@ This inventory identifies the principal GameDay software and buyer-handoff asset
 - `gameday-slots-lobby.html`
 - `gameday-poker.html`
 - `gameday-video-poker.html`
-- `gameday-bonus-poker.html`
-- `gameday-deuces-wild.html`
-- `gameday-three-card-poker.html`
-- `gameday-ultimate-texas-holdem.html`
-- `gameday-caribbean-stud.html`
 
 ## Buyer / operator surfaces
 
@@ -93,9 +88,6 @@ The connected backend currently includes active Edge Functions for, among other 
 - `baccarat-test`
 - `slots-test`
 - `video-poker-test`
-- `three-card-poker-test`
-- `ultimate-texas-holdem-test`
-- `caribbean-stud-test`
 - `themed-slots-test`
 - `gameday-operator-metrics`
 - `gameday-operator-health`
