@@ -4,7 +4,7 @@
 
 - All committed HTML, CSS, JavaScript, PWA, configuration, utility-script and workflow source in the accepted `daddypaid/Game-day-sports` repository commit.
 - Customer surfaces: product hub, sportsbook, account, wallet, My Bets and settlement views.
-- Casino surfaces: casino lobby, Blackjack, Roulette, Baccarat, Slots, Video Poker, Bonus Poker, Deuces Wild, Three Card Poker, Ultimate Texas Hold'em and Caribbean Stud.
+- Casino surfaces: casino lobby, Blackjack, Roulette, Baccarat, Slots, Poker Room and Video Poker.
 - Buyer/operator surfaces: Sale Room, V5 Demo, Buyer Walkthrough, Control Center, Analytics, System Health, Architecture, Buyer Readiness, Configuration Check, Admin Takeover and Transfer Audit.
 
 ## Frontend assets
