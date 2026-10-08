@@ -7,11 +7,8 @@ html{background:#000!important}
 body.gd-live-card-game{margin:0!important;height:100dvh!important;min-height:0!important;overflow:hidden!important;padding:0!important;background:#000!important;color:#fff;font-family:Georgia,'Times New Roman',serif!important}
 body.gd-live-card-game::before{content:"";position:fixed;z-index:0;inset:0;background-image:linear-gradient(rgba(0,0,0,.08),rgba(0,0,0,.18)),var(--gd-table-art);background-position:center top;background-size:auto 100%;background-repeat:no-repeat;pointer-events:none}
 body.gd-game-blackjack{--gd-table-art:none}
-body.gd-game-three-card-poker{--gd-table-art:url('assets/card-tables/three-card-poker.webp')}
 body.gd-game-baccarat{--gd-table-art:url('assets/card-tables/baccarat.webp')}
 body.gd-game-video-poker{--gd-table-art:url('assets/card-tables/video-poker.webp')}
-body.gd-game-ultimate-holdem{--gd-table-art:url('assets/card-tables/ultimate-holdem.webp')}
-body.gd-game-caribbean-stud{--gd-table-art:url('assets/card-tables/caribbean-stud.webp')}
 
 body.gd-live-card-game header{position:relative!important;z-index:20!important;max-width:709px!important;height:112px!important;margin:0 auto!important;padding:max(9px,env(safe-area-inset-top)) 14px 40px!important;background:linear-gradient(180deg,rgba(4,4,3,.96),rgba(8,8,6,.72))!important;border-bottom:1px solid rgba(231,189,85,.72)!important;box-shadow:0 10px 30px rgba(0,0,0,.44)!important;backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px)}
 body.gd-live-card-game header .top,body.gd-live-card-game header .header-row{display:block!important;position:relative!important;padding:0!important}
@@ -114,10 +111,6 @@ body.gd-game-blackjack .table-label{color:var(--gd-gold-hi)!important;letter-spa
 body.gd-game-blackjack .hand-area{flex:1 1 0!important;min-height:0!important;justify-content:center!important}
 body.gd-game-blackjack .divider{margin:0 14%!important}
 
-body.gd-game-three-card-poker .table{display:flex!important;flex-direction:column!important;justify-content:center!important;gap:5px!important}
-body.gd-game-three-card-poker .marquee,body.gd-game-three-card-poker .rule{visibility:hidden!important;height:0!important;margin:0!important}
-body.gd-game-three-card-poker .area{margin:0 6%!important;padding:5px!important;border:1px solid rgba(231,189,85,.2)!important;background:rgba(0,34,20,.26)!important}
-body.gd-game-three-card-poker .result{margin-top:4px!important;text-shadow:0 2px 5px #000!important}
 
 body.gd-game-baccarat .table{display:grid!important;grid-template-columns:1fr 1fr!important;grid-template-rows:auto 1fr auto!important;gap:6px!important;align-items:center!important;padding-top:42px!important}
 body.gd-game-baccarat .table-title{grid-column:1/-1!important;visibility:hidden!important;height:0!important}
@@ -137,8 +130,4 @@ body.gd-game-video-poker .cards{margin:0!important;display:grid!important;grid-t
 body.gd-game-video-poker .cardwrap{display:flex!important;flex-direction:column!important;align-items:center!important;min-width:0!important}
 body.gd-game-video-poker .hold{width:100%!important;min-height:25px!important;margin-top:3px!important;border:1px solid var(--gd-gold)!important;background:rgba(0,30,18,.9)!important;color:#f5df8e!important;font-size:8px!important}
 
-body.gd-game-ultimate-holdem .table,body.gd-game-caribbean-stud .table{display:flex!important;flex-direction:column!important;justify-content:center!important;gap:4px!important}
-body.gd-game-ultimate-holdem .logo,body.gd-game-caribbean-stud .logo{visibility:hidden!important;height:0!important}
-body.gd-game-ultimate-holdem .area,body.gd-game-caribbean-stud .area{margin:0!important;padding:3px!important;background:rgba(0,29,17,.18)!important}
-body.gd-game-ultimate-holdem .bets,body.gd-game-caribbean-stud .bets{margin:2px 8%!important}
 @media(prefers-reduced-motion:reduce){body.gd-live-card-game .gd-deal,body.gd-live-card-game .gd-reveal,body.gd-live-card-game .gd-chip-pop{animation-duration:.01ms!important;animation-delay:0ms!important}}
