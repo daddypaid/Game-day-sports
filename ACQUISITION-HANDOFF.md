@@ -26,7 +26,7 @@ GameDay is software/IP in TEST MODE. It is not represented as a licensed real-mo
 
 ## Casino surfaces
 
-The repository includes connected GameDay casino experiences including Blackjack, Roulette, Baccarat, Slots, Poker, Video Poker, Bonus Poker, Deuces Wild, Three Card Poker, Ultimate Texas Hold'em and Caribbean Stud. Canonical lobby links should be treated as the supported navigation path during buyer review.
+The repository includes connected GameDay casino experiences including Blackjack, Roulette, Baccarat, Slots, Poker and Video Poker. Canonical lobby links should be treated as the supported navigation path during buyer review.
 
 ## Backend
 
@@ -63,7 +63,7 @@ Connected casino games use server-side Edge Functions for result generation and 
 
 `gameday-config.js` is the canonical public client-configuration module for the current buyer-handoff architecture. It contains only browser-safe settings such as the Supabase URL, publishable key, shared function slugs, route names, brand, and TEST environment marker.
 
-The current customer-facing transfer set is centralized on `gameday-config.js`, including the sportsbook, casino lobby, My Bets, account/test wallet, Blackjack, Roulette, Baccarat, Slots, Video Poker, Bonus Poker, Deuces Wild, Three Card Poker, Ultimate Texas Hold'em and Caribbean Stud. The Control Center, Operator Analytics and System Health pages use the same public configuration module.
+The current customer-facing transfer set is centralized on `gameday-config.js`, including the sportsbook, casino lobby, My Bets, account/test wallet, Blackjack, Roulette, Baccarat, Slots, Poker and Video Poker. The Control Center, Operator Analytics and System Health pages use the same public configuration module.
 
 `gameday-config-check.html` validates the configured public project settings and project reachability. `gameday-transfer-audit.html` independently checks the browser-facing customer pages for shared-config adoption and legacy embedded project references. GitHub's `GameDay Transferability Check` workflow provides an additional repository-level CI guard and also verifies that the current buyer-readiness and takeover surfaces remain present and TEST MODE labeled.
 
