@@ -17,9 +17,6 @@ export const GAMEDAY_CONFIG = Object.freeze({
     slots: 'slots-test',
     themedSlots: 'themed-slots-test',
     videoPoker: 'video-poker-test',
-    threeCardPoker: 'three-card-poker-test',
-    ultimateTexasHoldem: 'ultimate-texas-holdem-test',
-    caribbeanStud: 'caribbean-stud-test'
   }),
   routes: Object.freeze({
     home: 'index.html',
@@ -34,11 +31,6 @@ export const GAMEDAY_CONFIG = Object.freeze({
     slotsLobby: 'gameday-slots-lobby.html',
     poker: 'gameday-poker.html',
     videoPoker: 'gameday-video-poker.html',
-    bonusPoker: 'gameday-bonus-poker.html',
-    deucesWild: 'gameday-deuces-wild.html',
-    threeCardPoker: 'gameday-three-card-poker.html',
-    ultimateTexasHoldem: 'gameday-ultimate-texas-holdem.html',
-    caribbeanStud: 'gameday-caribbean-stud.html',
     controlCenter: 'gameday-control-center.html',
     analytics: 'gameday-operator-analytics.html',
     systemHealth: 'gameday-system-health.html',
