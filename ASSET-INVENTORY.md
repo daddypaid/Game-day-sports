@@ -94,6 +94,8 @@ The connected backend currently includes active Edge Functions for, among other 
 - `gameday-operator-analytics`
 - provider/probe/internal-support functions used by the TEST MODE data stack
 
+Retired poker function slugs `three-card-poker-test`, `ultimate-texas-holdem-test`, and `caribbean-stud-test` are retained only as authenticated HTTP 410 tombstones to block legacy calls; they are not active game engines. `video-poker-test` now supports Jacks or Better only.
+
 A buyer should recreate or transfer the permitted schema, RLS, functions, scheduled jobs and server-side secrets into buyer-controlled infrastructure and rotate all privileged credentials.
 
 ## Data / functional asset categories
