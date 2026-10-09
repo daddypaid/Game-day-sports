@@ -9,9 +9,10 @@ visual references. Compare future changes against both photos at 390px.
 - Fifteen painted symbols: Starfighter, Space Station, Planet, Asteroid, Galaxy,
   Space Pilot, Alien Queen, Enemy Bot, Crystal Chest, Star Compass, Red Planet,
   Ringed Planet, Black Hole, Laser Cannon, Wild. The complete game also shows Scatter.
-- Free Spins / Win / Features below the reels. Round blue/gold SPIN above the
-  stacked Total Bet and Bet Per Way panels, following the user's latest Midnight
-  Monsters control layout. Keep information, AUTO, MAX BET, and wager minus/plus.
+- Latest approved layout: longer reel windows, then Free Spins / Win / Features,
+  followed by stacked Total Bet and Bet Per Way panels. Put the round blue/gold
+  SPIN below both wager panels, with information on its left and AUTO / MAX BET
+  on its right. Keep minus/plus controls and square artwork in each taller cell.
 - Continuous vertical movement, blur, staggered reel stops, electronic spin and
   win sounds, and a mute control. Retain GameDay navigation and the test-mode label.
 

@@ -93,18 +93,22 @@ function makeSymbol(code, cellIndex) {
   if (cellIndex !== undefined) symbol.dataset.cell = String(cellIndex);
   symbol.setAttribute('role', 'img');
   symbol.setAttribute('aria-label', artwork.name);
+  const art = document.createElement('span');
+  art.className = 'mm-symbol-art';
+  art.setAttribute('aria-hidden', 'true');
   if (artwork.file) {
     const image = document.createElement('img');
     image.src = ART + artwork.file;
     image.alt = '';
     image.draggable = false;
-    symbol.appendChild(image);
+    art.appendChild(image);
   } else {
     symbol.classList.add('mm-symbol--atlas');
-    symbol.style.backgroundImage = `url("${ATLAS}")`;
-    symbol.style.backgroundSize = '400% 200%';
-    symbol.style.backgroundPosition = `${artwork.atlas[0] * 100 / 3}% ${artwork.atlas[1] * 100}%`;
+    art.style.backgroundImage = `url("${ATLAS}")`;
+    art.style.backgroundSize = '400% 200%';
+    art.style.backgroundPosition = `${artwork.atlas[0] * 100 / 3}% ${artwork.atlas[1] * 100}%`;
   }
+  symbol.appendChild(art);
   return symbol;
 }
 
