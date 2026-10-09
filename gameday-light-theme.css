@@ -1,0 +1,202 @@
+/* White, black and green UI for Sportsbook, My Bets and Account only.
+   The shared app opts those pages in with gd-light-theme; game artwork stays original. */
+html:root.gd-light-theme {
+  color-scheme: light;
+  background: #fff !important;
+  --gd-bg: #fff;
+  --gd-panel: #fff;
+  --gd-panel2: #edf7f0;
+  --gd-line: #c7d8cd;
+  --gd-gold: #087038;
+  --gd-gold2: #087038;
+  --gd-green: #087038;
+  --gd-text: #111;
+  --gd-muted: #405348;
+  --gd-shadow: 0 8px 22px rgba(10, 55, 30, .08);
+}
+
+html:root.gd-light-theme body,
+html:root.gd-light-theme body.gd-premium,
+html:root.gd-light-theme body.gd-art-sportsbook,
+html:root.gd-light-theme body.gd-art-my-bets,
+html:root.gd-light-theme body.gd-art-account {
+  background: #fff !important;
+  color: #111 !important;
+}
+html:root.gd-light-theme body.gd-premium::before { background: none !important; }
+
+/* The outer shell opts in only while one of the three light pages is open. */
+html:root.gd-light-theme body :is(main, .shell, .stage, .frame),
+html:root.gd-light-theme body.gd-premium main,
+html:root.gd-light-theme body.gd-art-sportsbook main {
+  background: #fff !important;
+  color: #111 !important;
+}
+html:root.gd-light-theme body :is(header, .bar, .side, .gd-side, .gameday-app-nav, .slipbar, .panel, .panel-head),
+html:root.gd-light-theme body.gd-premium header,
+html:root.gd-light-theme body.gd-art-sportsbook :is(.panel, .panel-head, .slipbar) {
+  background: #fff !important;
+  color: #111 !important;
+  border-color: #c7d8cd !important;
+  box-shadow: 0 5px 18px rgba(10, 55, 30, .07) !important;
+}
+
+html:root.gd-light-theme body :is(h1, h2, h3, .selection-title, .tx-title, .email, .value, .team, .team-right, .odd-name, .odd-desc, .odd-point, .bar > .title),
+html:root.gd-light-theme body.gd-premium :is(h1, h2, h3),
+html:root.gd-light-theme body.gd-art-account :is(.card h2, .email, .tx-title),
+html:root.gd-light-theme body.gd-art-my-bets :is(.selection-title, .value) {
+  color: #111 !important;
+  text-shadow: none !important;
+}
+html:root.gd-light-theme body :is(.sub, .small, .muted, .account, .time, .tag, .auto, .password-help, .wallet-rule, .tx-meta, .selection-meta, .slip-item > div[style], .picker span),
+html:root.gd-light-theme body .panel-head strong::after,
+html:root.gd-light-theme body.gd-premium :is(.sub, .small, .muted),
+html:root.gd-light-theme body.gd-art-account :is(.muted, .password-help, .wallet-rule, .tx-meta) {
+  color: #405348 !important;
+  text-shadow: none !important;
+}
+html:root.gd-light-theme body :is(.logo, .gd-side-logo, .logo small, .gd-side-logo small, .section, .book-name, .odd-price, .score, .group, .label, .side .ico, .gd-side .ico),
+html:root.gd-light-theme body.gd-art-sportsbook :is(.section, .odd-price, .book-name, .score),
+html:root.gd-light-theme body.gd-art-my-bets :is(.section, .label) {
+  color: #087038 !important;
+  text-shadow: none !important;
+}
+
+html:root.gd-light-theme body :is(.nav a, .side a, .gd-side a, .tabs button, .sport, .view, .market, .action, .picker, .world, .odd, .secondary, .refresh-wallet, .danger, .remove, .panel-head button, .mobile-menu) {
+  background: #fff !important;
+  color: #111 !important;
+  border-color: #9cbea8 !important;
+  box-shadow: none !important;
+}
+html:root.gd-light-theme body :is(.nav a.active, .side a.active, .gd-side a.active, .tabs button.active, .sport.active, .view.active, .view.live-active, .market.active, .odd.selected),
+html:root.gd-light-theme body.gd-premium :is(.nav a.active, .odd.selected),
+html:root.gd-light-theme body.gd-art-sportsbook :is(.sport.active, .view.active, .view.live-active, .market.active, .tabs button.active, .odd.selected) {
+  background: #e8f5ed !important;
+  color: #075e2f !important;
+  border-color: #087038 !important;
+  box-shadow: none !important;
+}
+html:root.gd-light-theme body .gameday-app-nav a { color: #111 !important; }
+html:root.gd-light-theme body .gameday-app-nav a.active {
+  background: #e8f5ed !important;
+  color: #087038 !important;
+}
+
+html:root.gd-light-theme body :is(input, select, textarea),
+html:root.gd-light-theme body.gd-premium :is(input, select),
+html:root.gd-light-theme body.gd-art-account input {
+  background: #fff !important;
+  color: #111 !important;
+  border-color: #9cbea8 !important;
+  box-shadow: none !important;
+  caret-color: #087038;
+}
+html:root.gd-light-theme body :is(input, textarea)::placeholder { color: #405348 !important; }
+html:root.gd-light-theme body label { color: #405348 !important; }
+
+html:root.gd-light-theme body :is(.card, .bet, .empty, .notice, .error, .success, .selection, .summary-box, .book, .slip-item, .stake, .responsible, .gd-responsible, .game-state, .card-head, .books, .market-tabs),
+html:root.gd-light-theme body.gd-art-sportsbook :is(.featured, .views, .books, .book, .card-head, .game-state, .notice, .slip-item, .stake),
+html:root.gd-light-theme body.gd-art-my-bets :is(.bet, .selection, .summary-box),
+html:root.gd-light-theme body.gd-art-account :is(.card, .empty) {
+  background: #fff !important;
+  color: #111 !important;
+  border-color: #c7d8cd !important;
+  box-shadow: 0 5px 16px rgba(10, 55, 30, .06) !important;
+}
+html:root.gd-light-theme body :is(.game-state strong, .slip-row, .slip-row strong, .payout, .payout strong, .tx-amount.debit) { color: #111 !important; }
+
+html:root.gd-light-theme body :is(.status, .pill, .pill.pending, .pill.accepted, .pill.won, .pill.lost, .live-badge, .inplay, .count),
+html:root.gd-light-theme body.gd-premium :is(.status, .pill.won, .pill.lost),
+html:root.gd-light-theme body.gd-art-my-bets :is(.pill.pending, .pill.accepted, .pill.won, .pill.lost) {
+  background: #e8f5ed !important;
+  color: #075e2f !important;
+  border-color: #9cbea8 !important;
+  box-shadow: none !important;
+}
+html:root.gd-light-theme body :is(.pill.lost, .pill.void, .pill.cancelled) {
+  background: #fff !important;
+  color: #111 !important;
+  border-color: #59665e !important;
+}
+
+html:root.gd-light-theme body :is(.wallet, .balance, .slip-wallet),
+html:root.gd-light-theme body.gd-premium :is(.balance, .slip-wallet),
+html:root.gd-light-theme body.gd-art-sportsbook .slip-wallet {
+  background: #e8f5ed !important;
+  color: #075e2f !important;
+  border-color: #087038 !important;
+  box-shadow: none !important;
+}
+html:root.gd-light-theme body :is(.wallet strong, .wallet span, .slip-wallet strong, .wallet-balance),
+html:root.gd-light-theme body.gd-art-account .wallet-balance {
+  color: #075e2f !important;
+  text-shadow: none !important;
+}
+html:root.gd-light-theme body :is(.primary, .place, .refresh, .link, .slipbar button),
+html:root.gd-light-theme body.gd-premium :is(.primary, .place, .refresh),
+html:root.gd-light-theme body.gd-art-account :is(.primary, .link),
+html:root.gd-light-theme body.gd-art-sportsbook :is(.place, .refresh, .slipbar button) {
+  background: #e8f5ed !important;
+  color: #075e2f !important;
+  border-color: #087038 !important;
+  box-shadow: none !important;
+}
+html:root.gd-light-theme body :is(.responsible strong, .gd-responsible strong, .tx-amount.credit) { color: #087038 !important; }
+html:root.gd-light-theme body :is(.tx, .wallet-head) { border-color: #c7d8cd !important; }
+html:root.gd-light-theme body :is(.divider, .gd-side-divider),
+html:root.gd-light-theme body .bet::before { background: #c7d8cd !important; }
+
+/* Distinguish warning and error states while keeping their text readable. */
+html:root.gd-light-theme body :is(.error, .suspended, .slip-warning, .slip-item.stale) {
+  background: #fff !important;
+  color: #111 !important;
+  border-color: #59665e !important;
+  box-shadow: inset 3px 0 #59665e !important;
+}
+html:root.gd-light-theme body :is(.suspended small, .slip-warning small) { color: #405348 !important; }
+html:root.gd-light-theme body .success { border-color: #087038 !important; }
+html:root.gd-light-theme body .danger { border-color: #59665e !important; }
+
+/* White Sportsbook hero chrome and caption bands preserve the original photographs. */
+html:root.gd-light-theme body .gd-premium-hero,
+html:root.gd-light-theme body.gd-art-sportsbook .gd-premium-hero {
+  background-color: #fff !important;
+  background-image: none !important;
+  color: #111 !important;
+  border-color: #c7d8cd !important;
+  box-shadow: 0 8px 22px rgba(10, 55, 30, .08) !important;
+}
+html:root.gd-light-theme body.gd-art-sportsbook.gd-in-shell .gd-premium-hero {
+  background-image: url('art/gameday-sportsbook-approved-hero.jpg') !important;
+}
+html:root.gd-light-theme body .gd-premium-hero::before { background: none !important; }
+html:root.gd-light-theme body .gd-premium-hero::before,
+html:root.gd-light-theme body .gd-premium-hero::after,
+html:root.gd-light-theme body .gd-premium-hero h2::before,
+html:root.gd-light-theme body .gd-premium-hero h2::after,
+html:root.gd-light-theme body .gd-premium-hero .kicker {
+  color: #087038 !important;
+  text-shadow: none !important;
+}
+html:root.gd-light-theme body .gd-premium-hero p { color: #405348 !important; }
+html:root.gd-light-theme body .gd-athletes { border-color: #c7d8cd !important; }
+html:root.gd-light-theme body.gd-art-sportsbook .gd-athletes span {
+  color: #087038 !important;
+  border-color: #c7d8cd !important;
+  text-shadow: none !important;
+  box-shadow: inset 0 -36px #fff !important;
+}
+html:root.gd-light-theme body.gd-art-sportsbook .gd-athletes span::before { background: none !important; }
+html:root.gd-light-theme body.gd-art-sportsbook .gd-hero-action {
+  background: #e8f5ed !important;
+  color: #075e2f !important;
+  border-color: #087038 !important;
+  box-shadow: none !important;
+}
+html:root.gd-light-theme body.gd-art-sportsbook #content::before {
+  background: #e8f5ed !important;
+  color: #087038 !important;
+  border-color: #c7d8cd !important;
+}
+
+html:root.gd-light-theme body :is(a, button, input, select, textarea):focus-visible { outline-color: #087038 !important; }

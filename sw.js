@@ -1,4 +1,4 @@
-const CACHE='gameday-shell-v94';
+const CACHE='gameday-shell-v95';
 const SHELL=[
   './',
   './index.html',
@@ -36,6 +36,7 @@ const SHELL=[
   './manifest.webmanifest',
   './gameday-config.js',
   './gameday-app.js',
+  './gameday-light-theme.css',
   './gameday-table-wager.css',
   './gameday-table-wager.js',
   './gameday-table-dealing.js',
@@ -133,7 +134,7 @@ const SHELL=[
 ];
 
 self.addEventListener('install',event=>{
-  event.waitUntil(caches.open(CACHE).then(cache=>cache.addAll(SHELL.map(path=>/gameday-(?:table-(?:wager|dealing)\.(?:js|css)|(?:blackjack|baccarat|jacks-or-better|texas-holdem|omaha|seven-card-stud|five-card-draw)\.html)$/.test(path)?new Request(path,{cache:'reload'}):path))).then(()=>self.skipWaiting()));
+  event.waitUntil(caches.open(CACHE).then(cache=>cache.addAll(SHELL.map(path=>/gameday-(?:app\.js|light-theme\.css|table-(?:wager|dealing)\.(?:js|css)|(?:sportsbook|my-bets|auth|premium|blackjack|baccarat|jacks-or-better|texas-holdem|omaha|seven-card-stud|five-card-draw)\.html)(?:\?.*)?$/.test(path)?new Request(path,{cache:'reload'}):path))).then(()=>self.skipWaiting()));
 });
 
 self.addEventListener('activate',event=>{
@@ -161,9 +162,10 @@ self.addEventListener('fetch',event=>{
   }
 
   const tableWagerRuntime=/\/gameday-table-(?:wager|dealing)\.(?:js|css)$/.test(url.pathname);
-  const criticalRuntime=tableWagerRuntime||/\/(?:gameday-config|gameday-card-wager-ui|gameday-standard-deck|gameday-live-card-tables|gameday-blackjack-live|gameday-roulette-spinner|gameday-app|gameday-home)\.(?:js|css)$/.test(url.pathname);
+  const themeRuntime=/\/(?:gameday-light-theme\.css|gameday-app\.js)$/.test(url.pathname);
+  const criticalRuntime=tableWagerRuntime||themeRuntime||/\/(?:gameday-config|gameday-card-wager-ui|gameday-standard-deck|gameday-live-card-tables|gameday-blackjack-live|gameday-roulette-spinner|gameday-app|gameday-home)\.(?:js|css)$/.test(url.pathname);
   if(criticalRuntime){
-    event.respondWith(fetch(req,tableWagerRuntime?{cache:'no-cache'}:undefined).then(res=>{
+    event.respondWith(fetch(req,tableWagerRuntime||themeRuntime?{cache:'no-cache'}:undefined).then(res=>{
       const copy=res.clone();
       caches.open(CACHE).then(cache=>cache.put(req,copy));
       return res;

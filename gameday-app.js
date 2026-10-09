@@ -1,4 +1,16 @@
 (() => {
+  const path = location.pathname.split('/').pop() || 'gameday-sportsbook.html';
+  if (['gameday-sportsbook.html', 'gameday-my-bets.html', 'gameday-auth.html'].includes(path)) {
+    document.documentElement.classList.add('gd-light-theme');
+    if (!document.querySelector('link[href="gameday-light-theme.css"]')) {
+      const theme = document.createElement('link');
+      theme.rel = 'stylesheet';
+      theme.href = 'gameday-light-theme.css';
+      document.head.appendChild(theme);
+    }
+    document.querySelector('meta[name="theme-color"]')?.setAttribute('content', '#ffffff');
+    document.querySelector('meta[name="apple-mobile-web-app-status-bar-style"]')?.setAttribute('content', 'default');
+  }
   if ('serviceWorker' in navigator) {
     window.addEventListener('load', () => {
       navigator.serviceWorker.register('./sw.js?v=86', { scope: './', updateViaCache: 'none' }).then(registration => registration.update()).catch(() => {});
@@ -9,7 +21,6 @@
   document.documentElement.dataset.gamedayApp = standalone ? 'standalone' : 'browser';
   if (!standalone) return;
 
-  const path = location.pathname.split('/').pop() || 'gameday-sportsbook.html';
   const pageMap = {
     'gameday-sportsbook.html':'sportsbook',
     'gameday-casino-v2.html':'casino',
