@@ -8,7 +8,6 @@ body.gd-live-card-game{margin:0!important;height:100dvh!important;min-height:0!i
 body.gd-live-card-game::before{content:"";position:fixed;z-index:0;inset:0;background-image:linear-gradient(rgba(0,0,0,.08),rgba(0,0,0,.18)),var(--gd-table-art);background-position:center top;background-size:auto 100%;background-repeat:no-repeat;pointer-events:none}
 body.gd-game-blackjack{--gd-table-art:none}
 body.gd-game-baccarat{--gd-table-art:url('assets/card-tables/baccarat.webp')}
-body.gd-game-video-poker{--gd-table-art:url('assets/card-tables/video-poker.webp')}
 
 body.gd-live-card-game header{position:relative!important;z-index:20!important;max-width:709px!important;height:112px!important;margin:0 auto!important;padding:max(9px,env(safe-area-inset-top)) 14px 40px!important;background:linear-gradient(180deg,rgba(4,4,3,.96),rgba(8,8,6,.72))!important;border-bottom:1px solid rgba(231,189,85,.72)!important;box-shadow:0 10px 30px rgba(0,0,0,.44)!important;backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px)}
 body.gd-live-card-game header .top,body.gd-live-card-game header .header-row{display:block!important;position:relative!important;padding:0!important}
@@ -94,7 +93,6 @@ body.gd-live-card-game .gd-chip-pop{animation:gd-chip-pop .22s ease both}
  body.gd-live-card-game .status{left:5px!important;right:5px!important;font-size:8px!important}
  body.gd-live-card-game .cards,body.gd-live-card-game .community{gap:3px!important;min-height:52px!important}
  body.gd-live-card-game .card,body.gd-live-card-game .slot{width:clamp(44px,12.5vw,54px)!important}
- body.gd-game-video-poker .card{width:clamp(58px,17vw,73px)!important}
  body.gd-live-card-game .controls,body.gd-live-card-game .control-card,body.gd-live-card-game .decision{width:calc(100% - 8px)!important;bottom:max(4px,env(safe-area-inset-bottom))!important;max-height:160px!important;padding:6px!important;border-radius:14px!important}
  body.gd-live-card-game .chips{gap:3px!important}body.gd-live-card-game .chips button{width:clamp(34px,9vw,39px)!important;border-width:2px!important}
  body.gd-live-card-game .actions button,body.gd-live-card-game .deal-btn,body.gd-live-card-game .hit-btn,body.gd-live-card-game .stand-btn,body.gd-live-card-game .play-btn{min-height:48px!important;font-size:10px!important}
@@ -124,10 +122,5 @@ body.gd-game-baccarat .bet-btn{min-height:34px!important;border-color:#a98939!im
 body.gd-game-baccarat .play-btn{min-height:34px!important;margin-top:4px!important;background:linear-gradient(#ffe68d,#c48a20)!important;color:#1a1004!important}
 body.gd-game-baccarat .controls>label{display:none!important}
 
-body.gd-game-video-poker .table{display:flex!important;flex-direction:column!important;justify-content:center!important}
-body.gd-game-video-poker .marquee,body.gd-game-video-poker .sub{visibility:hidden!important;height:0!important;margin:0!important}
-body.gd-game-video-poker .cards{margin:0!important;display:grid!important;grid-template-columns:repeat(5,minmax(0,1fr))!important}
-body.gd-game-video-poker .cardwrap{display:flex!important;flex-direction:column!important;align-items:center!important;min-width:0!important}
-body.gd-game-video-poker .hold{width:100%!important;min-height:25px!important;margin-top:3px!important;border:1px solid var(--gd-gold)!important;background:rgba(0,30,18,.9)!important;color:#f5df8e!important;font-size:8px!important}
 
 @media(prefers-reduced-motion:reduce){body.gd-live-card-game .gd-deal,body.gd-live-card-game .gd-reveal,body.gd-live-card-game .gd-chip-pop{animation-duration:.01ms!important;animation-delay:0ms!important}}
