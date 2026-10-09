@@ -95,11 +95,13 @@
       element.setAttribute('role', 'group');
       element.setAttribute('aria-label', label);
       element.style.cssText = `left:${x}%;top:${y}%;width:${width}%;aspect-ratio:${width / (displayWidth * 1.4)}`;
-      const caption = document.createElement('span');
-      caption.className = 'gd-deal-caption';
-      caption.textContent = label;
-      caption.setAttribute('aria-hidden', 'true');
-      element.appendChild(caption);
+      if (id === 'board') {
+        const caption = document.createElement('span');
+        caption.className = 'gd-deal-caption';
+        caption.textContent = label;
+        caption.setAttribute('aria-hidden', 'true');
+        element.appendChild(caption);
+      }
       layer.appendChild(element);
       groups[id] = { id, element, cards: [], slots: 0, cardPercent: displayWidth / width * 100 };
     });
@@ -379,7 +381,7 @@
           const next = { third:'fourth', fourth:'fifth', fifth:'sixth', sixth:'seventh' }[phase];
           if (!await dealCards([item('player', next !== 'seventh')], token)) return;
           setPhase(next);
-          announcement.textContent = `${next[0].toUpperCase() + next.slice(1)} card dealt${next === 'seventh' ? ' face down. Show Cards reveals your hand.' : ' face up.'}`;
+          announcement.textContent = `${next[0].toUpperCase() + next.slice(1)} card dealt${next === 'seventh' ? ' face down. Show Cards reveals them.' : ' face up.'}`;
         }
       } else await initialDeal(token);
     } else if (name === 'hit' || name === 'double') {
@@ -389,7 +391,7 @@
         reveal('dealer');
         setPhase('complete');
       }
-      announcement.textContent = name === 'double' ? 'One additional card dealt. No wager was changed.' : 'One additional card dealt to your hand.';
+      announcement.textContent = name === 'double' ? 'One additional card dealt. No wager was changed.' : 'One additional card dealt.';
     } else if (name === 'stand') {
       reveal('dealer');
       setPhase('complete');
