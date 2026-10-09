@@ -3,42 +3,26 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
-<meta name="theme-color" content="#020714">
-<title>GameDay Galactic Rebellion</title>
-<link rel="stylesheet" href="gameday-themed-slots.css">
-<link rel="stylesheet" href="gameday-themed-slots-premium-art.css">
-<link rel="stylesheet" href="gameday-premium-spin.css">
+<meta name="theme-color" content="#090e0b">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<link rel="manifest" href="manifest.webmanifest">
+<title>Galactic Rebellion — GameDay</title>
+<style>
+*{box-sizing:border-box}
+html,body{margin:0;min-height:100%;background:#090e0b;color:#fff;font-family:Arial,sans-serif}
+body{padding-bottom:calc(90px + env(safe-area-inset-bottom))}
+header{background:#101712;border-bottom:1px solid #29352d;padding:calc(14px + env(safe-area-inset-top)) 14px 14px}
+h1{font-size:23px;margin:0 0 12px}
+.back{color:#f0d58b;font-size:14px;font-weight:700;text-decoration:none}
+main{min-height:65dvh}
+</style>
 </head>
-<body class="theme-galactic" data-game="galactic-rebellion">
-<header><div class="top"><div class="brand"><h1>Galactic Rebellion</h1><small>GameDay Original • 5×3 • 20 paylines</small></div><a class="back" href="gameday-slots-lobby.html">‹ Slots Lobby</a></div></header>
-<div class="wrap">
-<div id="notice" class="notice hidden"></div>
-<div class="cabinet">
-<div class="marquee"><div class="title">GALACTIC REBELLION</div><div class="subtitle">THE FINAL ORBIT BEGINS</div></div>
-<section class="scene">
-<div class="hud">
-<div class="wallet"><span>Test Wallet</span><strong id="wallet">—</strong></div>
-<div><span>Bet / Line</span><strong id="betView">1</strong></div>
-<div><span>Last Win</span><strong id="winView">$0.00</strong></div>
-<div><span>Warp Meter</span><strong id="bonusView">0 / 3</strong><div class="bonusbar"><i id="bonusFill"></i></div></div>
-</div>
-<div class="reel-shell"><div id="grid" class="grid"></div><div id="linebar" class="linebar"></div></div>
-<div id="result" class="result">Tap SPIN to launch</div>
-</section>
-</div>
-<div class="controls">
-<div class="box"><label>Bet per line</label><div class="step"><button id="minus">−</button><strong id="bet">1</strong><button id="plus">+</button></div></div>
-<button id="spin" class="spinbtn">SPIN</button>
-<div class="box"><label>Total bet</label><div class="step"><strong id="total">$20.00</strong></div></div>
-</div>
-<div class="tiny">TEST CASINO • Uses the shared GameDay test wallet. Outcomes, battle features, free spins and wallet settlement are handled server-side.</div>
-<section class="paytable"><h3>Galactic Paytable</h3><div class="paygrid">
-<div class="pay"><span>Starfighter ×5</span><strong>40×</strong></div><div class="pay"><span>Planet ×5</span><strong>30×</strong></div>
-<div class="pay"><span>Droid ×5</span><strong>24×</strong></div><div class="pay"><span>Energy ×5</span><strong>18×</strong></div>
-<div class="pay"><span>WILD ×5</span><strong>50×</strong></div><div class="pay"><span>BONUS ×3+</span><strong>6 Free Spins</strong></div>
-</div><div class="tiny">FINAL ORBIT FREE SPINS • 3+ Bonus symbols award 6 persistent free spins at the triggering bet. Every Final Orbit free spin expands one reel to Wild and pays with a 2× feature multiplier. Unfinished free spins resume after reload.</div></section>
-</div>
-<script type="module" src="gameday-themed-slots.js?v=28"></script>
+<body>
+<header>
+<h1>Galactic Rebellion</h1>
+<a class="back" href="gameday-slots-lobby.html">‹ Back to Slots Lobby</a>
+</header>
+<main aria-label="Galactic Rebellion cleared game area"></main>
 <script src="gameday-app.js" defer></script>
 </body>
 </html>
