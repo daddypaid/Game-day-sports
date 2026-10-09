@@ -43,6 +43,11 @@ main{max-width:900px;margin:auto;padding:12px 0 110px}
 @media(max-width:480px){.nav{grid-template-columns:repeat(2,1fr)}.hero{border-radius:16px}.game-card{flex-basis:205px}.art{height:122px}}
 .art{background-size:cover!important;background-position:center!important}.art::after{content:""!important;height:32%!important;background:linear-gradient(transparent,rgba(0,0,0,.28))!important}.blackjack-art::before,.roulette-art::before,.baccarat-art::before,.slots-art::before,.poker-art::before{content:none!important}.blackjack-art{background-image:url('assets/casino-premium/blackjack.webp')}.roulette-art{background-image:url('assets/casino-premium/roulette.webp')}.baccarat-art{background-image:url('assets/casino-premium/baccarat.webp')}.midnight-art{background-image:url('assets/casino-premium/midnight-monsters.webp')}.galactic-art{background-image:url('assets/casino-premium/galactic-rebellion.webp')}.poker-room-art{background-image:url('assets/casino-premium/poker-room.webp')}.jacks-art{background-image:url('assets/poker-premium/jacks-or-better.webp')!important;background-size:cover!important;background-position:center top!important}.jacks-art::before{content:none!important}.slots-art{background-image:url('assets/casino-premium/lucky-7s.webp')}
 </style>
+<style>
+/* Reuse the approved Jacks scene without the poster's printed controls. */
+#poker .art.gd-poker-art{position:relative;overflow:hidden;height:auto!important;aspect-ratio:591/450;background:none!important}
+#poker .gd-poker-art img{position:absolute;top:0;left:0;display:block;width:100%;height:auto;max-width:none;transform:translateY(-21.5625%)}
+</style>
 </head>
 <body>
 <header>
@@ -85,7 +90,7 @@ main{max-width:900px;margin:auto;padding:12px 0 110px}
     <div class="section-head"><h3>Poker</h3><div class="section-note">GameDay Poker Room</div></div>
     <div class="game-row">
       <a class="game-card" href="gameday-poker.html"><div class="art poker-room-art"></div><div class="game-info"><div class="game-title">GameDay Poker</div><div class="game-meta">Hold’em • Omaha • Stud</div><div class="play-row"><span class="status">POKER ROOM</span><span class="play">OPEN ›</span></div></div></a>
-      <a class="game-card" href="gameday-jacks-or-better.html"><div class="art jacks-art"></div><div class="game-info"><div class="game-title">Jacks or Better</div><div class="game-meta">Deal • Hold • Draw</div><div class="play-row"><span class="status">CONNECTED</span><span class="play">PLAY ›</span></div></div></a>
+      <a class="game-card" href="gameday-jacks-or-better.html"><div class="art gd-poker-art"><img src="assets/poker-premium/jacks-or-better-approved.jpg" width="591" height="1280" alt="GameDay Jacks or Better artwork"></div><div class="game-info"><div class="game-title">Jacks or Better</div><div class="game-meta">Deal • Hold • Draw</div><div class="play-row"><span class="status">CONNECTED</span><span class="play">PLAY ›</span></div></div></a>
 
 
 

@@ -1,4 +1,4 @@
-const CACHE='gameday-shell-v79';
+const CACHE='gameday-shell-v80';
 const SHELL=[
   './',
   './index.html',
@@ -17,6 +17,11 @@ const SHELL=[
   './gameday-galactic-rebellion-v2.html',
   './gameday-poker.html',
   './gameday-jacks-or-better.html',
+  './assets/poker-premium/texas-holdem-approved.jpg',
+  './assets/poker-premium/omaha-approved.jpg',
+  './assets/poker-premium/seven-card-stud-approved.jpg',
+  './assets/poker-premium/five-card-draw-approved.jpg',
+  './assets/poker-premium/jacks-or-better-approved.jpg',
   './gameday-control-center.html',
   './gameday-operator-analytics.html',
   './gameday-system-health.html',
