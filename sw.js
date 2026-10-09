@@ -1,4 +1,4 @@
-const CACHE='gameday-shell-v76';
+const CACHE='gameday-shell-v77';
 const SHELL=[
   './',
   './index.html',
@@ -30,13 +30,9 @@ const SHELL=[
   './gameday-app.js?v=12',
   './gameday-home.css?v=1',
   './gameday-home.js?v=1',
-  './gameday-card-wager-ui.js?v=33',
-  './gameday-playing-cards.css?v=1',
-  './assets/playing-cards/gameday-back.svg',
-  './assets/playing-cards/gameday-ace-spades.svg',
-  './assets/playing-cards/gameday-court-jack.svg',
-  './assets/playing-cards/gameday-court-queen.svg',
-  './assets/playing-cards/gameday-court-king.svg',
+  './gameday-card-wager-ui.js?v=34',
+  './gameday-standard-deck.css?v=1',
+  './assets/deck/gameday-standard-deck.png',
   './gameday-live-card-tables.js?v=2',
   './gameday-live-card-tables.css?v=8',
   './gameday-blackjack-live.css?v=40',
@@ -145,7 +141,7 @@ self.addEventListener('fetch',event=>{
     return;
   }
 
-  const criticalRuntime=/\/(?:gameday-config|gameday-card-wager-ui|gameday-playing-cards|gameday-live-card-tables|gameday-blackjack-live|gameday-roulette-spinner|gameday-app|gameday-home)\.(?:js|css)$/.test(url.pathname);
+  const criticalRuntime=/\/(?:gameday-config|gameday-card-wager-ui|gameday-standard-deck|gameday-live-card-tables|gameday-blackjack-live|gameday-roulette-spinner|gameday-app|gameday-home)\.(?:js|css)$/.test(url.pathname);
   if(criticalRuntime){
     event.respondWith(fetch(req).then(res=>{
       const copy=res.clone();

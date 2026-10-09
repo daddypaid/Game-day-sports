@@ -51,7 +51,7 @@ async function loadHistory(){if(!user)return;const{data,error}=await supabase.fr
 document.querySelectorAll("[data-chip]").forEach(button=>button.addEventListener("click",()=>{stake.value=button.dataset.chip;updateBetSummary()}));stake.addEventListener("input",updateBetSummary);document.addEventListener("click",event=>{const button=event.target.closest("[data-type]");if(button)selectBet(button)});spinBtn.addEventListener("click",spin);buildWheelLabels();renderNumbers();updateBetSummary();const signedIn=await loadAccount();if(signedIn)await Promise.all([loadWallet(),loadHistory()]);
 </script>
 <link rel="stylesheet" href="gameday-roulette-spinner.css?v=4">
-<script src="gameday-card-wager-ui.js?v=33" defer></script>
+<script src="gameday-card-wager-ui.js?v=34" defer></script>
 <script src="gameday-app.js" defer></script>
 </body>
 </html>

@@ -77,11 +77,11 @@
   }
 
   function centerMarkup(rank,suit){
-    if (rank === 'A' && suit === '♠') return `<div class="gd-card-center gd-card-signature" aria-hidden="true"><img class="gd-card-art" src="assets/playing-cards/gameday-ace-spades.svg" alt="" draggable="false"></div>`;
+    if (rank === 'A' && (suit === '♠' || suit === '♥')) return `<div class="gd-card-center gd-card-signature" aria-hidden="true"><div class="gd-deck-art gd-deck-${suit === '♠' ? 'spade' : 'heart'}"></div></div>`;
     if (rank === 'A') return `<div class="gd-card-center" aria-hidden="true"><div class="gd-card-ace">${suit}</div></div>`;
     if (rank === 'J' || rank === 'Q' || rank === 'K') {
       const court = {J:'jack',Q:'queen',K:'king'}[rank];
-      return `<div class="gd-card-center gd-card-court" aria-hidden="true"><img class="gd-card-art" src="assets/playing-cards/gameday-court-${court}.svg" alt="" draggable="false"><span class="gd-court-suit">${suit}</span><span class="gd-court-suit gd-court-suit-bottom">${suit}</span></div>`;
+      return `<div class="gd-card-center gd-card-court" aria-hidden="true"><div class="gd-deck-art gd-deck-${court}"></div><span class="gd-court-suit">${suit}</span><span class="gd-court-suit gd-court-suit-bottom">${suit}</span></div>`;
     }
     const pips = (pipLayouts[rank] || []).map(([x,y,r])=>`<span class="gd-pip" style="--x:${x}%;--y:${y}%;--r:${r}deg">${suit}</span>`).join('');
     return `<div class="gd-card-center" aria-hidden="true"><div class="gd-card-pips">${pips}</div></div>`;
