@@ -16,7 +16,8 @@ visual references. Compare future changes against both photos at 390px.
   atlas's painted Wild and Scatter words fully visible with a smaller, uniformly
   scaled copy over the same full-height artwork. Stack compact
   Total Bet and Bet Per Way panels directly under the Free Spins panel in the
-  left column only. Keep Spin, Info, AUTO and MAX BET in the lower action row.
+  left column only. Raise Spin beneath Win and AUTO / MAX BET beneath Features,
+  beside the wager panels. Keep Info in the lower action row.
 - Continuous vertical movement, blur, staggered reel stops, electronic spin and
   win sounds, and a mute control. Retain GameDay navigation and the test-mode label.
 

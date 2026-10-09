@@ -50,8 +50,8 @@ body.mm-game .mm-machine{position:relative;isolation:isolate;max-width:520px;min
 .mm-game .mm-features{font-size:12px;font-weight:800;color:#c2e8bd}
 .mm-controls{display:grid;grid-template-columns:44px minmax(0,1fr) 44px;grid-template-areas:'info spin tools';align-items:center;gap:12px 8px;margin-top:17px}
 .mm-info{grid-area:info;justify-self:center}
-.mm-spin{grid-area:spin;justify-self:center}
-.mm-auto-tools{grid-area:tools}
+.mm-spin{grid-area:spin;justify-self:center;top:-104px}
+.mm-auto-tools{grid-area:tools;position:relative;top:-104px}
 .mm-info{width:28px;height:42px;border-radius:50%;border:2px solid #b8a06d;background:radial-gradient(circle at 32% 24%,#15563d,#04160e 70%);font:italic 700 25px Georgia,serif!important;color:#e7dbb6!important;box-shadow:0 0 0 2px #241b0c}
 .mm-bet-panel{width:100%;min-height:42px;min-width:0;border:1px solid #94763a;border-radius:6px;background:#02100aeb;text-align:center;box-shadow:inset 0 0 0 1px #c49d4836}
 .mm-bet-panel>span{display:block;font-size:9px;font-weight:700;letter-spacing:.015em;line-height:1;padding-top:7px;color:#e4e7df;white-space:nowrap}

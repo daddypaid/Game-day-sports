@@ -13,7 +13,8 @@ complete portrait game. Compare future changes against those photos at 390px.
   gaps between rows. Each picture scales uniformly to fill its taller cell;
   its sides crop inside the reel rather than stretching the image. Stack compact
   Total Bet and Bet Per Line panels directly under the Free Spins panel in the
-  left column only. Keep Spin, Info, AUTO and MAX BET in the lower action row.
+  left column only. Raise Spin beneath Win and AUTO / MAX BET beneath Features,
+  beside the wager panels. Keep Info in the lower action row.
 - Real vertical reel movement, blur, staggered stops, reel and win sounds, mute.
 - Keep GameDay bottom navigation and the test-mode/no-real-money label.
 
