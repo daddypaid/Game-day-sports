@@ -1,4 +1,4 @@
-const CACHE='gameday-shell-v91';
+const CACHE='gameday-shell-v92';
 const SHELL=[
   './',
   './index.html',
@@ -38,6 +38,10 @@ const SHELL=[
   './gameday-app.js',
   './gameday-table-wager.css',
   './gameday-table-wager.js',
+  './gameday-table-dealing.js',
+  './gameday-table-dealing.css',
+  './gameday-standard-deck.css',
+  './assets/deck/gameday-approved-back.png',
   './gameday-app.js?v=12',
   './gameday-home.css?v=1',
   './gameday-home.js?v=1',
@@ -129,7 +133,7 @@ const SHELL=[
 ];
 
 self.addEventListener('install',event=>{
-  event.waitUntil(caches.open(CACHE).then(cache=>cache.addAll(SHELL.map(path=>/gameday-table-wager\.(?:js|css)$/.test(path)?new Request(path,{cache:'reload'}):path))).then(()=>self.skipWaiting()));
+  event.waitUntil(caches.open(CACHE).then(cache=>cache.addAll(SHELL.map(path=>/gameday-(?:table-(?:wager|dealing)\.(?:js|css)|(?:blackjack|baccarat|jacks-or-better|texas-holdem|omaha|seven-card-stud|five-card-draw)\.html)$/.test(path)?new Request(path,{cache:'reload'}):path))).then(()=>self.skipWaiting()));
 });
 
 self.addEventListener('activate',event=>{
@@ -156,7 +160,7 @@ self.addEventListener('fetch',event=>{
     return;
   }
 
-  const tableWagerRuntime=/\/gameday-table-wager\.(?:js|css)$/.test(url.pathname);
+  const tableWagerRuntime=/\/gameday-table-(?:wager|dealing)\.(?:js|css)$/.test(url.pathname);
   const criticalRuntime=tableWagerRuntime||/\/(?:gameday-config|gameday-card-wager-ui|gameday-standard-deck|gameday-live-card-tables|gameday-blackjack-live|gameday-roulette-spinner|gameday-app|gameday-home)\.(?:js|css)$/.test(url.pathname);
   if(criticalRuntime){
     event.respondWith(fetch(req,tableWagerRuntime?{cache:'no-cache'}:undefined).then(res=>{

@@ -17,9 +17,9 @@
     'gameday-blackjack.html': [[5, ['Hit', 'Stand', 'Double', 'Split', 'Deal']]],
     'gameday-baccarat.html': [[4, ['Player', 'Banker', 'Tie', 'Deal']]],
     'gameday-jacks-or-better.html': [[5, ['Hold 1', 'Hold 2', 'Hold 3', 'Hold 4', 'Hold 5']], [2, ['Deal', 'Draw']]],
-    'gameday-texas-holdem.html': [[3, ['Fold', 'Check', 'Call', 'Bet', 'Raise', 'All In']]],
-    'gameday-omaha.html': [[3, ['Fold', 'Check', 'Call', 'Bet', 'Raise', 'Pot']]],
-    'gameday-seven-card-stud.html': [[4, ['Bring In', 'Complete', 'Fold', 'Check', 'Call', 'Bet', 'Raise']]],
+    'gameday-texas-holdem.html': [[1, ['Deal']], [3, ['Fold', 'Check', 'Call', 'Bet', 'Raise', 'All In']]],
+    'gameday-omaha.html': [[1, ['Deal']], [3, ['Fold', 'Check', 'Call', 'Bet', 'Raise', 'Pot']]],
+    'gameday-seven-card-stud.html': [[1, ['Deal']], [4, ['Bring In', 'Complete', 'Fold', 'Check', 'Call', 'Bet', 'Raise']]],
     'gameday-five-card-draw.html': [[4, ['Deal', 'Discard', 'Draw', 'Fold', 'Check', 'Call', 'Bet', 'Raise']]],
     'gameday-roulette.html': [[2, ['Select Bet', 'Spin', 'Clear', 'Repeat Bet']]]
   };
