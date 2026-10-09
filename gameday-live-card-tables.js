@@ -3,7 +3,6 @@
   const games = {
     'gameday-blackjack.html': 'blackjack',
     'gameday-baccarat.html': 'baccarat',
-    'gameday-video-poker.html': 'video-poker',
   };
   const game = games[page];
   if (!game) return;
