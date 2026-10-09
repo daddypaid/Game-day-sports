@@ -28,11 +28,15 @@
   const x = [16, 29.6, 43.2, 56.8, 70.4, 84];
   const curve = [-2.8, -0.8, 0, 0, -0.8, -2.8];
   const storageKey = `gameday:wager-draft:${game}`;
+  let amount = 0;
   let selectedChip = null;
   try {
     const saved = JSON.parse(sessionStorage.getItem(storageKey));
-    if (saved && saved.amount === saved.selectedChip && chips.some(([value]) => value === saved.selectedChip)) selectedChip = saved.selectedChip;
-  } catch (_) { /* Chip selection also works without browser storage. */ }
+    if (saved && Number.isSafeInteger(saved.amount) && saved.amount >= 0 && (saved.selectedChip === null || chips.some(([value]) => value === saved.selectedChip))) {
+      amount = saved.amount;
+      selectedChip = saved.selectedChip;
+    }
+  } catch (_) { /* Wager adjustments also work without browser storage. */ }
 
   document.body.classList.add('gd-table-wager-page');
   stage.classList.add('gd-wager-surface');
@@ -64,23 +68,43 @@
   const existingStatus = stage.parentElement.querySelector('.note');
   const statusId = existingStatus?.id || 'gd-table-actions-status';
   if (existingStatus) existingStatus.id = statusId;
-  panel.innerHTML = `<div class="gd-wager-bar"><span id="gd-table-wager-label">TOTAL BET</span><output class="gd-wager-total" aria-labelledby="gd-table-wager-label" aria-live="polite" aria-atomic="true"></output></div>
+  panel.innerHTML = `<div class="gd-wager-bar"><button type="button" class="gd-wager-adjust" data-wager-adjust="increase" aria-label="Increase wager by $1"><span aria-hidden="true">&#8593;</span></button><div class="gd-wager-display"><span id="gd-table-wager-label">TOTAL BET</span><output class="gd-wager-total" aria-labelledby="gd-table-wager-label" aria-live="polite" aria-atomic="true"></output></div><button type="button" class="gd-wager-adjust" data-wager-adjust="decrease" aria-label="Decrease wager by $1"><span aria-hidden="true">&#8595;</span></button></div>
     <div class="gd-table-action-groups" role="group" aria-label="Game actions">${actions[game].map(([columns, labels]) => `<div class="gd-table-action-row" style="--gd-action-columns:${columns}">${labels.map(label => `<button type="button" class="gd-table-action" data-table-action="${label.toLowerCase().replaceAll(' ', '-')}" aria-describedby="${statusId}" disabled>${label}</button>`).join('')}</div>`).join('')}</div>
     ${existingStatus ? '' : `<p id="${statusId}" class="gd-table-actions-status">Gameplay is still building.</p>`}`;
   stage.appendChild(panel);
   const output = panel.querySelector('.gd-wager-total');
+  const increase = panel.querySelector('[data-wager-adjust="increase"]');
+  const decrease = panel.querySelector('[data-wager-adjust="decrease"]');
   const money = new Intl.NumberFormat('en-US', { style: 'currency', currency: 'USD' });
 
   function render() {
-    stage.dataset.wagerAmount = String(selectedChip || 0);
-    output.value = money.format(selectedChip || 0);
+    stage.dataset.wagerAmount = String(amount);
+    output.value = money.format(amount);
+    increase.disabled = amount >= Number.MAX_SAFE_INTEGER;
+    decrease.disabled = amount === 0;
     buttons.forEach(button => button.setAttribute('aria-pressed', String(Number(button.dataset.wagerChip) === selectedChip)));
+  }
+  function save() {
+    try { sessionStorage.setItem(storageKey, JSON.stringify({ amount, selectedChip })); } catch (_) {}
   }
   buttons.forEach(button => button.addEventListener('click', () => {
     selectedChip = Number(button.dataset.wagerChip);
+    amount = selectedChip;
     render();
-    try { sessionStorage.setItem(storageKey, JSON.stringify({ amount: selectedChip, selectedChip })); } catch (_) {}
+    save();
   }));
+  increase.addEventListener('click', () => {
+    if (amount >= Number.MAX_SAFE_INTEGER) return;
+    amount += 1;
+    render();
+    save();
+  });
+  decrease.addEventListener('click', () => {
+    if (amount === 0) return;
+    amount -= 1;
+    render();
+    save();
+  });
   render();
 
   if (artworkWrapper) {

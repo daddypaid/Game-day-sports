@@ -11,8 +11,13 @@ html:root body.gd-table-wager-page .gd-wager-chip:focus-visible{outline:2px soli
 html:root body.gd-table-wager-page .gd-wager-on-table{position:absolute;inset:0;z-index:2;display:block;margin:0;padding:0;pointer-events:none}
 html:root body.gd-table-wager-page .gd-wager-on-table .gd-wager-chip{position:absolute;left:var(--gd-chip-x);top:calc(var(--gd-chip-rail-y) + var(--gd-chip-curve));transform:translate(-50%,-50%);width:13%;max-width:76px;pointer-events:auto}
 html:root body.gd-table-wager-page .gd-table-wager-panel{position:relative;z-index:3;margin:calc(-1 * var(--gd-panel-overlap,0px)) 0 0;padding:10px 12px 12px;background:transparent;border:0;border-radius:0;box-shadow:none;color:#fff;font-family:Arial,sans-serif}
-html:root body.gd-table-wager-page .gd-wager-bar{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px;min-height:52px;max-width:380px;margin:0 auto 8px;padding:5px 10px;border:2px solid #bd983c;border-radius:11px;background:rgba(3,6,4,.92);box-shadow:inset 0 0 0 1px #51401a;color:#f7e5a2}
-.gd-wager-bar>span{font:700 10px/1.2 Georgia,serif;letter-spacing:.14em}
+html:root body.gd-table-wager-page .gd-wager-bar{display:grid;grid-template-columns:44px minmax(0,1fr) 44px;align-items:center;gap:2px;min-height:52px;max-width:380px;margin:0 auto 8px;padding:5px 10px;border:2px solid #bd983c;border-radius:11px;background:rgba(3,6,4,.92);box-shadow:inset 0 0 0 1px #51401a;color:#f7e5a2}
+.gd-wager-display{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px;min-width:0}
+.gd-wager-display>span{font:700 10px/1.2 Georgia,serif;letter-spacing:.14em}
+html:root body.gd-table-wager-page .gd-wager-adjust{display:grid;place-items:center;width:44px;min-height:44px!important;margin:0;padding:0;border:0!important;border-radius:7px;background:transparent!important;box-shadow:none!important;color:#f7e5a2!important;font:700 28px/1 Arial,sans-serif;cursor:pointer;touch-action:manipulation;-webkit-tap-highlight-color:transparent}
+html:root body.gd-table-wager-page .gd-wager-adjust:disabled{opacity:.35;cursor:default}
+html:root body.gd-table-wager-page .gd-wager-adjust:focus-visible{outline:2px solid #b4f0ca;outline-offset:-2px}
+html:root body.gd-table-wager-page .gd-wager-adjust:active:not(:disabled){background:#332a13!important}
 .gd-wager-total{font:700 24px/1.15 Georgia,serif;color:#fff5d4;overflow-wrap:anywhere;text-align:center}
 .gd-table-action-groups{display:grid;gap:6px}
 .gd-table-action-row{display:grid;grid-template-columns:repeat(var(--gd-action-columns),minmax(0,1fr));gap:5px}
