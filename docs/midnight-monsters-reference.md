@@ -9,10 +9,11 @@ complete portrait game. Compare future changes against those photos at 390px.
 - Fifteen painted symbols: Vampire, Werewolf, Zombie, Potion, Bat, Candle, Wild,
   Scatter, Spade, Club, Heart, Diamond, Skull, Book, Ring.
 - Free Spins / Win / Features directly below the reels.
-- Latest approved layout: longer reel windows, then Free Spins / Win / Features,
-  followed by stacked Total Bet and Bet Per Line panels. Put the round green SPIN
-  below both wager panels, with information on its left and AUTO / MAX BET on its
-  right. Keep minus/plus controls and square artwork inside each taller reel cell.
+- Latest approved layout: enlarged, tightly packed reel pictures with no blank
+  gaps between rows. Each picture scales uniformly to fill its taller cell;
+  its sides crop inside the reel rather than stretching the image. Stack compact
+  Total Bet and Bet Per Line panels directly under the Free Spins panel in the
+  left column only. Keep Spin, Info, AUTO and MAX BET in the lower action row.
 - Real vertical reel movement, blur, staggered stops, reel and win sounds, mute.
 - Keep GameDay bottom navigation and the test-mode/no-real-money label.
 

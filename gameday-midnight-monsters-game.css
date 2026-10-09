@@ -26,11 +26,11 @@ body.mm-game .mm-machine{position:relative;isolation:isolate;max-width:520px;min
 .mm-reel-frame::before,.mm-reel-frame::after{content:'◆';position:absolute;z-index:3;left:4px;right:4px;pointer-events:none;text-align:center;color:#ddbc71;font-size:13px;letter-spacing:25px;line-height:10px;text-shadow:0 0 4px #d6a95a}
 .mm-reel-frame::before{top:-7px}.mm-reel-frame::after{bottom:-7px}
 .mm-frame-crest{position:absolute;z-index:4;left:50%;top:-15px;transform:translateX(-50%);width:27px;height:27px;background:url('assets/midnight-monsters/extended-symbols-atlas.webp') 0% 100%/400% 200% no-repeat;border-radius:4px;box-shadow:0 1px 5px #000}
-.mm-reels{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:3px;background:#000}
+.mm-reels{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:2px;background:#000}
 .mm-reel{position:relative;height:clamp(240px,72vw,360px);overflow:hidden;background:#030604;box-shadow:inset 0 0 9px #000}
 .mm-strip{display:flex;flex-direction:column;will-change:transform;transform:translate3d(0,0,0)}
-.mm-symbol{position:relative;display:grid;place-items:center;width:100%;aspect-ratio:1;background:#040504;background-repeat:no-repeat;overflow:hidden;flex-shrink:0}
-.mm-symbol-art{display:block;width:100%;aspect-ratio:1;background-repeat:no-repeat;pointer-events:none}
+.mm-symbol{position:relative;display:block;width:100%;aspect-ratio:1;background:#040504;background-repeat:no-repeat;overflow:hidden;flex-shrink:0}
+.mm-symbol-art{position:absolute;display:block;left:50%;top:0;height:100%;width:auto;aspect-ratio:1;transform:translateX(-50%);background-repeat:no-repeat;pointer-events:none}
 .mm-symbol img{display:block;width:100%;height:100%;object-fit:contain;pointer-events:none}
 .mm-symbol--atlas .mm-symbol-art{background-image:url('assets/midnight-monsters/extended-symbols-atlas.webp');background-size:400% 200%}
 .mm-reel.is-spinning .mm-strip{filter:blur(2px);opacity:.93}
@@ -39,7 +39,8 @@ body.mm-game .mm-machine{position:relative;isolation:isolate;max-width:520px;min
 .mm-symbol.is-win{z-index:2;box-shadow:inset 0 0 0 2px #f6d67b,inset 0 0 19px #ffca5050;animation:mm-win-glow .65s ease-in-out 4 alternate}
 .mm-symbol.is-feature{z-index:2;box-shadow:inset 0 0 0 2px #84ff99,inset 0 0 19px #59ff9550}
 @keyframes mm-win-glow{to{filter:brightness(1.3)}}
-.mm-hud{display:grid;grid-template-columns:1fr 1.25fr 1fr;gap:8px;margin:15px 6px 0;align-items:stretch}
+.mm-hud{display:grid;grid-template-columns:1fr 1.25fr 1fr;gap:8px;margin:15px 6px 0;align-items:start}
+.mm-free-column{display:grid;gap:6px;min-width:0}
 .mm-panel{display:flex;flex-direction:column;justify-content:center;align-items:center;min-height:51px;border:2px solid #9c7b40;border-radius:7px;background:linear-gradient(145deg,#031810ed,#020907ed);box-shadow:inset 0 0 0 1px #d4b16d44,0 0 0 2px #1c130b;font-size:10px;letter-spacing:.02em}
 .mm-panel>span{font-size:8px;letter-spacing:.08em;color:#c3e3c4;margin-bottom:3px}
 .mm-panel>strong{font-size:18px;color:#a9eab6}
@@ -47,14 +48,12 @@ body.mm-game .mm-machine{position:relative;isolation:isolate;max-width:520px;min
 .mm-win-panel>span{font-size:11px;color:#eccf88;font-weight:700}
 .mm-win-panel>strong{font-size:23px;color:#fff}
 .mm-game .mm-features{font-size:12px;font-weight:800;color:#c2e8bd}
-.mm-controls{display:grid;grid-template-columns:44px minmax(0,1fr) 44px;grid-template-areas:'. total .' '. line .' 'info spin tools';align-items:center;gap:12px 8px;margin-top:17px}
+.mm-controls{display:grid;grid-template-columns:44px minmax(0,1fr) 44px;grid-template-areas:'info spin tools';align-items:center;gap:12px 8px;margin-top:17px}
 .mm-info{grid-area:info;justify-self:center}
 .mm-spin{grid-area:spin;justify-self:center}
-.mm-total-panel{grid-area:total}
-.mm-line-panel{grid-area:line}
 .mm-auto-tools{grid-area:tools}
 .mm-info{width:28px;height:42px;border-radius:50%;border:2px solid #b8a06d;background:radial-gradient(circle at 32% 24%,#15563d,#04160e 70%);font:italic 700 25px Georgia,serif!important;color:#e7dbb6!important;box-shadow:0 0 0 2px #241b0c}
-.mm-bet-panel{width:min(100%,240px);justify-self:center;min-height:55px;min-width:0;border:1px solid #94763a;border-radius:6px;background:#02100aeb;text-align:center;box-shadow:inset 0 0 0 1px #c49d4836}
+.mm-bet-panel{width:100%;min-height:42px;min-width:0;border:1px solid #94763a;border-radius:6px;background:#02100aeb;text-align:center;box-shadow:inset 0 0 0 1px #c49d4836}
 .mm-bet-panel>span{display:block;font-size:9px;font-weight:700;letter-spacing:.015em;line-height:1;padding-top:7px;color:#e4e7df;white-space:nowrap}
 .mm-step{display:flex;align-items:center;justify-content:space-between;gap:1px;padding:5px 3px}
 .mm-step strong{font-size:12px;color:#fff;font-weight:700;white-space:nowrap}
@@ -113,3 +112,11 @@ body.mm-game.gd-premium.gd-in-shell .mm-bottom-nav{display:grid!important}
 @media(min-width:521px){.mm-controls{gap:14px 12px}.mm-game .mm-spin{width:130px;height:130px;font-size:34px}.mm-brand{font-size:23px}.mm-marquee{min-height:208px}.mm-game .mm-machine{min-height:930px}.mm-step strong{font-size:16px}.mm-bet-panel>span{font-size:9px}.mm-step button{width:29px;height:32px}.mm-auto-tools button{font-size:10px}.mm-panel{min-height:64px}.mm-wallet-box{min-width:126px}.mm-wallet-box strong{font-size:15px}}
 @media(max-width:359px){body.mm-game .mm-machine{padding-inline:9px}.mm-brand{font-size:15px}.mm-brand>span:first-child{font-size:29px}.mm-topbar{gap:5px}.mm-controls{grid-template-columns:36px minmax(0,1fr) 36px;gap:10px 6px}.mm-game .mm-spin{width:86px;height:86px;font-size:23px}.mm-step{padding-inline:1px}.mm-step strong{font-size:10px}.mm-step button{width:18px;height:25px}.mm-bet-panel>span{font-size:8px}.mm-info{width:24px}.mm-marquee{min-height:162px}.mm-footer>span{font-size:6px}.mm-game .mm-features{font-size:10px}}
 @media(prefers-reduced-motion:reduce){.mm-symbol.is-win{animation:none}.mm-reel.is-spinning .mm-strip,.mm-reel.is-stopping .mm-strip{filter:none}.mm-strip{will-change:auto}}
+
+/* Compact wagers stay directly beneath Free Spins; symbols fill every reel row. */
+.mm-free-column .mm-bet-panel>span{font-size:7px;padding-top:5px}
+.mm-free-column .mm-step{gap:0;padding:3px 1px}
+.mm-free-column .mm-step strong{font-size:clamp(8px,2.4vw,11px)}
+.mm-free-column .mm-step button{width:20px;height:23px;font-size:17px}
+.mm-reel-frame{margin:0;padding:9px 3px}
+@media(max-width:359px){.mm-hud{gap:5px;margin-inline:2px}.mm-free-column .mm-step strong{font-size:8px}.mm-free-column .mm-step button{width:17px;height:23px}}

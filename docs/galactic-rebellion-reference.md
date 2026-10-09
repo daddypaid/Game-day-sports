@@ -6,13 +6,17 @@ visual references. Compare future changes against both photos at 390px.
 - Blue space, starfighters, a space station, planets, asteroids, and laser trails.
 - Chrome/silver GALACTIC and gold REBELLION, with the star compass above the title.
 - Five vertical reels and three visible rows, chrome/gold frames, 243 ways to win.
+  The ways badges sit below the frame so the reels can use the full mobile width.
 - Fifteen painted symbols: Starfighter, Space Station, Planet, Asteroid, Galaxy,
   Space Pilot, Alien Queen, Enemy Bot, Crystal Chest, Star Compass, Red Planet,
   Ringed Planet, Black Hole, Laser Cannon, Wild. The complete game also shows Scatter.
-- Latest approved layout: longer reel windows, then Free Spins / Win / Features,
-  followed by stacked Total Bet and Bet Per Way panels. Put the round blue/gold
-  SPIN below both wager panels, with information on its left and AUTO / MAX BET
-  on its right. Keep minus/plus controls and square artwork in each taller cell.
+- Latest approved layout: enlarged, tightly packed reel pictures with no blank
+  gaps between rows. Each picture scales uniformly to fill its taller cell;
+  its sides crop inside the reel rather than stretching the image. Keep the
+  atlas's painted Wild and Scatter words fully visible with a smaller, uniformly
+  scaled copy over the same full-height artwork. Stack compact
+  Total Bet and Bet Per Way panels directly under the Free Spins panel in the
+  left column only. Keep Spin, Info, AUTO and MAX BET in the lower action row.
 - Continuous vertical movement, blur, staggered reel stops, electronic spin and
   win sounds, and a mute control. Retain GameDay navigation and the test-mode label.
 
