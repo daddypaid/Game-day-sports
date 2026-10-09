@@ -39,12 +39,6 @@ const targetPages = [
   'gameday-roulette.html',
   'gameday-baccarat.html',
   'gameday-slots.html',
-  'gameday-video-poker.html',
-  'gameday-bonus-poker.html',
-  'gameday-deuces-wild.html',
-  'gameday-three-card-poker.html',
-  'gameday-ultimate-texas-holdem.html',
-  'gameday-caribbean-stud.html'
 ];
 
 function replaceAllLiteral(text, from, to) {
