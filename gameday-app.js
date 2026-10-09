@@ -213,7 +213,7 @@
   });
 
   let activeHref = path;
-  if (['gameday-blackjack.html','gameday-roulette.html','gameday-baccarat.html','gameday-slots.html','gameday-midnight-monsters-v2.html','gameday-midnight-monsters.html','gameday-poker.html','gameday-jacks-or-better.html','gameday-texas-holdem.html','gameday-omaha.html','gameday-seven-card-stud.html','gameday-five-card-draw.html'].includes(path)) activeHref = 'gameday-casino-v2.html';
+  if (['gameday-blackjack.html','gameday-roulette.html','gameday-baccarat.html','gameday-slots.html','gameday-midnight-monsters-v2.html','gameday-midnight-monsters.html','gameday-galactic-rebellion-v2.html','gameday-galactic-rebellion.html','gameday-poker.html','gameday-jacks-or-better.html','gameday-texas-holdem.html','gameday-omaha.html','gameday-seven-card-stud.html','gameday-five-card-draw.html'].includes(path)) activeHref = 'gameday-casino-v2.html';
   const nav = document.querySelector('nav[data-gameday-nav]') || document.createElement('nav');
   nav.classList.add('gameday-app-nav');
   nav.setAttribute('aria-label','GameDay app navigation');

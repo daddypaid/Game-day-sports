@@ -112,6 +112,64 @@ const games: Record<string, Cfg> = {
     },
   },
 };
+// Old cached clients and existing bonus sessions keep their original 20-line math.
+// New Galactic wagers use total_bet; their stored per-way unit is below $1 because
+// the total wager is capped at $200. Legacy units are whole dollars from $1–$10.
+const galacticWays: Cfg = {
+  weights: [
+    "STARFIGHTER", "STATION", "PLANET", "ASTEROID", "GALAXY", "PILOT",
+    "QUEEN", "BOT", "CHEST", "COMPASS", "REDPLANET", "RINGED",
+    "BLACKHOLE", "CANNON", "WILD", "SCATTER", "STATION", "ASTEROID",
+    "BOT", "CANNON",
+  ],
+  wild: "WILD",
+  scatter: "SCATTER",
+  bonusName: "FINAL ORBIT FREE SPINS",
+  freeSpins: 6,
+  pays: {
+    STARFIGHTER: [0, 0, 4, 10, 40],
+    STATION: [0, 0, 1, 3, 10],
+    PLANET: [0, 0, 3, 8, 30],
+    ASTEROID: [0, 0, 1, 2, 8],
+    GALAXY: [0, 0, 1, 2, 6],
+    PILOT: [0, 0, 3, 8, 30],
+    QUEEN: [0, 0, 4, 10, 40],
+    BOT: [0, 0, 2, 6, 24],
+    CHEST: [0, 0, 2, 6, 24],
+    COMPASS: [0, 0, 1, 3, 10],
+    REDPLANET: [0, 0, 1, 2, 8],
+    RINGED: [0, 0, 1, 2, 8],
+    BLACKHOLE: [0, 0, 2, 5, 18],
+    CANNON: [0, 0, 2, 5, 18],
+    WILD: [0, 0, 5, 15, 50],
+  },
+};
+const galacticGameConfig = {
+  mode: "ways",
+  ways: 243,
+  min_total_bet: 0.1,
+  max_total_bet: 200,
+  total_bet_step: 0.1,
+  default_total_bet: 1,
+  free_spins: galacticWays.freeSpins,
+  pays: galacticWays.pays,
+  scatter_multiplier: 10,
+  payout_divisor: 243,
+};
+function galacticWagerMeta(unit: number) {
+  const legacy = Number.isInteger(unit) && unit >= 1 && unit <= 10;
+  const total = Math.round(unit * (legacy ? 20 : 243) * 100) / 100;
+  if (!legacy && (
+    !Number.isFinite(unit) || unit <= 0 || total < 0.1 || total > 200 ||
+    Math.round(total * 100) % 10 !== 0 || Math.abs(unit * 243 - total) > 0.000001
+  )) throw new Error("Invalid Galactic Rebellion bonus wager");
+  return {
+    wager_mode: legacy ? "lines" : "ways",
+    math_version: legacy ? "lines-v1" : "ways-v1",
+    total_bet: total,
+    ...(legacy ? { lines: 20 } : { ways: 243 }),
+  };
+}
 function ri(max: number) {
   const b = new Uint32Array(1);
   crypto.getRandomValues(b);
@@ -176,6 +234,63 @@ function evaluate(grid: string[][], cfg: Cfg, bet: number) {
     activeLines,
     winCells: [...new Set(winCells)],
     scatters,
+  };
+}
+function evaluateWays(grid: string[][], cfg: Cfg, unit: number) {
+  type Win = { rows: number[]; multiplier: number };
+  const wins = new Map<string, Win>();
+  for (const [symbol, pays] of Object.entries(cfg.pays)) {
+    const matching = grid.map((column) => column.flatMap((value, row) =>
+      value === symbol || value === cfg.wild ? [row] : []
+    ));
+    let count = 0;
+    while (count < 5 && matching[count].length) count++;
+    const multiplier = pays[count - 1] || 0;
+    if (count < 3 || multiplier <= 0) continue;
+    const visit = (rows: number[]) => {
+      const col = rows.length;
+      if (col < count) {
+        for (const row of matching[col]) visit([...rows, row]);
+        return;
+      }
+      const key = rows.join(",");
+      const prior = wins.get(key);
+      if (!prior || multiplier > prior.multiplier) wins.set(key, {
+        rows,
+        multiplier,
+      });
+    };
+    visit([]);
+  }
+  type Node = { win?: Win; children: Map<number, Node> };
+  const tree: Node = { children: new Map() };
+  for (const win of wins.values()) {
+    let node = tree;
+    for (const row of win.rows) {
+      if (!node.children.has(row)) node.children.set(row, { children: new Map() });
+      node = node.children.get(row)!;
+    }
+    node.win = win;
+  }
+  // Wild-only prefixes may overlap longer substitutions. Choose the highest
+  // combined award from disjoint prefixes; never count the same match twice.
+  const best = (node: Node): Win[] => {
+    const descendants = [...node.children.values()].flatMap(best);
+    const award = descendants.reduce((sum, win) => sum + win.multiplier, 0);
+    return node.win && node.win.multiplier >= award ? [node.win] : descendants;
+  };
+  const paid = best(tree);
+  const winCells = paid.flatMap((win) => win.rows.map((row, c) => row * 5 + c));
+  const scatters = grid.flat().filter((symbol) => symbol === cfg.scatter).length;
+  const waysWin = paid.reduce((sum, win) => sum + win.multiplier * unit, 0);
+  const scatterWin = scatters >= 3 ? scatters * 10 * unit : 0;
+  return {
+    payout: Math.round((waysWin + scatterWin) * 100) / 100,
+    rawPayout: waysWin + scatterWin,
+    activeLines: [] as number[],
+    winCells: [...new Set(winCells)],
+    scatters,
+    winningWays: paid.length,
   };
 }
 function paidFeature(game: string, grid: string[][], cfg: Cfg) {
@@ -252,19 +367,14 @@ Deno.serve(async (req) => {
     const admin = createClient(url, service);
     const body = await req.json();
     const game = String(body?.game || "");
-    const cfg = games[game];
+    let cfg = games[game];
     if (!cfg) throw new Error("Unknown themed slot");
-    const action =
-      game === "midnight-monsters"
-        ? body?.action === undefined
-          ? "spin"
-          : body.action
-        : String(body?.action || "spin");
+    const action = body?.action === undefined ? "spin" : body.action;
     if (
-      game === "midnight-monsters" &&
       !["spin", "status", "bonus_spin"].includes(action)
     )
-      throw new Error("Unknown Midnight Monsters action");
+      throw new Error(game === "midnight-monsters"
+        ? "Unknown Midnight Monsters action" : "Unknown Galactic Rebellion action");
     if (action === "status") {
       const { data: s, error: statusError } = await admin
         .from("themed_slot_bonus_sessions")
@@ -275,8 +385,13 @@ Deno.serve(async (req) => {
         .eq("game", game)
         .eq("status", "active")
         .maybeSingle();
-      if (game === "midnight-monsters" && statusError) throw statusError;
-      return new Response(JSON.stringify({ ok: true, bonus: s || null }), {
+      if (statusError) throw statusError;
+      return new Response(JSON.stringify({
+        ok: true,
+        bonus: s && game === "galactic-rebellion"
+          ? { ...s, ...galacticWagerMeta(Number(s.bet_per_line)) } : s || null,
+        ...(game === "galactic-rebellion" ? { game_config: galacticGameConfig } : {}),
+      }), {
         headers: cors,
       });
     }
@@ -299,10 +414,13 @@ Deno.serve(async (req) => {
       )
         throw new Error("No active free-spin session");
       const bet = Number(session.bet_per_line);
+      const wagerMeta = game === "galactic-rebellion" ? galacticWagerMeta(bet) : null;
+      const ways = wagerMeta?.wager_mode === "ways";
+      if (ways) cfg = galacticWays;
       const grid = makeGrid(cfg);
       const feat = bonusFeature(game, grid, cfg);
-      const out = evaluate(grid, cfg, bet);
-      const payout = Math.round(out.payout * feat.mult * 100) / 100;
+      const out = ways ? evaluateWays(grid, cfg, bet) : evaluate(grid, cfg, bet);
+      const payout = Math.round(("rawPayout" in out ? out.rawPayout : out.payout) * feat.mult * 100) / 100;
       const { data: rows, error: re } = await admin.rpc(
         "settle_themed_bonus_spin_atomic",
         {
@@ -322,7 +440,8 @@ Deno.serve(async (req) => {
             game,
             grid,
             bet_per_line: bet,
-            lines: 20,
+            ...(wagerMeta || { lines: 20 }),
+            ...(ways && "winningWays" in out ? { winning_ways: out.winningWays } : {}),
             stake: 0,
             payout,
             balance: Number(row.balance),
@@ -343,7 +462,8 @@ Deno.serve(async (req) => {
         { headers: cors },
       );
     }
-    const requestedBet = Number(body?.bet_per_line);
+    const ways = game === "galactic-rebellion" && body?.total_bet !== undefined;
+    const requestedBet = Number(ways ? body.total_bet : body?.bet_per_line);
     if (game === "midnight-monsters") {
       const cents = Math.round(requestedBet * 100);
       if (
@@ -354,6 +474,13 @@ Deno.serve(async (req) => {
         cents % 10 !== 0
       )
         throw new Error("Bet per line must be $0.10 to $10.00 in $0.10 steps");
+    } else if (ways) {
+      const cents = Math.round(requestedBet * 100);
+      if (
+        !Number.isFinite(requestedBet) || requestedBet !== cents / 100 ||
+        cents < 10 || cents > 20000 || cents % 10 !== 0
+      ) throw new Error("Total bet must be $0.10 to $200.00 in $0.10 steps");
+      cfg = galacticWays;
     } else if (
       !Number.isFinite(requestedBet) ||
       requestedBet < 1 ||
@@ -361,15 +488,15 @@ Deno.serve(async (req) => {
       Math.floor(requestedBet) !== requestedBet
     )
       throw new Error("Bet per line must be 1 to 10 test credits");
-    const bet = requestedBet;
+    const bet = ways ? requestedBet / 243 : requestedBet;
     const stake =
-      game === "midnight-monsters"
+      ways ? requestedBet : game === "midnight-monsters"
         ? Math.round(bet * 20 * 100) / 100
         : bet * 20;
     const grid = makeGrid(cfg);
     const feat = paidFeature(game, grid, cfg);
-    let out = evaluate(grid, cfg, bet);
-    let payout = Math.round(out.payout * feat.mult * 100) / 100;
+    let out = ways ? evaluateWays(grid, cfg, bet) : evaluate(grid, cfg, bet);
+    let payout = Math.round(("rawPayout" in out ? out.rawPayout : out.payout) * feat.mult * 100) / 100;
     const scatters = out.scatters;
     let bonusSpins = scatters >= 3 ? cfg.freeSpins : 0;
     let bonusName = scatters >= 3 ? cfg.bonusName : null;
@@ -378,8 +505,8 @@ Deno.serve(async (req) => {
       feat.cells.push(...more);
       feat.name = "FINAL ORBIT TRIGGER";
       feat.mult = Math.max(feat.mult, 2);
-      out = evaluate(grid, cfg, bet);
-      payout = Math.round(out.payout * feat.mult * 100) / 100;
+      out = ways ? evaluateWays(grid, cfg, bet) : evaluate(grid, cfg, bet);
+      payout = Math.round(("rawPayout" in out ? out.rawPayout : out.payout) * feat.mult * 100) / 100;
     }
     if (game === "midnight-monsters" && scatters >= 3) {
       feat.name = feat.name || "CRYPT AWAKENING";
@@ -413,7 +540,8 @@ Deno.serve(async (req) => {
           game,
           grid,
           bet_per_line: bet,
-          lines: 20,
+          ...(game === "galactic-rebellion" ? galacticWagerMeta(bet) : { lines: 20 }),
+          ...(ways && "winningWays" in out ? { winning_ways: out.winningWays } : {}),
           stake,
           payout,
           result,

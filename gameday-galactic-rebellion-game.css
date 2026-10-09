@@ -1,0 +1,125 @@
+/* Galactic Rebellion: reference space artwork and painted symbols, with live reel controls. */
+html:has(body.gr-game){background:#030715;color-scheme:dark}
+body.gr-game{--gr-gold:#d4ad5a;--gr-green:#7acaff;--gr-ink:#030c22;margin:0;min-height:100dvh;padding:0 0 calc(76px + env(safe-area-inset-bottom));background:#030715;color:#f4eacf;font-family:Arial,sans-serif;-webkit-text-size-adjust:100%}
+.gr-game *{box-sizing:border-box}
+.gr-game button,.gr-game a{-webkit-tap-highlight-color:transparent;touch-action:manipulation}
+.gr-game button{font-family:inherit;cursor:pointer;color:inherit}
+.gr-game button:disabled{cursor:default;opacity:.58}
+.gr-game button:focus-visible,.gr-game a:focus-visible{outline:3px solid #a7dfff;outline-offset:3px}
+body.gr-game .gr-machine{position:relative;isolation:isolate;max-width:520px;min-height:820px;margin:auto;padding:0 13px 22px;background:url('assets/galactic-rebellion/space-background.webp') center top/cover no-repeat;overflow:visible}
+.gr-machine::before{content:'';position:absolute;inset:0;z-index:-1;pointer-events:none;background:linear-gradient(180deg,transparent 0 16%,#001b451a 29%,#0004 72%,#0007)}
+.gr-topbar{display:flex;align-items:center;justify-content:space-between;gap:8px;padding:calc(10px + env(safe-area-inset-top)) 0 8px}
+.gr-brand{display:flex;gap:5px;align-items:center;text-decoration:none;color:#edcd80;font-weight:900;font-size:18px;letter-spacing:.065em;text-shadow:0 2px 5px #000}
+.gr-brand>span:first-child{font-size:35px;line-height:1}
+.gr-brand small{display:block;text-align:center;color:#f1ece4;font-size:8px;letter-spacing:.35em;margin-top:2px}
+.gr-wallet-box{position:relative;min-width:102px;padding:6px 32px 6px 10px;border:1px solid #395e90;border-radius:9px;background:#020a20ce;box-shadow:0 0 10px #53b7ff2b;color:#fff}
+.gr-wallet-box>span{display:block;font-size:7px;letter-spacing:.09em}
+.gr-wallet-box strong{display:block;font-size:13px;margin-top:2px}
+.gr-wallet-box a{position:absolute;right:5px;top:50%;transform:translateY(-50%);display:grid;place-items:center;width:25px;height:25px;border-radius:50%;background:#287ec4;box-shadow:inset 0 1px 3px #a9e2ff75;color:#fff;font-size:24px;text-decoration:none}
+.gr-game .gr-menu{width:35px;height:35px;flex-shrink:0;border:1px solid #7f6635;border-radius:6px;background:#040b20de;color:#edcf82;font-size:25px;line-height:1}
+.gr-marquee{position:relative;display:flex;flex-direction:column;justify-content:flex-end;min-height:208px;padding:15px 0 12px;text-align:center}
+.gr-marquee h1{margin:0;line-height:1}
+.gr-marquee h1 img{display:block;width:100%;height:auto;max-height:145px;object-fit:contain;filter:drop-shadow(0 3px 4px #000)}
+.gr-tagline{margin:7px 5px 0;padding:7px 2px 6px;border-block:1px solid #b4935399;background:#030c22cf;box-shadow:0 0 12px #33a5ff50;font-size:clamp(7px,2.13vw,11px);letter-spacing:.11em;white-space:nowrap;color:#d9ddd8}
+.gr-tagline span{margin:0 5px;color:#e2c98d}
+.gr-reel-frame{position:relative;margin:0;padding:9px 5px;border:3px double #d4ad5a;border-radius:11px;background:#030c20;box-shadow:0 0 0 2px #644519,0 0 0 4px #120e06,inset 0 0 15px #fae0a33b,0 8px 18px #000c}
+.gr-reel-frame::before,.gr-reel-frame::after{content:'◆';position:absolute;z-index:3;left:4px;right:4px;pointer-events:none;text-align:center;color:#ddbc71;font-size:13px;letter-spacing:25px;line-height:10px;text-shadow:0 0 4px #d6a95a}
+.gr-reel-frame::before{top:-7px}.gr-reel-frame::after{bottom:-7px}
+.gr-reels{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:3px;background:#000}
+.gr-reel{position:relative;aspect-ratio:1/3;overflow:hidden;background:#030615;box-shadow:inset 0 0 9px #000}
+.gr-strip{display:flex;flex-direction:column;will-change:transform;transform:translate3d(0,0,0)}
+.gr-symbol{position:relative;display:block;width:100%;aspect-ratio:1;background:#030612;background-repeat:no-repeat;overflow:hidden;flex-shrink:0}
+.gr-symbol img{display:block;width:100%;height:100%;object-fit:contain;pointer-events:none}
+.gr-symbol--atlas{background-image:url('assets/galactic-rebellion/symbols-atlas.webp');background-size:400% 400%}
+.gr-reel.is-spinning .gr-strip{filter:blur(2px);opacity:.93}
+.gr-reel.is-stopping .gr-strip{filter:blur(.6px)}
+.gr-reel::after{content:'';position:absolute;inset:0;pointer-events:none;background:linear-gradient(#0007,transparent 13% 87%,#0007)}
+.gr-symbol.is-win{z-index:2;box-shadow:inset 0 0 0 2px #f6d67b,inset 0 0 19px #ffca5050;animation:gr-win-glow .65s ease-in-out 4 alternate}
+.gr-symbol.is-feature{z-index:2;box-shadow:inset 0 0 0 2px #84cfff,inset 0 0 19px #59baff50}
+@keyframes gr-win-glow{to{filter:brightness(1.3)}}
+.gr-hud{display:grid;grid-template-columns:1fr 1.25fr 1fr;gap:8px;margin:15px 6px 0;align-items:stretch}
+.gr-panel{display:flex;flex-direction:column;justify-content:center;align-items:center;min-height:51px;border:2px solid #9c7b40;border-radius:7px;background:linear-gradient(145deg,#071e3ced,#020915ed);box-shadow:inset 0 0 0 1px #d4b16d44,0 0 0 2px #1c130b;font-size:10px;letter-spacing:.02em}
+.gr-panel>span{font-size:8px;letter-spacing:.08em;color:#c3dfe9;margin-bottom:3px}
+.gr-panel>strong{font-size:18px;color:#a9dbff}
+.gr-win-panel{background:#020815ed;border-color:#b19755}
+.gr-win-panel>span{font-size:11px;color:#eccf88;font-weight:700}
+.gr-win-panel>strong{font-size:23px;color:#fff}
+.gr-game .gr-features{font-size:12px;font-weight:800;color:#c2e1ff}
+.gr-controls{display:grid;grid-template-columns:44px minmax(0,1fr) 44px;grid-template-areas:'info spin auto' '. total .' '. line .';align-items:center;gap:10px 8px;margin-top:17px}
+.gr-info{grid-area:info;justify-self:center}
+.gr-spin{grid-area:spin;justify-self:center}
+.gr-total-panel{grid-area:total}
+.gr-line-panel{grid-area:line}
+.gr-auto-tools{grid-area:auto}
+.gr-info{width:28px;height:42px;border-radius:50%;border:2px solid #b8a06d;background:radial-gradient(circle at 32% 24%,#154d80,#04122b 70%);font:italic 700 25px Georgia,serif!important;color:#e7dbb6!important;box-shadow:0 0 0 2px #241b0c}
+.gr-bet-panel{width:min(100%,240px);justify-self:center;min-height:55px;min-width:0;border:1px solid #94763a;border-radius:6px;background:#020c24eb;text-align:center;box-shadow:inset 0 0 0 1px #c49d4836}
+.gr-bet-panel>span{display:block;font-size:9px;font-weight:700;letter-spacing:.015em;line-height:1;padding-top:7px;color:#e4e7df;white-space:nowrap}
+.gr-step{display:flex;align-items:center;justify-content:space-between;gap:1px;padding:5px 3px}
+.gr-step strong{font-size:12px;color:#fff;font-weight:700;white-space:nowrap}
+.gr-step button{display:grid;place-items:center;flex-shrink:0;width:22px;height:26px;padding:0;border:1px solid #90a285;border-radius:50%;background:radial-gradient(circle at 35% 25%,#164779,#031d42);font-size:20px;line-height:1;box-shadow:0 1px 3px #0008}
+.gr-game .gr-spin{position:relative;width:102px;height:102px;border:6px double #ead68c;border-radius:50%;background:radial-gradient(circle at 45% 25%,#598fd7,#064b96 47%,#001d47 72%);box-shadow:0 0 0 3px #503a16,0 0 0 5px #e2bc65,0 0 18px #449dffb3,inset 0 0 0 3px #5c8ec5,inset 0 5px 8px #8ab9ff73,inset 0 -9px 14px #000c27;font-size:26px;font-weight:900;color:#ffe996;text-shadow:0 2px 2px #492e02;letter-spacing:-.025em}
+.gr-spin:active:not(:disabled){transform:scale(.97)}
+.gr-game .gr-spin:disabled{opacity:.8}
+.gr-game .gr-spin.is-spinning{box-shadow:0 0 0 3px #503a16,0 0 0 5px #e2bc65,0 0 28px #4a9dffc9,inset 0 0 15px #1eaaff70}
+.gr-auto-tools{display:grid;gap:7px}
+.gr-auto-tools button{min-height:37px;border:1px solid #bb9650;border-radius:6px;background:#030d27eb;font-size:8px;font-weight:800;box-shadow:0 0 0 1px #61451e,inset 0 0 0 2px #cfb25a24;padding:3px}
+.gr-auto-tools button.is-active{color:#bfe4ff;border-color:#86cde1}
+.gr-bonus-mode .gr-spin{font-size:16px}
+.gr-status{min-height:36px;margin:17px 23px 0;text-align:center;color:#d5e4f7;font-size:11px;line-height:1.4;text-shadow:0 2px 4px #000}
+.gr-status a{color:#f6d878;font-weight:700;text-decoration:underline;text-underline-offset:3px}
+.gr-status.is-error{color:#ffe0b5}
+.gr-footer{display:flex;align-items:center;justify-content:space-between;gap:5px;padding:24px 1px 0;font-size:8px;color:#dfdcd0}
+.gr-footer a{color:#e0c786;text-decoration:none;font-weight:700;font-size:10px}
+.gr-footer>span{font-size:7px;letter-spacing:.05em;white-space:nowrap}
+.gr-footer button{border:1px solid #799078;border-radius:5px;background:#041329ba;padding:7px 5px;font-size:9px;color:#d5e4ff}
+body.gr-game .gr-bottom-nav{position:fixed;z-index:140;inset:auto 0 0;display:grid;grid-template-columns:repeat(4,minmax(0,1fr));padding:7px 8px calc(7px + env(safe-area-inset-bottom));gap:3px;background:#0c1811f5;border-top:1px solid #304333;backdrop-filter:blur(16px)}
+.gr-bottom-nav a{display:flex;flex-direction:column;justify-content:center;align-items:center;gap:3px;min-width:0;min-height:50px;border-radius:12px;color:#8f9d94;text-decoration:none;font-size:10px;font-weight:700}
+.gr-bottom-nav .gameday-nav-icon{font-size:21px;line-height:1.2}
+.gr-bottom-nav a.active{background:#173722;color:#eff7ed}
+.gr-game .gr-dialog{width:min(94vw,560px);max-height:85dvh;padding:16px;border:2px solid #ad8847;border-radius:14px;background:#040e26;color:#eae6d5;box-shadow:0 0 50px #000c;font-size:13px;line-height:1.5}
+.gr-dialog::backdrop{background:#000b;backdrop-filter:blur(4px)}
+.gr-dialog-heading{display:flex;justify-content:space-between;align-items:center;gap:10px;border-bottom:1px solid #745b34;margin-bottom:13px;padding-bottom:8px}
+.gr-dialog-heading h2{font:700 22px Georgia,serif;margin:0;color:#e6c779}
+.gr-dialog-heading button{width:38px;height:38px;border:1px solid #736340;border-radius:6px;background:#14233c;font-size:27px}
+.gr-dialog h3{color:#e4c783;font-size:16px}
+.gr-dialog a{color:#b7dcff}
+.gr-symbol-gallery figure,.gr-payline-gallery figure{margin:0;min-width:0;text-align:center}
+.gr-symbol-gallery figcaption{margin-top:3px;font-size:9px}
+.gr-payline-gallery{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:8px;font-size:10px}
+.gr-payline-gallery svg{display:block;width:100%;height:auto}
+.gr-bonus-announcement{text-align:center;padding:10px 0}
+.gr-bonus-value{display:block;color:#f1d387;font:700 34px Georgia,serif}
+.gr-dialog-action{padding:12px 20px;border:1px solid #baa064;border-radius:7px;background:#144a7b;color:#edf5ff;font-weight:700}
+.gr-ways-diagram{display:block;width:min(100%,280px);height:auto;margin:16px auto}
+.gr-menu-links{display:grid;gap:8px}
+.gr-menu-links a{display:block;padding:12px;border:1px solid #425b80;border-radius:7px;text-decoration:none;background:#0c203f}
+.gr-symbol-list,.gr-symbol-gallery{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:7px}
+.gr-symbol-item,.gr-symbol-card{min-width:0;text-align:center;font-size:8px;color:#e0d8c1}
+.gr-symbol-item .gr-symbol,.gr-symbol-card .gr-symbol{height:auto!important}
+.gr-symbol-label{display:block;font-size:9px;padding:4px 0}
+.gr-paytable{width:100%;border-collapse:collapse;font-size:11px}
+.gr-paytable th,.gr-paytable td{padding:7px 4px;border-bottom:1px solid #2b3552;text-align:left}
+.gr-paylines{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:8px}
+.gr-payline{font-size:9px;text-align:center;color:#cbbd99}
+.gr-payline-grid{display:grid;grid-template-columns:repeat(5,1fr);gap:2px;margin-top:4px}
+.gr-payline-cell{aspect-ratio:1;border:1px solid #675831;background:#0b142c}
+.gr-payline-cell.is-active{background:#e2c264}
+.gr-noscript{padding:12px;text-align:center;color:#f9d490}
+html[data-gameday-app="standalone"] body.gr-game .gr-machine{padding-left:13px;padding-right:13px}
+body.gr-game.gd-premium.gd-in-shell{padding-bottom:calc(76px + env(safe-area-inset-bottom))!important}
+body.gr-game.gd-premium.gd-in-shell .gr-machine{padding-top:0!important;padding-left:13px!important;padding-right:13px!important}
+body.gr-game.gd-premium.gd-in-shell .gr-bottom-nav{display:grid!important}
+@media(min-width:521px){.gr-controls{gap:14px 12px}.gr-game .gr-spin{width:130px;height:130px;font-size:34px}.gr-brand{font-size:23px}.gr-marquee{min-height:208px}.gr-game .gr-machine{min-height:930px}.gr-step strong{font-size:16px}.gr-bet-panel>span{font-size:9px}.gr-step button{width:29px;height:32px}.gr-auto-tools button{font-size:10px}.gr-panel{min-height:64px}.gr-wallet-box{min-width:126px}.gr-wallet-box strong{font-size:15px}}
+@media(max-width:359px){body.gr-game .gr-machine{padding-inline:9px}.gr-brand{font-size:15px}.gr-brand>span:first-child{font-size:29px}.gr-topbar{gap:5px}.gr-controls{grid-template-columns:36px minmax(0,1fr) 36px;gap:10px 6px}.gr-game .gr-spin{width:86px;height:86px;font-size:23px}.gr-step{padding-inline:1px}.gr-step strong{font-size:10px}.gr-step button{width:18px;height:25px}.gr-bet-panel>span{font-size:8px}.gr-info{width:24px}.gr-marquee{min-height:162px}.gr-footer>span{font-size:6px}.gr-game .gr-features{font-size:10px}}
+@media(prefers-reduced-motion:reduce){.gr-symbol.is-win{animation:none}.gr-reel.is-spinning .gr-strip,.gr-reel.is-stopping .gr-strip{filter:none}.gr-strip{will-change:auto}}
+
+/* Keep the side plaques inside the phone, alongside the live five reels. */
+.gr-reel-assembly{display:grid;grid-template-columns:25px minmax(0,1fr) 25px;gap:3px;align-items:center;margin:0 0 4px}
+.gr-ways-plaque{display:flex;flex-direction:column;justify-content:center;align-items:center;gap:5px;min-height:93px;border:1px solid #b99a59;border-radius:5px;background:linear-gradient(135deg,#152642,#020918 60%);box-shadow:inset 0 0 0 2px #657d9560,0 0 8px #4d98db44;text-align:center;color:#f0d798}
+.gr-ways-plaque strong{font-size:12px;line-height:1}.gr-ways-plaque span{font-size:6px;line-height:1.65;letter-spacing:.035em}
+.gr-reel-frame{box-shadow:0 0 0 1px #a68c52,inset 0 0 15px #91bfff55,0 7px 20px #000c;border-radius:8px}
+.gr-reel-frame::before,.gr-reel-frame::after{content:'';left:8px;right:8px;height:2px;background:linear-gradient(90deg,transparent,#94d6ff,#f6dd9d,#94d6ff,transparent);box-shadow:0 0 7px #63aaff}
+.gr-reel-frame::before{top:-5px}.gr-reel-frame::after{bottom:-5px}
+.gr-legacy-bonus .gr-ways-plaque strong{font-size:0}.gr-legacy-bonus .gr-ways-plaque strong::after{content:'20';font-size:12px}
+.gr-legacy-bonus .gr-ways-plaque span{font-size:0}.gr-legacy-bonus .gr-ways-plaque span::after{content:'PAYLINES';font-size:5px}
+@media(min-width:521px){.gr-reel-assembly{grid-template-columns:35px minmax(0,1fr) 35px;gap:4px}.gr-ways-plaque strong{font-size:17px}.gr-ways-plaque span{font-size:8px}}

@@ -3,26 +3,60 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
-<meta name="theme-color" content="#090e0b">
+<meta name="theme-color" content="#030715">
 <meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <link rel="manifest" href="manifest.webmanifest">
+<link rel="apple-touch-icon" href="icons/gameday-192.png">
+<link rel="preload" as="image" href="assets/galactic-rebellion/space-background.webp">
 <title>Galactic Rebellion — GameDay</title>
-<style>
-*{box-sizing:border-box}
-html,body{margin:0;min-height:100%;background:#090e0b;color:#fff;font-family:Arial,sans-serif}
-body{padding-bottom:calc(90px + env(safe-area-inset-bottom))}
-header{background:#101712;border-bottom:1px solid #29352d;padding:calc(14px + env(safe-area-inset-top)) 14px 14px}
-h1{font-size:23px;margin:0 0 12px}
-.back{color:#f0d58b;font-size:14px;font-weight:700;text-decoration:none}
-main{min-height:65dvh}
-</style>
+<link rel="stylesheet" href="gameday-galactic-rebellion-game.css">
 </head>
-<body>
-<header>
-<h1>Galactic Rebellion</h1>
-<a class="back" href="gameday-slots-lobby.html">‹ Back to Slots Lobby</a>
-</header>
-<main aria-label="Galactic Rebellion cleared game area"></main>
+<body class="gr-game" data-game="galactic-rebellion">
+<main class="gr-machine" aria-label="Galactic Rebellion slot machine">
+  <div class="gr-topbar" role="banner">
+    <a class="gr-brand" href="gameday-casino-v2.html" aria-label="GameDay Casino"><span aria-hidden="true">♛</span><span>GAMEDAY<small>CASINO</small></span></a>
+    <div class="gr-wallet-box"><span>TEST BALANCE</span><strong id="gr-wallet">—</strong><a id="gr-wallet-plus" href="gameday-auth.html" aria-label="Open GameDay wallet">+</a></div>
+    <button id="gr-menu" class="gr-menu" aria-label="Game menu" aria-haspopup="dialog">☰</button>
+  </div>
+  <section class="gr-marquee" aria-labelledby="gr-title">
+    <h1 id="gr-title"><img src="assets/galactic-rebellion/galactic-rebellion-title.webp" alt="Galactic Rebellion" width="1983" height="793"></h1>
+    <p class="gr-tagline">SPIN <span>•</span> BATTLE <span>•</span> WIN <span>•</span> EXPLORE</p>
+  </section>
+  <section class="gr-reel-assembly" aria-label="Five reels, three rows, 243 ways to win">
+    <div class="gr-ways-plaque"><strong>243</strong><span>WAYS<br>TO WIN</span></div>
+    <div class="gr-reel-frame">
+    <div id="gr-reels" class="gr-reels" role="group" aria-label="Reel results"></div>
+    </div>
+    <div class="gr-ways-plaque"><strong>243</strong><span>WAYS<br>TO WIN</span></div>
+  </section>
+  <section class="gr-hud" aria-label="Spin results">
+    <div class="gr-panel gr-free-panel"><span>FREE SPINS</span><strong id="gr-free-spins">0 / 6</strong></div>
+    <div class="gr-panel gr-win-panel"><span>WIN</span><strong id="gr-win">$0.00</strong></div>
+    <button id="gr-features" class="gr-panel gr-features" aria-haspopup="dialog">FEATURES</button>
+  </section>
+  <section class="gr-controls" aria-label="Spin and wager controls">
+    <button id="gr-info" class="gr-info" aria-label="Game rules and ways to win" aria-haspopup="dialog">i</button>
+    <button id="gr-spin" class="gr-spin" aria-label="Spin Galactic Rebellion reels" disabled>SPIN</button>
+    <div class="gr-auto-tools"><button id="gr-auto" aria-label="Start five automatic spins" disabled>AUTO</button><button id="gr-max" disabled>MAX<br>BET</button></div>
+    <div class="gr-bet-panel gr-total-panel"><span>TOTAL BET</span><div class="gr-step"><button id="gr-total-minus" aria-label="Decrease total bet" disabled>−</button><strong id="gr-total-bet">$1.00</strong><button id="gr-total-plus" aria-label="Increase total bet" disabled>+</button></div></div>
+    <div class="gr-bet-panel gr-line-panel"><span id="gr-unit-label">BET PER WAY</span><div class="gr-step"><button id="gr-line-minus" aria-label="Decrease wager" disabled>−</button><strong id="gr-bet-line">$0.004115</strong><button id="gr-line-plus" aria-label="Increase wager" disabled>+</button></div></div>
+  </section>
+  <div id="gr-status" class="gr-status" role="status" aria-live="polite">Connecting to your GameDay test wallet…</div>
+  <footer class="gr-footer"><a href="gameday-slots-lobby.html">‹ Slots Lobby</a><span>TEST MODE • NO REAL MONEY</span><button id="gr-sound" aria-label="Mute game sound" aria-pressed="false">Sound On</button></footer>
+</main>
+<nav class="gameday-app-nav gr-bottom-nav" data-gameday-nav aria-label="GameDay app navigation">
+  <a href="gameday-sportsbook.html"><span class="gameday-nav-icon" aria-hidden="true">◉</span><span>Sportsbook</span></a>
+  <a class="active" aria-current="page" href="gameday-casino-v2.html"><span class="gameday-nav-icon" aria-hidden="true">♠</span><span>Casino</span></a>
+  <a href="gameday-my-bets.html"><span class="gameday-nav-icon" aria-hidden="true">✓</span><span>My Bets</span></a>
+  <a href="gameday-auth.html"><span class="gameday-nav-icon" aria-hidden="true">●</span><span>Account</span></a>
+</nav>
+<dialog id="gr-dialog" class="gr-dialog" aria-labelledby="gr-dialog-title">
+  <div class="gr-dialog-heading"><h2 id="gr-dialog-title">Galactic Rebellion</h2><button id="gr-dialog-close" aria-label="Close game information">×</button></div>
+  <div id="gr-dialog-content"></div>
+</dialog>
+<noscript><p class="gr-noscript">Turn on JavaScript to spin Galactic Rebellion.</p></noscript>
 <script src="gameday-app.js" defer></script>
+<script type="module" src="gameday-galactic-rebellion-game.js"></script>
 </body>
 </html>
