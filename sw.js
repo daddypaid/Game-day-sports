@@ -1,4 +1,4 @@
-const CACHE='gameday-shell-v77';
+const CACHE='gameday-shell-v78';
 const SHELL=[
   './',
   './index.html',
@@ -16,7 +16,6 @@ const SHELL=[
   './gameday-midnight-monsters-v2.html',
   './gameday-galactic-rebellion-v2.html',
   './gameday-poker.html',
-  './gameday-video-poker.html',
   './gameday-control-center.html',
   './gameday-operator-analytics.html',
   './gameday-system-health.html',
@@ -68,7 +67,6 @@ const SHELL=[
   './assets/homepage/gameday-home-hero.webp',
   './assets/homepage/gameday-homepage-approved.jpeg',
   './assets/gameday-blackjack-table-premium.svg',
-  './assets/gameday-video-poker-premium.svg',
   './assets/gameday-roulette-room.svg',
   './assets/gameday-poker-room.svg',
   './assets/gameday-baccarat-room.svg',
@@ -88,14 +86,12 @@ const SHELL=[
   './assets/casino-premium/blackjack.webp',
   './assets/casino-premium/roulette.webp',
   './assets/casino-premium/baccarat.webp',
-  './assets/casino-premium/video-poker.webp',
   './assets/casino-premium/midnight-monsters.webp',
   './assets/casino-premium/galactic-rebellion.webp',
   './assets/casino-premium/lucky-7s.webp',
   './assets/casino-premium/poker-room.webp',
   './assets/card-tables/blackjack.webp',
   './assets/card-tables/baccarat.webp',
-  './assets/card-tables/video-poker.webp',
   './assets/casino-premium/casino-lobby-hero.webp',
   './assets/casino-premium/poker-hero.webp',
   './assets/casino-premium/slots-hero.webp',
