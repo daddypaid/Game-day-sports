@@ -13,6 +13,17 @@
   const stage = document.querySelector('main > .game-stage, main > .stage');
   if (!Object.hasOwn(rail, game) || !stage || document.querySelector('.gd-wager-chip-row')) return;
 
+  const actions = {
+    'gameday-blackjack.html': [[5, ['Hit', 'Stand', 'Double', 'Split', 'Deal']]],
+    'gameday-baccarat.html': [[4, ['Player', 'Banker', 'Tie', 'Deal']]],
+    'gameday-jacks-or-better.html': [[5, ['Hold 1', 'Hold 2', 'Hold 3', 'Hold 4', 'Hold 5']], [2, ['Deal', 'Draw']]],
+    'gameday-texas-holdem.html': [[3, ['Fold', 'Check', 'Call', 'Bet', 'Raise', 'All In']]],
+    'gameday-omaha.html': [[3, ['Fold', 'Check', 'Call', 'Bet', 'Raise', 'Pot']]],
+    'gameday-seven-card-stud.html': [[4, ['Bring In', 'Complete', 'Fold', 'Check', 'Call', 'Bet', 'Raise']]],
+    'gameday-five-card-draw.html': [[4, ['Deal', 'Discard', 'Draw', 'Fold', 'Check', 'Call', 'Bet', 'Raise']]],
+    'gameday-roulette.html': [[2, ['Select Bet', 'Spin', 'Clear', 'Repeat Bet']]]
+  };
+
   const chips = [[1, 'white'], [5, 'red'], [10, 'blue'], [25, 'green'], [100, 'black'], [500, 'purple']];
   const x = [16, 29.6, 43.2, 56.8, 70.4, 84];
   const curve = [-2.8, -0.8, 0, 0, -0.8, -2.8];
@@ -25,20 +36,44 @@
 
   document.body.classList.add('gd-table-wager-page');
   stage.classList.add('gd-wager-surface');
+  const artwork = [...stage.children].find(element => element.tagName === 'IMG');
+  let artworkWrapper;
+  if (artwork && rail[game] !== null) {
+    artworkWrapper = document.createElement('div');
+    artworkWrapper.className = 'gd-wager-artwork';
+    stage.insertBefore(artworkWrapper, artwork);
+    artworkWrapper.appendChild(artwork);
+  } else {
+    stage.classList.add('gd-wager-no-art');
+  }
   const row = document.createElement('div');
   row.className = 'gd-wager-chip-row';
   row.setAttribute('role', 'group');
   row.setAttribute('aria-label', 'Choose a chip amount');
   row.innerHTML = chips.map(([value, color], index) => `<button type="button" class="gd-wager-chip" data-wager-chip="${value}" style="--gd-chip-x:${x[index]}%;--gd-chip-curve:${curve[index]}%" aria-label="Select $${value} ${color} chip for wager" aria-pressed="false"><img src="assets/chips/gameday-${value}.webp" width="150" height="150" alt="" draggable="false"></button>`).join('');
-  if (stage.querySelector('img') && rail[game] !== null) {
+  if (artworkWrapper) {
     row.classList.add('gd-wager-on-table');
     stage.style.setProperty('--gd-chip-rail-y', `${rail[game]}%`);
   }
-  stage.appendChild(row);
+  (artworkWrapper || stage).appendChild(row);
   const buttons = [...row.querySelectorAll('[data-wager-chip]')];
+
+  const panel = document.createElement('section');
+  panel.className = 'gd-table-wager-panel';
+  panel.setAttribute('aria-label', 'Wager and game actions');
+  const existingStatus = stage.parentElement.querySelector('.note');
+  const statusId = existingStatus?.id || 'gd-table-actions-status';
+  if (existingStatus) existingStatus.id = statusId;
+  panel.innerHTML = `<div class="gd-wager-bar"><span id="gd-table-wager-label">TOTAL BET</span><output class="gd-wager-total" aria-labelledby="gd-table-wager-label" aria-live="polite" aria-atomic="true"></output></div>
+    <div class="gd-table-action-groups" role="group" aria-label="Game actions">${actions[game].map(([columns, labels]) => `<div class="gd-table-action-row" style="--gd-action-columns:${columns}">${labels.map(label => `<button type="button" class="gd-table-action" data-table-action="${label.toLowerCase().replaceAll(' ', '-')}" aria-describedby="${statusId}" disabled>${label}</button>`).join('')}</div>`).join('')}</div>
+    ${existingStatus ? '' : `<p id="${statusId}" class="gd-table-actions-status">Gameplay is still building.</p>`}`;
+  stage.appendChild(panel);
+  const output = panel.querySelector('.gd-wager-total');
+  const money = new Intl.NumberFormat('en-US', { style: 'currency', currency: 'USD' });
 
   function render() {
     stage.dataset.wagerAmount = String(selectedChip || 0);
+    output.value = money.format(selectedChip || 0);
     buttons.forEach(button => button.setAttribute('aria-pressed', String(Number(button.dataset.wagerChip) === selectedChip)));
   }
   buttons.forEach(button => button.addEventListener('click', () => {
@@ -47,4 +82,22 @@
     try { sessionStorage.setItem(storageKey, JSON.stringify({ amount: selectedChip, selectedChip })); } catch (_) {}
   }));
   render();
+
+  if (artworkWrapper) {
+    function placePanel() {
+      const imageHeight = artwork.getBoundingClientRect().height;
+      if (!imageHeight) return;
+      stage.style.minHeight = `${imageHeight}px`;
+      const chipRadius = Math.max(...buttons.map(button => button.getBoundingClientRect().height)) / 2;
+      const panelTop = imageHeight * rail[game] / 100 + chipRadius + 8;
+      stage.style.setProperty('--gd-panel-overlap', `${Math.max(0, imageHeight - panelTop)}px`);
+    }
+    if ('ResizeObserver' in window) {
+      const observer = new ResizeObserver(placePanel);
+      observer.observe(artworkWrapper, { box: 'border-box' });
+    }
+    artwork.addEventListener('load', placePanel);
+    window.addEventListener('resize', placePanel, { passive: true });
+    requestAnimationFrame(placePanel);
+  }
 })();

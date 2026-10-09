@@ -2,6 +2,7 @@
 html:root body.gd-table-wager-page{height:auto!important;overflow-y:visible!important}
 html:root body.gd-table-wager-page main{height:auto!important;overflow-y:visible!important}
 html:root body.gd-table-wager-page .gd-wager-surface{position:relative!important}
+.gd-wager-artwork{position:relative;width:100%}
 .gd-wager-chip-row{display:grid;grid-template-columns:repeat(6,minmax(0,1fr));gap:3px;position:absolute;left:0;right:0;bottom:16px;padding:0 8px}
 html:root body.gd-table-wager-page .gd-wager-chip{display:grid;place-items:center;min-width:44px;min-height:44px;aspect-ratio:1;margin:0;padding:0;border:0!important;border-radius:0;background:transparent!important;box-shadow:none!important;cursor:pointer;touch-action:manipulation;-webkit-tap-highlight-color:transparent}
 html:root body.gd-table-wager-page .gd-wager-chip img{display:block;width:100%;height:auto;aspect-ratio:1;object-fit:contain;border:0!important;border-radius:0;box-shadow:none!important;filter:none!important;pointer-events:none;user-select:none}
@@ -9,3 +10,19 @@ html:root body.gd-table-wager-page .gd-wager-chip[aria-pressed="true"] img{trans
 html:root body.gd-table-wager-page .gd-wager-chip:focus-visible{outline:2px solid #b4f0ca;outline-offset:-4px;border-radius:50%}
 html:root body.gd-table-wager-page .gd-wager-on-table{position:absolute;inset:0;z-index:2;display:block;margin:0;padding:0;pointer-events:none}
 html:root body.gd-table-wager-page .gd-wager-on-table .gd-wager-chip{position:absolute;left:var(--gd-chip-x);top:calc(var(--gd-chip-rail-y) + var(--gd-chip-curve));transform:translate(-50%,-50%);width:13%;max-width:76px;pointer-events:auto}
+html:root body.gd-table-wager-page .gd-table-wager-panel{position:relative;z-index:3;margin:calc(-1 * var(--gd-panel-overlap,0px)) 0 0;padding:10px 12px 12px;background:transparent;border:0;border-radius:0;box-shadow:none;color:#fff;font-family:Arial,sans-serif}
+html:root body.gd-table-wager-page .gd-wager-bar{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px;min-height:52px;max-width:380px;margin:0 auto 8px;padding:5px 10px;border:2px solid #bd983c;border-radius:11px;background:rgba(3,6,4,.92);box-shadow:inset 0 0 0 1px #51401a;color:#f7e5a2}
+.gd-wager-bar>span{font:700 10px/1.2 Georgia,serif;letter-spacing:.14em}
+.gd-wager-total{font:700 24px/1.15 Georgia,serif;color:#fff5d4;overflow-wrap:anywhere;text-align:center}
+.gd-table-action-groups{display:grid;gap:6px}
+.gd-table-action-row{display:grid;grid-template-columns:repeat(var(--gd-action-columns),minmax(0,1fr));gap:5px}
+html:root body.gd-table-wager-page .gd-table-action{min-width:0;min-height:44px!important;margin:0;padding:5px 3px;border:1px solid #68725e!important;border-radius:9px;background:linear-gradient(180deg,#283327,#10170f)!important;color:#eff1df!important;font:700 11px/1.2 Georgia,serif;text-transform:uppercase;overflow-wrap:anywhere;box-shadow:inset 0 1px rgba(255,255,255,.09)!important}
+html:root body.gd-table-wager-page .gd-table-action:disabled{opacity:.58;cursor:not-allowed}
+html:root body.gd-table-wager-page .gd-table-action:is([data-table-action="deal"],[data-table-action="draw"],[data-table-action="spin"]){border-color:#e5c568!important;background:linear-gradient(180deg,#f6e7a6,#b48b2d)!important;color:#1b160b!important}
+html:root body.gd-table-wager-page .gd-table-action[data-table-action="hit"]{background:linear-gradient(180deg,#572524,#24110f)!important}
+html:root body.gd-table-wager-page .gd-table-action[data-table-action="stand"]{background:linear-gradient(180deg,#535145,#25271f)!important}
+html:root body.gd-table-wager-page .gd-table-action[data-table-action="split"]{background:linear-gradient(180deg,#283951,#111c2a)!important}
+.gd-table-actions-status{margin:7px 0 0;color:#a7b4ac;font:400 10px/1.3 Arial,sans-serif;text-align:center}
+html:root body.gd-table-wager-page .gd-wager-no-art{display:flex;flex-direction:column;justify-content:flex-end}
+html:root body.gd-table-wager-page .gd-wager-no-art .gd-wager-chip-row{position:static;margin-top:auto}
+html:root body.gd-table-wager-page .gd-wager-no-art .gd-table-wager-panel{margin-top:8px}
