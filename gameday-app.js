@@ -1,7 +1,7 @@
 (() => {
   if ('serviceWorker' in navigator) {
     window.addEventListener('load', () => {
-      navigator.serviceWorker.register('./sw.js?v=77', { scope: './', updateViaCache: 'none' }).then(registration => registration.update()).catch(() => {});
+      navigator.serviceWorker.register('./sw.js?v=78', { scope: './', updateViaCache: 'none' }).then(registration => registration.update()).catch(() => {});
     });
   }
 
@@ -20,7 +20,6 @@
     'gameday-baccarat.html':'casino-game',
     'gameday-slots.html':'casino-game',
     'gameday-poker.html':'poker',
-    'gameday-video-poker.html':'poker-game',
 
 
 
@@ -198,7 +197,7 @@
   });
 
   let activeHref = path;
-  if (['gameday-blackjack.html','gameday-roulette.html','gameday-baccarat.html','gameday-slots.html','gameday-poker.html','gameday-video-poker.html'].includes(path)) activeHref = 'gameday-casino-v2.html';
+  if (['gameday-blackjack.html','gameday-roulette.html','gameday-baccarat.html','gameday-slots.html','gameday-poker.html'].includes(path)) activeHref = 'gameday-casino-v2.html';
   const nav = document.createElement('nav');
   nav.className = 'gameday-app-nav';
   nav.setAttribute('aria-label','GameDay app navigation');
