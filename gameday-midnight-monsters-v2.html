@@ -3,45 +3,26 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
-<meta name="theme-color" content="#080710">
-<title>GameDay Midnight Monsters</title>
-<link rel="stylesheet" href="gameday-themed-slots.css">
-<link rel="stylesheet" href="gameday-themed-slots-premium-art.css">
-<link rel="stylesheet" href="gameday-premium-spin.css">
-<link rel="stylesheet" href="gameday-midnight-monsters-premium.css?v=3">
+<meta name="theme-color" content="#090e0b">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<link rel="manifest" href="manifest.webmanifest">
+<title>Midnight Monsters — GameDay</title>
+<style>
+*{box-sizing:border-box}
+html,body{margin:0;min-height:100%;background:#090e0b;color:#fff;font-family:Arial,sans-serif}
+body{padding-bottom:calc(90px + env(safe-area-inset-bottom))}
+header{background:#101712;border-bottom:1px solid #29352d;padding:calc(14px + env(safe-area-inset-top)) 14px 14px}
+h1{font-size:23px;margin:0 0 12px}
+.back{color:#f0d58b;font-size:14px;font-weight:700;text-decoration:none}
+main{min-height:65dvh}
+</style>
 </head>
-<body class="theme-monsters" data-game="midnight-monsters">
-<header><div class="top"><div class="brand"><h1>Midnight Monsters</h1><small>GameDay Original • 5×3 • 20 paylines</small></div><div class="header-actions"><button id="mmSound" class="mm-sound" type="button" aria-pressed="false" aria-label="Mute game sound">Sound On</button><a class="back" href="gameday-slots-lobby.html">‹ Slots Lobby</a></div></div></header>
-<div class="wrap">
-<div id="notice" class="notice hidden"></div>
-<div class="cabinet">
-<div class="marquee"><div class="title">Midnight Monsters</div><div class="subtitle">5 × 3 • 20 PAYLINES • HORROR FEATURES</div></div>
-<section class="scene">
-<div class="hud">
-<div class="wallet"><span>Test Wallet</span><strong id="wallet">—</strong></div>
-<div><span>Bet / Line</span><strong id="betView">1</strong></div>
-<div><span>Last Win</span><strong id="winView">$0.00</strong></div>
-<div><span>Lines</span><strong>20</strong></div>
-<div><span>Crypt Meter</span><strong id="bonusView">0 / 3</strong><div class="bonusbar"><i id="bonusFill"></i></div></div>
-</div>
-<div class="reel-shell"><div id="grid" class="grid"></div><div id="linebar" class="linebar"></div></div>
-<div id="result" class="result" role="status" aria-live="polite">Tap SPIN to wake the monsters</div>
-</section>
-</div>
-<div class="controls">
-<div class="box"><label>Bet per line</label><div class="step"><button id="minus" aria-label="Decrease bet">−</button><strong id="bet">1</strong><button id="plus" aria-label="Increase bet">+</button></div></div>
-<button id="spin" class="spinbtn">SPIN</button>
-<div class="box"><label>Total bet</label><div class="step"><strong id="total">$20.00</strong></div></div>
-</div>
-<div class="mm-tools" aria-label="Slot controls"><button type="button" class="mm-tool" id="mmAuto">AUTO ×5</button><button type="button" class="mm-tool" id="mmMax">MAX BET</button></div>
-<div class="tiny">TEST CASINO • Uses the shared GameDay test wallet. Outcomes, monster features, free spins and wallet settlement are handled server-side.</div>
-<section class="paytable"><h3>Monster Paytable</h3><div class="paygrid">
-<div class="pay"><span>Vampire ×5</span><strong>40×</strong></div><div class="pay"><span>Werewolf ×5</span><strong>30×</strong></div>
-<div class="pay"><span>Zombie ×5</span><strong>24×</strong></div><div class="pay"><span>Potion ×5</span><strong>18×</strong></div>
-<div class="pay"><span>WILD ×5</span><strong>50×</strong></div><div class="pay"><span>CRYPT ×3+</span><strong>8 Free Spins</strong></div>
-</div><div class="tiny">CRYPT FREE SPINS • 3+ Crypt symbols award 8 persistent free spins at the triggering bet. Each free spin receives a monster power: Blood Moon multiplier, Werewolf Wild reel, or Zombie Wild Infection. Unfinished free spins resume after reload.</div></section>
-</div>
-<script type="module" src="gameday-themed-slots.js?v=31"></script>
+<body>
+<header>
+<h1>Midnight Monsters</h1>
+<a class="back" href="gameday-slots-lobby.html">‹ Back to Slots Lobby</a>
+</header>
+<main aria-label="Midnight Monsters cleared game area"></main>
 <script src="gameday-app.js" defer></script>
 </body>
 </html>
