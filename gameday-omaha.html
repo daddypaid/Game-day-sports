@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1.0,viewport-fit=cover">
+<meta name="theme-color" content="#08100b">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="GameDay">
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="apple-touch-icon" href="icons/gameday-192.png">
+<title>GameDay Omaha</title>
+<style>
+*{box-sizing:border-box}
+html,body{margin:0;min-height:100%;background:#08100b;color:#fff;font-family:Arial,sans-serif}
+body{padding-bottom:92px}
+header{background:#101712;border-bottom:1px solid #27342c;padding:max(10px,env(safe-area-inset-top)) 12px 10px}
+.top{display:flex;justify-content:space-between;align-items:center;gap:10px}
+h1{margin:0;font-size:23px}
+.badge{flex:0 0 auto;background:#252c27;border:1px solid #465149;color:#c4cec7;border-radius:999px;padding:7px 9px;font-size:10px;font-weight:900}
+.back{display:inline-flex;margin-top:8px;text-decoration:none;color:#f3df93;font-size:11px;font-weight:900}
+main{max-width:760px;margin:auto;padding:12px}
+.stage{border:1px solid #6f5a20;border-radius:18px;overflow:hidden;background:#050706}
+.stage img{display:block;width:100%;height:auto;object-fit:contain}
+.note{margin-top:10px;padding:10px 11px;border:1px solid #2c3931;border-radius:11px;background:#101612;color:#aab5ae;font-size:11px;line-height:1.4}
+@media(max-width:430px){h1{font-size:20px}main{padding:7px}.stage{border-radius:14px}}
+</style>
+</head>
+<body>
+<header>
+  <div class="top"><h1>GameDay Omaha</h1><div class="badge">BUILDING</div></div>
+  <a class="back" href="gameday-poker.html">‹ Back to Poker Room</a>
+</header>
+<main>
+  <section class="stage" aria-label="Omaha work area">
+    <img src="assets/card-tables/gameday-omaha-table.png" alt="GameDay Omaha table artwork" fetchpriority="high">
+  </section>
+  <div class="note">Game workspace opened. Gameplay controls, cards, chips and wagering will be added here in later steps.</div>
+</main>
+<script src="gameday-app.js" defer></script>
+</body>
+</html>
