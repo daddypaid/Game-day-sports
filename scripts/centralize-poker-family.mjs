@@ -1,13 +1,6 @@
 import fs from 'node:fs';
 
-const targets = [
-  { file: 'gameday-video-poker.html', functionKey: 'videoPoker', legacyFunction: 'video-poker-test' },
-  { file: 'gameday-bonus-poker.html', functionKey: 'videoPoker', legacyFunction: 'video-poker-test' },
-  { file: 'gameday-deuces-wild.html', functionKey: 'videoPoker', legacyFunction: 'video-poker-test' },
-  { file: 'gameday-three-card-poker.html', functionKey: 'threeCardPoker', legacyFunction: 'three-card-poker-test' },
-  { file: 'gameday-ultimate-texas-holdem.html', functionKey: 'ultimateTexasHoldem', legacyFunction: 'ultimate-texas-holdem-test' },
-  { file: 'gameday-caribbean-stud.html', functionKey: 'caribbeanStud', legacyFunction: 'caribbean-stud-test' }
-];
+const targets = [];
 
 for (const target of targets) {
   let source = fs.readFileSync(target.file, 'utf8');
