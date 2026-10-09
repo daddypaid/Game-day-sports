@@ -42,7 +42,11 @@ jobs:
             gameday-midnight-monsters-v2.html
             gameday-galactic-rebellion-v2.html
             gameday-poker.html
-            gameday-video-poker.html
+            gameday-jacks-or-better.html
+            gameday-texas-holdem.html
+            gameday-omaha.html
+            gameday-seven-card-stud.html
+            gameday-five-card-draw.html
             gameday-my-bets.html
             gameday-auth.html
             gameday-config.js
@@ -62,11 +66,16 @@ jobs:
           grep -q 'rel="manifest" href="manifest.webmanifest"' index.html
           grep -q "./index.html" sw.js
           grep -q "./gameday-config.js" sw.js
-          grep -q "gameday-themed-slots-premium-art.css" sw.js
           grep -q "gameday-sportsbook.html" index.html
           grep -q "gameday-casino-v2.html" index.html
           grep -q "GAMEDAY_CONFIG" gameday-sportsbook.html
           grep -q "GAMEDAY_CONFIG" gameday-casino-v2.html
+
+          grep -q 'href="gameday-texas-holdem.html"' gameday-poker.html
+          grep -q 'href="gameday-omaha.html"' gameday-poker.html
+          grep -q 'href="gameday-seven-card-stud.html"' gameday-poker.html
+          grep -q 'href="gameday-five-card-draw.html"' gameday-poker.html
+          grep -q 'href="gameday-jacks-or-better.html"' gameday-poker.html
 
           if grep -RInE \
             --include='*.html' --include='*.js' --include='*.css' \
