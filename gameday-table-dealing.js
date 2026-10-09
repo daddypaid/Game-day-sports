@@ -88,19 +88,20 @@
     groups = {};
     layer.replaceChildren();
     Object.entries(positions[game]).forEach(([id, [label,x,y,width,cardWidth]]) => {
+      const displayWidth = cardWidth * 1.1;
       const element = document.createElement('div');
       element.className = 'gd-deal-group';
       element.dataset.cardGroup = id;
       element.setAttribute('role', 'group');
       element.setAttribute('aria-label', label);
-      element.style.cssText = `left:${x}%;top:${y}%;width:${width}%;aspect-ratio:${width / (cardWidth * 1.4)}`;
+      element.style.cssText = `left:${x}%;top:${y}%;width:${width}%;aspect-ratio:${width / (displayWidth * 1.4)}`;
       const caption = document.createElement('span');
       caption.className = 'gd-deal-caption';
       caption.textContent = label;
       caption.setAttribute('aria-hidden', 'true');
       element.appendChild(caption);
       layer.appendChild(element);
-      groups[id] = { id, element, cards: [], slots: 0, cardPercent: cardWidth / width * 100 };
+      groups[id] = { id, element, cards: [], slots: 0, cardPercent: displayWidth / width * 100 };
     });
   }
   function setPhase(next) {
