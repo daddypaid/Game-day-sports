@@ -24,9 +24,13 @@ main{max-width:760px;margin:auto;padding:14px}
 .game-stage img{display:block;width:100%;height:auto;object-fit:contain}
 html body.jacks-artwork-page{background:#08100b!important}
 @media(max-width:520px){header{padding:10px}h1{font-size:20px}}
+/* Keep approved poker table artwork free of added frames in every app view. */
+html:root body.poker-table-artwork-page{background:#08100b!important}
+html:root body.poker-table-artwork-page main{padding:0!important}
+html:root body.poker-table-artwork-page :is(.stage,.game-stage,.stage img,.game-stage img){border:0!important;border-radius:0!important;outline:0!important;box-shadow:none!important}
 </style>
 </head>
-<body class="jacks-artwork-page">
+<body class="jacks-artwork-page poker-table-artwork-page">
 <header>
   <div class="header-row">
     <h1>GameDay Jacks or Better</h1>
