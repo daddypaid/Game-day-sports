@@ -1,0 +1,44 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 160 240" fill="none">
+  <title>GameDay Jack court illustration</title>
+  <defs>
+    <pattern id="weave" width="12" height="12" patternUnits="userSpaceOnUse">
+      <path d="M0 6 6 0l6 6-6 6Z" stroke="#2c704c" stroke-width="1"/>
+      <circle cx="6" cy="6" r="1.5" fill="#b99845"/>
+    </pattern>
+    <g id="jack">
+      <path d="M19 120V94l22-17 32 1h21l27 6 20 20v16Z" fill="#082d20" stroke="#c8a34c" stroke-width="2"/>
+      <path d="M23 96 47 80l27 4 16 36H23Z" fill="url(#weave)"/>
+      <path d="m26 93 20-14 17 38H43Z" fill="#efe2bf" stroke="#181d17" stroke-width="2"/>
+      <path d="m33 88 15 30M39 84l16 34" stroke="#b68e39" stroke-width="3"/>
+      <path d="m92 83 27 4 18 22v11H92Z" fill="#101e17"/>
+      <path d="m108 90 19 8-1 22h-18Z" fill="#983c31" stroke="#c8a34c" stroke-width="2"/>
+      <path d="m112 96 10 4m-10 5 10 4m-10 5 10 4" stroke="#ebdba6" stroke-width="2"/>
+      <path d="m63 79 14-9 16 1 10 12-14 20-13-1Z" fill="#f3e5c4" stroke="#161e17" stroke-width="2"/>
+      <path d="m69 81 8 12 11-1 10-10-8 6-11-1Z" fill="#bb953f"/>
+      <path d="M60 35c0-12 10-19 25-18 16 1 24 12 22 28l-5 27-10 9-22-6-10-16Z" fill="#171e17" stroke="#b99845" stroke-width="2"/>
+      <path d="M69 37h27l6 14-5 19-11 9-13-6-8-17Z" fill="#f4e8ca" stroke="#151c16" stroke-width="2"/>
+      <path d="m69 38-3 22 8-5 2-18M93 36l3 13 7 4-3-17" fill="#22251b"/>
+      <path d="M76 49h6m8 0h7" stroke="#20241a" stroke-width="2.5" stroke-linecap="round"/>
+      <path d="m85 51-3 11h7m-10 6 10 1" stroke="#8c5e3d" stroke-width="1.8" stroke-linecap="round"/>
+      <path d="M60 35c-2-14 8-22 22-23 13-1 25 8 27 23l-25-3Z" fill="#983c31" stroke="#d0ac54" stroke-width="2"/>
+      <path d="m58 35 26-6 27 6-1 8-27-6-26 6Z" fill="#112c20" stroke="#c8a34c" stroke-width="2"/>
+      <path d="M96 17c7-7 17-11 25-9-1 11-9 18-21 19" fill="#f4e8ca" stroke="#b99845" stroke-width="2"/>
+      <path d="m99 24 18-12m-7 4 1-6m-5 10 10-1" stroke="#b99845" stroke-width="1.5"/>
+      <path d="m58 105 15-10 16 25H69Z" fill="#152a1e" stroke="#c8a34c" stroke-width="2"/>
+      <circle cx="75" cy="108" r="4" fill="#e4c16b" stroke="#151c16" stroke-width="2"/>
+      <path d="m88 104 13-13 3 29H89Z" fill="url(#weave)" stroke="#c8a34c" stroke-width="2"/>
+      <path d="M132 41v79" stroke="#151c16" stroke-width="8"/>
+      <path d="M132 41v79" stroke="#cfaa52" stroke-width="4"/>
+      <path d="m132 30 7 9-7 11-7-11Z" fill="#ebcd81" stroke="#151c16" stroke-width="2"/>
+      <path d="M125 101c-6-1-10 1-10 6 0 4 6 7 10 5l9-4-2-8Z" fill="#f4e8ca" stroke="#151c16" stroke-width="2"/>
+      <path d="m121 105 11-1m-9 5 9-1" stroke="#9c7643" stroke-width="1.5"/>
+    </g>
+  </defs>
+  <rect x="3" y="3" width="154" height="234" rx="5" fill="#0b261b" stroke="#d1b46b" stroke-width="2"/>
+  <path d="M12 25V12h22m92 0h22v13M12 215v13h22m92 0h22v-13" stroke="#d1b46b" stroke-width="2"/>
+  <path d="M9 36v168m142-168v168" stroke="#426044"/>
+  <use href="#jack"/>
+  <use href="#jack" transform="rotate(180 80 120)"/>
+  <path d="M20 119h120v3H20Z" fill="#c8a34c"/>
+  <path d="m9 30 4 5-4 5m142-10-4 5 4 5M9 200l4 5-4 5m142-10-4 5 4 5" stroke="#d1b46b" stroke-width="1.5"/>
+</svg>

@@ -1,4 +1,4 @@
-const CACHE='gameday-shell-v74';
+const CACHE='gameday-shell-v75';
 const SHELL=[
   './',
   './index.html',
@@ -28,10 +28,16 @@ const SHELL=[
   './gameday-config.js',
   './gameday-app.js',
   './gameday-app.js?v=12',
-  './gameday-card-wager-ui.js?v=32',
+  './gameday-card-wager-ui.js?v=33',
+  './gameday-playing-cards.css?v=1',
+  './assets/playing-cards/gameday-back.svg',
+  './assets/playing-cards/gameday-ace-spades.svg',
+  './assets/playing-cards/gameday-court-jack.svg',
+  './assets/playing-cards/gameday-court-queen.svg',
+  './assets/playing-cards/gameday-court-king.svg',
   './gameday-live-card-tables.js?v=2',
   './gameday-live-card-tables.css?v=8',
-  './gameday-blackjack-live.css?v=39',
+  './gameday-blackjack-live.css?v=40',
   './gameday-roulette-spinner.css?v=3',
   './assets/card-tables/blackjack-empty-approved.webp',
   './assets/card-tables/blackjack-clean-reference.webp',
@@ -137,7 +143,7 @@ self.addEventListener('fetch',event=>{
     return;
   }
 
-  const criticalRuntime=/\/(?:gameday-config|gameday-card-wager-ui|gameday-live-card-tables|gameday-blackjack-live|gameday-roulette-spinner|gameday-app)\.(?:js|css)$/.test(url.pathname);
+  const criticalRuntime=/\/(?:gameday-config|gameday-card-wager-ui|gameday-playing-cards|gameday-live-card-tables|gameday-blackjack-live|gameday-roulette-spinner|gameday-app)\.(?:js|css)$/.test(url.pathname);
   if(criticalRuntime){
     event.respondWith(fetch(req).then(res=>{
       const copy=res.clone();

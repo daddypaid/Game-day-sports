@@ -1,0 +1,49 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 160 240" fill="none">
+  <title>GameDay Queen court illustration</title>
+  <defs>
+    <pattern id="brocade" width="16" height="16" patternUnits="userSpaceOnUse">
+      <path d="M8 2c-7 5-7 7 0 12 7-5 7-7 0-12Z" stroke="#367151" stroke-width="1.2"/>
+      <circle cx="8" cy="8" r="2" fill="#b99746"/>
+    </pattern>
+    <g id="queen">
+      <path d="M18 120v-16l20-21 31-9h23l29 11 21 22v13Z" fill="#112d20" stroke="#c5a050" stroke-width="2"/>
+      <path d="m23 106 21-22 24-6 13 42H23Z" fill="url(#brocade)"/>
+      <path d="m92 78 24 9 22 20v13H84Z" fill="url(#brocade)"/>
+      <path d="m48 83 16-6 17 43H61Z" fill="#eee0b8" stroke="#171e17" stroke-width="2"/>
+      <path d="m100 80 15 8-15 32H85Z" fill="#eee0b8" stroke="#171e17" stroke-width="2"/>
+      <path d="m54 82 16 38m38-35-17 35" stroke="#b99442" stroke-width="3"/>
+      <path d="M52 43c-1-19 11-28 28-28 22 0 32 13 28 36l2 34-15 10-14-18-16 15-17-7Z" fill="#b69543" stroke="#161d17" stroke-width="2"/>
+      <path d="M59 34v43m7-46-4 54m38-48v46m-8-50 7 56" stroke="#705823" stroke-width="2"/>
+      <path d="M63 40c0-11 34-15 35 2l-1 22-7 10H76l-10-12Z" fill="#f5e8c7" stroke="#171e17" stroke-width="2"/>
+      <path d="m63 42 6-12 13 7 11-8 5 12" fill="#b69543" stroke="#171e17" stroke-width="2"/>
+      <path d="m70 49 7-1m9 0 7 1" stroke="#27271b" stroke-width="2.5" stroke-linecap="round"/>
+      <path d="m82 51-3 10 6 1m-8 5h10" stroke="#9a6041" stroke-width="1.8" stroke-linecap="round"/>
+      <path d="m76 67 5 2 6-2" stroke="#9a4034" stroke-width="1.6"/>
+      <path d="m75 74-4 8 11 12 12-12-5-8" fill="#f5e8c7" stroke="#171e17" stroke-width="2"/>
+      <path d="m72 84 10 11 11-11" stroke="#d7b460" stroke-width="3"/>
+      <circle cx="82" cy="91" r="3" fill="#9d3b33" stroke="#c5a050" stroke-width="1.5"/>
+      <path d="m57 30 1-18 11 9 11-13 11 13 12-8-1 17Z" fill="#d4b05a" stroke="#171e17" stroke-width="2"/>
+      <path d="M59 30h42v7H59Z" fill="#172c20" stroke="#c5a050" stroke-width="2"/>
+      <circle cx="80" cy="26" r="4" fill="#9d3b33" stroke="#f0dba0" stroke-width="1.5"/>
+      <circle cx="65" cy="27" r="2" fill="#f0dba0"/>
+      <circle cx="95" cy="27" r="2" fill="#f0dba0"/>
+      <path d="m58 100 19-4 11 24H65Z" fill="#9d3b33" stroke="#c5a050" stroke-width="2"/>
+      <path d="m65 104 10-2 8 18M68 110l11-3m-9 9 11-3" stroke="#e0c887" stroke-width="1.5"/>
+      <path d="m91 99 9 4-3 17H86Z" fill="#152d20" stroke="#c5a050" stroke-width="2"/>
+      <path d="M127 59c-7 16-6 28-9 47" stroke="#151f18" stroke-width="6"/>
+      <path d="M127 59c-7 16-6 28-9 47" stroke="#c5a050" stroke-width="2.5"/>
+      <path d="M123 76c-9-1-13-5-12-11 9 0 14 4 12 11Zm0 12c9-1 14-6 13-12-8 0-14 5-13 12Z" fill="#376446" stroke="#c5a050" stroke-width="1.5"/>
+      <path d="M127 40c8-6 16 6 8 12 8 7-2 16-8 10-7 8-17-2-10-9-8-7 3-18 10-13Z" fill="#f3e5bd" stroke="#c5a050" stroke-width="2"/>
+      <circle cx="126" cy="52" r="5" fill="#9d3b33" stroke="#171e17" stroke-width="1.5"/>
+      <path d="M119 101c-5-3-12-2-14 2-2 5 2 10 8 9l10-5Z" fill="#f5e8c7" stroke="#171e17" stroke-width="2"/>
+      <path d="m110 104 10 1m-8 4 8-2" stroke="#9b7948" stroke-width="1.5"/>
+    </g>
+  </defs>
+  <rect x="3" y="3" width="154" height="234" rx="5" fill="#0a251b" stroke="#d1b46b" stroke-width="2"/>
+  <path d="M12 25V12h22m92 0h22v13M12 215v13h22m92 0h22v-13" stroke="#d1b46b" stroke-width="2"/>
+  <path d="M9 36v168m142-168v168" stroke="#426044"/>
+  <use href="#queen"/>
+  <use href="#queen" transform="rotate(180 80 120)"/>
+  <path d="M20 119h120v3H20Z" fill="#c5a050"/>
+  <path d="m9 30 4 5-4 5m142-10-4 5 4 5M9 200l4 5-4 5m142-10-4 5 4 5" stroke="#d1b46b" stroke-width="1.5"/>
+</svg>
