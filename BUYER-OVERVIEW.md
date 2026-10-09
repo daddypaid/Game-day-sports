@@ -25,7 +25,6 @@ GameDay is **not** represented as a licensed real-money gambling operation. The 
 - Roulette
 - Baccarat
 - Slots
-- Video Poker
 - Shared GameDay test wallet
 
 ### Account system
