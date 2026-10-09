@@ -27,7 +27,6 @@ This inventory identifies the principal GameDay software and buyer-handoff asset
 - `gameday-slots.html`
 - `gameday-slots-lobby.html`
 - `gameday-poker.html`
-- `gameday-video-poker.html`
 
 ## Buyer / operator surfaces
 
@@ -66,7 +65,6 @@ Representative repository assets include:
 - `assets/gameday-baccarat-room.svg`
 - `assets/gameday-poker-room.svg`
 - `assets/gameday-poker-table-room.svg`
-- `assets/gameday-video-poker-premium.svg`
 - `assets/gameday-account-premium.svg`
 - `assets/gameday-my-bets-premium.svg`
 - slot-card SVGs under `assets/`
@@ -87,14 +85,12 @@ The connected backend currently includes active Edge Functions for, among other 
 - `roulette-test`
 - `baccarat-test`
 - `slots-test`
-- `video-poker-test`
 - `themed-slots-test`
 - `gameday-operator-metrics`
 - `gameday-operator-health`
 - `gameday-operator-analytics`
 - provider/probe/internal-support functions used by the TEST MODE data stack
 
-Retired poker function slugs `three-card-poker-test`, `ultimate-texas-holdem-test`, and `caribbean-stud-test` are retained only as authenticated HTTP 410 tombstones to block legacy calls; they are not active game engines. `video-poker-test` now supports Jacks or Better only.
 
 A buyer should recreate or transfer the permitted schema, RLS, functions, scheduled jobs and server-side secrets into buyer-controlled infrastructure and rotate all privileged credentials.
 
