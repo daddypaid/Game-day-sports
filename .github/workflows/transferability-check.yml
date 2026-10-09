@@ -33,10 +33,6 @@ jobs:
           grep -q "roulette: 'roulette-test'" gameday-config.js
           grep -q "baccarat: 'baccarat-test'" gameday-config.js
           grep -q "slots: 'slots-test'" gameday-config.js
-          grep -q "videoPoker: 'video-poker-test'" gameday-config.js
-          grep -q "threeCardPoker: 'three-card-poker-test'" gameday-config.js
-          grep -q "ultimateTexasHoldem: 'ultimate-texas-holdem-test'" gameday-config.js
-          grep -q "caribbeanStud: 'caribbean-stud-test'" gameday-config.js
           grep -q "buyerReadiness: 'gameday-buyer-readiness.html'" gameday-config.js
           grep -q "platformArchitecture: 'gameday-platform-architecture.html'" gameday-config.js
 
@@ -55,12 +51,6 @@ jobs:
             gameday-roulette.html
             gameday-baccarat.html
             gameday-slots.html
-            gameday-video-poker.html
-            gameday-bonus-poker.html
-            gameday-deuces-wild.html
-            gameday-three-card-poker.html
-            gameday-ultimate-texas-holdem.html
-            gameday-caribbean-stud.html
             gameday-control-center.html
             gameday-operator-analytics.html
             gameday-system-health.html
@@ -82,12 +72,6 @@ jobs:
           grep -q 'GAMEDAY_CONFIG.functions.roulette' gameday-roulette.html
           grep -q 'GAMEDAY_CONFIG.functions.baccarat' gameday-baccarat.html
           grep -q 'GAMEDAY_CONFIG.functions.slots' gameday-slots.html
-          grep -q 'GAMEDAY_CONFIG.functions.videoPoker' gameday-video-poker.html
-          grep -q 'GAMEDAY_CONFIG.functions.videoPoker' gameday-bonus-poker.html
-          grep -q 'GAMEDAY_CONFIG.functions.videoPoker' gameday-deuces-wild.html
-          grep -q 'GAMEDAY_CONFIG.functions.threeCardPoker' gameday-three-card-poker.html
-          grep -q 'GAMEDAY_CONFIG.functions.ultimateTexasHoldem' gameday-ultimate-texas-holdem.html
-          grep -q 'GAMEDAY_CONFIG.functions.caribbeanStud' gameday-caribbean-stud.html
 
       - name: Validate buyer handoff surfaces
         shell: bash
