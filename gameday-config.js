@@ -16,7 +16,6 @@ export const GAMEDAY_CONFIG = Object.freeze({
     baccarat: 'baccarat-test',
     slots: 'slots-test',
     themedSlots: 'themed-slots-test',
-    videoPoker: 'video-poker-test',
   }),
   routes: Object.freeze({
     home: 'index.html',
@@ -30,7 +29,6 @@ export const GAMEDAY_CONFIG = Object.freeze({
     slots: 'gameday-slots.html',
     slotsLobby: 'gameday-slots-lobby.html',
     poker: 'gameday-poker.html',
-    videoPoker: 'gameday-video-poker.html',
     controlCenter: 'gameday-control-center.html',
     analytics: 'gameday-operator-analytics.html',
     systemHealth: 'gameday-system-health.html',
