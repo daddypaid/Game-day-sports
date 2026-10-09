@@ -1,0 +1,445 @@
+import "jsr:@supabase/functions-js/edge-runtime.d.ts";
+import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
+
+const cors = {
+  "Access-Control-Allow-Origin": "*",
+  "Access-Control-Allow-Headers":
+    "authorization, x-client-info, apikey, content-type",
+  "Access-Control-Allow-Methods": "POST, OPTIONS",
+  "Content-Type": "application/json",
+};
+const lines: number[][] = [
+  [1, 1, 1, 1, 1],
+  [0, 0, 0, 0, 0],
+  [2, 2, 2, 2, 2],
+  [0, 1, 2, 1, 0],
+  [2, 1, 0, 1, 2],
+  [0, 0, 1, 2, 2],
+  [2, 2, 1, 0, 0],
+  [1, 0, 0, 0, 1],
+  [1, 2, 2, 2, 1],
+  [0, 1, 1, 1, 0],
+  [2, 1, 1, 1, 2],
+  [1, 0, 1, 2, 1],
+  [1, 2, 1, 0, 1],
+  [0, 1, 0, 1, 0],
+  [2, 1, 2, 1, 2],
+  [0, 2, 0, 2, 0],
+  [2, 0, 2, 0, 2],
+  [0, 2, 2, 2, 0],
+  [2, 0, 0, 0, 2],
+  [1, 1, 0, 1, 1],
+];
+type Cfg = {
+  weights: string[];
+  wild: string;
+  scatter: string;
+  pays: Record<string, number[]>;
+  bonusName: string;
+  freeSpins: number;
+};
+const games: Record<string, Cfg> = {
+  "midnight-monsters": {
+    weights: [
+      "VAMP",
+      "WOLF",
+      "ZOMB",
+      "POTION",
+      "BAT",
+      "CANDLE",
+      "BAT",
+      "CANDLE",
+      "ZOMB",
+      "POTION",
+      "WILD",
+      "SCATTER",
+      "SPADE",
+      "CLUB",
+      "HEART",
+      "DIAMOND",
+      "SKULL",
+      "BOOK",
+      "RING",
+    ],
+    wild: "WILD",
+    scatter: "SCATTER",
+    bonusName: "CRYPT FREE SPINS",
+    freeSpins: 10,
+    pays: {
+      VAMP: [0, 0, 4, 10, 40],
+      WOLF: [0, 0, 3, 8, 30],
+      ZOMB: [0, 0, 2, 6, 24],
+      POTION: [0, 0, 2, 5, 18],
+      BAT: [0, 0, 1, 3, 10],
+      CANDLE: [0, 0, 1, 2, 8],
+      WILD: [0, 0, 5, 15, 50],
+      SPADE: [0, 0, 1, 2, 4],
+      CLUB: [0, 0, 1, 2, 4],
+      HEART: [0, 0, 1, 2, 4],
+      DIAMOND: [0, 0, 1, 2, 4],
+      SKULL: [0, 0, 1, 2, 6],
+      BOOK: [0, 0, 1, 2, 6],
+      RING: [0, 0, 1, 2, 6],
+    },
+  },
+  "galactic-rebellion": {
+    weights: [
+      "FIGHTER",
+      "PLANET",
+      "DROID",
+      "ENERGY",
+      "SAT",
+      "COMET",
+      "SAT",
+      "COMET",
+      "DROID",
+      "ENERGY",
+      "WILD",
+      "SCATTER",
+    ],
+    wild: "WILD",
+    scatter: "SCATTER",
+    bonusName: "FINAL ORBIT FREE SPINS",
+    freeSpins: 6,
+    pays: {
+      FIGHTER: [0, 0, 4, 10, 40],
+      PLANET: [0, 0, 3, 8, 30],
+      DROID: [0, 0, 2, 6, 24],
+      ENERGY: [0, 0, 2, 5, 18],
+      SAT: [0, 0, 1, 3, 10],
+      COMET: [0, 0, 1, 2, 8],
+      WILD: [0, 0, 5, 15, 50],
+    },
+  },
+};
+function ri(max: number) {
+  const b = new Uint32Array(1);
+  crypto.getRandomValues(b);
+  return b[0] % max;
+}
+function pick(a: string[]) {
+  return a[ri(a.length)];
+}
+function makeGrid(cfg: Cfg) {
+  return Array.from({ length: 5 }, () =>
+    Array.from({ length: 3 }, () => pick(cfg.weights)),
+  );
+}
+function expandWild(grid: string[][], reel: number) {
+  for (let r = 0; r < 3; r++) grid[reel][r] = "WILD";
+  return [0, 1, 2].map((r) => r * 5 + reel);
+}
+function infect(grid: string[][], cfg: Cfg) {
+  const cells: number[] = [];
+  for (let i = 0; i < 3; i++) {
+    const c = ri(5),
+      r = ri(3);
+    if (grid[c][r] !== cfg.scatter) {
+      grid[c][r] = "WILD";
+      cells.push(r * 5 + c);
+    }
+  }
+  return cells;
+}
+function evaluate(grid: string[][], cfg: Cfg, bet: number) {
+  let lineWin = 0;
+  const activeLines: number[] = [];
+  const winCells: number[] = [];
+  lines.forEach((line, li) => {
+    let base: string | null = null,
+      count = 0;
+    for (let c = 0; c < 5; c++) {
+      const s = grid[c][line[c]];
+      if (s === cfg.scatter) break;
+      if (base === null && s !== cfg.wild) base = s;
+      if (base === null && s === cfg.wild) {
+        count++;
+        continue;
+      }
+      if (s === base || s === cfg.wild) count++;
+      else break;
+    }
+    if (count >= 3) {
+      const sym = base || cfg.wild;
+      const mult = (cfg.pays[sym] || [])[count - 1] || 0;
+      if (mult > 0) {
+        lineWin += mult * bet;
+        activeLines.push(li);
+        for (let c = 0; c < count; c++) winCells.push(line[c] * 5 + c);
+      }
+    }
+  });
+  const scatters = grid.flat().filter((s) => s === cfg.scatter).length;
+  const scatterWin = scatters >= 3 ? scatters * 10 * bet : 0;
+  return {
+    payout: Math.round((lineWin + scatterWin) * 100) / 100,
+    activeLines,
+    winCells: [...new Set(winCells)],
+    scatters,
+  };
+}
+function paidFeature(game: string, grid: string[][], cfg: Cfg) {
+  let name: null | string = null;
+  let cells: number[] = [];
+  let mult = 1;
+  if (game === "midnight-monsters" && ri(100) < 18) {
+    const n = ri(3);
+    if (n === 0) {
+      name = "BLOOD MOON";
+      mult = 2;
+    } else if (n === 1) {
+      name = "WEREWOLF CLAW";
+      const reel = ri(5);
+      cells = expandWild(grid, reel);
+    } else {
+      name = "ZOMBIE INFECTION";
+      cells = infect(grid, cfg);
+    }
+  }
+  if (game === "galactic-rebellion" && ri(100) < 20) {
+    name = "REBEL STRIKE";
+    const reel = ri(5);
+    cells = expandWild(grid, reel);
+  }
+  return { name, cells, mult };
+}
+function bonusFeature(game: string, grid: string[][], cfg: Cfg) {
+  let name = "FREE SPIN";
+  let cells: number[] = [];
+  let mult = 2;
+  if (game === "midnight-monsters") {
+    const n = ri(3);
+    if (n === 0) {
+      name = "BLOOD MOON FREE SPIN";
+      mult = 3;
+    } else if (n === 1) {
+      name = "WEREWOLF WILD REEL";
+      cells = expandWild(grid, ri(5));
+    } else {
+      name = "ZOMBIE WILD INFECTION";
+      cells = infect(grid, cfg);
+    }
+  } else {
+    name = "FINAL ORBIT WILD REEL";
+    cells = expandWild(grid, ri(5));
+    mult = 2;
+  }
+  return { name, cells, mult };
+}
+
+Deno.serve(async (req) => {
+  if (req.method === "OPTIONS") return new Response("ok", { headers: cors });
+  if (req.method !== "POST")
+    return new Response(JSON.stringify({ error: "Method not allowed" }), {
+      status: 405,
+      headers: cors,
+    });
+  try {
+    const authHeader = req.headers.get("Authorization") || "";
+    const url = Deno.env.get("SUPABASE_URL")!;
+    const anon = Deno.env.get("SUPABASE_ANON_KEY")!;
+    const service = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!;
+    const userClient = createClient(url, anon, {
+      global: { headers: { Authorization: authHeader } },
+    });
+    const { data: userData, error: userError } =
+      await userClient.auth.getUser();
+    if (userError || !userData.user)
+      return new Response(
+        JSON.stringify({ error: "Authentication required" }),
+        { status: 401, headers: cors },
+      );
+    const admin = createClient(url, service);
+    const body = await req.json();
+    const game = String(body?.game || "");
+    const cfg = games[game];
+    if (!cfg) throw new Error("Unknown themed slot");
+    const action =
+      game === "midnight-monsters"
+        ? body?.action === undefined
+          ? "spin"
+          : body.action
+        : String(body?.action || "spin");
+    if (
+      game === "midnight-monsters" &&
+      !["spin", "status", "bonus_spin"].includes(action)
+    )
+      throw new Error("Unknown Midnight Monsters action");
+    if (action === "status") {
+      const { data: s, error: statusError } = await admin
+        .from("themed_slot_bonus_sessions")
+        .select(
+          "id,spins_remaining,total_spins,total_payout,status,bet_per_line",
+        )
+        .eq("user_id", userData.user.id)
+        .eq("game", game)
+        .eq("status", "active")
+        .maybeSingle();
+      if (game === "midnight-monsters" && statusError) throw statusError;
+      return new Response(JSON.stringify({ ok: true, bonus: s || null }), {
+        headers: cors,
+      });
+    }
+    if (action === "bonus_spin") {
+      const sessionId = String(body?.session_id || "");
+      const { data: session, error: se } = await admin
+        .from("themed_slot_bonus_sessions")
+        .select(
+          "id,game,bet_per_line,spins_remaining,total_spins,status,total_payout",
+        )
+        .eq("id", sessionId)
+        .eq("user_id", userData.user.id)
+        .eq("game", game)
+        .single();
+      if (
+        se ||
+        !session ||
+        session.status !== "active" ||
+        session.spins_remaining <= 0
+      )
+        throw new Error("No active free-spin session");
+      const bet = Number(session.bet_per_line);
+      const grid = makeGrid(cfg);
+      const feat = bonusFeature(game, grid, cfg);
+      const out = evaluate(grid, cfg, bet);
+      const payout = Math.round(out.payout * feat.mult * 100) / 100;
+      const { data: rows, error: re } = await admin.rpc(
+        "settle_themed_bonus_spin_atomic",
+        {
+          p_user_id: userData.user.id,
+          p_session_id: sessionId,
+          p_grid: grid,
+          p_payout: payout,
+          p_feature: feat.name,
+        },
+      );
+      if (re) throw re;
+      const row = Array.isArray(rows) ? rows[0] : rows;
+      return new Response(
+        JSON.stringify({
+          ok: true,
+          spin: {
+            game,
+            grid,
+            bet_per_line: bet,
+            lines: 20,
+            stake: 0,
+            payout,
+            balance: Number(row.balance),
+            active_lines: out.activeLines,
+            win_cells: [...new Set([...out.winCells, ...feat.cells])],
+            scatters: out.scatters,
+            feature_name: feat.name,
+            feature_cells: feat.cells,
+            feature_multiplier: feat.mult,
+            free_spin: true,
+            bonus_session_id: sessionId,
+            bonus_spins_remaining: Number(row.spins_remaining),
+            bonus_total_spins: Number(session.total_spins),
+            bonus_total_payout: Number(row.total_payout),
+            bonus_complete: row.session_status === "completed",
+          },
+        }),
+        { headers: cors },
+      );
+    }
+    const requestedBet = Number(body?.bet_per_line);
+    if (game === "midnight-monsters") {
+      const cents = Math.round(requestedBet * 100);
+      if (
+        !Number.isFinite(requestedBet) ||
+        requestedBet !== cents / 100 ||
+        cents < 10 ||
+        cents > 1000 ||
+        cents % 10 !== 0
+      )
+        throw new Error("Bet per line must be $0.10 to $10.00 in $0.10 steps");
+    } else if (
+      !Number.isFinite(requestedBet) ||
+      requestedBet < 1 ||
+      requestedBet > 10 ||
+      Math.floor(requestedBet) !== requestedBet
+    )
+      throw new Error("Bet per line must be 1 to 10 test credits");
+    const bet = requestedBet;
+    const stake =
+      game === "midnight-monsters"
+        ? Math.round(bet * 20 * 100) / 100
+        : bet * 20;
+    const grid = makeGrid(cfg);
+    const feat = paidFeature(game, grid, cfg);
+    let out = evaluate(grid, cfg, bet);
+    let payout = Math.round(out.payout * feat.mult * 100) / 100;
+    const scatters = out.scatters;
+    let bonusSpins = scatters >= 3 ? cfg.freeSpins : 0;
+    let bonusName = scatters >= 3 ? cfg.bonusName : null;
+    if (game === "galactic-rebellion" && scatters >= 3) {
+      const more = expandWild(grid, ri(5));
+      feat.cells.push(...more);
+      feat.name = "FINAL ORBIT TRIGGER";
+      feat.mult = Math.max(feat.mult, 2);
+      out = evaluate(grid, cfg, bet);
+      payout = Math.round(out.payout * feat.mult * 100) / 100;
+    }
+    if (game === "midnight-monsters" && scatters >= 3) {
+      feat.name = feat.name || "CRYPT AWAKENING";
+      feat.mult = Math.max(feat.mult, 2);
+      payout = Math.round(out.payout * feat.mult * 100) / 100;
+    }
+    const result = payout > 0 ? "won" : "lost";
+    const flat = grid.flatMap((col, c) =>
+      col.map((s, r) => `${game}:${c}:${r}:${s}`),
+    );
+    const { data: rows, error: pe } = await admin.rpc(
+      "play_themed_slot_paid_spin_atomic",
+      {
+        p_user_id: userData.user.id,
+        p_game: game,
+        p_stake: stake,
+        p_reels: flat,
+        p_payout: payout,
+        p_result: result,
+        p_bet_per_line: bet,
+        p_bonus_spins: bonusSpins,
+      },
+    );
+    if (pe) throw pe;
+    const row = Array.isArray(rows) ? rows[0] : rows;
+    return new Response(
+      JSON.stringify({
+        ok: true,
+        spin: {
+          id: row.spin_id,
+          game,
+          grid,
+          bet_per_line: bet,
+          lines: 20,
+          stake,
+          payout,
+          result,
+          balance: Number(row.balance),
+          active_lines: out.activeLines,
+          win_cells: [...new Set([...out.winCells, ...feat.cells])],
+          scatters,
+          feature_name: feat.name,
+          feature_cells: feat.cells,
+          feature_multiplier: feat.mult,
+          bonus_triggered: bonusSpins > 0,
+          bonus_name: bonusName,
+          bonus_session_id: row.bonus_session_id,
+          bonus_spins_remaining: Number(row.bonus_spins_remaining || 0),
+          bonus_total_spins: bonusSpins > 0 ? cfg.freeSpins : 0,
+          free_spin: false,
+        },
+      }),
+      { headers: cors },
+    );
+  } catch (e) {
+    return new Response(
+      JSON.stringify({
+        error: e instanceof Error ? e.message : "Unable to play themed slots",
+      }),
+      { status: 400, headers: cors },
+    );
+  }
+});

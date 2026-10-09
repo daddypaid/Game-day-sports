@@ -3,26 +3,57 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
-<meta name="theme-color" content="#090e0b">
+<meta name="theme-color" content="#030907">
 <meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <link rel="manifest" href="manifest.webmanifest">
+<link rel="apple-touch-icon" href="icons/gameday-192.png">
+<link rel="preload" as="image" href="assets/midnight-monsters/castle-background.webp">
 <title>Midnight Monsters — GameDay</title>
-<style>
-*{box-sizing:border-box}
-html,body{margin:0;min-height:100%;background:#090e0b;color:#fff;font-family:Arial,sans-serif}
-body{padding-bottom:calc(90px + env(safe-area-inset-bottom))}
-header{background:#101712;border-bottom:1px solid #29352d;padding:calc(14px + env(safe-area-inset-top)) 14px 14px}
-h1{font-size:23px;margin:0 0 12px}
-.back{color:#f0d58b;font-size:14px;font-weight:700;text-decoration:none}
-main{min-height:65dvh}
-</style>
+<link rel="stylesheet" href="gameday-midnight-monsters-game.css">
 </head>
-<body>
-<header>
-<h1>Midnight Monsters</h1>
-<a class="back" href="gameday-slots-lobby.html">‹ Back to Slots Lobby</a>
-</header>
-<main aria-label="Midnight Monsters cleared game area"></main>
+<body class="mm-game" data-game="midnight-monsters">
+<main class="mm-machine" aria-label="Midnight Monsters slot machine">
+  <div class="mm-topbar" role="banner">
+    <a class="mm-brand" href="gameday-casino-v2.html" aria-label="GameDay Casino"><span aria-hidden="true">♛</span><span>GAMEDAY<small>CASINO</small></span></a>
+    <div class="mm-wallet-box"><span>TEST BALANCE</span><strong id="mm-wallet">—</strong><a id="mm-wallet-plus" href="gameday-auth.html" aria-label="Open GameDay wallet">+</a></div>
+    <button id="mm-menu" class="mm-menu" aria-label="Game menu" aria-haspopup="dialog">☰</button>
+  </div>
+  <section class="mm-marquee" aria-labelledby="mm-title">
+    <h1 id="mm-title"><img src="assets/midnight-monsters/midnight-monsters-title.webp" alt="Midnight Monsters" width="2172" height="724"></h1>
+    <p class="mm-tagline">5 × 3 <span>•</span> 20 PAYLINES <span>•</span> HORROR FEATURES</p>
+  </section>
+  <section class="mm-reel-frame" aria-label="Five reels, three rows">
+    <span class="mm-frame-crest" aria-hidden="true"></span>
+    <div id="mm-reels" class="mm-reels" role="group" aria-label="Reel results"></div>
+  </section>
+  <section class="mm-hud" aria-label="Spin results">
+    <div class="mm-panel mm-free-panel"><span>FREE SPINS</span><strong id="mm-free-spins">0 / 10</strong></div>
+    <div class="mm-panel mm-win-panel"><span>WIN</span><strong id="mm-win">$0.00</strong></div>
+    <button id="mm-features" class="mm-panel mm-features" aria-haspopup="dialog">FEATURES</button>
+  </section>
+  <section class="mm-controls" aria-label="Spin and wager controls">
+    <button id="mm-info" class="mm-info" aria-label="Game rules and paylines" aria-haspopup="dialog">i</button>
+    <div class="mm-bet-panel mm-line-panel"><span>BET PER LINE</span><div class="mm-step"><button id="mm-line-minus" aria-label="Decrease bet per line" disabled>−</button><strong id="mm-bet-line">$0.10</strong><button id="mm-line-plus" aria-label="Increase bet per line" disabled>+</button></div></div>
+    <button id="mm-spin" class="mm-spin" aria-label="Spin Midnight Monsters reels" disabled>SPIN</button>
+    <div class="mm-bet-panel mm-total-panel"><span>TOTAL BET</span><div class="mm-step"><button id="mm-total-minus" aria-label="Decrease total bet" disabled>−</button><strong id="mm-total-bet">$2.00</strong><button id="mm-total-plus" aria-label="Increase total bet" disabled>+</button></div></div>
+    <div class="mm-auto-tools"><button id="mm-auto" aria-label="Start five automatic spins" disabled>AUTO</button><button id="mm-max" disabled>MAX<br>BET</button></div>
+  </section>
+  <div id="mm-status" class="mm-status" role="status" aria-live="polite">Connecting to your GameDay test wallet…</div>
+  <footer class="mm-footer"><a href="gameday-slots-lobby.html">‹ Slots Lobby</a><span>TEST MODE • NO REAL MONEY</span><button id="mm-sound" aria-label="Mute game sound" aria-pressed="false">Sound On</button></footer>
+</main>
+<nav class="gameday-app-nav mm-bottom-nav" data-gameday-nav aria-label="GameDay app navigation">
+  <a href="gameday-sportsbook.html"><span class="gameday-nav-icon" aria-hidden="true">◉</span><span>Sportsbook</span></a>
+  <a class="active" aria-current="page" href="gameday-casino-v2.html"><span class="gameday-nav-icon" aria-hidden="true">♠</span><span>Casino</span></a>
+  <a href="gameday-my-bets.html"><span class="gameday-nav-icon" aria-hidden="true">✓</span><span>My Bets</span></a>
+  <a href="gameday-auth.html"><span class="gameday-nav-icon" aria-hidden="true">●</span><span>Account</span></a>
+</nav>
+<dialog id="mm-dialog" class="mm-dialog" aria-labelledby="mm-dialog-title">
+  <div class="mm-dialog-heading"><h2 id="mm-dialog-title">Midnight Monsters</h2><button id="mm-dialog-close" aria-label="Close game information">×</button></div>
+  <div id="mm-dialog-content"></div>
+</dialog>
+<noscript><p class="mm-noscript">Turn on JavaScript to spin Midnight Monsters.</p></noscript>
 <script src="gameday-app.js" defer></script>
+<script type="module" src="gameday-midnight-monsters-game.js"></script>
 </body>
 </html>
