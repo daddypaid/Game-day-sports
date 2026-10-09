@@ -1,4 +1,4 @@
-const CACHE='gameday-shell-v83';
+const CACHE='gameday-shell-v84';
 const SHELL=[
   './',
   './index.html',
@@ -99,6 +99,7 @@ const SHELL=[
   './assets/card-tables/blackjack.webp',
   './assets/card-tables/baccarat.webp',
   './assets/card-tables/gameday-baccarat-table.png',
+  './assets/card-tables/gameday-blackjack-table.png',
   './assets/card-tables/gameday-jacks-or-better-table.png',
   './assets/card-tables/gameday-texas-holdem-table.png',
   './assets/card-tables/gameday-omaha-table.png',

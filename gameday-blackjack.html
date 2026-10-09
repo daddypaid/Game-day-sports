@@ -21,11 +21,14 @@ h1{margin:0;font-size:23px}
 main{max-width:760px;margin:auto;padding:14px}
 .nav{display:grid;grid-template-columns:repeat(4,1fr);gap:8px}
 .nav a{text-decoration:none;text-align:center;padding:11px;border-radius:10px;background:#202b24;color:#fff;font-weight:bold}
-.game-stage{min-height:60vh}
+.game-stage{margin-top:14px;background:#000}
+.game-stage img{display:block;width:100%;height:auto;object-fit:contain}
+html body.blackjack-artwork-page,html[data-gameday-page="casino-game"] body.blackjack-artwork-page{height:auto!important;overflow:visible!important;background:#07100a!important;padding-bottom:calc(92px + env(safe-area-inset-bottom))!important}
+html body.blackjack-artwork-page main{height:auto!important;overflow:visible!important}
 @media(max-width:520px){header{padding:10px}h1{font-size:20px}.nav{grid-template-columns:repeat(2,1fr)}.nav a{font-size:12px;padding:10px 6px}}
 </style>
 </head>
-<body>
+<body class="blackjack-artwork-page">
 <header>
   <div class="header-row">
     <h1>GameDay Blackjack</h1>
@@ -39,7 +42,7 @@ main{max-width:760px;margin:auto;padding:14px}
     <a href="gameday-my-bets.html">My Bets</a>
     <a href="gameday-auth.html">Account</a>
   </div>
-  <section class="game-stage" aria-label="Blackjack game area"></section>
+  <section class="game-stage" aria-label="Blackjack game area"><img src="assets/card-tables/gameday-blackjack-table.png" width="702" height="1280" alt="GameDay Blackjack table artwork" fetchpriority="high"></section>
 </main>
 <script src="gameday-app.js" defer></script>
 </body>
