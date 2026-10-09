@@ -1,4 +1,4 @@
-const CACHE='gameday-shell-v81';
+const CACHE='gameday-shell-v82';
 const SHELL=[
   './',
   './index.html',
@@ -98,6 +98,12 @@ const SHELL=[
   './assets/casino-premium/poker-room.webp',
   './assets/card-tables/blackjack.webp',
   './assets/card-tables/baccarat.webp',
+  './assets/card-tables/gameday-baccarat-table.png',
+  './assets/card-tables/gameday-jacks-or-better-table.png',
+  './assets/card-tables/gameday-texas-holdem-table.png',
+  './assets/card-tables/gameday-omaha-table.png',
+  './assets/card-tables/gameday-seven-card-stud-table.png',
+  './assets/card-tables/gameday-five-card-draw-table.png',
   './assets/casino-premium/casino-lobby-hero.webp',
   './assets/casino-premium/poker-hero.webp',
   './assets/casino-premium/slots-hero.webp',
