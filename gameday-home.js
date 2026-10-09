@@ -203,7 +203,7 @@ if (promotionsButton && promotionsDialog) {
 
 if ('serviceWorker' in navigator) {
   window.addEventListener('load', () => {
-    navigator.serviceWorker.register('./sw.js?v=76', { scope: './', updateViaCache: 'none' }).catch(() => {});
+    navigator.serviceWorker.register('./sw.js?v=77', { scope: './', updateViaCache: 'none' }).catch(() => {});
   });
 }
 

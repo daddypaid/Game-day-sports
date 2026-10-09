@@ -1,0 +1,109 @@
+/* White casino faces with classic courts and the shared GameDay back. */
+body.gd-card-wager-page .card.gameday-detailed-card,
+body.gd-card-wager-page .card.gameday-card-back {
+  position: relative !important;
+  overflow: hidden !important;
+  container-type: inline-size;
+  aspect-ratio: 5 / 7 !important;
+  padding: 0 !important;
+  border: 1px solid #d6c7a5 !important;
+  border-radius: 6px !important;
+  opacity: 1 !important;
+  box-shadow: 0 4px 12px #0007, inset 0 0 0 1px #fff9 !important;
+  font-family: Georgia, 'Times New Roman', serif !important;
+}
+
+body.gd-card-wager-page .card.gameday-detailed-card {
+  background: #fff !important;
+  color: #111 !important;
+  -webkit-font-smoothing: antialiased;
+}
+body.gd-card-wager-page .card.gameday-detailed-card.gd-red { color: #b01625 !important; }
+body.gd-card-wager-page .card.gameday-detailed-card :is(.rank, .suit, .card-rank, .card-suit) {
+  display: none !important;
+}
+
+body.gd-card-wager-page .card.gameday-detailed-card::before,
+body.gd-card-wager-page .card.gameday-detailed-card::after {
+  content: attr(data-gd-rank) '\A' attr(data-gd-suit) !important;
+  position: absolute;
+  z-index: 3;
+  white-space: pre;
+  text-align: center;
+  font: 700 12px / .88 Georgia, 'Times New Roman', serif;
+  font-size: clamp(10px, 25cqw, 19px);
+  letter-spacing: -.06em;
+}
+body.gd-card-wager-page .card.gameday-detailed-card::before { left: 5%; top: 4%; }
+body.gd-card-wager-page .card.gameday-detailed-card::after { right: 5%; bottom: 4%; transform: rotate(180deg); }
+
+body.gd-card-wager-page .gd-card-center {
+  position: absolute;
+  inset: 17% 22%;
+  z-index: 1;
+  pointer-events: none;
+}
+body.gd-card-wager-page .gd-card-pips {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  font-size: clamp(9px, 27cqw, 21px);
+  line-height: 1;
+}
+body.gd-card-wager-page .gd-pip {
+  position: absolute;
+  left: var(--x);
+  top: var(--y);
+  transform: translate(-50%, -50%) rotate(var(--r, 0deg));
+}
+body.gd-card-wager-page .gd-card-ace {
+  position: absolute;
+  inset: 0;
+  display: grid;
+  place-items: center;
+  font-size: 76cqw;
+  line-height: 1;
+  -webkit-text-stroke: .6px #bd964c;
+  paint-order: stroke fill;
+}
+body.gd-card-wager-page :is(.gd-card-signature, .gd-card-court) { inset: 0; }
+body.gd-card-wager-page .gd-deck-art {
+  position: absolute;
+  inset: 0;
+  background-image: url('assets/deck/gameday-standard-deck.png');
+  background-repeat: no-repeat;
+  /* Crop each 400 x 560 portrait inside the 1298 x 1212 sheet. */
+  background-size: 324.5% 216.428572%;
+}
+body.gd-card-wager-page .gd-deck-spade { background-position: 50% 2.760736%; }
+body.gd-card-wager-page .gd-deck-heart { background-position: 97.995546% 2.760736%; }
+body.gd-card-wager-page .gd-deck-jack { background-position: 2.004454% 95.705521%; }
+body.gd-card-wager-page .gd-deck-queen { background-position: 50% 95.705521%; }
+body.gd-card-wager-page .gd-deck-king { background-position: 97.995546% 95.705521%; }
+body.gd-card-wager-page .gd-court-suit {
+  position: absolute;
+  right: 13%;
+  top: 8%;
+  z-index: 2;
+  font-size: 18cqw;
+  line-height: 1;
+  background: #fff;
+}
+body.gd-card-wager-page .gd-court-suit-bottom {
+  left: 13%;
+  right: auto;
+  top: auto;
+  bottom: 8%;
+  transform: rotate(180deg);
+}
+
+body.gd-card-wager-page .card.gameday-card-back {
+  background: #063c26 url('assets/deck/gameday-standard-deck.png') 2.004454% 2.760736% / 324.5% 216.428572% no-repeat !important;
+  color: transparent !important;
+}
+body.gd-card-wager-page .card.gameday-card-back::before,
+body.gd-card-wager-page .card.gameday-card-back::after {
+  content: none !important;
+  display: none !important;
+}
+body.gd-card-wager-page .card.gameday-card-back > * { display: none !important; }
