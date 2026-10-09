@@ -1,15 +1,11 @@
-/* Shared wager draft controls; the approved chip images keep their original colors. */
-html:root body.gd-table-wager-page{height:auto!important;overflow-y:visible!important;padding-bottom:calc(var(--gd-wager-panel-height,150px) + var(--gd-wager-nav-height,0px) + 18px)!important}
+/* Approved chip images sit directly on the curved black table rail. */
+html:root body.gd-table-wager-page{height:auto!important;overflow-y:visible!important}
 html:root body.gd-table-wager-page main{height:auto!important;overflow-y:visible!important}
-html:root body.gd-table-wager-page .gd-table-wager{position:fixed;z-index:135;left:0;right:0;bottom:var(--gd-wager-nav-height,0px);margin:0;padding:7px 10px calc(8px + var(--gd-wager-safe-bottom,env(safe-area-inset-bottom)));background:rgba(8,16,11,.97);border:0;border-top:1px solid #2b3a31;border-radius:0;box-shadow:0 -5px 20px rgba(0,0,0,.25);color:#fff;font-family:Arial,sans-serif}
-.gd-wager-inner{max-width:660px;margin:0 auto}
-.gd-wager-chip-row{display:grid;grid-template-columns:repeat(6,minmax(0,1fr));gap:3px}
-html:root body.gd-table-wager-page .gd-table-wager .gd-wager-chip{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px;min-height:72px;min-width:0;margin:0;padding:3px 0;border:0;border-radius:10px;background:transparent!important;color:#fff!important;font:700 12px/1.2 Arial,sans-serif;box-shadow:none!important;cursor:pointer;touch-action:manipulation;-webkit-tap-highlight-color:transparent}
-html:root body.gd-table-wager-page .gd-wager-chip img{display:block;width:clamp(38px,12.7vw,60px);max-width:100%;height:auto;aspect-ratio:1;object-fit:contain;border:0;border-radius:0;box-shadow:none;filter:none;pointer-events:none;user-select:none}
-html:root body.gd-table-wager-page .gd-table-wager .gd-wager-chip[aria-pressed="true"]{background:#183624!important}
-html:root body.gd-table-wager-page .gd-table-wager button:focus-visible{outline:2px solid #8ce2ac;outline-offset:1px}
-.gd-wager-summary{display:flex;align-items:center;justify-content:space-between;gap:12px;margin-top:4px;padding:0 5px}
-.gd-wager-label{display:block;color:#aab8af;font:700 10px/1.3 Arial,sans-serif;letter-spacing:.1em}
-.gd-wager-total{display:block;margin-top:2px;color:#fff;font:700 22px/1.15 Arial,sans-serif;overflow-wrap:anywhere}
-html:root body.gd-table-wager-page .gd-table-wager .gd-wager-clear{flex:0 0 auto;min-height:44px;margin:0;padding:8px 15px;border:1px solid #496353;border-radius:10px;background:#12241a;color:#d7efdf;font:700 12px/1.2 Arial,sans-serif;box-shadow:none!important;cursor:pointer;touch-action:manipulation}
-html:root body.gd-table-wager-page .gd-table-wager .gd-wager-clear:disabled{opacity:.45;cursor:default}
+html:root body.gd-table-wager-page .gd-wager-surface{position:relative!important}
+.gd-wager-chip-row{display:grid;grid-template-columns:repeat(6,minmax(0,1fr));gap:3px;position:absolute;left:0;right:0;bottom:16px;padding:0 8px}
+html:root body.gd-table-wager-page .gd-wager-chip{display:grid;place-items:center;min-width:44px;min-height:44px;aspect-ratio:1;margin:0;padding:0;border:0!important;border-radius:0;background:transparent!important;box-shadow:none!important;cursor:pointer;touch-action:manipulation;-webkit-tap-highlight-color:transparent}
+html:root body.gd-table-wager-page .gd-wager-chip img{display:block;width:100%;height:auto;aspect-ratio:1;object-fit:contain;border:0!important;border-radius:0;box-shadow:none!important;filter:none!important;pointer-events:none;user-select:none}
+html:root body.gd-table-wager-page .gd-wager-chip[aria-pressed="true"] img{transform:scale(.94)}
+html:root body.gd-table-wager-page .gd-wager-chip:focus-visible{outline:2px solid #b4f0ca;outline-offset:-4px;border-radius:50%}
+html:root body.gd-table-wager-page .gd-wager-on-table{position:absolute;inset:0;z-index:2;display:block;margin:0;padding:0;pointer-events:none}
+html:root body.gd-table-wager-page .gd-wager-on-table .gd-wager-chip{position:absolute;left:var(--gd-chip-x);top:calc(var(--gd-chip-rail-y) + var(--gd-chip-curve));transform:translate(-50%,-50%);width:13%;max-width:76px;pointer-events:auto}
