@@ -46,10 +46,15 @@ body.mm-game .mm-machine{position:relative;isolation:isolate;max-width:520px;min
 .mm-win-panel>span{font-size:11px;color:#eccf88;font-weight:700}
 .mm-win-panel>strong{font-size:23px;color:#fff}
 .mm-game .mm-features{font-size:12px;font-weight:800;color:#c2e8bd}
-.mm-controls{display:grid;grid-template-columns:28px minmax(0,1fr) 102px minmax(0,1fr) 36px;align-items:center;gap:5px;margin-top:17px}
+.mm-controls{display:grid;grid-template-columns:44px minmax(0,1fr) 44px;grid-template-areas:'info spin auto' '. total .' '. line .';align-items:center;gap:12px 8px;margin-top:17px}
+.mm-info{grid-area:info;justify-self:center}
+.mm-spin{grid-area:spin;justify-self:center}
+.mm-total-panel{grid-area:total}
+.mm-line-panel{grid-area:line}
+.mm-auto-tools{grid-area:auto}
 .mm-info{width:28px;height:42px;border-radius:50%;border:2px solid #b8a06d;background:radial-gradient(circle at 32% 24%,#15563d,#04160e 70%);font:italic 700 25px Georgia,serif!important;color:#e7dbb6!important;box-shadow:0 0 0 2px #241b0c}
-.mm-bet-panel{min-height:55px;min-width:0;border:1px solid #94763a;border-radius:6px;background:#02100aeb;text-align:center;box-shadow:inset 0 0 0 1px #c49d4836}
-.mm-bet-panel>span{display:block;font-size:7px;font-weight:700;letter-spacing:.015em;line-height:1;padding-top:7px;color:#e4e7df;white-space:nowrap}
+.mm-bet-panel{width:min(100%,240px);justify-self:center;min-height:55px;min-width:0;border:1px solid #94763a;border-radius:6px;background:#02100aeb;text-align:center;box-shadow:inset 0 0 0 1px #c49d4836}
+.mm-bet-panel>span{display:block;font-size:9px;font-weight:700;letter-spacing:.015em;line-height:1;padding-top:7px;color:#e4e7df;white-space:nowrap}
 .mm-step{display:flex;align-items:center;justify-content:space-between;gap:1px;padding:5px 3px}
 .mm-step strong{font-size:12px;color:#fff;font-weight:700;white-space:nowrap}
 .mm-step button{display:grid;place-items:center;flex-shrink:0;width:22px;height:26px;padding:0;border:1px solid #90a285;border-radius:50%;background:radial-gradient(circle at 35% 25%,#165137,#032719);font-size:20px;line-height:1;box-shadow:0 1px 3px #0008}
@@ -104,6 +109,6 @@ html[data-gameday-app="standalone"] body.mm-game .mm-machine{padding-left:13px;p
 body.mm-game.gd-premium.gd-in-shell{padding-bottom:calc(76px + env(safe-area-inset-bottom))!important}
 body.mm-game.gd-premium.gd-in-shell .mm-machine{padding-top:0!important;padding-left:13px!important;padding-right:13px!important}
 body.mm-game.gd-premium.gd-in-shell .mm-bottom-nav{display:grid!important}
-@media(min-width:521px){.mm-controls{grid-template-columns:34px minmax(0,1fr) 130px minmax(0,1fr) 44px;gap:8px}.mm-game .mm-spin{width:130px;height:130px;font-size:34px}.mm-brand{font-size:23px}.mm-marquee{min-height:208px}.mm-game .mm-machine{min-height:930px}.mm-step strong{font-size:16px}.mm-bet-panel>span{font-size:9px}.mm-step button{width:29px;height:32px}.mm-auto-tools button{font-size:10px}.mm-panel{min-height:64px}.mm-wallet-box{min-width:126px}.mm-wallet-box strong{font-size:15px}}
-@media(max-width:359px){body.mm-game .mm-machine{padding-inline:9px}.mm-brand{font-size:15px}.mm-brand>span:first-child{font-size:29px}.mm-topbar{gap:5px}.mm-controls{grid-template-columns:24px minmax(0,1fr) 86px minmax(0,1fr) 31px;gap:3px}.mm-game .mm-spin{width:86px;height:86px;font-size:23px}.mm-step{padding-inline:1px}.mm-step strong{font-size:10px}.mm-step button{width:18px;height:25px}.mm-bet-panel>span{font-size:6px}.mm-info{width:24px}.mm-marquee{min-height:162px}.mm-footer>span{font-size:6px}.mm-game .mm-features{font-size:10px}}
+@media(min-width:521px){.mm-controls{gap:14px 12px}.mm-game .mm-spin{width:130px;height:130px;font-size:34px}.mm-brand{font-size:23px}.mm-marquee{min-height:208px}.mm-game .mm-machine{min-height:930px}.mm-step strong{font-size:16px}.mm-bet-panel>span{font-size:9px}.mm-step button{width:29px;height:32px}.mm-auto-tools button{font-size:10px}.mm-panel{min-height:64px}.mm-wallet-box{min-width:126px}.mm-wallet-box strong{font-size:15px}}
+@media(max-width:359px){body.mm-game .mm-machine{padding-inline:9px}.mm-brand{font-size:15px}.mm-brand>span:first-child{font-size:29px}.mm-topbar{gap:5px}.mm-controls{grid-template-columns:36px minmax(0,1fr) 36px;gap:10px 6px}.mm-game .mm-spin{width:86px;height:86px;font-size:23px}.mm-step{padding-inline:1px}.mm-step strong{font-size:10px}.mm-step button{width:18px;height:25px}.mm-bet-panel>span{font-size:8px}.mm-info{width:24px}.mm-marquee{min-height:162px}.mm-footer>span{font-size:6px}.mm-game .mm-features{font-size:10px}}
 @media(prefers-reduced-motion:reduce){.mm-symbol.is-win{animation:none}.mm-reel.is-spinning .mm-strip,.mm-reel.is-stopping .mm-strip{filter:none}.mm-strip{will-change:auto}}

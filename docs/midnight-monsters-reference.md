@@ -9,8 +9,9 @@ complete portrait game. Compare future changes against those photos at 390px.
 - Fifteen painted symbols: Vampire, Werewolf, Zombie, Potion, Bat, Candle, Wild,
   Scatter, Spade, Club, Heart, Diamond, Skull, Book, Ring.
 - Free Spins / Win / Features directly below the reels.
-- Bet Per Line on the left, round green SPIN in the center, Total Bet on the
-  right; minus/plus controls, information, AUTO, and MAX BET.
+- Latest approved layout: round green SPIN centered above two stacked wager
+  panels, Total Bet first and Bet Per Line second. Keep minus/plus controls,
+  information on the left of SPIN, and AUTO / MAX BET on its right.
 - Real vertical reel movement, blur, staggered stops, reel and win sounds, mute.
 - Keep GameDay bottom navigation and the test-mode/no-real-money label.
 
