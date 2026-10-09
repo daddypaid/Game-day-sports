@@ -1,0 +1,83 @@
+/* Keep artwork confined to team identities; team colors are never recolored. */
+.gd-team-identity {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  min-width: 0;
+  max-width: 100%;
+  vertical-align: middle;
+  white-space: normal;
+  text-align: left;
+}
+.gd-team-identity .gd-team-text {
+  display: block;
+  min-width: 0;
+  max-width: 100%;
+  white-space: normal;
+  overflow-wrap: anywhere;
+  line-height: 1.3;
+}
+.gd-team-identity .gd-team-logo {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  flex: 0 0 32px;
+  width: 32px;
+  height: 32px;
+  overflow: hidden;
+  border: 1px solid #c7d8cd;
+  border-radius: 50%;
+  background: #edf7f0;
+  color: #075e2f;
+  font: 700 10px/1 Arial, sans-serif;
+}
+.gd-team-identity .gd-team-logo img {
+  position: absolute;
+  inset: 0;
+  display: block;
+  width: 100%;
+  height: 100%;
+  margin: 0;
+  padding: 0;
+  border: 0;
+  border-radius: 0;
+  object-fit: contain;
+}
+.gd-team-identity .gd-team-logo img[hidden] { display: none; }
+.gd-team-identity .gd-team-logo--loaded {
+  border-color: transparent;
+  border-radius: 0;
+  background: transparent;
+}
+.gd-team-identity .gd-team-logo--loaded .gd-team-monogram { visibility: hidden; }
+.gd-team-identity .gd-team-monogram { font: inherit; color: inherit; }
+.card-head .team:has(> .gd-team-identity) {
+  grid-template-columns: minmax(0, 1fr) auto;
+}
+.picker .gd-team-matchup {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 8px;
+  min-width: 0;
+}
+.gd-team-matchup > .gd-team-identity {
+  flex: 1 1 120px;
+  min-width: 0;
+}
+.gd-team-matchup > [aria-hidden="true"] {
+  flex: 0 0 auto;
+  align-self: center;
+}
+.odd-name .gd-team-identity { gap: 5px; }
+.odd-name .gd-team-identity .gd-team-logo {
+  flex-basis: 22px;
+  width: 22px;
+  height: 22px;
+  font-size: 8px;
+}
+.picker .gd-team-identity,
+.picker .gd-team-identity .gd-team-text { font-size: inherit; }
+.picker .gd-team-identity .gd-team-logo,
+.picker .gd-team-identity .gd-team-monogram { color: #075e2f !important; }
