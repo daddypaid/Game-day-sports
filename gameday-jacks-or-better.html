@@ -1,0 +1,200 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1.0,viewport-fit=cover">
+<meta name="theme-color" content="#080b09">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="GameDay">
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="apple-touch-icon" href="icons/gameday-192.png">
+<title>GameDay Jacks or Better</title>
+<style>
+*{box-sizing:border-box}
+:root{--panel:#111713;--line:#2c3931;--gold:#e0bd58;--muted:#94a198}
+html,body{margin:0;min-height:100%;background:radial-gradient(circle at 50% -5%,#22321f 0,#0b100c 36%,#050706 100%);color:#fff;font-family:Arial,sans-serif}
+body{padding-bottom:92px}
+header{position:sticky;top:0;z-index:20;background:rgba(8,11,9,.96);border-bottom:1px solid var(--line);backdrop-filter:blur(14px);-webkit-backdrop-filter:blur(14px);padding:max(10px,env(safe-area-inset-top)) 12px 10px}
+.top{display:flex;justify-content:space-between;align-items:center;gap:10px}.title h1{margin:0;font-size:22px}.title div{margin-top:3px;color:var(--muted);font-size:10px}.wallet{background:#153f24;border:1px solid #2e7040;border-radius:11px;padding:7px 9px;text-align:right;min-width:92px}.wallet span{display:block;color:#a8cdb2;font-size:8px;font-weight:900}.wallet strong{display:block;margin-top:2px;color:#d7f3dd;font-size:13px}
+.back{display:inline-flex;margin-top:8px;text-decoration:none;color:#f3df93;font-size:11px;font-weight:900}
+main{max-width:760px;margin:auto;padding:12px}.mode{margin-bottom:10px;padding:9px 11px;border:1px solid #725b20;background:#352a0f;color:#f2df96;border-radius:11px;font-size:10px;font-weight:900;text-align:center}
+.message{margin-bottom:10px}.notice,.error,.success{padding:10px 11px;border-radius:10px;font-size:11px;line-height:1.35}.notice{background:#33290f;border:1px solid #705b20;color:#eedc94}.error{background:#2b1518;border:1px solid #763841;color:#ffc2c9}.success{background:#102718;border:1px solid #326b43;color:#c3efcd}
+.machine{border:3px solid #b58b2f;border-radius:24px;background:linear-gradient(180deg,#17120a,#0a0d0b 18%,#07110b 100%);box-shadow:0 16px 42px rgba(0,0,0,.55),inset 0 0 26px rgba(224,189,88,.06);padding:12px}
+.marquee{text-align:center;border:1px solid #72591d;background:linear-gradient(180deg,#33260b,#161005);border-radius:13px;padding:11px;color:#ffe38a;font-family:Georgia,serif;font-weight:900;font-size:26px;letter-spacing:.04em;text-shadow:0 2px 0 #6b270e,0 0 16px rgba(255,208,62,.22)}.sub{text-align:center;margin:6px 0 10px;color:#adbaaf;font-size:10px;letter-spacing:.12em;font-weight:800}
+.cards{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:6px}.card-wrap{min-width:0}.card-btn{width:100%;border:0;background:transparent;padding:0;cursor:pointer}.card{height:112px;background:#f7f7f3;color:#111;border:2px solid #ddd;border-radius:9px;padding:6px;display:flex;flex-direction:column;justify-content:space-between;font-weight:900;box-shadow:0 4px 12px rgba(0,0,0,.38)}.card.red{color:#b51f2c}.card.empty{background:repeating-linear-gradient(45deg,#173623,#173623 7px,#234a31 7px,#234a31 14px);border-color:#496853;color:#a9c8b2;justify-content:center;align-items:center;font-size:18px}.rank{font-size:16px}.suit{text-align:center;font-size:28px}.hold{width:100%;min-height:31px;margin-top:5px;border:1px solid #67531d;background:#161a17;color:#c9d2cc;border-radius:8px;font-size:9px;font-weight:900}.hold.active{background:linear-gradient(180deg,#f4d86b,#b58725);border-color:#fff1a6;color:#1a1203}
+.controls{margin-top:10px;border:1px solid var(--line);background:#101612;border-radius:14px;padding:11px}.stake-row{display:grid;grid-template-columns:1fr auto;gap:8px;align-items:end}label{display:block;color:#a8b4ac;font-size:10px;font-weight:800}input{margin-top:5px;width:100%;min-height:44px;border:1px solid #3a4a40;background:#080c09;color:#fff;border-radius:10px;padding:9px 10px;font-size:18px}.balance-note{font-size:10px;color:#94a198;padding-bottom:12px}.chips{display:grid;grid-template-columns:repeat(5,1fr);gap:5px;margin-top:7px}.chips button,.primary{min-height:40px;border-radius:9px;border:1px solid #614c17;background:#1e211e;color:#f2df99;font-weight:900}.primary{width:100%;margin-top:8px;background:linear-gradient(180deg,#f2d66a,#b68425);border-color:#ffe794;color:#170f02;font-size:14px;min-height:48px}.primary.draw{background:linear-gradient(180deg,#33c76b,#137438);border-color:#87eca9;color:#fff}.primary:disabled,.chips button:disabled,.card-btn:disabled{opacity:.45;cursor:not-allowed}
+.result{margin-top:10px;border:1px solid var(--line);background:#101612;border-radius:12px;padding:11px}.result strong{font-size:18px}.result-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:7px;margin-top:8px}.result-box{background:#0a0e0b;border:1px solid #253128;border-radius:9px;padding:8px}.result-box span{display:block;color:#8f9b93;font-size:9px}.result-box b{display:block;margin-top:3px;font-size:12px}
+.paytable{margin-top:10px;border:1px solid #4f421e;border-radius:12px;overflow:hidden;background:#0d100e}.paytitle{padding:9px 10px;background:#211b0c;color:#f2db88;font-weight:900;font-size:11px}.paygrid{display:grid;grid-template-columns:1fr auto}.paygrid span,.paygrid b{padding:6px 9px;border-top:1px solid #242d27;font-size:10px}.paygrid b{text-align:right;color:#f5dc7f}
+@media(max-width:430px){header{padding-left:9px;padding-right:9px}.title h1{font-size:19px}main{padding:7px}.machine{padding:7px;border-radius:18px}.marquee{font-size:21px;padding:8px}.cards{gap:4px}.card{height:88px;padding:4px}.rank{font-size:12px}.suit{font-size:21px}.hold{min-height:28px;font-size:8px}.controls{padding:8px}.chips{gap:3px}.chips button{font-size:9px;padding:0}.paygrid span,.paygrid b{font-size:9px;padding:5px 7px}}
+</style>
+</head>
+<body>
+<header>
+  <div class="top">
+    <div class="title"><h1>Jacks or Better</h1><div>GameDay • classic five-card draw</div></div>
+    <div class="wallet"><span>TEST WALLET</span><strong id="wallet">—</strong></div>
+  </div>
+  <a class="back" href="gameday-poker.html">‹ Back to Poker Room</a>
+</header>
+<main>
+  <div class="mode">TEST MODE • NO REAL MONEY</div>
+  <div id="message" class="message"></div>
+  <section class="machine" aria-label="Jacks or Better game">
+    <div class="marquee">JACKS OR BETTER</div>
+    <div class="sub">DEAL • HOLD • DRAW</div>
+    <div id="cards" class="cards" aria-live="polite"></div>
+    <section class="controls" aria-label="Game controls">
+      <div class="stake-row">
+        <label for="stake">TEST BET
+          <input id="stake" type="number" min="1" max="1000" step="1" value="5" inputmode="numeric">
+        </label>
+        <div class="balance-note">Max $1,000</div>
+      </div>
+      <div class="chips" aria-label="Quick test bets">
+        <button type="button" data-stake="1">$1</button>
+        <button type="button" data-stake="5">$5</button>
+        <button type="button" data-stake="10">$10</button>
+        <button type="button" data-stake="25">$25</button>
+        <button type="button" data-stake="100">$100</button>
+      </div>
+      <button id="deal" class="primary" type="button">DEAL</button>
+      <button id="draw" class="primary draw" type="button" hidden>DRAW</button>
+    </section>
+    <section class="result">
+      <strong id="resultTitle">Ready to deal</strong>
+      <div class="result-grid">
+        <div class="result-box"><span>Stake</span><b id="resultStake">$0.00</b></div>
+        <div class="result-box"><span>Payout</span><b id="resultPayout">$0.00</b></div>
+        <div class="result-box"><span>Status</span><b id="resultStatus">Ready</b></div>
+      </div>
+    </section>
+    <section class="paytable" aria-label="Jacks or Better pay table">
+      <div class="paytitle">PAY TABLE</div>
+      <div class="paygrid">
+        <span>Royal Flush</span><b>800×</b>
+        <span>Straight Flush</span><b>50×</b>
+        <span>Four of a Kind</span><b>25×</b>
+        <span>Full House</span><b>9×</b>
+        <span>Flush</span><b>6×</b>
+        <span>Straight</span><b>4×</b>
+        <span>Three of a Kind</span><b>3×</b>
+        <span>Two Pair</span><b>2×</b>
+        <span>Jacks or Better</span><b>1×</b>
+      </div>
+    </section>
+  </section>
+</main>
+<script type="module">
+import{createClient}from"https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/+esm";
+import{GAMEDAY_CONFIG}from"./gameday-config.js";
+
+const supabase=createClient(GAMEDAY_CONFIG.supabaseUrl,GAMEDAY_CONFIG.supabasePublishableKey);
+const cardsEl=document.getElementById("cards"),walletEl=document.getElementById("wallet"),messageEl=document.getElementById("message");
+const stakeEl=document.getElementById("stake"),dealBtn=document.getElementById("deal"),drawBtn=document.getElementById("draw");
+const resultTitle=document.getElementById("resultTitle"),resultStake=document.getElementById("resultStake"),resultPayout=document.getElementById("resultPayout"),resultStatus=document.getElementById("resultStatus");
+const chipButtons=[...document.querySelectorAll("[data-stake]")];
+let user=null,balance=0,currentHand=null,holds=new Set();
+
+const money=v=>"$"+Number(v||0).toFixed(2);
+const escapeHtml=v=>String(v??"").replaceAll("&","&amp;").replaceAll("<","&lt;").replaceAll(">","&gt;");
+
+function show(text,type="success"){messageEl.innerHTML=text?'<div class="'+type+'">'+escapeHtml(text)+'</div>':""}
+function setBalance(v){balance=Number(v||0);walletEl.textContent=money(balance)}
+function setBetEnabled(enabled){stakeEl.disabled=!enabled;dealBtn.disabled=!enabled;chipButtons.forEach(b=>b.disabled=!enabled)}
+function suitRed(s){return s==="♥"||s==="♦"}
+
+function cardMarkup(card,index,active){
+  if(!card)return '<div class="card-wrap"><button class="card-btn" disabled><div class="card empty">♠</div></button><button class="hold" disabled>HOLD</button></div>';
+  const held=holds.has(index);
+  return '<div class="card-wrap"><button class="card-btn" type="button" data-card="'+index+'" '+(active?"":"disabled")+' aria-label="'+(held?"Release":"Hold")+' '+escapeHtml(card.rank)+' '+escapeHtml(card.suit)+'"><div class="card '+(suitRed(card.suit)?"red":"")+'"><div class="rank">'+escapeHtml(card.rank)+'</div><div class="suit">'+escapeHtml(card.suit)+'</div><div class="rank">'+escapeHtml(card.rank)+'</div></div></button><button class="hold '+(held?"active":"")+'" type="button" data-hold="'+index+'" '+(active?"":"disabled")+'>'+(held?"HELD":"HOLD")+'</button></div>';
+}
+
+function render(){
+  const active=currentHand?.status==="active";
+  const hand=active?currentHand.initial_hand:(currentHand?.final_hand||[]);
+  cardsEl.innerHTML=Array.from({length:5},(_,i)=>cardMarkup(hand?.[i],i,active)).join("");
+  document.querySelectorAll("[data-card],[data-hold]").forEach(btn=>btn.addEventListener("click",()=>toggleHold(Number(btn.dataset.card??btn.dataset.hold))));
+  drawBtn.hidden=!active;
+  dealBtn.hidden=active;
+  setBetEnabled(!active);
+}
+
+function toggleHold(i){
+  if(currentHand?.status!=="active")return;
+  holds.has(i)?holds.delete(i):holds.add(i);
+  render();
+}
+
+async function api(body){
+  const{data,error}=await supabase.functions.invoke(GAMEDAY_CONFIG.functions.jacksOrBetter,{body});
+  if(error)throw error;
+  if(data?.error)throw new Error(data.error);
+  return data;
+}
+
+async function loadAccount(){
+  const{data,error}=await supabase.auth.getSession();
+  if(error||!data.session){
+    user=null;walletEl.textContent="Sign in";show("Sign in to your GameDay account before playing Jacks or Better.","error");render();return false;
+  }
+  user=data.session.user;
+  const{data:w,error:we}=await supabase.from("wallets").select("balance").eq("user_id",user.id).single();
+  if(we){walletEl.textContent="—"}else setBalance(w.balance);
+  return true;
+}
+
+async function resume(){
+  if(!user)return;
+  try{
+    const data=await api({action:"resume"});
+    if(data.hand){
+      currentHand=data.hand;holds=new Set();
+      resultTitle.textContent="Choose the cards you want to hold";
+      resultStake.textContent=money(data.hand.stake);resultPayout.textContent="$0.00";resultStatus.textContent="Draw pending";
+      render();
+    }
+  }catch(e){show(e.message||"Unable to restore the active hand.","error")}
+}
+
+async function deal(){
+  show("");
+  if(!user&&!(await loadAccount()))return;
+  const stake=Number(stakeEl.value);
+  if(!Number.isFinite(stake)||stake<=0||stake>1000){show("Enter a test bet from $1 to $1,000.","error");return}
+  if(stake>balance){show("Your test wallet does not have enough credits for that bet.","error");return}
+  dealBtn.disabled=true;dealBtn.textContent="DEALING…";
+  try{
+    const data=await api({action:"deal",stake});
+    currentHand=data.hand;holds=new Set();setBalance(data.balance);
+    resultTitle.textContent="Pick your holds";
+    resultStake.textContent=money(stake);resultPayout.textContent="$0.00";resultStatus.textContent="Draw pending";
+    render();show("Cards dealt. Tap any cards you want to hold.","success");
+  }catch(e){show(e.message||"Unable to deal Jacks or Better.","error")}
+  finally{dealBtn.textContent="DEAL";if(currentHand?.status!=="active")dealBtn.disabled=false}
+}
+
+async function draw(){
+  if(currentHand?.status!=="active")return;
+  drawBtn.disabled=true;drawBtn.textContent="DRAWING…";
+  try{
+    const data=await api({action:"draw",hand_id:currentHand.id,holds:[...holds]});
+    currentHand=data.hand;holds=new Set();setBalance(data.balance);
+    resultTitle.textContent=data.hand.result||"Hand settled";
+    resultStake.textContent=money(data.hand.stake);resultPayout.textContent=money(data.hand.payout);resultStatus.textContent=data.hand.multiplier?String(data.hand.multiplier)+"× payout":"No win";
+    render();
+    show(Number(data.hand.payout)>0?data.hand.result+" • "+money(data.hand.payout)+" returned":data.hand.result+". Deal again when ready.",Number(data.hand.payout)>0?"success":"notice");
+  }catch(e){show(e.message||"Unable to draw cards.","error")}
+  finally{drawBtn.disabled=false;drawBtn.textContent="DRAW"}
+}
+
+chipButtons.forEach(b=>b.addEventListener("click",()=>{stakeEl.value=b.dataset.stake}));
+dealBtn.addEventListener("click",deal);
+drawBtn.addEventListener("click",draw);
+supabase.auth.onAuthStateChange(async()=>{await loadAccount();await resume()});
+render();
+if(await loadAccount())await resume();
+</script>
+<script src="gameday-app.js" defer></script>
+</body>
+</html>
