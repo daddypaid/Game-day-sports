@@ -74,12 +74,12 @@ body.blackjack-v2 .result-card .result-row{display:none!important}
 @media(min-width:431px){body.blackjack-v2{grid-template-rows:84px minmax(0,1fr)!important}body.blackjack-v2 .blackjack-header{height:84px!important}body.blackjack-v2 .blackjack-main{height:calc(100dvh - 84px)!important}.blackjack-v2 .card{width:55px!important}body.blackjack-v2.gd-card-wager-page .quick-bets button[data-chip]{width:44px!important;height:44px!important}}
 @media(max-height:760px){body.blackjack-v2{grid-template-rows:66px minmax(0,1fr)!important}body.blackjack-v2 .blackjack-header{height:66px!important}body.blackjack-v2 .blackjack-main{height:calc(100dvh - 66px)!important;grid-template-rows:minmax(0,1fr) 36px!important}body.blackjack-v2 .blackjack-table{padding-bottom:94px!important}body.blackjack-v2 .dealer-zone{height:68px!important}.blackjack-v2 .table-brand strong{font-size:18px!important}.blackjack-v2 .player-zone{padding-top:3px!important}.blackjack-v2 .player-zone .cards{min-height:52px!important}.blackjack-v2 .card{width:40px!important}.blackjack-v2 .player-wager-circle{width:76px!important;height:48px!important}.blackjack-v2 .control-card{bottom:36px!important;grid-template-rows:24px 36px 38px!important}.blackjack-v2.gd-card-wager-page .quick-bets button[data-chip]{width:34px!important;height:34px!important}.blackjack-v2 .actions button{min-height:36px!important}}
 
-/* Step 1 approval mode: exact empty Blackjack table artwork only. */
+/* Approved Blackjack table artwork. */
 body.blackjack-v2{display:block!important;width:100%!important;max-width:960px!important;height:100dvh!important;background:#000!important;overflow:hidden!important}
 body.blackjack-v2::before,body.blackjack-v2 .blackjack-header,body.blackjack-v2 #message,body.blackjack-v2 .control-card,body.blackjack-v2 .result-card,body.blackjack-v2 #history{display:none!important}
 body.blackjack-v2 .blackjack-main{display:block!important;width:100%!important;max-width:none!important;height:100dvh!important;margin:0!important;padding:0!important;background:#000!important;overflow:hidden!important}
 body.blackjack-v2 .blackjack-table{display:block!important;width:100%!important;height:100dvh!important;margin:0!important;padding:0!important;border:0!important;border-radius:0!important;background-color:#000!important;background-image:url('assets/card-tables/blackjack-empty-approved.webp')!important;background-position:center top!important;background-repeat:no-repeat!important;background-size:100% auto!important;box-shadow:none!important;overflow:hidden!important}
-body.blackjack-v2 .blackjack-table::before,body.blackjack-v2 .blackjack-table::after,body.blackjack-v2 .blackjack-table>*{display:none!important;content:none!important}
+body.blackjack-v2 .blackjack-table::before,body.blackjack-v2 .blackjack-table::after,body.blackjack-v2 .blackjack-table>.table-brand,body.blackjack-v2 .blackjack-table>.table-rules{display:none!important;content:none!important}
 
 /* Step 2 approval mode: six live additive chips only. */
 body.blackjack-v2 .control-card{position:absolute!important;z-index:50!important;top:134vw!important;left:9%!important;right:auto!important;bottom:auto!important;transform:none!important;display:block!important;width:82%!important;max-width:none!important;height:auto!important;max-height:none!important;margin:0!important;padding:0!important;border:0!important;border-radius:0!important;background:transparent!important;box-shadow:none!important;overflow:visible!important}
@@ -114,9 +114,34 @@ body.blackjack-v2 .control-card .actions{flex:0 0 auto!important;display:grid!im
 body.blackjack-v2 .control-card .actions button{height:16vw!important;min-height:58px!important;max-height:76px!important;border-radius:clamp(14px,4vw,20px)!important}
 @media(min-width:700px){body.blackjack-v2 .control-card .quick-bets{width:82%!important}.blackjack-v2 .control-card .total-bet{height:62px!important}.blackjack-v2 .control-card .actions{width:96%!important;gap:9px!important}.blackjack-v2 .control-card .actions button{height:76px!important}}
 
-/* Approved action-row state: table, six chips, wager box, and five live actions only. */
+/* Show dealt hands on the felt while preserving the approved artwork and controls. */
 body.blackjack-v2 .blackjack-table>.dealer-zone,
 body.blackjack-v2 .blackjack-table>.player-zone{
+  position:absolute!important;
+  z-index:10!important;
+  left:0!important;
+  display:flex!important;
+  width:100%!important;
+  max-width:none!important;
+  height:auto!important;
+  min-height:0!important;
+  margin:0!important;
+  padding:0!important;
+  gap:3px!important;
+}
+body.blackjack-v2 .blackjack-table>.dealer-zone{top:min(32vw,307px)!important}
+body.blackjack-v2 .blackjack-table>.player-zone{top:min(85vw,816px)!important}
+body.blackjack-v2 .blackjack-table>.dealer-zone .cards,
+body.blackjack-v2 .blackjack-table>.player-zone .cards{
+  min-height:0!important;
+  max-width:98%!important;
+  flex-wrap:wrap!important;
+}
+body.blackjack-v2 .blackjack-table>.dealer-zone:not(:has(.card)),
+body.blackjack-v2 .blackjack-table>.player-zone:not(:has(.card)),
+body.blackjack-v2 .player-wager-circle,
+body.blackjack-v2 .player-zone::before,
+body.blackjack-v2 .player-zone::after{
   display:none!important;
 }
 

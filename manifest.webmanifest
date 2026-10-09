@@ -3,7 +3,7 @@
   "name": "GameDay Sports & Casino",
   "short_name": "GameDay",
   "description": "GameDay Sports & Casino TEST MODE platform with sportsbook, casino, wallet, wager history, and operator tools.",
-  "start_url": "./index.html?pwa=home-v2",
+  "start_url": "./index.html",
   "scope": "./",
   "display": "standalone",
   "orientation": "portrait-primary",
