@@ -3,26 +3,56 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
-<meta name="theme-color" content="#090e0b">
+<meta name="theme-color" content="#030a06">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <link rel="manifest" href="manifest.webmanifest">
-<title>GameDay Lucky 7s — GameDay</title>
-<style>
-*{box-sizing:border-box}
-html,body{margin:0;min-height:100%;background:#090e0b;color:#fff;font-family:Arial,sans-serif}
-body{padding-bottom:calc(90px + env(safe-area-inset-bottom))}
-header{background:#101712;border-bottom:1px solid #29352d;padding:calc(14px + env(safe-area-inset-top)) 14px 14px}
-h1{font-size:23px;margin:0 0 12px}
-.back{color:#f0d58b;font-size:14px;font-weight:700;text-decoration:none}
-main{min-height:65dvh}
-</style>
+<title>GameDay Lucky 7s — GameDay Casino</title>
+<link rel="preload" href="assets/lucky-7s/symbols-atlas.webp" as="image">
+<link rel="stylesheet" href="gameday-lucky-7s-game.css">
 </head>
-<body>
-<header>
-<h1>GameDay Lucky 7s</h1>
-<a class="back" href="gameday-slots-lobby.html">‹ Back to Slots Lobby</a>
-</header>
-<main aria-label="GameDay Lucky 7s cleared game area"></main>
+<body class="l7-game" data-game="lucky-7s">
+<main class="l7-machine" aria-label="GameDay Lucky 7s slot machine">
+  <div class="l7-topbar" role="banner">
+    <a class="l7-brand" href="gameday-casino-v2.html" aria-label="GameDay Casino"><span aria-hidden="true">♛</span><span>GAMEDAY<small>CASINO</small></span></a>
+    <div class="l7-wallet-box"><span>TEST BALANCE</span><strong id="l7-wallet">—</strong><a href="gameday-auth.html" aria-label="Open GameDay wallet">+</a></div>
+    <button id="l7-menu" class="l7-menu" aria-label="Game menu" aria-haspopup="dialog">☰</button>
+  </div>
+  <section class="l7-cabinet" aria-labelledby="l7-title">
+    <h1 id="l7-title" class="l7-sr-only">GameDay Lucky 7s</h1>
+    <img class="l7-cabinet-art" src="assets/lucky-7s/stadium-cabinet.webp" alt="Green and gold GameDay Lucky 7s stadium cabinet with sports equipment" width="1024" height="1536" fetchpriority="high">
+    <div id="l7-reels" class="l7-reels" role="group" aria-label="Three reels, three visible rows, five paylines"></div>
+    <section class="l7-hud" aria-label="Spin results and wager controls">
+      <div class="l7-wager-column">
+        <div class="l7-panel l7-lines-panel"><span>5 PAYLINES</span><strong>ALL ACTIVE</strong></div>
+        <div class="l7-bet-panel"><span>TOTAL BET</span><div class="l7-step"><button id="l7-total-minus" aria-label="Decrease total bet" disabled>−</button><strong id="l7-total-bet">$1.00</strong><button id="l7-total-plus" aria-label="Increase total bet" disabled>+</button></div></div>
+        <div class="l7-bet-panel"><span>BET PER LINE</span><div class="l7-step"><button id="l7-line-minus" aria-label="Decrease bet per line" disabled>−</button><strong id="l7-bet-line">$0.20</strong><button id="l7-line-plus" aria-label="Increase bet per line" disabled>+</button></div></div>
+      </div>
+      <div class="l7-action-column">
+        <div class="l7-panel l7-win-panel"><span>WIN</span><strong id="l7-win">$0.00</strong></div>
+        <button id="l7-spin" class="l7-spin" aria-label="Spin GameDay Lucky 7s reels" disabled>SPIN</button>
+      </div>
+      <div class="l7-tools-column">
+        <button id="l7-info" class="l7-panel l7-info" aria-label="Game rules, paytable and five paylines" aria-haspopup="dialog">PAYTABLE</button>
+        <button id="l7-max" class="l7-tool" disabled>MAX BET</button>
+        <button id="l7-auto" class="l7-tool" aria-label="Start five automatic spins" disabled>AUTO SPIN</button>
+      </div>
+    </section>
+  </section>
+  <div id="l7-status" class="l7-status" role="status" aria-live="polite">Connecting to your GameDay test wallet…</div>
+  <footer class="l7-footer"><a href="gameday-slots-lobby.html">‹ Slots Lobby</a><span>TEST MODE • NO REAL MONEY</span><button id="l7-sound" aria-label="Mute game sound" aria-pressed="false">Sound On</button></footer>
+</main>
+<nav class="gameday-app-nav l7-bottom-nav" data-gameday-nav aria-label="GameDay app navigation">
+  <a href="gameday-sportsbook.html"><span class="gameday-nav-icon" aria-hidden="true">◉</span><span>Sportsbook</span></a>
+  <a class="active" aria-current="page" href="gameday-casino-v2.html"><span class="gameday-nav-icon" aria-hidden="true">♠</span><span>Casino</span></a>
+  <a href="gameday-my-bets.html"><span class="gameday-nav-icon" aria-hidden="true">✓</span><span>My Bets</span></a>
+  <a href="gameday-auth.html"><span class="gameday-nav-icon" aria-hidden="true">●</span><span>Account</span></a>
+</nav>
+<dialog id="l7-dialog" class="l7-dialog" aria-labelledby="l7-dialog-title">
+  <div class="l7-dialog-heading"><h2 id="l7-dialog-title">GameDay Lucky 7s</h2><button id="l7-dialog-close" aria-label="Close game information">×</button></div>
+  <div id="l7-dialog-content"></div>
+</dialog>
+<noscript><p class="l7-noscript">Turn on JavaScript to spin GameDay Lucky 7s.</p></noscript>
 <script src="gameday-app.js" defer></script>
+<script type="module" src="gameday-lucky-7s-game.js"></script>
 </body>
 </html>

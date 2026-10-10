@@ -1,0 +1,83 @@
+/* Reference-led stadium cabinet; live symbols fill its three original windows. */
+html:has(body.l7-game){background:#030a06;color-scheme:dark}
+body.l7-game{--l7-gold:#e3bf62;--l7-green:#a4ecae;margin:0;min-height:100dvh;padding:0 0 calc(76px + env(safe-area-inset-bottom));background:#030a06;color:#fff1c5;font-family:Arial,sans-serif;-webkit-text-size-adjust:100%}
+.l7-game *{box-sizing:border-box}
+.l7-game button,.l7-game a{-webkit-tap-highlight-color:transparent;touch-action:manipulation}
+.l7-game button{font-family:inherit;cursor:pointer;color:inherit}
+.l7-game button:disabled{cursor:default;opacity:.55}
+.l7-game button:focus-visible,.l7-game a:focus-visible{outline:3px solid #b1ffc3;outline-offset:3px}
+body.l7-game .l7-machine{max-width:520px;margin:auto;padding:0 0 16px;overflow:visible}
+.l7-topbar{display:flex;align-items:center;gap:9px;padding:calc(7px + env(safe-area-inset-top)) 10px 7px;background:#040d08;border-bottom:1px solid #6c5425}
+.l7-brand{display:flex;align-items:center;gap:5px;color:#efd381;text-decoration:none;font-size:18px;font-weight:900;letter-spacing:.04em;white-space:nowrap}
+.l7-brand>span:first-child{font-size:29px}
+.l7-brand small{display:block;text-align:center;font-size:8px;font-weight:400;letter-spacing:.32em;margin-top:1px}
+.l7-wallet-box{position:relative;margin-left:auto;min-width:116px;padding:5px 31px 5px 9px;border:1px solid #577154;border-radius:8px;background:#001d11}
+.l7-wallet-box>span{display:block;font-size:7px;letter-spacing:.09em;color:#b8d0bc}
+.l7-wallet-box strong{display:block;font-size:15px;line-height:1.2}
+.l7-wallet-box a{position:absolute;right:5px;top:7px;width:23px;height:23px;border-radius:50%;background:#4cb35c;color:white;text-align:center;font-size:23px;line-height:22px;text-decoration:none}
+.l7-menu{width:34px;height:34px;flex-shrink:0;border:1px solid #b4964a;border-radius:7px;background:#09100a;font-size:23px;color:var(--l7-gold)}
+.l7-cabinet{position:relative;isolation:isolate}
+.l7-cabinet-art{display:block;width:100%;height:auto;object-fit:contain}
+.l7-sr-only{position:absolute;width:1px;height:1px;overflow:hidden;clip-path:inset(50%);white-space:nowrap}
+.l7-reels{position:absolute;left:17.1875%;right:16.8945%;top:29.8828%;height:40.8854%;display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:4.4444%;z-index:1}
+.l7-reel{position:relative;height:100%;overflow:hidden;background:#030b06}
+.l7-strip{display:flex;flex-direction:column;will-change:transform}
+.l7-symbol{position:relative;flex-shrink:0;width:100%;aspect-ratio:1;overflow:hidden}
+.l7-symbol-art{position:absolute;top:0;bottom:0;left:50%;height:100%;aspect-ratio:1;transform:translateX(-50%);background-repeat:no-repeat;background-size:300% 300%;display:block}
+.l7-reel.is-spinning .l7-symbol-art{filter:blur(1.5px);opacity:.92}
+.l7-symbol.is-win{box-shadow:inset 0 0 0 3px #ffdc53,inset 0 0 15px #ffcb5380;z-index:1}
+.l7-symbol.is-win::after{content:'';position:absolute;inset:1px;border:2px solid #ffe478;pointer-events:none;box-shadow:inset 0 0 10px #ffdc5380}
+.l7-payline-overlay{position:absolute;inset:0;width:100%;height:100%;z-index:3;pointer-events:none;overflow:visible;filter:drop-shadow(0 1px 2px #000)}
+.l7-hud{position:absolute;top:74.3%;left:6%;right:6%;display:grid;grid-template-columns:1fr 1.25fr 1fr;gap:8px;z-index:2}
+.l7-wager-column,.l7-action-column,.l7-tools-column{display:flex;flex-direction:column;gap:6px;min-width:0}
+.l7-panel,.l7-bet-panel,.l7-tool{height:32px;min-width:0;margin:0;padding:3px;border:1px solid #c69e48;border-radius:7px;background:linear-gradient(180deg,#0a2918,#020e08);box-shadow:inset 0 0 0 2px #3e3015,0 2px 4px #0009;text-align:center}
+.l7-panel>span,.l7-bet-panel>span{display:block;font-size:7px;font-weight:700;line-height:9px;letter-spacing:.045em;color:#ccdbb9}
+.l7-panel strong{display:block;font-size:16px;line-height:17px;color:#f7e6a8}
+.l7-lines-panel strong{font-size:10px;line-height:16px;color:#a4ecae}
+.l7-bet-panel{padding:2px 3px}
+.l7-bet-panel>span{font-size:6px;line-height:7px}
+.l7-step{display:flex;align-items:center;justify-content:space-between;gap:2px}
+.l7-step button{width:20px;height:19px;min-width:20px;padding:0;border:1px solid #a88940;border-radius:4px;background:linear-gradient(#174d2b,#031609);font-size:17px;line-height:16px}
+.l7-step strong{font-size:10px;line-height:18px;white-space:nowrap;font-variant-numeric:tabular-nums}
+.l7-info,.l7-tool{font-size:10px;font-weight:900;letter-spacing:.025em;color:#e4ca81}
+.l7-spin{height:58px;padding:0;border:3px solid #f1d571;border-radius:12px;background:linear-gradient(180deg,#1aae47 0,#05611f 47%,#023411 53%,#147835 100%);box-shadow:inset 0 0 0 2px #3a3010,inset 0 0 13px #60ff6570,0 0 14px #25d95d65,0 4px 5px #000;color:#fff1a6;font-size:27px;font-weight:900;letter-spacing:.04em;text-shadow:0 2px 2px #173000}
+.l7-spin:active:not(:disabled){transform:translateY(1px)}
+.l7-status{min-height:28px;margin:3px 12px 5px;text-align:center;font-size:11px;line-height:1.4;color:#d0e0c9}
+.l7-status a{color:#ffdf8f;font-weight:700}
+.l7-status.is-error{color:#ffc8a5}.l7-status.is-win{color:#b2ffbd}
+.l7-footer{display:flex;align-items:center;justify-content:space-between;gap:7px;padding:0 10px;font-size:8px;color:#bac7ab}
+.l7-footer a{font-size:11px;text-decoration:none;color:#f1d58d;white-space:nowrap}
+.l7-footer button{min-height:28px;padding:3px 5px;border:1px solid #625836;border-radius:6px;background:#0a1b0f;font-size:10px;white-space:nowrap}
+.l7-bottom-nav{position:fixed;z-index:100;bottom:0;left:0;right:0;display:grid;grid-template-columns:repeat(4,1fr);height:calc(70px + env(safe-area-inset-bottom));padding:6px 8px calc(6px + env(safe-area-inset-bottom));border-top:1px solid #314235;background:#0a170f}
+.l7-bottom-nav a{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:3px;border-radius:15px;color:#99a79b;text-decoration:none;font-size:12px;font-weight:700}
+.l7-bottom-nav .gameday-nav-icon{font-size:25px;line-height:28px}
+.l7-bottom-nav a.active{background:#173820;color:#e7f3e5}
+.l7-dialog{width:min(94vw,500px);max-height:85dvh;padding:16px;border:2px solid #c4a25b;border-radius:15px;background:#05160c;color:#f3ebd2;overflow:auto;box-shadow:0 20px 70px #000c;font-family:Arial,sans-serif}
+.l7-dialog::backdrop{background:#000b}
+.l7-dialog-heading{display:flex;align-items:center;justify-content:space-between;gap:10px;position:sticky;top:-16px;background:#05160c;padding:8px 0;z-index:2}
+.l7-dialog h2{font:700 21px Georgia,serif;margin:0;color:#f0d58a}
+.l7-dialog-heading button{min-width:36px;min-height:36px;border:1px solid #b69954;border-radius:8px;background:#112719;color:#fff0bc;font-size:26px;line-height:1}
+.l7-dialog p{font-size:12px;line-height:1.55;color:#d5dccd}
+.l7-dialog h3{font-size:15px;color:#edcf82}
+.l7-symbol-gallery,.l7-payline-gallery{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px}
+.l7-dialog figure{margin:0;min-width:0;text-align:center}
+.l7-dialog figcaption{font-size:10px;margin-top:4px;color:#dedcbf}
+.l7-symbol-gallery .l7-symbol{aspect-ratio:1;border:1px solid #a78a4b}
+.l7-payline-gallery svg{width:100%;max-width:90px;height:auto}
+.l7-paytable{width:100%;border-collapse:collapse;font-size:12px;margin-top:16px}
+.l7-paytable caption{text-align:left;color:#efda9d;padding-bottom:7px;font-size:11px}
+.l7-paytable th,.l7-paytable td{padding:7px;border-bottom:1px solid #354a30;text-align:left}
+.l7-paytable th:last-child,.l7-paytable td:last-child{text-align:right;color:#f3d781}
+.l7-menu-links{display:grid;gap:12px}.l7-menu-links a{color:#f4da90;font-size:15px}
+.l7-noscript{text-align:center;padding:12px;color:#f5ce7d}
+/* The shell's legacy one-row slot styles must not clip the reference cabinet. */
+html[data-gameday-page="casino-game"] body.l7-game{height:auto!important;overflow:visible!important;padding-bottom:calc(76px + env(safe-area-inset-bottom))!important;background:#030a06!important}
+html[data-gameday-page="casino-game"] body.l7-game main.l7-machine{height:auto!important;overflow:visible!important;padding:0 0 16px!important}
+html[data-gameday-page="casino-game"] body.l7-game .l7-step button{min-height:19px!important}
+html[data-gameday-page="casino-game"] body.l7-game .l7-panel,html[data-gameday-page="casino-game"] body.l7-game .l7-tool{min-height:32px!important}
+html[data-gameday-page="casino-game"] body.l7-game .l7-footer button{min-height:28px!important}
+body.l7-game.gd-premium.gd-in-shell{padding-bottom:calc(76px + env(safe-area-inset-bottom))!important}
+body.l7-game.gd-premium.gd-in-shell main.l7-machine{padding:0 0 16px!important}
+body.l7-game.gd-premium.gd-in-shell .l7-bottom-nav{display:grid!important}
+@media(max-width:359px){.l7-brand{font-size:15px}.l7-brand>span:first-child{font-size:24px}.l7-topbar{gap:6px}.l7-wallet-box{min-width:106px}.l7-hud{gap:5px}.l7-panel,.l7-bet-panel,.l7-tool{height:28px}.l7-panel strong{font-size:14px;line-height:14px}.l7-lines-panel strong{font-size:8px}.l7-info,.l7-tool{font-size:8px}.l7-step button{min-width:17px;width:17px;height:17px;font-size:15px}.l7-step strong{font-size:9px;line-height:16px}.l7-spin{height:46px;font-size:23px}.l7-footer{font-size:7px;gap:4px}.l7-footer a{font-size:10px}html[data-gameday-page="casino-game"] body.l7-game .l7-step button{min-height:17px!important}html[data-gameday-page="casino-game"] body.l7-game .l7-panel,html[data-gameday-page="casino-game"] body.l7-game .l7-tool{min-height:28px!important}}
+@media(prefers-reduced-motion:reduce){.l7-spin:active:not(:disabled){transform:none}.l7-reel.is-spinning .l7-symbol-art{filter:none}}
