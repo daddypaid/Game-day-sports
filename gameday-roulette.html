@@ -3,44 +3,85 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1.0,viewport-fit=cover">
-<meta name="theme-color" content="#101712">
+<meta name="theme-color" content="#08100b">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <meta name="apple-mobile-web-app-title" content="GameDay">
 <link rel="manifest" href="manifest.webmanifest">
 <link rel="apple-touch-icon" href="icons/gameday-192.png">
 <title>GameDay Roulette</title>
-<style>
-*{box-sizing:border-box}
-html,body{margin:0;min-height:100%;background:#08100b;color:#fff;font-family:Arial,sans-serif}
-body{padding-bottom:90px}
-header{background:#101712;border-bottom:1px solid #27342c;padding:14px}
-.header-row{display:flex;justify-content:space-between;align-items:center;gap:10px}
-h1{margin:0;font-size:23px}
-.badge{background:#433514;color:#f0d987;border:1px solid #725c21;border-radius:999px;padding:6px 9px;font-size:10px;font-weight:bold}
-main{max-width:760px;margin:auto;padding:14px}
-.nav{display:grid;grid-template-columns:repeat(4,1fr);gap:8px}
-.nav a{text-decoration:none;text-align:center;padding:11px;border-radius:10px;background:#202b24;color:#fff;font-weight:bold}
-.game-stage{min-height:60vh}
-@media(max-width:520px){header{padding:10px}h1{font-size:20px}.nav{grid-template-columns:repeat(2,1fr)}.nav a{font-size:12px;padding:10px 6px}}
-</style>
+<link rel="stylesheet" href="gameday-table-wager.css">
+<link rel="stylesheet" href="gameday-roulette-spinner.css">
+<link rel="stylesheet" href="gameday-roulette-game.css">
 </head>
-<body>
+<body class="gd-roulette-game">
 <header>
-  <div class="header-row">
-    <h1>GameDay Roulette</h1>
-    <div class="badge">BUILDING</div>
-  </div>
+  <div class="gd-roulette-header-row"><a href="gameday-casino-v2.html" class="gd-roulette-back">‹ Casino</a><h1>GameDay Roulette</h1><span class="gd-roulette-test">TEST</span></div>
+  <div class="account-row"><span id="roulette-account">Connecting…</span><strong id="balance">TEST WALLET —</strong><a id="roulette-signin" href="gameday-auth.html" hidden>Sign in</a></div>
 </header>
 <main>
-  <div class="nav">
-    <a href="gameday-sportsbook.html">Sportsbook</a>
-    <a href="gameday-casino-v2.html">Casino</a>
-    <a href="gameday-my-bets.html">My Bets</a>
-    <a href="gameday-auth.html">Account</a>
-  </div>
-  <section class="game-stage" aria-label="Roulette preview"><p>Roulette is being built. This preview does not take wagers.</p><a href="gameday-casino-v2.html">Back to Casino ›</a></section>
+  <section class="game-stage" aria-label="GameDay single-zero Roulette">
+    <div class="gd-roulette-wheel-area"><div id="roulette-wheel" class="gd-roulette-wheel" data-bowl-src="assets/roulette/wheel.webp" data-rotor-src="assets/roulette/wheel.webp" aria-label="European Roulette wheel"></div><p id="roulette-wheel-caption" class="gd-roulette-wheel-caption" aria-live="polite">European Roulette · Single zero</p></div>
+    <p class="gd-roulette-instructions">Choose a bet on the table, add chips, then Spin.</p>
+    <div class="gd-roulette-table" role="group" aria-label="Roulette betting table">
+      <img src="assets/roulette/betting-table.webp" width="1024" height="1536" alt="GameDay Roulette emerald felt with walnut and gold table border" fetchpriority="high">
+      <button type="button" class="gd-roulette-bet gd-roulette-bet-green" data-roulette-bet="number" data-roulette-value="0" data-roulette-label="0" aria-label="Bet on 0" aria-pressed="false" style="left:25.400%;top:17.200%;width:57.500%;height:5.100%">0</button>
+      <button type="button" class="gd-roulette-bet gd-roulette-bet-red" data-roulette-bet="number" data-roulette-value="1" data-roulette-label="1" aria-label="Bet on 1" aria-pressed="false" style="left:25.600%;top:22.300%;width:19.583%;height:5.230%">1</button>
+      <button type="button" class="gd-roulette-bet gd-roulette-bet-black" data-roulette-bet="number" data-roulette-value="2" data-roulette-label="2" aria-label="Bet on 2" aria-pressed="false" style="left:44.733%;top:22.300%;width:19.583%;height:5.230%">2</button>
+      <button type="button" class="gd-roulette-bet gd-roulette-bet-red" data-roulette-bet="number" data-roulette-value="3" data-roulette-label="3" aria-label="Bet on 3" aria-pressed="false" style="left:63.867%;top:22.300%;width:19.583%;height:5.230%">3</button>
+      <button type="button" class="gd-roulette-bet gd-roulette-bet-black" data-roulette-bet="number" data-roulette-value="4" data-roulette-label="4" aria-label="Bet on 4" aria-pressed="false" style="left:25.442%;top:27.515%;width:19.742%;height:5.230%">4</button>
+      <button type="button" class="gd-roulette-bet gd-roulette-bet-red" data-roulette-bet="number" data-roulette-value="5" data-roulette-label="5" aria-label="Bet on 5" aria-pressed="false" style="left:44.733%;top:27.515%;width:19.742%;height:5.230%">5</button>
+      <button type="button" class="gd-roulette-bet gd-roulette-bet-black" data-roulette-bet="number" data-roulette-value="6" data-roulette-label="6" aria-label="Bet on 6" aria-pressed="false" style="left:64.025%;top:27.515%;width:19.742%;height:5.230%">6</button>
+      <button type="button" class="gd-roulette-bet gd-roulette-bet-red" data-roulette-bet="number" data-roulette-value="7" data-roulette-label="7" aria-label="Bet on 7" aria-pressed="false" style="left:25.283%;top:32.730%;width:19.900%;height:5.230%">7</button>
+      <button type="button" class="gd-roulette-bet gd-roulette-bet-black" data-roulette-bet="number" data-roulette-value="8" data-roulette-label="8" aria-label="Bet on 8" aria-pressed="false" style="left:44.733%;top:32.730%;width:19.900%;height:5.230%">8</button>
+      <button type="button" class="gd-roulette-bet gd-roulette-bet-red" data-roulette-bet="number" data-roulette-value="9" data-roulette-label="9" aria-label="Bet on 9" aria-pressed="false" style="left:64.183%;top:32.730%;width:19.900%;height:5.230%">9</button>
+      <button type="button" class="gd-roulette-bet gd-roulette-bet-black" data-roulette-bet="number" data-roulette-value="10" data-roulette-label="10" aria-label="Bet on 10" aria-pressed="false" style="left:25.125%;top:37.945%;width:20.058%;height:5.230%">10</button>
+      <button type="button" class="gd-roulette-bet gd-roulette-bet-black" data-roulette-bet="number" data-roulette-value="11" data-roulette-label="11" aria-label="Bet on 11" aria-pressed="false" style="left:44.733%;top:37.945%;width:20.058%;height:5.230%">11</button>
+      <button type="button" class="gd-roulette-bet gd-roulette-bet-red" data-roulette-bet="number" data-roulette-value="12" data-roulette-label="12" aria-label="Bet on 12" aria-pressed="false" style="left:64.342%;top:37.945%;width:20.058%;height:5.230%">12</button>
+      <button type="button" class="gd-roulette-bet gd-roulette-bet-black" data-roulette-bet="number" data-roulette-value="13" data-roulette-label="13" aria-label="Bet on 13" aria-pressed="false" style="left:24.967%;top:43.160%;width:20.217%;height:5.230%">13</button>
+      <button type="button" class="gd-roulette-bet gd-roulette-bet-red" data-roulette-bet="number" data-roulette-value="14" data-roulette-label="14" aria-label="Bet on 14" aria-pressed="false" style="left:44.733%;top:43.160%;width:20.217%;height:5.230%">14</button>
+      <button type="button" class="gd-roulette-bet gd-roulette-bet-black" data-roulette-bet="number" data-roulette-value="15" data-roulette-label="15" aria-label="Bet on 15" aria-pressed="false" style="left:64.500%;top:43.160%;width:20.217%;height:5.230%">15</button>
+      <button type="button" class="gd-roulette-bet gd-roulette-bet-red" data-roulette-bet="number" data-roulette-value="16" data-roulette-label="16" aria-label="Bet on 16" aria-pressed="false" style="left:24.808%;top:48.375%;width:20.375%;height:5.230%">16</button>
+      <button type="button" class="gd-roulette-bet gd-roulette-bet-black" data-roulette-bet="number" data-roulette-value="17" data-roulette-label="17" aria-label="Bet on 17" aria-pressed="false" style="left:44.733%;top:48.375%;width:20.375%;height:5.230%">17</button>
+      <button type="button" class="gd-roulette-bet gd-roulette-bet-red" data-roulette-bet="number" data-roulette-value="18" data-roulette-label="18" aria-label="Bet on 18" aria-pressed="false" style="left:64.658%;top:48.375%;width:20.375%;height:5.230%">18</button>
+      <button type="button" class="gd-roulette-bet gd-roulette-bet-red" data-roulette-bet="number" data-roulette-value="19" data-roulette-label="19" aria-label="Bet on 19" aria-pressed="false" style="left:24.650%;top:53.590%;width:20.533%;height:5.230%">19</button>
+      <button type="button" class="gd-roulette-bet gd-roulette-bet-black" data-roulette-bet="number" data-roulette-value="20" data-roulette-label="20" aria-label="Bet on 20" aria-pressed="false" style="left:44.733%;top:53.590%;width:20.533%;height:5.230%">20</button>
+      <button type="button" class="gd-roulette-bet gd-roulette-bet-red" data-roulette-bet="number" data-roulette-value="21" data-roulette-label="21" aria-label="Bet on 21" aria-pressed="false" style="left:64.817%;top:53.590%;width:20.533%;height:5.230%">21</button>
+      <button type="button" class="gd-roulette-bet gd-roulette-bet-black" data-roulette-bet="number" data-roulette-value="22" data-roulette-label="22" aria-label="Bet on 22" aria-pressed="false" style="left:24.492%;top:58.805%;width:20.692%;height:5.230%">22</button>
+      <button type="button" class="gd-roulette-bet gd-roulette-bet-red" data-roulette-bet="number" data-roulette-value="23" data-roulette-label="23" aria-label="Bet on 23" aria-pressed="false" style="left:44.733%;top:58.805%;width:20.692%;height:5.230%">23</button>
+      <button type="button" class="gd-roulette-bet gd-roulette-bet-black" data-roulette-bet="number" data-roulette-value="24" data-roulette-label="24" aria-label="Bet on 24" aria-pressed="false" style="left:64.975%;top:58.805%;width:20.692%;height:5.230%">24</button>
+      <button type="button" class="gd-roulette-bet gd-roulette-bet-red" data-roulette-bet="number" data-roulette-value="25" data-roulette-label="25" aria-label="Bet on 25" aria-pressed="false" style="left:24.333%;top:64.020%;width:20.850%;height:5.230%">25</button>
+      <button type="button" class="gd-roulette-bet gd-roulette-bet-black" data-roulette-bet="number" data-roulette-value="26" data-roulette-label="26" aria-label="Bet on 26" aria-pressed="false" style="left:44.733%;top:64.020%;width:20.850%;height:5.230%">26</button>
+      <button type="button" class="gd-roulette-bet gd-roulette-bet-red" data-roulette-bet="number" data-roulette-value="27" data-roulette-label="27" aria-label="Bet on 27" aria-pressed="false" style="left:65.133%;top:64.020%;width:20.850%;height:5.230%">27</button>
+      <button type="button" class="gd-roulette-bet gd-roulette-bet-black" data-roulette-bet="number" data-roulette-value="28" data-roulette-label="28" aria-label="Bet on 28" aria-pressed="false" style="left:24.175%;top:69.235%;width:21.008%;height:5.230%">28</button>
+      <button type="button" class="gd-roulette-bet gd-roulette-bet-black" data-roulette-bet="number" data-roulette-value="29" data-roulette-label="29" aria-label="Bet on 29" aria-pressed="false" style="left:44.733%;top:69.235%;width:21.008%;height:5.230%">29</button>
+      <button type="button" class="gd-roulette-bet gd-roulette-bet-red" data-roulette-bet="number" data-roulette-value="30" data-roulette-label="30" aria-label="Bet on 30" aria-pressed="false" style="left:65.292%;top:69.235%;width:21.008%;height:5.230%">30</button>
+      <button type="button" class="gd-roulette-bet gd-roulette-bet-black" data-roulette-bet="number" data-roulette-value="31" data-roulette-label="31" aria-label="Bet on 31" aria-pressed="false" style="left:24.017%;top:74.450%;width:21.167%;height:5.230%">31</button>
+      <button type="button" class="gd-roulette-bet gd-roulette-bet-red" data-roulette-bet="number" data-roulette-value="32" data-roulette-label="32" aria-label="Bet on 32" aria-pressed="false" style="left:44.733%;top:74.450%;width:21.167%;height:5.230%">32</button>
+      <button type="button" class="gd-roulette-bet gd-roulette-bet-black" data-roulette-bet="number" data-roulette-value="33" data-roulette-label="33" aria-label="Bet on 33" aria-pressed="false" style="left:65.450%;top:74.450%;width:21.167%;height:5.230%">33</button>
+      <button type="button" class="gd-roulette-bet gd-roulette-bet-red" data-roulette-bet="number" data-roulette-value="34" data-roulette-label="34" aria-label="Bet on 34" aria-pressed="false" style="left:23.858%;top:79.665%;width:21.325%;height:5.230%">34</button>
+      <button type="button" class="gd-roulette-bet gd-roulette-bet-black" data-roulette-bet="number" data-roulette-value="35" data-roulette-label="35" aria-label="Bet on 35" aria-pressed="false" style="left:44.733%;top:79.665%;width:21.325%;height:5.230%">35</button>
+      <button type="button" class="gd-roulette-bet gd-roulette-bet-red" data-roulette-bet="number" data-roulette-value="36" data-roulette-label="36" aria-label="Bet on 36" aria-pressed="false" style="left:65.608%;top:79.665%;width:21.325%;height:5.230%">36</button>
+      <button type="button" class="gd-roulette-bet gd-roulette-bet-green" data-roulette-bet="low" data-roulette-label="1–18" aria-label="Bet on 1–18" aria-pressed="false" style="left:11.500%;top:22.000%;width:13.300%;height:10.500%">1–18</button>
+      <button type="button" class="gd-roulette-bet gd-roulette-bet-green" data-roulette-bet="even" data-roulette-label="EVEN" aria-label="Bet on EVEN" aria-pressed="false" style="left:11.070%;top:32.500%;width:13.550%;height:10.500%">EVEN</button>
+      <button type="button" class="gd-roulette-bet gd-roulette-bet-red" data-roulette-bet="red" data-roulette-label="RED" aria-label="Bet on RED" aria-pressed="false" style="left:10.640%;top:43.000%;width:13.800%;height:10.500%">RED</button>
+      <button type="button" class="gd-roulette-bet gd-roulette-bet-black" data-roulette-bet="black" data-roulette-label="BLACK" aria-label="Bet on BLACK" aria-pressed="false" style="left:10.210%;top:53.500%;width:14.050%;height:10.500%">BLACK</button>
+      <button type="button" class="gd-roulette-bet gd-roulette-bet-green" data-roulette-bet="odd" data-roulette-label="ODD" aria-label="Bet on ODD" aria-pressed="false" style="left:9.780%;top:64.000%;width:14.300%;height:10.500%">ODD</button>
+      <button type="button" class="gd-roulette-bet gd-roulette-bet-green" data-roulette-bet="high" data-roulette-label="19–36" aria-label="Bet on 19–36" aria-pressed="false" style="left:9.350%;top:74.500%;width:14.550%;height:10.500%">19–36</button>
+      <button type="button" class="gd-roulette-bet gd-roulette-bet-green" data-roulette-bet="column1" data-roulette-label="Column 1" aria-label="Bet on column 1, pays 2 to 1" aria-pressed="false" style="left:23.700%;top:85.000%;width:21.200%;height:5.700%">2 to 1</button>
+      <button type="button" class="gd-roulette-bet gd-roulette-bet-green" data-roulette-bet="column2" data-roulette-label="Column 2" aria-label="Bet on column 2, pays 2 to 1" aria-pressed="false" style="left:44.850%;top:85.000%;width:21.200%;height:5.700%">2 to 1</button>
+      <button type="button" class="gd-roulette-bet gd-roulette-bet-green" data-roulette-bet="column3" data-roulette-label="Column 3" aria-label="Bet on column 3, pays 2 to 1" aria-pressed="false" style="left:66.000%;top:85.000%;width:21.200%;height:5.700%">2 to 1</button>
+    </div>
+    <p id="roulette-selected-bet" class="gd-roulette-selection" aria-live="polite">Choose a bet on the table</p>
+    <div id="roulette-result" class="gd-roulette-result" role="status" aria-live="polite" hidden></div>
+    <p id="roulette-status" class="gd-roulette-status" role="status" aria-live="polite">Connecting to your test wallet…</p>
+    <button id="roulette-retry" class="gd-roulette-retry" type="button" hidden>Check result</button>
+    <button id="roulette-sound" class="gd-roulette-sound" type="button" aria-pressed="true">Sound on</button>
+    <p class="gd-roulette-test-note">European Roulette · Single zero · Test credits only</p>
+  </section>
 </main>
 <script src="gameday-app.js" defer></script>
+<script src="gameday-table-wager.js" defer></script>
+<script type="module" src="gameday-roulette-game.js"></script>
 </body>
 </html>

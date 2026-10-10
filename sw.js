@@ -1,4 +1,4 @@
-const CACHE='gameday-shell-v107';
+const CACHE='gameday-shell-v108';
 const SHELL=[
   './',
   './index.html',
@@ -10,6 +10,12 @@ const SHELL=[
   './gameday-auth.html',
   './gameday-blackjack.html',
   './gameday-roulette.html',
+  './gameday-roulette-game.js',
+  './gameday-roulette-game.css',
+  './gameday-roulette-spinner.js',
+  './gameday-roulette-spinner.css',
+  './assets/roulette/wheel.webp',
+  './assets/roulette/betting-table.webp',
   './gameday-baccarat.html',
   './gameday-slots-lobby.html',
   './gameday-slots.html',
@@ -160,7 +166,7 @@ const SHELL=[
 ];
 
 self.addEventListener('install',event=>{
-  event.waitUntil(caches.open(CACHE).then(cache=>cache.addAll(SHELL.map(path=>path==='./'||/(?:index\.html|gameday-(?:app\.js|premium-app\.css|light-theme\.css|team-logos\.(?:js|css)|(?:midnight-monsters|galactic-rebellion|lucky-7s|blackjack|baccarat|jacks)-game\.(?:js|css)|table-(?:wager|dealing)\.(?:js|css)|poker-hand-evaluation\.js|home\.css|(?:sportsbook|my-bets|auth|premium|casino-v2|slots-lobby|slots|(?:midnight-monsters|galactic-rebellion)(?:-v2)?|blackjack|baccarat|roulette|poker|jacks-or-better|texas-holdem|omaha|seven-card-stud|five-card-draw)\.html))(?:\?.*)?$/.test(path)||/\/assets\/sportsbook\/team-logos\.json$/.test(path)?new Request(path,{cache:'reload'}):path))).then(()=>self.skipWaiting()));
+  event.waitUntil(caches.open(CACHE).then(cache=>cache.addAll(SHELL.map(path=>path==='./'||/(?:index\.html|gameday-(?:app\.js|premium-app\.css|light-theme\.css|team-logos\.(?:js|css)|(?:midnight-monsters|galactic-rebellion|lucky-7s|blackjack|baccarat|jacks|roulette)-game\.(?:js|css)|table-(?:wager|dealing)\.(?:js|css)|poker-hand-evaluation\.js|roulette-spinner\.(?:js|css)|home\.css|(?:sportsbook|my-bets|auth|premium|casino-v2|slots-lobby|slots|(?:midnight-monsters|galactic-rebellion)(?:-v2)?|blackjack|baccarat|roulette|poker|jacks-or-better|texas-holdem|omaha|seven-card-stud|five-card-draw)\.html))(?:\?.*)?$/.test(path)||/\/assets\/sportsbook\/team-logos\.json$/.test(path)?new Request(path,{cache:'reload'}):path))).then(()=>self.skipWaiting()));
 });
 
 self.addEventListener('activate',event=>{
@@ -190,11 +196,12 @@ self.addEventListener('fetch',event=>{
   const tableWagerRuntime=/\/gameday-table-(?:wager|dealing)\.(?:js|css)$/.test(url.pathname);
   const themeRuntime=/\/(?:gameday-light-theme\.css|gameday-app\.js|gameday-premium-app\.css)$/.test(url.pathname);
   const logoRuntime=/\/(?:gameday-team-logos\.(?:js|css)|assets\/sportsbook\/team-logos\.json)$/.test(url.pathname);
-  const slotRuntime=/\/gameday-(?:midnight-monsters|galactic-rebellion|lucky-7s|blackjack|baccarat|jacks)-game\.(?:js|css)$/.test(url.pathname);
+  const slotRuntime=/\/gameday-(?:midnight-monsters|galactic-rebellion|lucky-7s|blackjack|baccarat|jacks|roulette)-game\.(?:js|css)$/.test(url.pathname);
   const pokerRuntime=/\/gameday-poker-hand-evaluation\.js$/.test(url.pathname);
-  const criticalRuntime=pokerRuntime||tableWagerRuntime||themeRuntime||logoRuntime||slotRuntime||/\/(?:gameday-config|gameday-card-wager-ui|gameday-standard-deck|gameday-live-card-tables|gameday-blackjack-live|gameday-roulette-spinner|gameday-app|gameday-home)\.(?:js|css)$/.test(url.pathname);
+  const rouletteSpinnerRuntime=/\/gameday-roulette-spinner\.(?:js|css)$/.test(url.pathname);
+  const criticalRuntime=rouletteSpinnerRuntime||pokerRuntime||tableWagerRuntime||themeRuntime||logoRuntime||slotRuntime||/\/(?:gameday-config|gameday-card-wager-ui|gameday-standard-deck|gameday-live-card-tables|gameday-blackjack-live|gameday-roulette-spinner|gameday-app|gameday-home)\.(?:js|css)$/.test(url.pathname);
   if(criticalRuntime){
-    event.respondWith(fetch(req,pokerRuntime||tableWagerRuntime||themeRuntime||logoRuntime||slotRuntime?{cache:'no-cache'}:undefined).then(res=>{
+    event.respondWith(fetch(req,rouletteSpinnerRuntime||pokerRuntime||tableWagerRuntime||themeRuntime||logoRuntime||slotRuntime?{cache:'no-cache'}:undefined).then(res=>{
       const copy=res.clone();
       caches.open(CACHE).then(cache=>cache.put(req,copy));
       return res;

@@ -41,6 +41,10 @@ Working casino games:
 - `gameday-baccarat.html`
 - `gameday-slots.html`
 
+Roulette uses the photographed walnut-and-gold single-zero wheel and emerald betting table. Players choose one number, outside bet, or column, build a stake with the shared $1–$500 chips, and spin. The authenticated `roulette-test` function settles the test wallet atomically; owner-scoped request UUIDs recover interrupted spins without a second debit. Straight numbers pay 35:1 profit, columns 2:1, and outside bets 1:1; zero loses every outside and column bet.
+
+For a fresh Roulette backend, apply `supabase/migrations/20261010021011_roulette_complete.sql` before deploying `supabase/functions/roulette-test/index.ts` with JWT verification enabled. Run `node --test tests/roulette-completion.test.cjs` to verify settlement and recovery. Browser animation always lands on the service result.
+
 Older wallet, betslip, settlement, live, v2/v3/v4, wager, and casino routes are redirect shims only. Do not rebuild independent wagering logic in those files.
 
 ## Operator tooling

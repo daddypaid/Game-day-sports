@@ -112,11 +112,11 @@
   }
   stage.gamedayWager = Object.freeze({
     getAmount: () => amount,
-    setAmount(value) {
+    setAmount(value, { asDraft = false } = {}) {
       if (!validAmount(value)) throw new TypeError('Invalid wager amount');
       amount = Math.round(value * 100) / 100;
       selectedChip = chips.some(([chip]) => chip === value) ? value : null;
-      chipDraftStarted = false;
+      chipDraftStarted = asDraft && amount > 0;
       feedbackText = '';
       changed();
     },
