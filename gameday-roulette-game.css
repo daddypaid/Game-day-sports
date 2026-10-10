@@ -13,10 +13,15 @@ body.gd-roulette-game .account-row{display:flex;align-items:center;justify-conte
 body.gd-roulette-game .account-row strong{padding:7px 10px;background:#153d24;border:1px solid #3f8555;border-radius:9px;color:#dcf4e0;white-space:nowrap}
 body.gd-roulette-game #roulette-account{display:none!important}
 .gd-roulette-game .game-stage{display:flex;flex-direction:column;background:var(--gd-roulette-felt);overflow:hidden}
-.gd-roulette-wheel-area{padding:8px 3px 0;background:var(--gd-roulette-felt)}
-.gd-roulette-wheel-caption{margin:0 12px 9px;text-align:center;color:#f8dd97;font:700 15px/1.4 Georgia,serif}
+.gd-roulette-wheel-area{position:relative;z-index:2;padding:22px 3px 0;margin-bottom:-10.5%;background:transparent}
+.gd-roulette-wheel-caption{position:absolute;top:3px;left:12px;right:12px;margin:0;text-align:center;color:#f8dd97;font:700 12px/1.4 Georgia,serif;pointer-events:none}
 .gd-roulette-table{position:relative;width:100%;aspect-ratio:1024/1960;background:var(--gd-roulette-felt);isolation:isolate}
 .gd-roulette-table>img{position:absolute;inset:0;width:100%;height:100%;object-fit:fill;pointer-events:none;user-select:none}
+.gd-roulette-table-shoulders{position:absolute;bottom:calc(100% - 8px);left:0;width:100%;height:auto;aspect-ratio:1024/180;overflow:visible;pointer-events:none}
+/* The open felt neck sits beneath the bowl. Only its top is replaced, preserving
+   the photographed board and all 46 betting-cell coordinates below 17.2%. */
+.gd-roulette-table>img:not(.gd-roulette-table-neck){clip-path:inset(16.9% 0 0 0)}
+.gd-roulette-table>img.gd-roulette-table-neck{clip-path:inset(0 0 83.05% 0);mask-image:linear-gradient(transparent,#000 8px)}
 html:root body.gd-roulette-game .gd-roulette-bet{position:absolute;display:grid;place-items:center;min-width:0;min-height:0!important;margin:0;padding:0;border:1px solid #e5be68;border-radius:0;background:#034b25;color:#fff1cb;font:700 clamp(15px,5.4vw,29px)/1 Georgia,serif;text-shadow:0 2px 3px #000;touch-action:manipulation;cursor:pointer;box-shadow:inset 0 0 12px #0005}
 html:root body.gd-roulette-game .gd-roulette-bet-red{background:linear-gradient(115deg,#941212,#bc1d19,#830e11)}
 html:root body.gd-roulette-game .gd-roulette-bet-black{background:linear-gradient(115deg,#11110f,#1c1d19,#080a08)}
@@ -44,4 +49,4 @@ html:root body.gd-roulette-game .gd-roulette-retry,html:root body.gd-roulette-ga
 html:root body.gd-roulette-game .gd-roulette-sound{order:9}
 .gd-roulette-test-note{order:10;text-align:center;font-size:10px;letter-spacing:.08em;color:#9ead9e;margin:0 12px 4px}
 body.gd-roulette-game [hidden]{display:none!important}
-@media(min-width:620px){.gd-roulette-table{aspect-ratio:1024/1660}.gd-roulette-bet{font-size:28px}.gd-roulette-wheel-area{padding:8px 32px 0}}
+@media(min-width:620px){.gd-roulette-table{aspect-ratio:1024/1660}.gd-roulette-bet{font-size:28px}.gd-roulette-wheel-area{padding-inline:3px}}

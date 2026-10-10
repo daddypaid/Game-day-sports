@@ -1,4 +1,4 @@
-const CACHE='gameday-shell-v110';
+const CACHE='gameday-shell-v111';
 const SHELL=[
   './',
   './index.html',
@@ -16,6 +16,7 @@ const SHELL=[
   './gameday-roulette-spinner.css',
   './assets/roulette/wheel.webp',
   './assets/roulette/betting-table.webp',
+  './assets/roulette/table-joined-top.webp',
   './gameday-baccarat.html',
   './gameday-slots-lobby.html',
   './gameday-slots.html',

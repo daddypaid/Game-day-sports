@@ -23,7 +23,20 @@
   <section class="game-stage" aria-label="GameDay single-zero Roulette">
     <div class="gd-roulette-wheel-area"><div id="roulette-wheel" class="gd-roulette-wheel" data-bowl-src="assets/roulette/wheel.webp" data-rotor-src="assets/roulette/wheel.webp" aria-label="European Roulette wheel"></div><p id="roulette-wheel-caption" class="gd-roulette-wheel-caption" aria-live="polite">European Roulette · Single zero</p></div>
     <div class="gd-roulette-table" role="group" aria-label="Roulette betting table">
+      <svg class="gd-roulette-table-shoulders" viewBox="0 0 1024 180" aria-hidden="true" focusable="false">
+        <defs>
+          <linearGradient id="roulette-shoulder-wood"><stop stop-color="#2b1005"/><stop offset=".45" stop-color="#6b3213"/><stop offset="1" stop-color="#321205"/></linearGradient>
+          <linearGradient id="roulette-shoulder-gold"><stop stop-color="#70400b"/><stop offset=".22" stop-color="#e4a239"/><stop offset=".45" stop-color="#ffec9a"/><stop offset=".7" stop-color="#bf7d18"/><stop offset="1" stop-color="#ffe29a"/></linearGradient>
+          <pattern id="roulette-shoulder-grain" width="1024" height="1536" patternUnits="userSpaceOnUse"><image href="assets/roulette/table-joined-top.webp" width="1536" height="2304"/></pattern>
+        </defs>
+        <path d="M100 0C60 6 0 50 0 110V180H129C155 113 119 60 119 0Z M924 0C964 6 1024 50 1024 110V180H895C869 113 905 60 905 0Z" fill="url(#roulette-shoulder-wood)"/>
+        <path id="roulette-wood-shoulder" d="M100 0C60 6 0 50 0 110V180H129C155 113 119 60 119 0Z" fill="url(#roulette-shoulder-grain)"/><use href="#roulette-wood-shoulder" transform="translate(1024 0) scale(-1 1)"/>
+        <path d="M100 0C100 60 136 113 110 180 M924 0C924 60 888 113 914 180" fill="none" stroke="#231103" stroke-width="25"/>
+        <path d="M100 0C100 60 136 113 110 180 M924 0C924 60 888 113 914 180" fill="none" stroke="url(#roulette-shoulder-gold)" stroke-width="18"/>
+        <path d="M105 0C105 60 141 113 115 180 M919 0C919 60 883 113 909 180" fill="none" stroke="#ffebaf" stroke-width="2"/>
+      </svg>
       <img src="assets/roulette/betting-table.webp" width="1024" height="1536" alt="GameDay Roulette emerald felt with walnut and gold table border" fetchpriority="high">
+      <img class="gd-roulette-table-neck" src="assets/roulette/table-joined-top.webp" width="1024" height="1536" alt="" aria-hidden="true" fetchpriority="high">
       <button type="button" class="gd-roulette-bet gd-roulette-bet-green" data-roulette-bet="number" data-roulette-value="0" data-roulette-label="0" aria-label="Bet on 0" aria-pressed="false" style="left:25.400%;top:17.200%;width:57.500%;height:5.100%">0</button>
       <button type="button" class="gd-roulette-bet gd-roulette-bet-red" data-roulette-bet="number" data-roulette-value="1" data-roulette-label="1" aria-label="Bet on 1" aria-pressed="false" style="left:25.600%;top:22.300%;width:19.583%;height:5.230%">1</button>
       <button type="button" class="gd-roulette-bet gd-roulette-bet-black" data-roulette-bet="number" data-roulette-value="2" data-roulette-label="2" aria-label="Bet on 2" aria-pressed="false" style="left:44.733%;top:22.300%;width:19.583%;height:5.230%">2</button>
