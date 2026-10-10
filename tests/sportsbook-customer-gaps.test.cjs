@@ -8,6 +8,17 @@ const http=require('node:http');
 const {chromium}=require(process.env.PLAYWRIGHT_MODULE||'playwright');
 const root=path.resolve(__dirname,'..');
 let browser,server,base;
+const disposals=new WeakMap();
+function disposeContext(context){
+ if(!disposals.has(context))disposals.set(context,(async()=>{
+  // Keep external traffic blocked after removing routes, and leave frames alive
+  // until existing async fixture handlers have finished their evaluations.
+  await context.setOffline(true);
+  await context.unrouteAll({behavior:'wait'});
+  await context.close();
+ })());
+ return disposals.get(context);
+}
 const sdk=`export function createClient(){
  const unlocked=()=>{if(__f.authLock)throw Error('SDK called inside auth callback')};
  return {auth:{getSession:async()=>{unlocked();return {data:{session:__f.session},error:null}},onAuthStateChange(fn){__f.callbacks.push(fn);return{data:{subscription:{unsubscribe(){}}}}}},
@@ -18,7 +29,7 @@ function matchup(live=false){return {id:'fixture-event',commence_time:new Date(D
 test.before(async()=>{server=http.createServer((req,res)=>{const file=path.join(root,decodeURIComponent(new URL(req.url,'http://local').pathname));if(!file.startsWith(root+path.sep)){res.writeHead(403).end();return}try{res.setHeader('Content-Type',file.endsWith('.js')?'text/javascript':file.endsWith('.css')?'text/css':'text/html');res.end(fs.readFileSync(file))}catch{res.writeHead(404).end()}});await new Promise(r=>server.listen(0,'127.0.0.1',r));base=`http://127.0.0.1:${server.address().port}`;browser=await chromium.launch({...(process.env.CHROMIUM_PATH?{executablePath:process.env.CHROMIUM_PATH}:{}),headless:true,args:['--no-sandbox']})});
 test.after(async()=>{await browser?.close();await new Promise(r=>server.close(r))});
 async function open(t,{sdkFailures=0,sdkDependencyFailures=0,wallet=100,live=false,liveFailure=false,states=[],empty=''}={}){
- const context=await browser.newContext({viewport:{width:390,height:844},serviceWorkers:'block'});t.after(()=>context.close());
+ const context=await browser.newContext({viewport:{width:390,height:844},serviceWorkers:'block'});t.after(()=>disposeContext(context));
  await context.addInitScript(({wallet,liveFailure,states,empty})=>{const session=id=>({user:{id,email:id+'@example.invalid'},access_token:'fixture-'+id});window.__session=session;window.__f={session:session('A'),callbacks:[],authLock:false,wallets:{A:{balance:wallet},B:{balance:500}},calls:[],failure:null,legacy:false,liveFailure,states,empty};const nativeInterval=window.setInterval;window.setInterval=(fn,ms,...args)=>{if(ms===15000)__f.liveTick=fn;return nativeInterval(fn,ms,...args)};window.__emit=s=>{__f.session=s;__f.authLock=true;try{for(const cb of __f.callbacks)cb(s?'SIGNED_IN':'SIGNED_OUT',s)}finally{__f.authLock=false}}},{wallet,liveFailure,states,empty});
  await context.route('https://**/*',r=>r.abort());
  let sdkRequests=0,dependencyRequests=0;
@@ -30,6 +41,24 @@ async function open(t,{sdkFailures=0,sdkDependencyFailures=0,wallet=100,live=fal
 }
 async function prepare(p,amount='10'){await p.locator('.odd').first().click();await p.click('#openSlip');await p.fill('#stake',amount)}
 async function rejection(p){await p.waitForFunction(()=>document.querySelector('#slipMsg').textContent.includes('No credits were charged'))}
+
+test('fixture teardown drains an in-flight route before closing its frame',async t=>{
+ const {p,context}=await open(t);let release,entered,draining,timeout,cleanupDone=false,completedMarker;
+ const gate=new Promise(resolve=>release=resolve),started=new Promise(resolve=>entered=resolve),drainStarted=new Promise(resolve=>draining=resolve);
+ const unrouteAll=context.unrouteAll.bind(context);context.unrouteAll=options=>{assert.deepEqual(options,{behavior:'wait'});draining();return unrouteAll(options)};
+ await context.route(base+'/fixture/teardown',async route=>{
+  entered();await gate;
+  completedMarker=await route.request().frame().evaluate(()=>window.__teardownMarker);
+  await route.fulfill({contentType:'application/json',body:JSON.stringify({marker:completedMarker})});
+ });
+ await p.evaluate(()=>{window.__teardownMarker='frame still alive';void fetch('/fixture/teardown').catch(()=>{})});await started;
+ const cleanup=disposeContext(context).then(()=>cleanupDone=true);
+ try{
+  await Promise.race([drainStarted,cleanup.then(()=>{throw Error('Frame closed before route drain started')}),new Promise((_,reject)=>timeout=setTimeout(()=>reject(Error('Route drain never started')),3000))]);
+  assert.equal(cleanupDone,false);assert.equal(p.isClosed(),false);
+ }finally{clearTimeout(timeout);release()}
+ await cleanup;assert.equal(completedMarker,'frame still alive');assert.equal(p.isClosed(),true);
+});
 
 test('SDK failure has a retry, blocks wagers, clears checking state and recovers once',async t=>{
  const h=await open(t,{sdkFailures:1}),{p}=h;assert.match(await p.locator('#account').textContent(),/Connection unavailable/);assert.match(await p.locator('#balance').textContent(),/unavailable/i);assert.equal(await p.locator('#slipBalance').textContent(),'Unavailable');assert(await p.locator('#place').isDisabled());
