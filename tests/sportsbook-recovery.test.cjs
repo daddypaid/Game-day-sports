@@ -51,7 +51,7 @@ async function open(t, options={}) {
   else if(body.mode==='props')data={event:{...game(body.sport),bookmakers:[{markets:[{key:body.markets[0],outcomes:[{name:'Over',description:body.sport+' Player',point:250.5,price:-110}]}]}]}};
   else if(body.mode==='future_markets')data={futures:[{key:body.sport+'_winner',title:body.sport+' Winner'}]};
   else if(body.mode==='futures')data={future:{title:body.sport+' Winner'},futures:[{id:'future-'+body.sport,bookmakers:[{markets:[{key:'outrights',outcomes:[{name:body.sport+' Champion',price:500}]}]}]}]};
-  else data={states:[]};
+  else data={sport:body.sport,fetched_at:new Date().toISOString(),stale:false,states:[]};
   try{await route.fulfill({contentType:'application/json',body:JSON.stringify(data)})}catch(e){if(!/closed|disposed/.test(e.message))throw e}
  });
  const page=await context.newPage(),errors=[];page.on('pageerror',e=>errors.push(e.message));await page.goto(base+'/gameday-sportsbook.html');await page.locator('.odd').first().waitFor();

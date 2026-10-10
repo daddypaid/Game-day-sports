@@ -1,28 +1,71 @@
-import { createClient } from 'npm:@supabase/supabase-js@2.115.0'
+import { createClient } from 'npm:@supabase/supabase-js@2.117.3'
+import { clean, routeFor, mapEspnEvent, mapMlbGame, withoutCurrentTime, type Route } from './live-state-model.ts'
 
 const corsHeaders = {
-  'Access-Control-Allow-Origin': '*',
-  'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type',
-  'Access-Control-Allow-Methods': 'GET, POST, OPTIONS',
-  'Content-Type': 'application/json',
+  'Access-Control-Allow-Origin':'*',
+  'Access-Control-Allow-Headers':'authorization, x-client-info, apikey, content-type',
+  'Access-Control-Allow-Methods':'GET, POST, OPTIONS',
+  'Content-Type':'application/json',
+  'Cache-Control':'no-store',
 }
-function json(data: unknown, status = 200) { return new Response(JSON.stringify(data), { status, headers: corsHeaders }) }
-function clean(v: unknown) { return String(v ?? '').trim() }
-function normalizeName(v: unknown) { return clean(v).toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g,'').replace(/[^a-z0-9]+/g,' ').replace(/\b(fc|cf|sc|club|team)\b/g,' ').replace(/\s+/g,' ').trim() }
-function isoDate(offsetDays=0){const d=new Date(Date.now()+offsetDays*86400000);return d.toISOString().slice(0,10)}
-function serviceKey(){const legacy=Deno.env.get('SUPABASE_SERVICE_ROLE_KEY');if(legacy)return legacy;const raw=Deno.env.get('SUPABASE_SECRET_KEYS');if(!raw)return null;try{const parsed=JSON.parse(raw);return parsed.default??Object.values(parsed)[0]??null}catch{return null}}
-async function getApi(url:string,key:string){const r=await fetch(url,{headers:{'x-apisports-key':key}});const raw=await r.text();let data:any;try{data=raw?JSON.parse(raw):null}catch{data={errors:{parse:raw}}}if(!r.ok)throw new Error(`API-SPORTS ${r.status}`);if(data?.errors&&((Array.isArray(data.errors)&&data.errors.length)||(!Array.isArray(data.errors)&&Object.keys(data.errors).length)))throw new Error(`API-SPORTS: ${JSON.stringify(data.errors)}`);return Array.isArray(data?.response)?data.response:[]}
-async function getJson(url:string){const r=await fetch(url,{headers:{'Accept':'application/json','User-Agent':'GameDay-Sports/1.0'}});if(!r.ok)throw new Error(`MLB ${r.status}`);return await r.json()}
-function num(v:unknown){const n=Number(v);return Number.isFinite(n)?n:null}
-function scoreTotal(obj:any){if(obj==null)return null;if(typeof obj==='number')return obj;if(typeof obj==='string'&&obj.trim()!=='')return num(obj);if(typeof obj==='object'){for(const k of ['total','points','runs','goals']){const n=num(obj?.[k]);if(n!==null)return n}}return null}
-function ordinal(n:number){const mod100=n%100;if(mod100>=11&&mod100<=13)return `${n}th`;switch(n%10){case 1:return `${n}st`;case 2:return `${n}nd`;case 3:return `${n}rd`;default:return `${n}th`}}
-function baseballPeriod(item:any,short:string,long:string){const m=short.match(/^IN(\d+)$/i);if(!m)return short&&!['NS','FT'].includes(short)?short:(long||null);const inning=Number(m[1]);const homeInnings=item?.scores?.home?.innings??item?.score?.home?.innings??{};const homeValue=homeInnings?.[inning]??homeInnings?.[String(inning)];const half=(homeValue===null||homeValue===undefined||homeValue==='')?'Top':'Bot';return `${half} ${ordinal(inning)}`}
-function mapGridGame(item:any,sport:string){const game=item?.game??item,status=game?.status??item?.status??{},home=item?.teams?.home??item?.home??{},away=item?.teams?.away??item?.away??{},short=clean(status?.short),long=clean(status?.long),timer=clean(status?.timer??game?.timer??item?.timer),finished=['FT','AOT','AP','CANC','PST'].includes(short),notStarted=['NS','TBD'].includes(short);const period=(sport==='mlb'||sport==='baseball')?baseballPeriod(item,short,long):(short&&!['NS','FT'].includes(short)?short:(long&&!finished&&!notStarted?long:null));return{provider:'api-sports',sport,provider_event_id:clean(game?.id??item?.id),home_team:clean(home?.name),away_team:clean(away?.name),home_key:normalizeName(home?.name),away_key:normalizeName(away?.name),home_score:scoreTotal(item?.scores?.home??item?.score?.home),away_score:scoreTotal(item?.scores?.away??item?.score?.away),period,clock:timer||null,status_short:short||null,status_long:long||null,live:!finished&&!notStarted,completed:finished}}
-function mapSoccer(item:any){const fixture=item?.fixture??{},status=fixture?.status??{},home=item?.teams?.home??{},away=item?.teams?.away??{},elapsed=num(status?.elapsed),seconds=clean(status?.seconds),short=clean(status?.short),finished=['FT','AET','PEN','CANC','PST'].includes(short),notStarted=['NS','TBD'].includes(short);return{provider:'api-sports',sport:'soccer',provider_event_id:clean(fixture?.id),home_team:clean(home?.name),away_team:clean(away?.name),home_key:normalizeName(home?.name),away_key:normalizeName(away?.name),home_score:num(item?.goals?.home),away_score:num(item?.goals?.away),period:clean(status?.long)||short||null,clock:seconds||(elapsed!==null?`${elapsed}'`:null),status_short:short||null,status_long:clean(status?.long)||null,live:!finished&&!notStarted,completed:finished}}
-async function fetchOneDate(host:string,sport:string,key:string,offset=0){const rows=await getApi(`https://${host}/games?date=${isoDate(offset)}`,key);return rows.map((x:any)=>mapGridGame(x,sport)).filter((x:any)=>x.live)}
-async function fetchDateGames(host:string,sport:string,key:string){let rows=await fetchOneDate(host,sport,key,0);if(!rows.length)rows=await fetchOneDate(host,sport,key,-1).catch(()=>[]);return rows}
-async function mlbScheduleGames(){const all:any[]=[];for(const offset of [0,-1]){try{const d=await getJson(`https://statsapi.mlb.com/api/v1/schedule?sportId=1&date=${isoDate(offset)}`);for(const day of d?.dates??[])for(const g of day?.games??[])all.push(g)}catch(e){console.error('MLB schedule lookup failed:',e instanceof Error?e.message:String(e))}}return all}
-async function enrichMlb(states:any[]){if(!states.length)return states;const schedule=await mlbScheduleGames();const byMatch=new Map<string,any>();for(const g of schedule){const home=normalizeName(g?.teams?.home?.team?.name),away=normalizeName(g?.teams?.away?.team?.name);if(home&&away)byMatch.set(`${away}|${home}`,g)}return await Promise.all(states.map(async(state:any)=>{const g=byMatch.get(`${state.away_key}|${state.home_key}`);if(!g?.gamePk)return{...state,clock:null};try{const ls=await getJson(`https://statsapi.mlb.com/api/v1/game/${g.gamePk}/linescore`);const inningState=clean(ls?.inningState),inningOrdinal=clean(ls?.currentInningOrdinal)||(num(ls?.currentInning)!==null?ordinal(Number(ls.currentInning)):'');const half=inningState.toLowerCase().startsWith('bottom')?'Bot':inningState.toLowerCase().startsWith('top')?'Top':inningState;const offense=ls?.offense??{};const balls=num(ls?.balls),strikes=num(ls?.strikes),outs=num(ls?.outs),bases={first:Boolean(offense?.first),second:Boolean(offense?.second),third:Boolean(offense?.third)};return{...state,provider:'api-sports+mlb',period:(half&&inningOrdinal)?`${half} ${inningOrdinal}`:state.period,clock:null,balls,strikes,outs,bases,batter:clean(offense?.batter?.fullName)||null,on_deck:clean(offense?.onDeck?.fullName)||null,game_pk:String(g.gamePk)}}catch(e){console.error('MLB live detail failed:',e instanceof Error?e.message:String(e));return{...state,clock:null}}}))}
-Deno.serve(async(req:Request)=>{if(req.method==='OPTIONS')return new Response(null,{status:204,headers:corsHeaders});if(req.method!=='GET'&&req.method!=='POST')return json({error:'Method not allowed'},405);const key=Deno.env.get('API_SPORTS_KEY');if(!key)return json({error:'API_SPORTS_KEY is not configured'},503);let body:any={};if(req.method==='POST'){try{body=await req.json()}catch{body={}}}const requestUrl=new URL(req.url),sport=clean(requestUrl.searchParams.get('sport')??body?.sport).toLowerCase();if(!sport)return json({error:'sport is required'},400);
-const supabaseUrl=Deno.env.get('SUPABASE_URL'),svc=serviceKey(),cacheKey=`live-state:${sport}`;let admin:any=null,stalePayload:any=null;if(supabaseUrl&&svc){admin=createClient(supabaseUrl,svc,{auth:{persistSession:false,autoRefreshToken:false,detectSessionInUrl:false}});try{const{data}=await admin.from('odds_response_cache').select('payload,expires_at').eq('cache_key',cacheKey).maybeSingle();if(data?.payload){stalePayload=data.payload;if(new Date(data.expires_at).getTime()>Date.now())return json(data.payload)}}catch(e){console.error('Live-state cache read failed:',e instanceof Error?e.message:String(e))}}
-try{let states:any[]=[];if(['nfl','ncaaf'].includes(sport))states=await fetchDateGames('v1.american-football.api-sports.io',sport,key);else if(['nba','wnba','ncaab','basketball'].includes(sport))states=await fetchDateGames('v1.basketball.api-sports.io',sport,key);else if(['mlb','baseball'].includes(sport)){states=await fetchDateGames('v1.baseball.api-sports.io',sport,key);states=await enrichMlb(states)}else if(['nhl','hockey'].includes(sport))states=await fetchDateGames('v1.hockey.api-sports.io',sport,key);else if(['mls','epl','ucl','soccer','football'].includes(sport)){const rows=await getApi('https://v3.football.api-sports.io/fixtures?live=all',key);states=rows.map(mapSoccer).filter((x:any)=>x.live)}else return json({error:'Live state is not configured for this sport yet'},400);const ttlMs=states.length?15000:300000,payload={provider:'api-sports',sport,count:states.length,states,fetched_at:new Date().toISOString(),cache_ttl_seconds:ttlMs/1000};if(admin){try{const now=new Date();await admin.from('odds_response_cache').upsert({cache_key:cacheKey,payload,expires_at:new Date(now.getTime()+ttlMs).toISOString(),updated_at:now.toISOString()},{onConflict:'cache_key'})}catch(e){console.error('Live-state cache write failed:',e instanceof Error?e.message:String(e))}}return json(payload)}catch(e){console.error('GameDay live-state failed:',e instanceof Error?e.message:String(e));if(stalePayload){const cachedStates=(stalePayload.states||[]).map((s:any)=>({...s,period:s?.period?`${s.period} • Cached`:'Live • Cached'}));return json({...stalePayload,states:cachedStates,stale:true,warning:'Live game state is temporarily using cached data.'})}return json({error:'Unable to load live game state'},502)}})
+const json=(data:unknown,status=200)=>new Response(JSON.stringify(data),{status,headers:corsHeaders})
+function serviceKey(){const legacy=Deno.env.get('SUPABASE_SERVICE_ROLE_KEY');if(legacy)return legacy;try{const parsed=JSON.parse(Deno.env.get('SUPABASE_SECRET_KEYS')??'{}');return parsed.default??Object.values(parsed)[0]??null}catch{return null}}
+function date(offset:number){return new Date(Date.now()+offset*86400000).toISOString().slice(0,10)}
+// Timeout includes both headers and body, including SDK cache requests.
+async function boundedFetch(input:any,init:any={},timeout=5000) {
+  const controller=new AbortController(),timer=setTimeout(()=>controller.abort(),timeout);
+  try {
+    const response=await fetch(input,{...init,signal:controller.signal});
+    const bytes=await response.arrayBuffer();
+    return new Response([204,205,304].includes(response.status)?null:bytes,{status:response.status,statusText:response.statusText,headers:response.headers});
+  } finally {clearTimeout(timer)}
+}
+async function providerJson(url:string){
+  const r=await boundedFetch(url,{headers:{Accept:'application/json','User-Agent':'GameDay-Sports/1.0'}});
+  if(!r.ok)throw new Error('Provider unavailable');
+  const providerDate=Date.parse(r.headers.get('date')??''),age=Number(r.headers.get('age')??0);
+  if((Number.isFinite(providerDate)&&Math.abs(Date.now()-providerDate)>90000)||!Number.isFinite(age)||age>90)throw new Error('Aged provider response');
+  return await r.json();
+}
+async function providerStates(route:Route,sport:string){
+  const isMlb=route.kind==='baseball';
+  const results=await Promise.allSettled([0,-1].map(async offset=>{
+    const day=date(offset),url=isMlb
+      ?`https://statsapi.mlb.com/api/v1/schedule?sportId=1&date=${day}&hydrate=linescore`
+      :`https://site.api.espn.com/apis/site/v2/sports/${route.path}/scoreboard?dates=${day.replaceAll('-','')}&limit=100${route.path==='football/college-football'?'&groups=80':''}`;
+    const data=await providerJson(url),fetchedAt=new Date().toISOString();
+    if(isMlb){if(!Array.isArray(data?.dates))throw new Error('Invalid provider response');return data.dates.flatMap((d:any)=>(d.games??[]).map((g:any)=>mapMlbGame(g,sport,fetchedAt,route.preseason)).filter(Boolean))}
+    if(!Array.isArray(data?.events)||!data?.leagues?.some((l:any)=>l.slug===route.path.split('/')[1]))throw new Error('Invalid provider league');
+    return data.events.flatMap((e:any)=>mapEspnEvent(e,route,sport,fetchedAt));
+  }));
+  // A partial outage cannot prove that an event missing from a failed date ended.
+  if(results.some(r=>r.status==='rejected'))throw new Error('Provider unavailable');
+  const unique=new Map<string,any>();for(const result of results)if(result.status==='fulfilled')for(const s of result.value)unique.set(`${s.provider}:${s.provider_event_id}`,s);
+  return [...unique.values()];
+}
+Deno.serve(async(req:Request)=>{
+  if(req.method==='OPTIONS')return new Response(null,{status:204,headers:corsHeaders});
+  if(!['GET','POST'].includes(req.method))return json({error:'Method not allowed'},405);
+  let body:any={};if(req.method==='POST'){try{body=await req.json()}catch{return json({error:'Invalid JSON'},400)}}
+  const sport=clean(new URL(req.url).searchParams.get('sport')??body?.sport).toLowerCase();
+  if(!/^[a-z0-9_]{1,100}$/.test(sport))return json({error:'A valid sport is required'},400);
+  const route=routeFor(sport);
+  if(!route)return json({provider:null,sport,count:0,states:[],fetched_at:new Date().toISOString(),stale:false,configured:false,warning:'Live time is not available for this competition.'});
+  const cacheKey=`live-state:verified-v2:${sport}`,url=Deno.env.get('SUPABASE_URL'),svc=serviceKey();let admin:any=null,stalePayload:any=null;
+  if(url&&svc){
+    admin=createClient(url,svc,{auth:{persistSession:false,autoRefreshToken:false,detectSessionInUrl:false},db:{retry:false},global:{fetch:(input:any,init:any)=>boundedFetch(input,init,2000)}});
+    try{const{data}=await admin.from('odds_response_cache').select('payload,expires_at').eq('cache_key',cacheKey).maybeSingle();
+      if(data?.payload?.sport===sport){stalePayload=data.payload;const age=Date.now()-Date.parse(data.payload.fetched_at);if(new Date(data.expires_at).getTime()>Date.now()&&age>=0&&age<30000)return json(data.payload)}
+    }catch{console.warn('Live-state cache read unavailable')}
+  }
+  try{
+    const states=await providerStates(route,sport),now=new Date(),ttl=15000;
+    const payload={provider:route.kind==='baseball'?'mlb':'espn',sport,count:states.length,states,fetched_at:now.toISOString(),stale:false,configured:true,cache_ttl_seconds:ttl/1000};
+    if(admin){try{const{error}=await admin.from('odds_response_cache').upsert({cache_key:cacheKey,payload,expires_at:new Date(now.getTime()+ttl).toISOString(),updated_at:now.toISOString()},{onConflict:'cache_key'});if(error)console.warn('Live-state cache write unavailable')}catch{console.warn('Live-state cache write unavailable')}}
+    return json(payload);
+  }catch{
+    console.warn('Verified live-state provider unavailable');
+    if(stalePayload)return json(withoutCurrentTime(stalePayload));
+    return json({error:'Live game time is temporarily unavailable',sport,stale:true,states:[]},502);
+  }
+})

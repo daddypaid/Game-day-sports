@@ -45,7 +45,7 @@ async function open(t,options={}){
   else if(body.mode==='events')data={events:[game(body.sport)]};
   else if(body.mode==='prop_markets')data={prop_markets:['player_pass_yds']};
   else if(body.mode==='props')data={event:propEvent(body.sport,updated,updated&&state.missingPlayer)};
-  else data={states:[]};
+  else data={sport:body.sport,fetched_at:new Date().toISOString(),stale:false,states:[]};
   await r.fulfill({contentType:'application/json',body:JSON.stringify(data)});
  });
  const p=await context.newPage(),errors=[];p.on('pageerror',e=>errors.push(e.message));t.after(()=>assert.deepEqual(errors,[]));

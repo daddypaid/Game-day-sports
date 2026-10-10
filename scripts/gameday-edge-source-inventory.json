@@ -1,7 +1,7 @@
 {
   "schema_version": 1,
   "project_ref": "qsvrvhcklnsbekxblpfo",
-  "observed_at": "2026-10-10T13:38:06.333Z",
+  "observed_at": "2026-10-10T17:08:25.891660+00:00",
   "source": "Supabase list_edge_functions and get_edge_function read-only snapshots",
   "hash_algorithm": "sha256",
   "notes": [
@@ -177,17 +177,22 @@
     },
     {
       "slug": "gameday-live-state",
-      "deployed_version": 12,
+      "deployed_version": 15,
       "deployed_status": "ACTIVE",
       "verify_jwt": false,
       "import_map": false,
-      "deployed_bundle_sha256": "65dbb2d8a51afed1509da0579df7f42907daf4c2c2d22eba660807e54f8af947",
+      "deployed_bundle_sha256": "7ac9010995e7c527ebe8db87b488eaf49bb3e760cd00b6d47d5bba55b40232e1",
       "source_status": "local_matches_deployment",
       "files": [
         {
           "path": "supabase/functions/gameday-live-state/index.ts",
-          "deployed_sha256": "2fb368ff0581e04d7b5c06057b8896dfd0fa9b27749f7bb2fe0edf7427f49795",
-          "local_sha256": "2fb368ff0581e04d7b5c06057b8896dfd0fa9b27749f7bb2fe0edf7427f49795"
+          "deployed_sha256": "533a6059b97311f0559cb999eec5ca538da9463c0e385ea7b417562fb6b50f5b",
+          "local_sha256": "533a6059b97311f0559cb999eec5ca538da9463c0e385ea7b417562fb6b50f5b"
+        },
+        {
+          "path": "supabase/functions/gameday-live-state/live-state-model.ts",
+          "deployed_sha256": "ce5ab817163722a38cc92fc4e7f86d70fdfec49a4280de34334ed5e4d7edac1f",
+          "local_sha256": "ce5ab817163722a38cc92fc4e7f86d70fdfec49a4280de34334ed5e4d7edac1f"
         }
       ]
     },
