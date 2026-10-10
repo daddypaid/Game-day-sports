@@ -574,7 +574,7 @@ function showInfo() {
     }
     paytable.append(caption, thead, tbody);
     content.appendChild(paytable);
-    content.append(paragraph('Winning paylines are added together. Total bet is split equally across five lines. Payouts, symbols, and test-wallet changes are settled by the authenticated GameDay service.'));
+    content.append(paragraph('Winning paylines are added together. Total bet is split equally across five lines.'));
   } else content.append(paragraph('Sign in to load the current GameDay Lucky 7s test paytable.'));
   const title = document.createElement('h3');
   title.textContent = '5 paylines';
