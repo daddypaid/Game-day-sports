@@ -7,7 +7,7 @@ const { stripTypeScriptTypes } = require('node:module');
 const { webcrypto } = require('node:crypto');
 const { PGlite } = require(process.env.GAMEDAY_PGLITE_MODULE || '@electric-sql/pglite');
 const root = path.resolve(__dirname, '../..');
-const migration = path.join(root, 'supabase/migrations/20261010104859_slot_request_receipts.sql');
+const migration = path.join(root, 'supabase/migrations/20261010110730_slot_request_receipts.sql');
 const user = '11111111-1111-4111-8111-111111111111';
 const other = '22222222-2222-4222-8222-222222222222';
 const clone = value => JSON.parse(JSON.stringify(value));

@@ -1,4 +1,4 @@
-const CACHE='gameday-shell-v121';
+const CACHE='gameday-shell-v122';
 const SHELL=[
   './',
   './index.html',
@@ -60,6 +60,7 @@ const SHELL=[
   './assets/poker-premium/jacks-or-better-approved.jpg',
   './gameday-control-center.html',
   './gameday-operator-analytics.html',
+  './gameday-operator-ui.js',
   './gameday-system-health.html',
   './gameday-buyer-demo.html',
   './gameday-admin-takeover.html',

@@ -1,0 +1,178 @@
+{
+  "scope": "isolated application schema and RPC restore; no production data or hosted services",
+  "started_at": "2026-10-10T13:37:21.158Z",
+  "finished_at": "2026-10-10T13:38:22.286Z",
+  "server_version": "17.6 (Debian 17.6-2.pgdg12+1)",
+  "extensions": [
+    {
+      "extname": "pg_cron",
+      "extversion": "1.6"
+    },
+    {
+      "extname": "pg_net",
+      "extversion": "0.20.4"
+    }
+  ],
+  "scheduler": {
+    "scheduled_jobs": 0,
+    "queued_requests": 0
+  },
+  "application_tables": 36,
+  "schema_fingerprint_equal": true,
+  "schema_fingerprint_sha256": "52f4e05e5020c8c9a9c3f75172a5df6f02762ec993cc89b78132c1feb1ad2de2",
+  "baseline_sha256": "21fdfc7c0a7b46b08037cdfabde621810043511c4805249768e42e965e39b18e",
+  "blackjack_rpc": {
+    "passed": true,
+    "dealReplay": true,
+    "hitStand": true,
+    "splitDouble": true,
+    "staleActionRejected": true,
+    "otherOwnerRejected": true,
+    "walletLedgerReconciled": true
+  },
+  "backup_restore": {
+    "passed": true,
+    "synthetic_only": true,
+    "schema_equal": true,
+    "owner_rls": true,
+    "wallet_ledger_wager_casino_equal": true,
+    "wallet_ledger_reconciled": true,
+    "sha256": "e27995a260443f6a0038933c1020cd81cf34a3a36a4129b4746a593b3b118c3d",
+    "scheduler": {
+      "scheduled_jobs": 0,
+      "queued_requests": 0
+    }
+  },
+  "operator_alerts": {
+    "passed": true,
+    "checks": [
+      "four distinct severity transitions",
+      "unchanged-observation deduplication",
+      "tied timestamps and reversed UUID causality",
+      "active lease fences recovery",
+      "legacy suppressed-state reconciliation",
+      "backfill preserves original alert IDs",
+      "service-only privileges"
+    ],
+    "migration_sha256": "567f98f6d304b8f8a1f34882b923a6f7ee617463d5dab4aaba297b51e24c7b8f"
+  },
+  "load": {
+    "passed": true,
+    "assertions": {
+      "walletLedgerReconciled": true,
+      "noOverdraft": true,
+      "noDuplicateDebitsOrSpins": true,
+      "retriesReplayCommittedResults": true,
+      "noUnfinishedPoker": true,
+      "bonusCountBounded": true,
+      "requestConflictRejected": true
+    },
+    "deadlocks": 0,
+    "productionCapacityVerified": false
+  },
+  "checks": [
+    "Every chronological application migration applied without omitted extension SQL",
+    "Live catalog and restored catalog match: columns, constraints, indexes, policies, ACLs, routines, triggers and views",
+    "Synthetic new-user trigger, owner-scoped wallet reads and restricted settlement RPC verified",
+    "Restored Blackjack Deal replay, Hit, Stand, Split, Double, stale-action and owner checks reconcile with the wallet ledger",
+    "Actual pg_dump/pg_restore into a second PostgreSQL runtime preserved synthetic wallet, ledger, wagers, casino results, schema, ACLs and owner RLS",
+    "Actual PostgreSQL alert transition, legacy backfill, causal ordering, lease fencing and service-only privilege checks passed",
+    "Restored database passed sustained concurrent wallet, sportsbook, slots, poker and durable retry workload"
+  ],
+  "passed": true,
+  "canonical_migrations": 71,
+  "catalog_entries": 748,
+  "source_baseline": "supabase/restore/schema-baseline.sql",
+  "load_limitations": [
+    "Local loopback HTTP fixture and restored application RPCs only.",
+    "No hosted PostgREST/Supavisor/Edge/Auth/odds-provider/CDN latency or throttling.",
+    "Deterministic outcomes; game probability/fairness is not a load-test claim."
+  ],
+  "load_phases": [
+    {
+      "name": "32 owners sustained sportsbook, three slots and poker",
+      "targetSeconds": 30,
+      "rounds": 9,
+      "acceptedUniqueOperations": 6912,
+      "logicalOperations": 6912,
+      "httpClients": 64,
+      "duplicates": 2,
+      "seconds": 32.514,
+      "completedClientRequests": 13824,
+      "requestsPerSecond": 425.2,
+      "logicalOperationsPerSecond": 212.6,
+      "latency": {
+        "count": 13824,
+        "p50Ms": 120.72,
+        "p95Ms": 309.87,
+        "p99Ms": 498.12,
+        "maxMs": 3166.76
+      },
+      "acceptedResponses": 13824,
+      "rejectedResponses": 0
+    },
+    {
+      "name": "one wallet with120 competing wagers and20 credits",
+      "acceptedUniqueOperations": 20,
+      "logicalOperations": 120,
+      "httpClients": 64,
+      "duplicates": 3,
+      "seconds": 0.999,
+      "completedClientRequests": 360,
+      "requestsPerSecond": 360.5,
+      "logicalOperationsPerSecond": 120.2,
+      "latency": {
+        "count": 360,
+        "p50Ms": 127.14,
+        "p95Ms": 416.66,
+        "p99Ms": 509.62,
+        "maxMs": 600.35
+      },
+      "acceptedResponses": 60,
+      "rejectedResponses": 300
+    },
+    {
+      "name": "64 simultaneous retries per durable request",
+      "acceptedUniqueOperations": 2,
+      "logicalOperations": 2,
+      "httpClients": 64,
+      "duplicates": 64,
+      "seconds": 0.305,
+      "completedClientRequests": 128,
+      "requestsPerSecond": 419.8,
+      "logicalOperationsPerSecond": 6.6,
+      "latency": {
+        "count": 128,
+        "p50Ms": 167.87,
+        "p95Ms": 257.11,
+        "p99Ms": 261.9,
+        "maxMs": 264.87
+      },
+      "acceptedResponses": 128,
+      "rejectedResponses": 0
+    },
+    {
+      "name": "20 competing free spins with only10 remaining",
+      "acceptedUniqueOperations": 10,
+      "logicalOperations": 20,
+      "httpClients": 64,
+      "duplicates": 3,
+      "seconds": 0.095,
+      "completedClientRequests": 60,
+      "requestsPerSecond": 633.2,
+      "logicalOperationsPerSecond": 211.1,
+      "latency": {
+        "count": 60,
+        "p50Ms": 72.07,
+        "p95Ms": 92.94,
+        "p99Ms": 94.75,
+        "maxMs": 94.75
+      },
+      "acceptedResponses": 30,
+      "rejectedResponses": 30
+    }
+  ],
+  "load_pool_size": 32,
+  "load_client_concurrency": 64,
+  "live_schema_md5": "c67682a936e171ce1d08c4c7efe67e5f"
+}

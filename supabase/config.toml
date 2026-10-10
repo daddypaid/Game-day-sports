@@ -1,9 +1,89 @@
 project_id = "game-day-sports"
 
+[functions.api-sports-basketball-probe]
+verify_jwt = true
+
+[functions.api-sports-nfl-probe]
+verify_jwt = true
+
+[functions.api-sports-status]
+verify_jwt = true
+
+[functions.api-sports-wnba-probe]
+verify_jwt = true
+
+# Cron authenticates with x-gameday-job-token inside the handler.
+
+[functions.auto-settle-test-wagers]
+verify_jwt = false
+
+[functions.baccarat-test]
+verify_jwt = true
+
 [functions.blackjack-test]
 verify_jwt = true
 
-[functions.baccarat-test]
+[functions.caribbean-stud-test]
+verify_jwt = true
+
+[functions.casino-history-test]
+verify_jwt = true
+
+# Preserves the deployed gateway setting; handler authorization remains required.
+
+[functions.gameday-live-state]
+verify_jwt = false
+
+# Preserves the deployed gateway setting; handler authorization remains required.
+
+[functions.gameday-odds]
+verify_jwt = false
+
+[functions.gameday-operator-analytics]
+verify_jwt = true
+
+[functions.gameday-operator-health]
+verify_jwt = true
+
+[functions.gameday-operator-metrics]
+verify_jwt = true
+
+# The scheduled monitor verifies its dedicated job secret inside the handler.
+[functions.gameday-operator-monitor]
+verify_jwt = false
+
+[functions.jacks-or-better-test]
+verify_jwt = true
+
+[functions.live-casino-launch]
+verify_jwt = true
+
+[functions.mlb-boxscore-probe]
+verify_jwt = true
+
+# Preserves the deployed gateway setting; handler authorization remains required.
+
+[functions.odds-engine]
+verify_jwt = false
+
+[functions.odds-proxy]
+verify_jwt = true
+
+[functions.place-test-wager]
+verify_jwt = true
+
+# Preserves the deployed gateway setting; handler authorization remains required.
+
+[functions.poker-test]
+verify_jwt = false
+
+[functions.refill-test-wallet]
+verify_jwt = true
+
+[functions.roulette-test]
+verify_jwt = true
+
+[functions.settle-test-wager]
 verify_jwt = true
 
 [functions.slots-test]
@@ -12,13 +92,11 @@ verify_jwt = true
 [functions.themed-slots-test]
 verify_jwt = true
 
-[functions.place-test-wager]
+[functions.three-card-poker-test]
 verify_jwt = true
 
-# The scheduled grading job verifies x-gameday-job-token inside its handler.
-# Cron uses that job secret rather than a customer session JWT.
-[functions.auto-settle-test-wagers]
-verify_jwt = false
+[functions.ultimate-texas-holdem-test]
+verify_jwt = true
 
-[functions.casino-history-test]
+[functions.video-poker-test]
 verify_jwt = true

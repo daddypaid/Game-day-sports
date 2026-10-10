@@ -14,93 +14,15 @@ jobs:
   transferability:
     runs-on: ubuntu-latest
     steps:
-      - name: Checkout
-        uses: actions/checkout@v4
-
-      - name: Validate shared public configuration
-        shell: bash
-        run: |
-          set -euo pipefail
-          test -s gameday-config.js
-          test -s gameday-transfer-audit.html
-          test -s gameday-config-check.html
-          test -s gameday-buyer-readiness.html
-          test -s gameday-platform-architecture.html
-          test -s scripts/gameday-transfer-config.mjs
-
-          grep -q "environment: 'TEST'" gameday-config.js
-          grep -q "blackjack: 'blackjack-test'" gameday-config.js
-          grep -q "roulette: 'roulette-test'" gameday-config.js
-          grep -q "baccarat: 'baccarat-test'" gameday-config.js
-          grep -q "slots: 'slots-test'" gameday-config.js
-          grep -q "buyerReadiness: 'gameday-buyer-readiness.html'" gameday-config.js
-          grep -q "platformArchitecture: 'gameday-platform-architecture.html'" gameday-config.js
-
-          node --check scripts/gameday-transfer-config.mjs
-
-      - name: Validate centralized customer and operator pages
-        shell: bash
-        run: |
-          set -euo pipefail
-          centralized=(
-            gameday-sportsbook.html
-            gameday-casino-v2.html
-            gameday-my-bets.html
-            gameday-auth.html
-            gameday-blackjack.html
-            gameday-roulette.html
-            gameday-baccarat.html
-            gameday-slots.html
-            gameday-control-center.html
-            gameday-operator-analytics.html
-            gameday-system-health.html
-          )
-          for file in "${centralized[@]}"; do
-            test -s "$file"
-            if grep -q 'qsvrvhcklnsbekxblpfo' "$file"; then
-              echo "Legacy embedded project reference detected in $file"
-              exit 1
-            fi
-          done
-          node scripts/check-gameday-release.mjs
-
-      - name: Validate casino function mappings
-        shell: bash
-        run: |
-          set -euo pipefail
-          node scripts/check-gameday-release.mjs
-
-      - name: Validate buyer handoff surfaces
-        shell: bash
-        run: |
-          set -euo pipefail
-          test -s gameday-admin-takeover.html
-          test -s gameday-buyer-readiness.html
-          test -s gameday-platform-architecture.html
-          test -s ACQUISITION-HANDOFF.md
-          test -s BUYER-OVERVIEW.md
-          grep -q 'Buyer Readiness' gameday-admin-takeover.html
-          grep -q 'gameday-buyer-readiness.html' gameday-admin-takeover.html
-          grep -q 'TEST MODE' gameday-buyer-readiness.html
-          grep -q 'TEST MODE' gameday-platform-architecture.html
-          grep -q 'BUYER-OVERVIEW.md' gameday-admin-takeover.html
-
-      - name: Block private browser credentials
-        shell: bash
-        run: |
-          set -euo pipefail
-          if grep -RInE \
-            --include='*.html' --include='*.js' --include='*.css' \
-            'SUPABASE_SERVICE_ROLE_KEY|SUPABASE_SECRET_KEYS|API_SPORTS_KEY|ODDS_API_KEY|sb_secret_[A-Za-z0-9_-]+' .; then
-            echo 'Private backend credential reference detected in browser source.'
-            exit 1
-          fi
-
-      - name: Confirm transfer tooling remains test-mode only
-        shell: bash
-        run: |
-          set -euo pipefail
-          grep -q 'Public browser configuration only' scripts/gameday-transfer-config.mjs
-          grep -q 'TEST MODE' gameday-transfer-audit.html
-          grep -q 'TEST MODE' gameday-buyer-readiness.html
-          grep -q 'TEST MODE' gameday-platform-architecture.html
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+          cache: npm
+      - run: npm ci --ignore-scripts --no-audit --no-fund
+      - name: Validate current customer services and PWA resources
+        run: npm run check:release
+      - name: Verify current transfer package and public-config transfer
+        run: node scripts/check-gameday-handoff.mjs --mode transfer
+      - name: Verify release checks reject broken fixtures
+        run: node --test tests/release-readiness.test.cjs

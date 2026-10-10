@@ -1,0 +1,17 @@
+alter policy "Users can view own baccarat rounds" on public.baccarat_rounds using ((select auth.uid()) = user_id);
+alter policy blackjack_hands_select_own on public.blackjack_hands using ((select auth.uid()) = user_id);
+alter policy "users read own live casino sessions" on public.live_casino_sessions using ((select auth.uid()) = user_id);
+alter policy profiles_select_own on public.profiles using ((select auth.uid()) = id);
+alter policy profiles_update_own on public.profiles using ((select auth.uid()) = id) with check ((select auth.uid()) = id);
+alter policy roulette_spins_select_own on public.roulette_spins using ((select auth.uid()) = user_id);
+alter policy "Users can view own slot spins" on public.slot_spins using ((select auth.uid()) = user_id);
+alter policy wager_selections_select_own on public.wager_selections using (exists (select 1 from public.wagers w where w.id = wager_selections.wager_id and w.user_id = (select auth.uid())));
+alter policy wagers_select_own on public.wagers using ((select auth.uid()) = user_id);
+alter policy wallet_transactions_select_own on public.wallet_transactions using ((select auth.uid()) = user_id);
+alter policy wallets_select_own on public.wallets using ((select auth.uid()) = user_id);
+create index if not exists baccarat_rounds_user_id_idx on public.baccarat_rounds(user_id);
+create index if not exists roulette_spins_user_id_idx on public.roulette_spins(user_id);
+create index if not exists slot_spins_user_id_idx on public.slot_spins(user_id);
+create index if not exists live_casino_sessions_user_id_idx on public.live_casino_sessions(user_id);
+create index if not exists live_casino_sessions_game_id_idx on public.live_casino_sessions(game_id);
+drop index if exists public.sports_outcomes_market_key_idx;

@@ -7,7 +7,7 @@ const { webcrypto } = require('node:crypto');
 const user = '11111111-1111-4111-8111-111111111111';
 const other = '22222222-2222-4222-8222-222222222222';
 const root = path.resolve(__dirname, '../..');
-const migration = path.resolve(root, 'supabase/migrations/20261010042617_poker_table_games.sql');
+const migration = path.resolve(root, 'supabase/migrations/20261010043551_poker_table_games.sql');
 const setupSQL = `
 create role anon; create role authenticated; create role service_role bypassrls;
 create schema auth; create table auth.users(id uuid primary key);

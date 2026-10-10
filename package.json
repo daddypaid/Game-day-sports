@@ -9,11 +9,15 @@
     "test:slot-startup": "node tests/slot-startup-recovery.browser.cjs",
     "test:card-recovery": "node tests/card-deal-recovery.browser.cjs",
     "check:release": "node scripts/check-gameday-release.mjs",
+    "check:handoff": "node scripts/check-gameday-handoff.mjs --mode transfer",
+    "test:restore": "node scripts/rehearse-gameday-restore.mjs",
+    "test:restore-load": "node scripts/rehearse-gameday-restore.mjs --load",
     "test:casino-history": "node tests/casino-table-history-roundtrip.browser.cjs"
   },
   "devDependencies": {
     "@electric-sql/pglite": "0.3.14",
     "@supabase/supabase-js": "2.117.3",
+    "pg": "8.23.1",
     "playwright": "1.64.0"
   }
 }

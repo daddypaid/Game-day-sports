@@ -1,0 +1,88 @@
+{
+  "scope": "names only; configure secret values separately",
+  "files": {
+    "supabase/functions/_shared/operator-auth.ts": [
+      "SUPABASE_ANON_KEY",
+      "SUPABASE_SERVICE_ROLE_KEY",
+      "SUPABASE_URL"
+    ],
+    "supabase/functions/auto-settle-test-wagers/index.ts": [
+      "API_SPORTS_KEY",
+      "ODDS_API_KEY",
+      "SUPABASE_SERVICE_ROLE_KEY",
+      "SUPABASE_URL"
+    ],
+    "supabase/functions/baccarat-test/index.ts": [
+      "SUPABASE_ANON_KEY",
+      "SUPABASE_SERVICE_ROLE_KEY",
+      "SUPABASE_URL"
+    ],
+    "supabase/functions/blackjack-test/index.ts": [
+      "SUPABASE_ANON_KEY",
+      "SUPABASE_SERVICE_ROLE_KEY",
+      "SUPABASE_URL"
+    ],
+    "supabase/functions/casino-history-test/index.ts": [
+      "SUPABASE_ANON_KEY",
+      "SUPABASE_SERVICE_ROLE_KEY",
+      "SUPABASE_URL"
+    ],
+    "supabase/functions/gameday-live-state/index.ts": [
+      "API_SPORTS_KEY",
+      "SUPABASE_SECRET_KEYS",
+      "SUPABASE_SERVICE_ROLE_KEY",
+      "SUPABASE_URL"
+    ],
+    "supabase/functions/gameday-odds/index.ts": [
+      "ODDS_API_KEY",
+      "SUPABASE_SECRET_KEYS",
+      "SUPABASE_SERVICE_ROLE_KEY",
+      "SUPABASE_URL"
+    ],
+    "supabase/functions/gameday-operator-monitor/index.ts": [
+      "GAMEDAY_OPERATOR_ALERT_SIGNING_SECRET",
+      "GAMEDAY_OPERATOR_ALERT_WEBHOOK_URL",
+      "SUPABASE_SERVICE_ROLE_KEY",
+      "SUPABASE_URL"
+    ],
+    "supabase/functions/jacks-or-better-test/index.ts": [
+      "SUPABASE_ANON_KEY",
+      "SUPABASE_SERVICE_ROLE_KEY",
+      "SUPABASE_URL"
+    ],
+    "supabase/functions/odds-engine/index.ts": [
+      "ODDS_API_KEY",
+      "SUPABASE_SERVICE_ROLE_KEY"
+    ],
+    "supabase/functions/place-test-wager/index.ts": [
+      "SUPABASE_ANON_KEY",
+      "SUPABASE_SERVICE_ROLE_KEY",
+      "SUPABASE_URL"
+    ],
+    "supabase/functions/poker-test/index.ts": [
+      "SUPABASE_ANON_KEY",
+      "SUPABASE_SERVICE_ROLE_KEY",
+      "SUPABASE_URL"
+    ],
+    "supabase/functions/refill-test-wallet/index.ts": [
+      "SUPABASE_ANON_KEY",
+      "SUPABASE_SERVICE_ROLE_KEY",
+      "SUPABASE_URL"
+    ],
+    "supabase/functions/roulette-test/index.ts": [
+      "SUPABASE_ANON_KEY",
+      "SUPABASE_SERVICE_ROLE_KEY",
+      "SUPABASE_URL"
+    ],
+    "supabase/functions/slots-test/index.ts": [
+      "SUPABASE_ANON_KEY",
+      "SUPABASE_SERVICE_ROLE_KEY",
+      "SUPABASE_URL"
+    ],
+    "supabase/functions/themed-slots-test/index.ts": [
+      "SUPABASE_ANON_KEY",
+      "SUPABASE_SERVICE_ROLE_KEY",
+      "SUPABASE_URL"
+    ]
+  }
+}

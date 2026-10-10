@@ -16,7 +16,7 @@ const payload = (selections = [selection()], stake = 10, type = 'single') => ({w
 async function fixture() {
   const db = new PGlite(); await db.waitReady;
   await db.exec(fs.readFileSync(path.join(__dirname,'fixtures/sportsbook-placement-baseline.sql'),'utf8'));
-  await db.exec(fs.readFileSync(path.join(root,'supabase/migrations/20261010104833_sportsbook_durable_requests_and_safe_parlays.sql'),'utf8'));
+  await db.exec(fs.readFileSync(path.join(root,'supabase/migrations/20261010110728_sportsbook_durable_requests_and_safe_parlays.sql'),'utf8'));
   await db.query('insert into auth.users values($1),($2)',[user,other]);
   await db.query('insert into wallets(user_id,balance) values($1,1000),($2,1000)',[user,other]);
   const rpc = async (name,args) => (await db.query(`select public.${name}(${args.map((_,i) => '$'+(i+1)).join(',')}) as result`,args)).rows[0].result;
@@ -171,11 +171,16 @@ test('Settlement uses one canonical provider fetch for short aliases and raw Wor
   const game = {id:'done',completed:true,home_team:'Home',away_team:'Away',scores:[{name:'Home',score:'24'},{name:'Away',score:'21'}]};
   const keys = ['nfl','americanfootball_nfl','NBA','basketball_nba','epl','soccer_epl','soccer_germany_bundesliga','boxing_boxing'];
   const wagers = keys.map((key,i) => ({id:'wager-'+i,wager_type:'single',stake:10,wager_selections:[{id:'leg-'+i,...selection('done',{sport_key:key})}]}));
-  const context = vm.createContext({Request,Response,URLSearchParams,Date,Map,Set,JSON,Number,String,Math,Error,
+  const context = vm.createContext({Request,Response,URLSearchParams,Date,Map,Set,JSON,Number,String,Math,Error,Boolean,AbortController,AbortSignal,setTimeout,clearTimeout,crypto:webcrypto,
     Deno:{env:{get:key => ({SUPABASE_URL:'https://fixture.invalid',SUPABASE_SERVICE_ROLE_KEY:'service',ODDS_API_KEY:'fixture',API_SPORTS_KEY:'fixture'})[key]},serve:fn => {handler = fn}},
-    createClient() {return {from(table) {const q = {select:() => q,eq:() => q,in:() => q,order:() => q,limit:() => q,
-      single:async () => ({data:{secret:'fixture'},error:null}),then:(yes,no) => Promise.resolve({data:wagers,error:null}).then(yes,no)};return q;},
-      rpc:async (name,args) => {calls.settlements.push({name,args});return {data:{},error:null};}};},
+    createClient() {return {from(table) {const q = {select:() => q,eq:() => q,in:() => q,order:() => q,limit:() => q,upsert:() => q,
+      single:async () => ({data:{secret:'fixture'},error:null}),then:(yes,no) => Promise.resolve({data:table==='wagers'?wagers:[],error:null}).then(yes,no)};return q;},
+      rpc:async (name,args) => {
+        if(name==='claim_test_wager_settlement_batch')return {data:wagers.map(w=>({wager_id:w.id})),error:null};
+        if(name==='get_test_wager_settlement_health')return {data:{pending_count:1},error:null};
+        if(args.p_outcome==='settled')calls.settlements.push({name,args});
+        return {data:{applied:true},error:null};
+      }};},
     fetch:async url => {calls.fetches.push(url);return new Response(JSON.stringify([game]));},
   });
   new vm.Script(executable('supabase/functions/auto-settle-test-wagers/index.ts')).runInContext(context);

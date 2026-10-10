@@ -19,8 +19,8 @@ async function fixture() {
     create table video_poker_hands(id uuid primary key default gen_random_uuid(),user_id uuid not null,game text not null,stake numeric not null,initial_hand jsonb not null,final_hand jsonb,deck_remaining jsonb not null,status text not null,result text,multiplier numeric not null,payout numeric not null,is_test boolean not null,created_at timestamptz not null,settled_at timestamptz);
     insert into auth.users values('${A}'),('${B}');
   `);
-  await db.exec(fs.readFileSync(path.join(root, 'supabase/migrations/20261010042617_poker_table_games.sql'), 'utf8'));
-  await db.exec(fs.readFileSync(path.join(root, 'supabase/migrations/20261010121725_casino_table_history_indexes.sql'), 'utf8'));
+  await db.exec(fs.readFileSync(path.join(root, 'supabase/migrations/20261010043551_poker_table_games.sql'), 'utf8'));
+  await db.exec(fs.readFileSync(path.join(root, 'supabase/migrations/20261010122742_casino_table_history_indexes.sql'), 'utf8'));
   const calls = [];
   let handler, fail = false, authenticated = true, authError = null, authHang = false, queryHang = false;
   function projection(columns) {

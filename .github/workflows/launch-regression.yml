@@ -21,9 +21,35 @@ jobs:
       - run: npm ci --ignore-scripts --no-audit --no-fund
       - run: npx playwright install --with-deps chromium
       - run: npm run check:release
+      - run: npm run check:handoff
       - run: npm test
       - run: npm run test:slot-recovery
       - run: npm run test:slot-roundtrip
       - run: npm run test:slot-startup
       - run: npm run test:card-recovery
       - run: npm run test:casino-history
+  database-restore-and-load:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+          cache: npm
+      - run: npm ci --ignore-scripts --no-audit --no-fund
+      - name: Build pinned PostgreSQL with real scheduler and network extensions
+        run: docker build --secret id=proxy_ca,src=/etc/ssl/certs/ca-certificates.crt -t gameday-restore-postgres:17.6 supabase/restore
+      - name: Restore migrations and backup, then exercise concurrent transactions
+        run: npm run test:restore-load
+        env:
+          GAMEDAY_RESTORE_ARTIFACT_DIR: ${{ runner.temp }}/gameday-restore-evidence
+      - name: Preserve verification results
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: database-restore-and-load-evidence
+          path: |
+            ${{ runner.temp }}/gameday-restore-evidence/restore-results.json
+            ${{ runner.temp }}/gameday-restore-evidence/postgres-load-results.json
+          if-no-files-found: warn

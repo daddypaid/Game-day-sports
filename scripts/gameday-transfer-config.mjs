@@ -10,8 +10,20 @@ if (!newUrl || !/^https:\/\/[a-z0-9-]+\.supabase\.co$/i.test(newUrl)) {
   process.exit(1);
 }
 
-if (!newKey) {
-  console.error('Set GAMEDAY_SUPABASE_PUBLISHABLE_KEY to the buyer project publishable key.');
+function isPublicKey(key) {
+  if (/^sb_publishable_[A-Za-z0-9_-]+$/.test(key || '')) return true;
+  // Older Supabase projects use a JWT anon key. Its role and project must match;
+  // a service-role JWT must never be copied into public browser configuration.
+  try {
+    const parts = key.split('.');
+    if (parts.length !== 3) return false;
+    const payload = JSON.parse(Buffer.from(parts[1], 'base64url').toString('utf8'));
+    return payload.role === 'anon' && payload.ref === new URL(newUrl).hostname.split('.')[0];
+  } catch { return false; }
+}
+
+if (!isPublicKey(newKey)) {
+  console.error('Set GAMEDAY_SUPABASE_PUBLISHABLE_KEY to a publishable key or matching legacy anon key. Private keys are not accepted.');
   process.exit(1);
 }
 

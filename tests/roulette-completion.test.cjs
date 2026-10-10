@@ -154,7 +154,7 @@ test('read-only state and latest errors never declare a pending spin rejected',a
 });
 
 test('migration serializes owner request recovery before debit and restricts RPC to service role',()=>{
- const sql=fs.readFileSync(path.join(root,'supabase/migrations/20261010021011_roulette_complete.sql'),'utf8');
+ const sql=fs.readFileSync(path.join(root,'supabase/migrations/20261010021639_roulette_complete.sql'),'utf8');
  assert.match(sql,/on public\.roulette_spins \(user_id, request_id\)/);
  assert.match(sql,/p_request_id uuid default null/);
  assert(sql.indexOf('for update')<sql.indexOf('if p_request_id is not null'));

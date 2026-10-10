@@ -10,9 +10,9 @@ const sdk=`export function createClient(){let id=sessionStorage.getItem('fixture
 async function backend(game){
  const db=new PGlite();await db.waitReady;
  await db.exec(fs.readFileSync(root+'/tests/fixtures/card-deal-baseline.sql','utf8'));
- await db.exec(fs.readFileSync(root+'/supabase/migrations/20260912060000_add_blackjack_double_split.sql','utf8'));
- await db.exec(fs.readFileSync(root+'/supabase/migrations/20261010104826_card_deal_request_recovery.sql','utf8'));
- await db.exec(fs.readFileSync(root+'/supabase/migrations/20261010120032_blackjack_insurance_decision.sql','utf8'));
+ await db.exec(fs.readFileSync(root+'/supabase/restore/historical-prerequisites/20260912060000_add_blackjack_double_split.sql','utf8'));
+ await db.exec(fs.readFileSync(root+'/supabase/migrations/20261010110710_card_deal_request_recovery.sql','utf8'));
+ await db.exec(fs.readFileSync(root+'/supabase/migrations/20261010121802_blackjack_insurance_decision.sql','utf8'));
  await db.query('insert into auth.users values($1),($2)',[A,B]);await db.query('insert into wallets(user_id,balance) values($1,1000),($2,1000)',[A,B]);
  let handler;
  const admin={from(table){const filters=[];let ordered=false,limited=false;const q={select(){return q},eq(k,v){filters.push([k,v]);return q},order(){ordered=true;return q},limit(){limited=true;return q},async single(){return q.maybeSingle()},async maybeSingle(){try{const r=await db.query(`select * from ${table} where ${filters.map(([k],i)=>`${k}=$${i+1}`).join(' and ')}${ordered?' order by created_at desc':''}${limited?' limit 1':''}`,filters.map(([,v])=>v));return{data:r.rows[0]||null,error:null}}catch(e){return{data:null,error:{message:e.message}}}}};return q},async rpc(name,p){try{const r=await db.query(`select * from ${name}(${Object.keys(p).map((k,i)=>`${k}=>$${i+1}`).join(',')})`,Object.values(p).map(v=>Array.isArray(v)?JSON.stringify(v):v));return{data:r.rows,error:null}}catch(e){return{data:null,error:{message:e.message}}}}};

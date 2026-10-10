@@ -17,8 +17,8 @@ const sqlTest = (name, callback) => test(name, { skip: PGlite ? false : 'Set GAM
 async function fixture() {
   const db = new PGlite(); await db.waitReady;
   await db.exec(fs.readFileSync(path.join(__dirname, 'fixtures/card-deal-baseline.sql'), 'utf8'));
-  await db.exec(fs.readFileSync(path.join(root, 'supabase/migrations/20261010104826_card_deal_request_recovery.sql'), 'utf8'));
-  await db.exec(fs.readFileSync(path.join(root, 'supabase/migrations/20261010120032_blackjack_insurance_decision.sql'), 'utf8'));
+  await db.exec(fs.readFileSync(path.join(root, 'supabase/migrations/20261010110710_card_deal_request_recovery.sql'), 'utf8'));
+  await db.exec(fs.readFileSync(path.join(root, 'supabase/migrations/20261010121802_blackjack_insurance_decision.sql'), 'utf8'));
   await db.query('insert into auth.users(id) values($1),($2)', [user, other]);
   await db.query('insert into wallets(user_id,balance) values($1,1000),($2,1000)', [user, other]);
   const start = (p = {}) => db.query('select * from start_blackjack_test_hand_idempotent($1,$2,$3,$4::jsonb,$5::jsonb,$6::jsonb,16,9,$7::blackjack_hand_status,$8)',

@@ -1,0 +1,650 @@
+{
+  "captured_at": "2026-10-10",
+  "remote_history_mutated": false,
+  "deployed_migrations": [
+    {
+      "version": "20260904222415",
+      "name": "create_gameday_wager_core",
+      "path": "supabase/migrations/20260904222415_create_gameday_wager_core.sql",
+      "source": "deployed_migration_history",
+      "source_payload_sha256": "deed49d6f48d0ec6081acc443e6f60b75736fea956ac86b1b948b478fb47a1bb",
+      "local_file_sha256": "18ea3256936591e8cd0ebe8b23d8568dc163cb3cd7cd525fc7c4faf54f4e1192",
+      "previous_local_path": null
+    },
+    {
+      "version": "20260904223832",
+      "name": "add_test_flag_to_wagers",
+      "path": "supabase/migrations/20260904223832_add_test_flag_to_wagers.sql",
+      "source": "deployed_migration_history",
+      "source_payload_sha256": "d4a74b0148a57cc4a3fd17aa10685905a751770d286c97f9f91d20dafc9d1f95",
+      "local_file_sha256": "ac319e58d98dc9db6206258e74f8d028c9229eb20f4c8c3fc073511854eb7b54",
+      "previous_local_path": null
+    },
+    {
+      "version": "20260904224935",
+      "name": "add_atomic_test_wallet_wager_flow",
+      "path": "supabase/migrations/20260904224935_add_atomic_test_wallet_wager_flow.sql",
+      "source": "deployed_migration_history",
+      "source_payload_sha256": "12bf7dbe7a5d65439c4cbafffab1f2071bf4ec06f6240d243d3ba700e6a06c43",
+      "local_file_sha256": "ae7895f488c3023df8213eac574f80a8a6a133b791675d2d1ed9dbc9fbed94ee",
+      "previous_local_path": null
+    },
+    {
+      "version": "20260904225700",
+      "name": "fix_atomic_test_wallet_balance_ambiguity",
+      "path": "supabase/migrations/20260904225700_fix_atomic_test_wallet_balance_ambiguity.sql",
+      "source": "deployed_migration_history",
+      "source_payload_sha256": "d9e3c799acd81c896b560648391fb28630ac114d3bf63f624ca118f6a19229d1",
+      "local_file_sha256": "709230475ad88f22f684aad20c79866d1a3117ea078a8202eedced1435fe44bd",
+      "previous_local_path": null
+    },
+    {
+      "version": "20260904230025",
+      "name": "add_atomic_test_wager_settlement",
+      "path": "supabase/migrations/20260904230025_add_atomic_test_wager_settlement.sql",
+      "source": "deployed_migration_history",
+      "source_payload_sha256": "54ff9dc1a374811f1b2be82e3bfa48b0a438a7785944a0921372685637e8e7f8",
+      "local_file_sha256": "d35d38ac482d1f8491419545f077f458c485a26226743f3694be0b8c4a124378",
+      "previous_local_path": null
+    },
+    {
+      "version": "20260904230730",
+      "name": "add_blackjack_test_hands",
+      "path": "supabase/migrations/20260904230730_add_blackjack_test_hands.sql",
+      "source": "deployed_migration_history",
+      "source_payload_sha256": "8c82bbb33bd5a09ab695bda6a434bc6f06d8f54f4a650a22b7a342708e2ca26f",
+      "local_file_sha256": "1c7d5bca3e4fc97f689b082d95d591485b4526f079a8d0b6970070aea9731087",
+      "previous_local_path": null
+    },
+    {
+      "version": "20260904230738",
+      "name": "add_blackjack_shoe_state",
+      "path": "supabase/migrations/20260904230738_add_blackjack_shoe_state.sql",
+      "source": "deployed_migration_history",
+      "source_payload_sha256": "e474b9ea752dbff6bf8628f685e4e89d43de1d07d2cb045fb90f3c99b5b6e5bd",
+      "local_file_sha256": "d63f9433aea25c024444a64fe4d249a283c66e7afac4b0961d6164ce2f9151ac",
+      "previous_local_path": null
+    },
+    {
+      "version": "20260904230758",
+      "name": "add_blackjack_atomic_actions",
+      "path": "supabase/migrations/20260904230758_add_blackjack_atomic_actions.sql",
+      "source": "deployed_migration_history",
+      "source_payload_sha256": "6a069b148e086f7bf9cbbb8eb6c18614c0c83336ff08ddee5ca88df82b6c94a7",
+      "local_file_sha256": "326669f2541a6f4e103b7180e1e9e07f7ea766059f227a10d5c76d12f705e3b4",
+      "previous_local_path": null
+    },
+    {
+      "version": "20260905002535",
+      "name": "create_gameday_test_roulette",
+      "path": "supabase/migrations/20260905002535_create_gameday_test_roulette.sql",
+      "source": "deployed_migration_history",
+      "source_payload_sha256": "d6069518337d7715bd5fb386abb88b9257b595b226beb73410784530ac9fed47",
+      "local_file_sha256": "4bcb9f779ffde3e778b12f4815c315951a45bd7c3de0075febcc1e10eea32b2c",
+      "previous_local_path": null
+    },
+    {
+      "version": "20260905002929",
+      "name": "add_baccarat_test_game",
+      "path": "supabase/migrations/20260905002929_add_baccarat_test_game.sql",
+      "source": "deployed_migration_history",
+      "source_payload_sha256": "eb60e60ef38c8a4e970f2f96abd03d30ef6c2f3723982c50a439158826112a6a",
+      "local_file_sha256": "95ffa4efe4cd83fb66265305dcf9006d3b35f4be0d21eadf96680f66f6ec32c4",
+      "previous_local_path": null
+    },
+    {
+      "version": "20260905003509",
+      "name": "create_slots_test_flow",
+      "path": "supabase/migrations/20260905003509_create_slots_test_flow.sql",
+      "source": "deployed_migration_history",
+      "source_payload_sha256": "b1f1bead9ed0eb9b49d3781037e10828382809917cc8f8829ad5b1872927e05f",
+      "local_file_sha256": "94b577db2e75f758bcd3c4db54b568b36e5fb242c3dcd52487d26e079f976f0a",
+      "previous_local_path": null
+    },
+    {
+      "version": "20260905004220",
+      "name": "add_live_casino_provider_layer",
+      "path": "supabase/migrations/20260905004220_add_live_casino_provider_layer.sql",
+      "source": "deployed_migration_history",
+      "source_payload_sha256": "294de87077c185e36986b8d37bb37ab42c5e8527f673136801282defdd790cfb",
+      "local_file_sha256": "c6c67eabec871b7b2f3b9a9834fc4666162ff4a0c8e4dd9829edeff1d2ce53ff",
+      "previous_local_path": null
+    },
+    {
+      "version": "20260905022832",
+      "name": "create_sports_market_layer",
+      "path": "supabase/migrations/20260905022832_create_sports_market_layer.sql",
+      "source": "deployed_migration_history",
+      "source_payload_sha256": "fbbe3ad8dc0b58dad86c49c4ace383abc5ce4ca4381fae5c52caed86643894ef",
+      "local_file_sha256": "a877c19df64c8045315082338e4fd6558a6cb8525a668149079b68777127d861",
+      "previous_local_path": null
+    },
+    {
+      "version": "20260905022901",
+      "name": "add_sports_outcome_key",
+      "path": "supabase/migrations/20260905022901_add_sports_outcome_key.sql",
+      "source": "deployed_migration_history",
+      "source_payload_sha256": "c0e4170bbccd18d48b256ee5c443a037ae462a412e6ddb5c7f0ca3bb79dabc15",
+      "local_file_sha256": "e3ce4e66f75c276d1fc1559fb9639dda2de360e4192f1761910db36112a8bc8d",
+      "previous_local_path": null
+    },
+    {
+      "version": "20260905023247",
+      "name": "sports_outcome_upsert_key",
+      "path": "supabase/migrations/20260905023247_sports_outcome_upsert_key.sql",
+      "source": "deployed_migration_history",
+      "source_payload_sha256": "576455e70b1c24169d302f6b4412dbb95cdff452393ea6a6098844fedcbc722e",
+      "local_file_sha256": "40a70c9e5c15a1d899efef181276587ffa0a6acaa255b0ab9f1db738e50d7a37",
+      "previous_local_path": null
+    },
+    {
+      "version": "20260905023304",
+      "name": "sports_backend_grants",
+      "path": "supabase/migrations/20260905023304_sports_backend_grants.sql",
+      "source": "deployed_migration_history",
+      "source_payload_sha256": "25f7f72ce129c56853d239a32535bc6ea5e233978a764ec4fee186418889a595",
+      "local_file_sha256": "81d368ccf454453a07f5f79ea54aa6dcf719ab1d0254fd3278d9d2136aee4983",
+      "previous_local_path": null
+    },
+    {
+      "version": "20260905023312",
+      "name": "sports_market_history_trigger",
+      "path": "supabase/migrations/20260905023312_sports_market_history_trigger.sql",
+      "source": "deployed_migration_history",
+      "source_payload_sha256": "f471cb92f9fa89cfdd9efc2a34c1b301f672496f26e5163b21fb2838f6636f9b",
+      "local_file_sha256": "da96750c59d3b298b614004fb5eac8caf45ca00086d2c65bcd39da5141113442",
+      "previous_local_path": null
+    },
+    {
+      "version": "20260905023329",
+      "name": "sports_market_snapshot_support",
+      "path": "supabase/migrations/20260905023329_sports_market_snapshot_support.sql",
+      "source": "deployed_migration_history",
+      "source_payload_sha256": "4e5ae7705f15602e1a9ef4d12b407782b7fecc767f422ebe9f4c2a63083f926f",
+      "local_file_sha256": "0e792524d8a14ed09907a23e6ad24361d1a15b1236a2e75927d4ba44477d6fa0",
+      "previous_local_path": null
+    },
+    {
+      "version": "20260905023335",
+      "name": "sports_market_trigger_permissions",
+      "path": "supabase/migrations/20260905023335_sports_market_trigger_permissions.sql",
+      "source": "deployed_migration_history",
+      "source_payload_sha256": "2e6ef9e9fd05b85432ef8bfe70bb3f830444ef092d1ed6ef6242a43f76b53d5d",
+      "local_file_sha256": "e1b062dc38d2ebb383af311266c14a2ff1f2cb7a112e8fe9b0902b7ef8694688",
+      "previous_local_path": null
+    },
+    {
+      "version": "20260905023340",
+      "name": "sports_market_service_role_rls",
+      "path": "supabase/migrations/20260905023340_sports_market_service_role_rls.sql",
+      "source": "deployed_migration_history",
+      "source_payload_sha256": "26ce78e099f31b97b2e9026854e386ac5bb34fd2fdedcfef2eeabfc9c8fd8d7e",
+      "local_file_sha256": "058d57ebf3332be35e5d4cc35c619049dd96a32f6f659b3fde88902fd6d9609c",
+      "previous_local_path": null
+    },
+    {
+      "version": "20260905023349",
+      "name": "sports_market_comments",
+      "path": "supabase/migrations/20260905023349_sports_market_comments.sql",
+      "source": "deployed_migration_history",
+      "source_payload_sha256": "6526f4064fbdd9374fa10642e1ec73aff96bf87a0fd14b83036f4936c07d2453",
+      "local_file_sha256": "b35c37d8277df75ea48bd9afcc261193a9d89dbbed96d50dfbc5dcd09d77312a",
+      "previous_local_path": null
+    },
+    {
+      "version": "20260905023355",
+      "name": "sports_market_touch_trigger",
+      "path": "supabase/migrations/20260905023355_sports_market_touch_trigger.sql",
+      "source": "deployed_migration_history",
+      "source_payload_sha256": "c17fd9382413aeb7fec77bbacce629b904e2d83189fb9c146b8fc10e7836b058",
+      "local_file_sha256": "dcf2a49ff3df6f3a805ff3d46abcb3382401f9f25f561b2f85353d3b2d7c65ba",
+      "previous_local_path": null
+    },
+    {
+      "version": "20260905023406",
+      "name": "sports_provider_snapshot_payload_index",
+      "path": "supabase/migrations/20260905023406_sports_provider_snapshot_payload_index.sql",
+      "source": "deployed_migration_history",
+      "source_payload_sha256": "45444feb77d24fc45e1911f90040ae29bb81f44e579cd38761fd28260d67c044",
+      "local_file_sha256": "da3528e89a832522379b61d6ee23edfe3336aa72389f958b1ae1c8bd283e509d",
+      "previous_local_path": null
+    },
+    {
+      "version": "20260905023416",
+      "name": "sports_market_no_client_grants",
+      "path": "supabase/migrations/20260905023416_sports_market_no_client_grants.sql",
+      "source": "deployed_migration_history",
+      "source_payload_sha256": "8ca1ba806988599ce4e9ecc9b6e7c0ef47305d9846162b5b99212bdf0e2fde10",
+      "local_file_sha256": "78e2c27ec9037a5f16d3ad9ee8995383d6edd8af5d9fc6bef32181d41511dc7c",
+      "previous_local_path": null
+    },
+    {
+      "version": "20260905023425",
+      "name": "sports_market_constraints_check",
+      "path": "supabase/migrations/20260905023425_sports_market_constraints_check.sql",
+      "source": "deployed_migration_history",
+      "source_payload_sha256": "504b2967bc356a54de565b04d3a99c13ea766d13939ee1b24f582230c23b9b38",
+      "local_file_sha256": "9e901f191dc8c6a6e265387bb19b17fc4d8a73dce81e5098af312f571c035f21",
+      "previous_local_path": null
+    },
+    {
+      "version": "20260905023430",
+      "name": "sports_market_line_history_immutable",
+      "path": "supabase/migrations/20260905023430_sports_market_line_history_immutable.sql",
+      "source": "deployed_migration_history",
+      "source_payload_sha256": "01fe9c9793b1f30c64adac3b2619274444c02f6ae3738f12af04703aa8a1373f",
+      "local_file_sha256": "24b0b2a9d62f118253b67744259400de36b9ee4ea0c707274327d1ae9e1505a5",
+      "previous_local_path": null
+    },
+    {
+      "version": "20260905023436",
+      "name": "sports_snapshots_retention_index",
+      "path": "supabase/migrations/20260905023436_sports_snapshots_retention_index.sql",
+      "source": "deployed_migration_history",
+      "source_payload_sha256": "af4f779d33bcd03e20b3d8e33763978321f8faf418e54cea08475c1ec2137af5",
+      "local_file_sha256": "3d36ff067f98bb17deeccb1aa35215f766350cc452c466c67618559beab6ceb1",
+      "previous_local_path": null
+    },
+    {
+      "version": "20260905023441",
+      "name": "sports_markets_readback_view",
+      "path": "supabase/migrations/20260905023441_sports_markets_readback_view.sql",
+      "source": "deployed_migration_history",
+      "source_payload_sha256": "752311dc92cc762e95c7c98d1690be8ee9b804001752007a88f3e3a11b485ca8",
+      "local_file_sha256": "2dc044e9e5486209a63bb83be773c14e02974598f424ea01fa2f25702006a30a",
+      "previous_local_path": null
+    },
+    {
+      "version": "20260905050720",
+      "name": "add_wager_selection_quote_timestamp",
+      "path": "supabase/migrations/20260905050720_add_wager_selection_quote_timestamp.sql",
+      "source": "deployed_migration_history",
+      "source_payload_sha256": "0facf138e538a71cdd5109def1bacd6a59a7941a078772b439c6d3f86d85cac7",
+      "local_file_sha256": "e570379147ba37174d6d320585015b61b0cd69ecf674f6bc0d0c13ded9d39a76",
+      "previous_local_path": null
+    },
+    {
+      "version": "20260905052111",
+      "name": "add_atomic_auto_wager_settlement",
+      "path": "supabase/migrations/20260905052111_add_atomic_auto_wager_settlement.sql",
+      "source": "deployed_migration_history",
+      "source_payload_sha256": "56229512ab96584e0263b55472ab78da1b6a65915b3c406e6e09701760b221e0",
+      "local_file_sha256": "b4eff2c1360d44e2aa9db70421a6175f8e87a78404fcfe7c2f37a0180b72633f",
+      "previous_local_path": null
+    },
+    {
+      "version": "20260905052146",
+      "name": "secure_auto_settlement_job_token",
+      "path": "supabase/migrations/20260905052146_secure_auto_settlement_job_token.sql",
+      "source": "deployed_migration_history",
+      "source_payload_sha256": "32b9063d6bb7b56def493833b10da528705296f3a454c1bdeae361dc1c30fa58",
+      "local_file_sha256": "668f1bf8b5955de6ce999fd2b059df4570dd393ecd5b38a5b9777a9996eed582",
+      "previous_local_path": null
+    },
+    {
+      "version": "20260905052842",
+      "name": "lock_down_handle_new_user_execute",
+      "path": "supabase/migrations/20260905052842_lock_down_handle_new_user_execute.sql",
+      "source": "deployed_migration_history",
+      "source_payload_sha256": "36d1af64d770de23dcf4086af66bedf668918524771777673dc113504bb30aa6",
+      "local_file_sha256": "a39303c41359dff3b79b6927ba154f8913a51af988b82958b949c50e97a07200",
+      "previous_local_path": null
+    },
+    {
+      "version": "20260905052948",
+      "name": "harden_set_updated_at_search_path",
+      "path": "supabase/migrations/20260905052948_harden_set_updated_at_search_path.sql",
+      "source": "deployed_migration_history",
+      "source_payload_sha256": "d29e9c42d1bf49bb899c48a4d02521db44c03077889b4b87d0c126127a09fe94",
+      "local_file_sha256": "89be834fee81fe44568509d927f6864d940032df9d7e09c60a1f6b1843e7cfa0",
+      "previous_local_path": null
+    },
+    {
+      "version": "20260905054154",
+      "name": "harden_blackjack_hand_reads",
+      "path": "supabase/migrations/20260905054154_harden_blackjack_hand_reads.sql",
+      "source": "deployed_migration_history",
+      "source_payload_sha256": "10ff3be3282e50af8ad25ca6267bd6c151c62324e9255be6f61c8796bb33546d",
+      "local_file_sha256": "16c07be7dc8d3e59fcfca88094ef295544731603dbb544d31b84c40c747ab5a1",
+      "previous_local_path": null
+    },
+    {
+      "version": "20260905054249",
+      "name": "harden_casino_history_tables",
+      "path": "supabase/migrations/20260905054249_harden_casino_history_tables.sql",
+      "source": "deployed_migration_history",
+      "source_payload_sha256": "32aa3758841b7ca5ea3cd5a54d574a0c995dd889fe21c1adcddcc3b1e6772472",
+      "local_file_sha256": "d1657c23311f9f48f59c40ecd2be013fe09bb8eba94fe7d4158ba9f4cabdbe46",
+      "previous_local_path": null
+    },
+    {
+      "version": "20260905054318",
+      "name": "harden_wallet_wager_table_grants",
+      "path": "supabase/migrations/20260905054318_harden_wallet_wager_table_grants.sql",
+      "source": "deployed_migration_history",
+      "source_payload_sha256": "3635b5604f2f0a3411e31d22ce334a6f509f4c4b92cc75ad5a2bb9f14169e858",
+      "local_file_sha256": "4d9ff032ba23b5546cfd949fad0da41046ece1cac0029445105b465ff56d3a17",
+      "previous_local_path": null
+    },
+    {
+      "version": "20260905054626",
+      "name": "optimize_rls_and_fk_indexes",
+      "path": "supabase/migrations/20260905054626_optimize_rls_and_fk_indexes.sql",
+      "source": "deployed_migration_history",
+      "source_payload_sha256": "5a5687149fb79ddbc562723cb992d262dba8dff81fa469e6150e8a11af59f6bf",
+      "local_file_sha256": "2f6a36ea47fc1a5bf9fc02ff5d17503382b24f9d74f8becb9ec0b2483701f499",
+      "previous_local_path": null
+    },
+    {
+      "version": "20260905055001",
+      "name": "add_internal_odds_response_cache",
+      "path": "supabase/migrations/20260905055001_add_internal_odds_response_cache.sql",
+      "source": "deployed_migration_history",
+      "source_payload_sha256": "bb520a2d6547011174eec606064bc756b091834970fcdd1273658a7ed22fe368",
+      "local_file_sha256": "26212d9b8c2f2a975957e884c04f501b94a9fb53ab7400308605d296a535d7b1",
+      "previous_local_path": null
+    },
+    {
+      "version": "20260905062642",
+      "name": "add_wager_ledger_idempotency",
+      "path": "supabase/migrations/20260905062642_add_wager_ledger_idempotency.sql",
+      "source": "deployed_migration_history",
+      "source_payload_sha256": "7a4cb431cd0d01f54359cc0434001d8fae4f2fc8a63ff53084ac0ee09b86e319",
+      "local_file_sha256": "3e4f3e52afcdbd580cb4f7797c011e1b2847fe396f21a3d42b4d665fda50d1d3",
+      "previous_local_path": null
+    },
+    {
+      "version": "20260905062733",
+      "name": "harden_auto_settlement_grade_integrity",
+      "path": "supabase/migrations/20260905062733_harden_auto_settlement_grade_integrity.sql",
+      "source": "deployed_migration_history",
+      "source_payload_sha256": "63a09b7ffc4acfa8822a937047a9567f01fc879adc4085ed0ed09ae235420f8d",
+      "local_file_sha256": "e3ea48c8353bf8eb2ce829cf0e730c1e57e869de35aae849a62691209151db30",
+      "previous_local_path": null
+    },
+    {
+      "version": "20260905063032",
+      "name": "add_atomic_wager_double_tap_protection",
+      "path": "supabase/migrations/20260905063032_add_atomic_wager_double_tap_protection.sql",
+      "source": "deployed_migration_history",
+      "source_payload_sha256": "7d57cf59ef92c0f5b2c07e19eaf809b45a92ca5391f1b1a9993d50ad7700de4d",
+      "local_file_sha256": "c46cb580c88b27c86769a077f4bb8e3c47d463c1f94b83eab172bd2c80cf2cee",
+      "previous_local_path": null
+    },
+    {
+      "version": "20260905070840",
+      "name": "add_controlled_test_wallet_refill",
+      "path": "supabase/migrations/20260905070840_add_controlled_test_wallet_refill.sql",
+      "source": "deployed_migration_history",
+      "source_payload_sha256": "21b37c4881a3153ecaa46e11b6dbb2d833dab7f7a66065a8402356fae790366f",
+      "local_file_sha256": "57ef04549d5c010d33d51ff385431012ce03dc5a358e0deeac764dee68f07cfb",
+      "previous_local_path": null
+    },
+    {
+      "version": "20260905071127",
+      "name": "fund_new_test_wallets",
+      "path": "supabase/migrations/20260905071127_fund_new_test_wallets.sql",
+      "source": "deployed_migration_history",
+      "source_payload_sha256": "e0eeebd306d3e838d628c3f581ec97e5b5ac2243dadc8b009b6039bc79bc3d99",
+      "local_file_sha256": "6525c91978494544f81e33a1a6e6eaf14f8ba95b8c66bcea9b3734f923f030ee",
+      "previous_local_path": null
+    },
+    {
+      "version": "20260905073835",
+      "name": "lock_down_profiles_and_retired_live_casino",
+      "path": "supabase/migrations/20260905073835_lock_down_profiles_and_retired_live_casino.sql",
+      "source": "deployed_migration_history",
+      "source_payload_sha256": "32c7a287924b14178725ba32aecfb6d867192349f92e15b9fbc2182692e49923",
+      "local_file_sha256": "cd293747c290ab10e2f544fd78babae44e3f77eb15e91113cd8b733eb07e42ce",
+      "previous_local_path": null
+    },
+    {
+      "version": "20260905073927",
+      "name": "revoke_direct_set_updated_at_execute",
+      "path": "supabase/migrations/20260905073927_revoke_direct_set_updated_at_execute.sql",
+      "source": "deployed_migration_history",
+      "source_payload_sha256": "f50da424d0400101301d9bf9dfc843f60f88b0fe3509f5fcf2093623cbc34dd8",
+      "local_file_sha256": "825167e0cba1dfced7fa46814541268c0b66b93816bed203c808f32f04de238a",
+      "previous_local_path": null
+    },
+    {
+      "version": "20260905074109",
+      "name": "enforce_wager_shape_and_unique_legs",
+      "path": "supabase/migrations/20260905074109_enforce_wager_shape_and_unique_legs.sql",
+      "source": "deployed_migration_history",
+      "source_payload_sha256": "1ff7c348afc4e1ce5f965f3bd2cb8207a0ddaddc4d0aacdfe4b077cf6c063931",
+      "local_file_sha256": "d3b211928f5d7e8bd188148a60aa865cdb512fcdb073cf0db4fd85c8ffd38709",
+      "previous_local_path": null
+    },
+    {
+      "version": "20260905074721",
+      "name": "enforce_nonnegative_casino_payouts",
+      "path": "supabase/migrations/20260905074721_enforce_nonnegative_casino_payouts.sql",
+      "source": "deployed_migration_history",
+      "source_payload_sha256": "58317b0031f517ba98d42f7070b10de0f33e67318504c7e8d4f22a7d0c2570df",
+      "local_file_sha256": "efe8f3e727ea21fd9819c106e8ac5ccb2d242e8676979eb1970da7901e979032",
+      "previous_local_path": null
+    },
+    {
+      "version": "20260905075243",
+      "name": "one_active_blackjack_hand_per_user",
+      "path": "supabase/migrations/20260905075243_one_active_blackjack_hand_per_user.sql",
+      "source": "deployed_migration_history",
+      "source_payload_sha256": "6024e4c655f1c816cac405b3b99b1088be9493700cfd30ba49999cc67b7fc5bf",
+      "local_file_sha256": "0809cb8c4c5d3613b876c116d8fd964d726d1f1928e2f5e95dbe8167d677c31f",
+      "previous_local_path": null
+    },
+    {
+      "version": "20260905140407",
+      "name": "add_video_poker_test_engine",
+      "path": "supabase/migrations/20260905140407_add_video_poker_test_engine.sql",
+      "source": "deployed_migration_history",
+      "source_payload_sha256": "48aca3fe2cb74b7751bd7681bfdbf8564a395b15e1416a13a700a52c579795f6",
+      "local_file_sha256": "4394c5f2b6dd6d5dd511ccf294a5975313140dfee8373db2a206d4b40fdf58aa",
+      "previous_local_path": null
+    },
+    {
+      "version": "20260905140955",
+      "name": "add_three_card_poker_test_engine",
+      "path": "supabase/migrations/20260905140955_add_three_card_poker_test_engine.sql",
+      "source": "deployed_migration_history",
+      "source_payload_sha256": "a4982487ad6aaa623d2420c6ed552ff7f8a9938bb34b1ebeb1096e8df15cad87",
+      "local_file_sha256": "76dfb6514c5f10fd57dc087390a656429e3facadfb8a99331c7e3fd4c26cdda8",
+      "previous_local_path": null
+    },
+    {
+      "version": "20260905153204",
+      "name": "add_ultimate_texas_holdem_test",
+      "path": "supabase/migrations/20260905153204_add_ultimate_texas_holdem_test.sql",
+      "source": "deployed_migration_history",
+      "source_payload_sha256": "b2a29a99bd9b8b0b2ed0151dc32e32a3b7be53d6eabfe9ea8629553a95d3b48a",
+      "local_file_sha256": "2eeef160949bce395059b9abbd9e99053194f930bad14314c6bc054298b4603a",
+      "previous_local_path": null
+    },
+    {
+      "version": "20260905153329",
+      "name": "make_ultimate_holdem_play_settlement_atomic",
+      "path": "supabase/migrations/20260905153329_make_ultimate_holdem_play_settlement_atomic.sql",
+      "source": "deployed_migration_history",
+      "source_payload_sha256": "96537c138e01412917aaf5224747a0808eef49c8af4d386cbbf4226653c10782",
+      "local_file_sha256": "7f899d778179daa5e72bd6418de2581e3ed6c7ee2cf0b2c006e58984dfca7821",
+      "previous_local_path": null
+    },
+    {
+      "version": "20260905154004",
+      "name": "add_caribbean_stud_test",
+      "path": "supabase/migrations/20260905154004_add_caribbean_stud_test.sql",
+      "source": "deployed_migration_history",
+      "source_payload_sha256": "d4573413169e987f25ae44e4539d9b383f8ee5bad55f9e054fccad6bed65df2f",
+      "local_file_sha256": "d0bc38be4115c97ec98dca51e8c6c1bd76daa2bfe99b87e3b32a6f55eb23f979",
+      "previous_local_path": null
+    },
+    {
+      "version": "20260905181122",
+      "name": "add_themed_slot_bonus_sessions",
+      "path": "supabase/migrations/20260905181122_add_themed_slot_bonus_sessions.sql",
+      "source": "deployed_migration_history",
+      "source_payload_sha256": "89a95b64c0b9e2d59a716128b928fabd106bfa4b215da41f85971951022700ba",
+      "local_file_sha256": "2ec878229e090e2c21d6dd4de130dae0bf823a865df8217302e46551a605e5fb",
+      "previous_local_path": null
+    },
+    {
+      "version": "20260905181212",
+      "name": "add_atomic_themed_slot_paid_bonus_trigger",
+      "path": "supabase/migrations/20260905181212_add_atomic_themed_slot_paid_bonus_trigger.sql",
+      "source": "deployed_migration_history",
+      "source_payload_sha256": "80411ef2deddee05404012dd9e57c3a0102494b62ea19e4025ad46ad63f87bdd",
+      "local_file_sha256": "9503e38fab8c4540bdfe1ee572a1647c97adf106ce845d6893ab092fd6990939",
+      "previous_local_path": null
+    },
+    {
+      "version": "20260905181432",
+      "name": "lock_down_themed_slot_settlement_rpcs",
+      "path": "supabase/migrations/20260905181432_lock_down_themed_slot_settlement_rpcs.sql",
+      "source": "deployed_migration_history",
+      "source_payload_sha256": "33f11852212bbc71d8c4057a3d39f031a95094195636b9475ce090e3c7a8bf3d",
+      "local_file_sha256": "37a2af21ca1e842403f44655a9da2ad5f831c4daf8d3d210f44290ea1f9d096c",
+      "previous_local_path": null
+    },
+    {
+      "version": "20260906014713",
+      "name": "optimize_themed_slot_rls_and_index",
+      "path": "supabase/migrations/20260906014713_optimize_themed_slot_rls_and_index.sql",
+      "source": "deployed_migration_history",
+      "source_payload_sha256": "8da4362a229e2f462d782ccc80a7ddf8982ce5efe414f13fcd4969ce4d4d149b",
+      "local_file_sha256": "d301148efa55ff776db0e5296954d7751366c14305a06b69cbc7dc9dd4caa98d",
+      "previous_local_path": null
+    },
+    {
+      "version": "20260911191001",
+      "name": "fix_video_poker_supported_games",
+      "path": "supabase/migrations/20260911191001_fix_video_poker_supported_games.sql",
+      "source": "deployed_migration_history",
+      "source_payload_sha256": "44419d1a08dfaa7b0edfac2b59627d34051e74c198f4d96e7dab39a5a7dac492",
+      "local_file_sha256": "0070591942ae6094a01579276ae8a66dd73b32f86aa4e60e9ecd4edb9c717679",
+      "previous_local_path": null
+    },
+    {
+      "version": "20261010021639",
+      "name": "roulette_complete",
+      "path": "supabase/migrations/20261010021639_roulette_complete.sql",
+      "source": "deployed_migration_history",
+      "source_payload_sha256": "5fa5fee1716f47c72828b2b99c2131f4cfbcd9514e78a5db9e77f3c844643ac4",
+      "local_file_sha256": "5fa5fee1716f47c72828b2b99c2131f4cfbcd9514e78a5db9e77f3c844643ac4",
+      "previous_local_path": "supabase/migrations/20261010021011_roulette_complete.sql"
+    },
+    {
+      "version": "20261010043551",
+      "name": "poker_table_games",
+      "path": "supabase/migrations/20261010043551_poker_table_games.sql",
+      "source": "deployed_migration_history",
+      "source_payload_sha256": "597bf5725e1d81cf33c8271ca52548239802b2a8bb8296ae2dd940204cddf830",
+      "local_file_sha256": "597bf5725e1d81cf33c8271ca52548239802b2a8bb8296ae2dd940204cddf830",
+      "previous_local_path": "supabase/migrations/20261010042617_poker_table_games.sql"
+    },
+    {
+      "version": "20261010110710",
+      "name": "card_deal_request_recovery",
+      "path": "supabase/migrations/20261010110710_card_deal_request_recovery.sql",
+      "source": "deployed_migration_history",
+      "source_payload_sha256": "586ae3d05304872fcdf700214447682b82e9cd97286ef2419521afbd188b6ebb",
+      "local_file_sha256": "586ae3d05304872fcdf700214447682b82e9cd97286ef2419521afbd188b6ebb",
+      "previous_local_path": "supabase/migrations/20261010104826_card_deal_request_recovery.sql"
+    },
+    {
+      "version": "20261010110728",
+      "name": "sportsbook_durable_requests_and_safe_parlays",
+      "path": "supabase/migrations/20261010110728_sportsbook_durable_requests_and_safe_parlays.sql",
+      "source": "deployed_migration_history",
+      "source_payload_sha256": "3007926ac4df1b1dca0487aa5ab5fc7e5b4b017d835077489a2c54a3d467e3b5",
+      "local_file_sha256": "3007926ac4df1b1dca0487aa5ab5fc7e5b4b017d835077489a2c54a3d467e3b5",
+      "previous_local_path": "supabase/migrations/20261010104833_sportsbook_durable_requests_and_safe_parlays.sql"
+    },
+    {
+      "version": "20261010110730",
+      "name": "slot_request_receipts",
+      "path": "supabase/migrations/20261010110730_slot_request_receipts.sql",
+      "source": "deployed_migration_history",
+      "source_payload_sha256": "e4197bb9b48aed14559f7f9813559c288b8c60114005bbd28644898278fa0ae8",
+      "local_file_sha256": "e4197bb9b48aed14559f7f9813559c288b8c60114005bbd28644898278fa0ae8",
+      "previous_local_path": "supabase/migrations/20261010104859_slot_request_receipts.sql"
+    },
+    {
+      "version": "20261010121802",
+      "name": "blackjack_insurance_decision",
+      "path": "supabase/migrations/20261010121802_blackjack_insurance_decision.sql",
+      "source": "deployed_migration_history",
+      "source_payload_sha256": "e975bd09cb3e63e201a79d69b824f8a1958b53763df2b5990796ead75018e118",
+      "local_file_sha256": "e975bd09cb3e63e201a79d69b824f8a1958b53763df2b5990796ead75018e118",
+      "previous_local_path": "supabase/migrations/20261010120032_blackjack_insurance_decision.sql"
+    },
+    {
+      "version": "20261010122742",
+      "name": "casino_table_history_indexes",
+      "path": "supabase/migrations/20261010122742_casino_table_history_indexes.sql",
+      "source": "deployed_migration_history",
+      "source_payload_sha256": "8f3005588cedad12692a2435195b8da3a6f9b7b9bb9a326992c72197c4af457a",
+      "local_file_sha256": "8f3005588cedad12692a2435195b8da3a6f9b7b9bb9a326992c72197c4af457a",
+      "previous_local_path": "supabase/migrations/20261010121725_casino_table_history_indexes.sql"
+    },
+    {
+      "version": "20261010130855",
+      "name": "poker_action_hand_foreign_key_index",
+      "path": "supabase/migrations/20261010130855_poker_action_hand_foreign_key_index.sql",
+      "source": "deployed_migration_history",
+      "source_payload_sha256": "9b8c6c7b562176b01b149bb11b010fdcc894d93eb745297d85a6361e9a488d0c",
+      "local_file_sha256": "9b8c6c7b562176b01b149bb11b010fdcc894d93eb745297d85a6361e9a488d0c",
+      "previous_local_path": null
+    },
+    {
+      "version": "20261010130857",
+      "name": "reconcile_blackjack_split_columns",
+      "path": "supabase/migrations/20261010130857_reconcile_blackjack_split_columns.sql",
+      "source": "deployed_migration_history",
+      "source_payload_sha256": "2379abf44f18f5bfa8217b99eda50e05c850e06378db9b6a4aa27499f34cafc4",
+      "local_file_sha256": "2379abf44f18f5bfa8217b99eda50e05c850e06378db9b6a4aa27499f34cafc4",
+      "previous_local_path": null
+    },
+    {
+      "version": "20261010131427",
+      "name": "operator_monitoring_alert_outbox",
+      "path": "supabase/migrations/20261010131427_operator_monitoring_alert_outbox.sql",
+      "source": "deployed_migration_history",
+      "source_payload_sha256": "bc3eab59c7196d90cdfd62c02f7b5572ddc2e3ed4d7f960bdf34cc14e3f63c9b",
+      "local_file_sha256": "bc3eab59c7196d90cdfd62c02f7b5572ddc2e3ed4d7f960bdf34cc14e3f63c9b",
+      "previous_local_path": null
+    },
+    {
+      "version": "20261010131537",
+      "name": "fair_settlement_queue_and_score_receipts",
+      "path": "supabase/migrations/20261010131537_fair_settlement_queue_and_score_receipts.sql",
+      "source": "deployed_migration_history",
+      "source_payload_sha256": "86297ba3f6f58901318802a82e6c6d90a081b1a4816e78c6dbb15252d03fd76f",
+      "local_file_sha256": "86297ba3f6f58901318802a82e6c6d90a081b1a4816e78c6dbb15252d03fd76f",
+      "previous_local_path": null
+    },
+    {
+      "version": "20261010131820",
+      "name": "reconcile_themed_slot_restore_definitions",
+      "path": "supabase/migrations/20261010131820_reconcile_themed_slot_restore_definitions.sql",
+      "source": "deployed_migration_history",
+      "source_payload_sha256": "8102859181f96d7c0e4d4e8c33de084d616b6bad0f41f9150313f17471ffd375",
+      "local_file_sha256": "8102859181f96d7c0e4d4e8c33de084d616b6bad0f41f9150313f17471ffd375",
+      "previous_local_path": null
+    },
+    {
+      "version": "20261010133524",
+      "name": "operator_alert_transition_sequence",
+      "path": "supabase/migrations/20261010133524_operator_alert_transition_sequence.sql",
+      "source": "deployed_migration_history",
+      "source_payload_sha256": "567f98f6d304b8f8a1f34882b923a6f7ee617463d5dab4aaba297b51e24c7b8f",
+      "local_file_sha256": "567f98f6d304b8f8a1f34882b923a6f7ee617463d5dab4aaba297b51e24c7b8f",
+      "previous_local_path": null
+    }
+  ],
+  "supplemental_local_migrations": [],
+  "archived_unrecorded_legacy_fixture": {
+    "path": "supabase/restore/historical-prerequisites/20260912060000_add_blackjack_double_split.sql",
+    "scope": "Isolated legacy fixture only; current insured v3 RPC comes from canonical insurance migration, columns from recorded reconciliation."
+  }
+}

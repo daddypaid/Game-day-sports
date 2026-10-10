@@ -1,0 +1,544 @@
+{
+  "schema_version": 1,
+  "project_ref": "qsvrvhcklnsbekxblpfo",
+  "observed_at": "2026-10-10T13:38:06.333Z",
+  "source": "Supabase list_edge_functions and get_edge_function read-only snapshots",
+  "hash_algorithm": "sha256",
+  "notes": [
+    "Every deployed function, including operators, monitor and grader, was compared with canonical UTF-8 source.",
+    "Source paths are normalized under supabase/functions; shared helper hashes are checked across all deployed bundles.",
+    "Existing local handler source was preserved. No environment secret values, customer records, job request headers or schedule commands are included."
+  ],
+  "functions": [
+    {
+      "slug": "odds-proxy",
+      "deployed_version": 10,
+      "deployed_status": "ACTIVE",
+      "verify_jwt": true,
+      "import_map": false,
+      "deployed_bundle_sha256": "ddcb0d45e5afb0d4e9afd7692dce23c8d4e0d8261f8efa8a15c051f158f65688",
+      "source_status": "local_matches_deployment",
+      "files": [
+        {
+          "path": "supabase/functions/odds-proxy/index.ts",
+          "deployed_sha256": "497a62525edf0894ee7206790a3a06eb10e2f0936194d1d3b0ae348b8e3a17e6",
+          "local_sha256": "497a62525edf0894ee7206790a3a06eb10e2f0936194d1d3b0ae348b8e3a17e6"
+        }
+      ]
+    },
+    {
+      "slug": "place-test-wager",
+      "deployed_version": 13,
+      "deployed_status": "ACTIVE",
+      "verify_jwt": true,
+      "import_map": false,
+      "deployed_bundle_sha256": "f36e40d2abab6f82e6be1c0f73d007c49a7bc459a08ba053e884639d0c08aa5e",
+      "source_status": "local_matches_deployment",
+      "files": [
+        {
+          "path": "supabase/functions/place-test-wager/index.ts",
+          "deployed_sha256": "02e390ec6441262f083b9f9b56ef7bf59563fcbc1dfc3c8caf0739f610e07141",
+          "local_sha256": "02e390ec6441262f083b9f9b56ef7bf59563fcbc1dfc3c8caf0739f610e07141"
+        },
+        {
+          "path": "supabase/functions/place-test-wager/sport-keys.ts",
+          "deployed_sha256": "a3890ca9874d8bc861fab009ca7b3057ffcc53f3dd96322aeb3f43ed45f91b80",
+          "local_sha256": "a3890ca9874d8bc861fab009ca7b3057ffcc53f3dd96322aeb3f43ed45f91b80"
+        }
+      ]
+    },
+    {
+      "slug": "settle-test-wager",
+      "deployed_version": 4,
+      "deployed_status": "ACTIVE",
+      "verify_jwt": true,
+      "import_map": false,
+      "deployed_bundle_sha256": "4210e32226a21f3b99ae8ce08ec7f474582e7990a24521d256e27c2a39021b54",
+      "source_status": "local_matches_deployment",
+      "files": [
+        {
+          "path": "supabase/functions/settle-test-wager/index.ts",
+          "deployed_sha256": "e09f9c17c48c4f7db1c383b882530be734855b81e67bfe77a6add36ef43fff9a",
+          "local_sha256": "e09f9c17c48c4f7db1c383b882530be734855b81e67bfe77a6add36ef43fff9a"
+        }
+      ]
+    },
+    {
+      "slug": "blackjack-test",
+      "deployed_version": 9,
+      "deployed_status": "ACTIVE",
+      "verify_jwt": true,
+      "import_map": false,
+      "deployed_bundle_sha256": "484f9930fd6ee767589453db3cb0f6995c9d763ddafb95ad8d38b612e559781a",
+      "source_status": "local_matches_deployment",
+      "files": [
+        {
+          "path": "supabase/functions/blackjack-test/index.ts",
+          "deployed_sha256": "17d3577a4f8d8609e20f4e02ba59d30c4ac63f29a29daf496ee25f5d281c8e5a",
+          "local_sha256": "17d3577a4f8d8609e20f4e02ba59d30c4ac63f29a29daf496ee25f5d281c8e5a"
+        }
+      ]
+    },
+    {
+      "slug": "roulette-test",
+      "deployed_version": 5,
+      "deployed_status": "ACTIVE",
+      "verify_jwt": true,
+      "import_map": false,
+      "deployed_bundle_sha256": "0cb56b686870dbdf09e5ebb99f1418fb139002b270a98ec53bd8c15afe2ea727",
+      "source_status": "local_matches_deployment",
+      "files": [
+        {
+          "path": "supabase/functions/roulette-test/index.ts",
+          "deployed_sha256": "c2bcf6ef6a4e3a26c4b0942545e6aa7080f020735cd3625a816267430cc25290",
+          "local_sha256": "c2bcf6ef6a4e3a26c4b0942545e6aa7080f020735cd3625a816267430cc25290"
+        }
+      ]
+    },
+    {
+      "slug": "baccarat-test",
+      "deployed_version": 5,
+      "deployed_status": "ACTIVE",
+      "verify_jwt": true,
+      "import_map": false,
+      "deployed_bundle_sha256": "2b9bcee16e05ee588e62ac02e836ad8cd9e5fdf0341f96665600925a06bb8100",
+      "source_status": "local_matches_deployment",
+      "files": [
+        {
+          "path": "supabase/functions/baccarat-test/index.ts",
+          "deployed_sha256": "59c560ddfafbd25bafb8de3c1dc38e5d88609cb8ce142f3f7d5751761bf31ddb",
+          "local_sha256": "59c560ddfafbd25bafb8de3c1dc38e5d88609cb8ce142f3f7d5751761bf31ddb"
+        }
+      ]
+    },
+    {
+      "slug": "slots-test",
+      "deployed_version": 5,
+      "deployed_status": "ACTIVE",
+      "verify_jwt": true,
+      "import_map": false,
+      "deployed_bundle_sha256": "4fc2862cf6832c7f3eeb661b44baef694caef3608c16a938134d51a88cf2d8b3",
+      "source_status": "local_matches_deployment",
+      "files": [
+        {
+          "path": "supabase/functions/slots-test/index.ts",
+          "deployed_sha256": "7f504acd1757d50caa4752ec6edd177c117f4119f3c3c86e74cfa3f274e7d189",
+          "local_sha256": "7f504acd1757d50caa4752ec6edd177c117f4119f3c3c86e74cfa3f274e7d189"
+        }
+      ]
+    },
+    {
+      "slug": "live-casino-launch",
+      "deployed_version": 4,
+      "deployed_status": "ACTIVE",
+      "verify_jwt": true,
+      "import_map": false,
+      "deployed_bundle_sha256": "36a511926b7a619c7c59a1cff8f21cfba2a2a8ff31cb6761f3a250db7183d683",
+      "source_status": "local_matches_deployment",
+      "files": [
+        {
+          "path": "supabase/functions/live-casino-launch/index.ts",
+          "deployed_sha256": "bb28364fac635d2ca54c42d79446698c45e5fd1ebe766e3c43fbd198accec08d",
+          "local_sha256": "bb28364fac635d2ca54c42d79446698c45e5fd1ebe766e3c43fbd198accec08d"
+        }
+      ]
+    },
+    {
+      "slug": "gameday-odds",
+      "deployed_version": 17,
+      "deployed_status": "ACTIVE",
+      "verify_jwt": false,
+      "import_map": false,
+      "deployed_bundle_sha256": "983417a25d27c2a0e412ea0c9e8696068f83ecacd7da79d923d53136597a4855",
+      "source_status": "local_matches_deployment",
+      "files": [
+        {
+          "path": "supabase/functions/gameday-odds/index.ts",
+          "deployed_sha256": "a8db13d50bb13c6e2347e064868a26beec47b749139ef7b68c3ece50377a20bd",
+          "local_sha256": "a8db13d50bb13c6e2347e064868a26beec47b749139ef7b68c3ece50377a20bd"
+        }
+      ]
+    },
+    {
+      "slug": "odds-engine",
+      "deployed_version": 4,
+      "deployed_status": "ACTIVE",
+      "verify_jwt": false,
+      "import_map": false,
+      "deployed_bundle_sha256": "9777fef1d0b84fc9ac270cc0d29de5686729ef8bc565957865edfcafe5149ece",
+      "source_status": "local_matches_deployment",
+      "files": [
+        {
+          "path": "supabase/functions/odds-engine/index.ts",
+          "deployed_sha256": "52b986f46e94c29c67712678df06c9d7721764d1300b630f07c67e9b1b11ea58",
+          "local_sha256": "52b986f46e94c29c67712678df06c9d7721764d1300b630f07c67e9b1b11ea58"
+        }
+      ]
+    },
+    {
+      "slug": "gameday-live-state",
+      "deployed_version": 12,
+      "deployed_status": "ACTIVE",
+      "verify_jwt": false,
+      "import_map": false,
+      "deployed_bundle_sha256": "65dbb2d8a51afed1509da0579df7f42907daf4c2c2d22eba660807e54f8af947",
+      "source_status": "local_matches_deployment",
+      "files": [
+        {
+          "path": "supabase/functions/gameday-live-state/index.ts",
+          "deployed_sha256": "2fb368ff0581e04d7b5c06057b8896dfd0fa9b27749f7bb2fe0edf7427f49795",
+          "local_sha256": "2fb368ff0581e04d7b5c06057b8896dfd0fa9b27749f7bb2fe0edf7427f49795"
+        }
+      ]
+    },
+    {
+      "slug": "auto-settle-test-wagers",
+      "deployed_version": 7,
+      "deployed_status": "ACTIVE",
+      "verify_jwt": false,
+      "import_map": false,
+      "deployed_bundle_sha256": "c6fdabd8a3663000fd7be88805b24a0f681a2942de4064bcd06bc874d42be0bb",
+      "source_status": "local_matches_deployment",
+      "files": [
+        {
+          "path": "supabase/functions/auto-settle-test-wagers/index.ts",
+          "deployed_sha256": "8fd68098104460fb73e20bcace5ac168e5e88665e989177a011c5a02b00f8e1b",
+          "local_sha256": "8fd68098104460fb73e20bcace5ac168e5e88665e989177a011c5a02b00f8e1b"
+        },
+        {
+          "path": "supabase/functions/place-test-wager/sport-keys.ts",
+          "deployed_sha256": "a3890ca9874d8bc861fab009ca7b3057ffcc53f3dd96322aeb3f43ed45f91b80",
+          "local_sha256": "a3890ca9874d8bc861fab009ca7b3057ffcc53f3dd96322aeb3f43ed45f91b80"
+        }
+      ]
+    },
+    {
+      "slug": "api-sports-status",
+      "deployed_version": 4,
+      "deployed_status": "ACTIVE",
+      "verify_jwt": true,
+      "import_map": false,
+      "deployed_bundle_sha256": "ae8b01ce07ce94bb526fa0aca7924eb810594df1577d5821ace63a096efaaef5",
+      "source_status": "local_matches_deployment",
+      "files": [
+        {
+          "path": "supabase/functions/api-sports-status/index.ts",
+          "deployed_sha256": "450101d7078c6a3ddac48ea62124cdb43d026a8d336e8f51f8a16aa5351c1dbb",
+          "local_sha256": "450101d7078c6a3ddac48ea62124cdb43d026a8d336e8f51f8a16aa5351c1dbb"
+        }
+      ]
+    },
+    {
+      "slug": "api-sports-nfl-probe",
+      "deployed_version": 4,
+      "deployed_status": "ACTIVE",
+      "verify_jwt": true,
+      "import_map": false,
+      "deployed_bundle_sha256": "5ec15a24636fad4d8b42e38630b1cc424c33c7418c0afa520012b45e5773c574",
+      "source_status": "local_matches_deployment",
+      "files": [
+        {
+          "path": "supabase/functions/api-sports-nfl-probe/index.ts",
+          "deployed_sha256": "450101d7078c6a3ddac48ea62124cdb43d026a8d336e8f51f8a16aa5351c1dbb",
+          "local_sha256": "450101d7078c6a3ddac48ea62124cdb43d026a8d336e8f51f8a16aa5351c1dbb"
+        }
+      ]
+    },
+    {
+      "slug": "api-sports-basketball-probe",
+      "deployed_version": 4,
+      "deployed_status": "ACTIVE",
+      "verify_jwt": true,
+      "import_map": false,
+      "deployed_bundle_sha256": "4db187b10e1ba57b1c9829b73f164aee5b8a104cfa675a1dd32d78f2c79203b2",
+      "source_status": "local_matches_deployment",
+      "files": [
+        {
+          "path": "supabase/functions/api-sports-basketball-probe/index.ts",
+          "deployed_sha256": "450101d7078c6a3ddac48ea62124cdb43d026a8d336e8f51f8a16aa5351c1dbb",
+          "local_sha256": "450101d7078c6a3ddac48ea62124cdb43d026a8d336e8f51f8a16aa5351c1dbb"
+        }
+      ]
+    },
+    {
+      "slug": "api-sports-wnba-probe",
+      "deployed_version": 4,
+      "deployed_status": "ACTIVE",
+      "verify_jwt": true,
+      "import_map": false,
+      "deployed_bundle_sha256": "625a2bc851c38f6ba2c056015de8759d644464162e73cfd4fe8321ae4e1abdf9",
+      "source_status": "local_matches_deployment",
+      "files": [
+        {
+          "path": "supabase/functions/api-sports-wnba-probe/index.ts",
+          "deployed_sha256": "450101d7078c6a3ddac48ea62124cdb43d026a8d336e8f51f8a16aa5351c1dbb",
+          "local_sha256": "450101d7078c6a3ddac48ea62124cdb43d026a8d336e8f51f8a16aa5351c1dbb"
+        }
+      ]
+    },
+    {
+      "slug": "mlb-boxscore-probe",
+      "deployed_version": 5,
+      "deployed_status": "ACTIVE",
+      "verify_jwt": true,
+      "import_map": false,
+      "deployed_bundle_sha256": "2ea34ee69eccbfdb64f5489025aa6ff6aaaed1368597239e554da5691bbe506f",
+      "source_status": "local_matches_deployment",
+      "files": [
+        {
+          "path": "supabase/functions/mlb-boxscore-probe/index.ts",
+          "deployed_sha256": "450101d7078c6a3ddac48ea62124cdb43d026a8d336e8f51f8a16aa5351c1dbb",
+          "local_sha256": "450101d7078c6a3ddac48ea62124cdb43d026a8d336e8f51f8a16aa5351c1dbb"
+        }
+      ]
+    },
+    {
+      "slug": "refill-test-wallet",
+      "deployed_version": 2,
+      "deployed_status": "ACTIVE",
+      "verify_jwt": true,
+      "import_map": false,
+      "deployed_bundle_sha256": "b5ac9de8bb1c252a7cee846665b13f8a126a2350b837002b5f1e8a2bab7c0a07",
+      "source_status": "local_matches_deployment",
+      "files": [
+        {
+          "path": "supabase/functions/refill-test-wallet/index.ts",
+          "deployed_sha256": "f15e1ea2ed793466922ca485a079ef34d996baa533c7617e22ac8e59eb6113b7",
+          "local_sha256": "f15e1ea2ed793466922ca485a079ef34d996baa533c7617e22ac8e59eb6113b7"
+        }
+      ]
+    },
+    {
+      "slug": "video-poker-test",
+      "deployed_version": 7,
+      "deployed_status": "ACTIVE",
+      "verify_jwt": true,
+      "import_map": false,
+      "deployed_bundle_sha256": "99b378bcaf9380a001a038446fa172e297a0c40d87fddc9be22242660d28e3b7",
+      "source_status": "local_matches_deployment",
+      "files": [
+        {
+          "path": "supabase/functions/video-poker-test/index.ts",
+          "deployed_sha256": "a163fcc50f16f52553ad2dc7a65d1a891c589a7e03b97c69511afc94ddf62077",
+          "local_sha256": "a163fcc50f16f52553ad2dc7a65d1a891c589a7e03b97c69511afc94ddf62077"
+        }
+      ]
+    },
+    {
+      "slug": "three-card-poker-test",
+      "deployed_version": 3,
+      "deployed_status": "ACTIVE",
+      "verify_jwt": true,
+      "import_map": false,
+      "deployed_bundle_sha256": "9e7d311f9b735efb2a97ecedb5ab720c658e4ce1d0c9b0d695a2c2b81f9cb22d",
+      "source_status": "local_matches_deployment",
+      "files": [
+        {
+          "path": "supabase/functions/three-card-poker-test/index.ts",
+          "deployed_sha256": "387e376ba90b4b94e2adc7d33503b74d4b9de0d1ce17d1a4fd0446eb0f5ff3fc",
+          "local_sha256": "387e376ba90b4b94e2adc7d33503b74d4b9de0d1ce17d1a4fd0446eb0f5ff3fc"
+        }
+      ]
+    },
+    {
+      "slug": "ultimate-texas-holdem-test",
+      "deployed_version": 4,
+      "deployed_status": "ACTIVE",
+      "verify_jwt": true,
+      "import_map": false,
+      "deployed_bundle_sha256": "247a139cdee79737fb3baa99710de2fced5b41053c3d11528fd37f0774d9eea2",
+      "source_status": "local_matches_deployment",
+      "files": [
+        {
+          "path": "supabase/functions/ultimate-texas-holdem-test/index.ts",
+          "deployed_sha256": "387e376ba90b4b94e2adc7d33503b74d4b9de0d1ce17d1a4fd0446eb0f5ff3fc",
+          "local_sha256": "387e376ba90b4b94e2adc7d33503b74d4b9de0d1ce17d1a4fd0446eb0f5ff3fc"
+        }
+      ]
+    },
+    {
+      "slug": "caribbean-stud-test",
+      "deployed_version": 3,
+      "deployed_status": "ACTIVE",
+      "verify_jwt": true,
+      "import_map": false,
+      "deployed_bundle_sha256": "5ce78f650853466da84cd7718ff680a98b071feae96e145671671f0e8eb4eb76",
+      "source_status": "local_matches_deployment",
+      "files": [
+        {
+          "path": "supabase/functions/caribbean-stud-test/index.ts",
+          "deployed_sha256": "387e376ba90b4b94e2adc7d33503b74d4b9de0d1ce17d1a4fd0446eb0f5ff3fc",
+          "local_sha256": "387e376ba90b4b94e2adc7d33503b74d4b9de0d1ce17d1a4fd0446eb0f5ff3fc"
+        }
+      ]
+    },
+    {
+      "slug": "themed-slots-test",
+      "deployed_version": 7,
+      "deployed_status": "ACTIVE",
+      "verify_jwt": true,
+      "import_map": false,
+      "deployed_bundle_sha256": "e4a0edcc10053651a15336e25b3dc911f3c9ac71af48ed807f444b07cf34d88e",
+      "source_status": "local_matches_deployment",
+      "files": [
+        {
+          "path": "supabase/functions/themed-slots-test/index.ts",
+          "deployed_sha256": "7eb6c931ac49b321386c1311d6a8485e833d6736e69716e6130d0fcb18829972",
+          "local_sha256": "7eb6c931ac49b321386c1311d6a8485e833d6736e69716e6130d0fcb18829972"
+        }
+      ]
+    },
+    {
+      "slug": "gameday-operator-metrics",
+      "deployed_version": 4,
+      "deployed_status": "ACTIVE",
+      "verify_jwt": true,
+      "import_map": false,
+      "deployed_bundle_sha256": "7f6a5663896d221d8b5bf17e037c9036cffd4ebcf4041ba89d5c19cb59c1272b",
+      "source_status": "local_matches_deployment",
+      "files": [
+        {
+          "path": "supabase/functions/gameday-operator-metrics/index.ts",
+          "deployed_sha256": "86ffddbd83ff562a2043f794ab7c5546ad4da149d496d38728dcdafd61b17287",
+          "local_sha256": "86ffddbd83ff562a2043f794ab7c5546ad4da149d496d38728dcdafd61b17287"
+        },
+        {
+          "path": "supabase/functions/_shared/operator-auth.ts",
+          "deployed_sha256": "16431266945c0d5fa8a27bf10f6cde4557769c4dd2c3be1490c7efe3b886b8cf",
+          "local_sha256": "16431266945c0d5fa8a27bf10f6cde4557769c4dd2c3be1490c7efe3b886b8cf"
+        }
+      ]
+    },
+    {
+      "slug": "gameday-operator-health",
+      "deployed_version": 3,
+      "deployed_status": "ACTIVE",
+      "verify_jwt": true,
+      "import_map": false,
+      "deployed_bundle_sha256": "cbb477c2132b9d6a34a0b3cfa421a781a0fbdffade94bed0dacc1fbe9b9412a4",
+      "source_status": "local_matches_deployment",
+      "files": [
+        {
+          "path": "supabase/functions/gameday-operator-health/index.ts",
+          "deployed_sha256": "d7f339011511a396e39d08257ed4cb27e181df23ccef389159ad3e6ca3821732",
+          "local_sha256": "d7f339011511a396e39d08257ed4cb27e181df23ccef389159ad3e6ca3821732"
+        },
+        {
+          "path": "supabase/functions/_shared/operator-auth.ts",
+          "deployed_sha256": "16431266945c0d5fa8a27bf10f6cde4557769c4dd2c3be1490c7efe3b886b8cf",
+          "local_sha256": "16431266945c0d5fa8a27bf10f6cde4557769c4dd2c3be1490c7efe3b886b8cf"
+        },
+        {
+          "path": "supabase/functions/_shared/operator-health.ts",
+          "deployed_sha256": "26ff69f57e90e249f11c8479fe87c321839863ee4e9e102a14d8273a3081ae8e",
+          "local_sha256": "26ff69f57e90e249f11c8479fe87c321839863ee4e9e102a14d8273a3081ae8e"
+        }
+      ]
+    },
+    {
+      "slug": "gameday-operator-analytics",
+      "deployed_version": 4,
+      "deployed_status": "ACTIVE",
+      "verify_jwt": true,
+      "import_map": false,
+      "deployed_bundle_sha256": "3afc80a50a1334deaecafc66e2882747bfbf8548771ecf84d2970c1fbd38d688",
+      "source_status": "local_matches_deployment",
+      "files": [
+        {
+          "path": "supabase/functions/gameday-operator-analytics/index.ts",
+          "deployed_sha256": "7bac7346bd9220f117c64acb4bbdf192dfe62854eddff6b9054fd50f30fe828f",
+          "local_sha256": "7bac7346bd9220f117c64acb4bbdf192dfe62854eddff6b9054fd50f30fe828f"
+        },
+        {
+          "path": "supabase/functions/_shared/operator-auth.ts",
+          "deployed_sha256": "16431266945c0d5fa8a27bf10f6cde4557769c4dd2c3be1490c7efe3b886b8cf",
+          "local_sha256": "16431266945c0d5fa8a27bf10f6cde4557769c4dd2c3be1490c7efe3b886b8cf"
+        }
+      ]
+    },
+    {
+      "slug": "jacks-or-better-test",
+      "deployed_version": 2,
+      "deployed_status": "ACTIVE",
+      "verify_jwt": true,
+      "import_map": false,
+      "deployed_bundle_sha256": "e6a29c123f659253faa7f3c259b02c37d6fdc436353367da75e39ded865e22af",
+      "source_status": "local_matches_deployment",
+      "files": [
+        {
+          "path": "supabase/functions/jacks-or-better-test/index.ts",
+          "deployed_sha256": "2497cabd114c5f68700b7661c78b06191ec86587ff2b3be616a56dbbc8c8bb7e",
+          "local_sha256": "2497cabd114c5f68700b7661c78b06191ec86587ff2b3be616a56dbbc8c8bb7e"
+        }
+      ]
+    },
+    {
+      "slug": "poker-test",
+      "deployed_version": 1,
+      "deployed_status": "ACTIVE",
+      "verify_jwt": false,
+      "import_map": false,
+      "deployed_bundle_sha256": "0f26ceee5d8cc76cad32ba2f8820b9d45960f141b6162326e6bb05693296c660",
+      "source_status": "local_matches_deployment",
+      "files": [
+        {
+          "path": "supabase/functions/poker-test/index.ts",
+          "deployed_sha256": "a4ed973fff40ef8a54faca11b79650bcfb5ec8e4dcfd5e756b66848193718ce5",
+          "local_sha256": "a4ed973fff40ef8a54faca11b79650bcfb5ec8e4dcfd5e756b66848193718ce5"
+        },
+        {
+          "path": "supabase/functions/poker-test/engine.ts",
+          "deployed_sha256": "b99787dfe912e8ee8384935b10c745b2fbb0f1a8e7aeb35e04275ea994ccd728",
+          "local_sha256": "b99787dfe912e8ee8384935b10c745b2fbb0f1a8e7aeb35e04275ea994ccd728"
+        }
+      ]
+    },
+    {
+      "slug": "casino-history-test",
+      "deployed_version": 1,
+      "deployed_status": "ACTIVE",
+      "verify_jwt": true,
+      "import_map": false,
+      "deployed_bundle_sha256": "60867f5514b9d1aeab70ba51f542d3cdc6bedd85299ad914e021d8757930b3b9",
+      "source_status": "local_matches_deployment",
+      "files": [
+        {
+          "path": "supabase/functions/casino-history-test/index.ts",
+          "deployed_sha256": "a96ab0df296f9881b2de41fc8cfc96e839684ba6fc5ef7fa1398ca813ffae355",
+          "local_sha256": "a96ab0df296f9881b2de41fc8cfc96e839684ba6fc5ef7fa1398ca813ffae355"
+        }
+      ]
+    },
+    {
+      "slug": "gameday-operator-monitor",
+      "deployed_version": 1,
+      "deployed_status": "ACTIVE",
+      "verify_jwt": false,
+      "import_map": false,
+      "deployed_bundle_sha256": "b5bd498d8122dd0f1ddeb0265d73ae1f22ff9d89ac21fab23ad321447ce64155",
+      "source_status": "local_matches_deployment",
+      "files": [
+        {
+          "path": "supabase/functions/gameday-operator-monitor/index.ts",
+          "deployed_sha256": "74fbf07c68cfbf7481a19a4634ddb0d0151f1c234567744b633e0d07ba6595ae",
+          "local_sha256": "74fbf07c68cfbf7481a19a4634ddb0d0151f1c234567744b633e0d07ba6595ae"
+        },
+        {
+          "path": "supabase/functions/_shared/operator-health.ts",
+          "deployed_sha256": "26ff69f57e90e249f11c8479fe87c321839863ee4e9e102a14d8273a3081ae8e",
+          "local_sha256": "26ff69f57e90e249f11c8479fe87c321839863ee4e9e102a14d8273a3081ae8e"
+        },
+        {
+          "path": "supabase/functions/_shared/operator-auth.ts",
+          "deployed_sha256": "16431266945c0d5fa8a27bf10f6cde4557769c4dd2c3be1490c7efe3b886b8cf",
+          "local_sha256": "16431266945c0d5fa8a27bf10f6cde4557769c4dd2c3be1490c7efe3b886b8cf"
+        },
+        {
+          "path": "supabase/functions/_shared/operator-alerts.ts",
+          "deployed_sha256": "52c29ec0e1e1d23d9072dd7afebb6dcf9c8870494b366c244e688dc5a945a5ca",
+          "local_sha256": "52c29ec0e1e1d23d9072dd7afebb6dcf9c8870494b366c244e688dc5a945a5ca"
+        }
+      ]
+    }
+  ]
+}
