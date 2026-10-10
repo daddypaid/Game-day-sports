@@ -1,9 +1,9 @@
 /* The Roulette photograph and interactive cells share one responsive surface. */
 *{box-sizing:border-box}
-html:root{--gd-roulette-felt:#01240e;background:var(--gd-roulette-felt)!important}
+html:root{--gd-roulette-felt:#01240e;background:#070907!important}
 html,body{margin:0;min-height:100%;font-family:Arial,sans-serif}
-html:root body.gd-roulette-game,html[data-gameday-page="casino-game"] body.gd-roulette-game{height:auto!important;overflow:visible!important;background:var(--gd-roulette-felt)!important;color:#f7eccb;padding-bottom:calc(96px + env(safe-area-inset-bottom))!important}
-html:root body.gd-roulette-game main{max-width:620px!important;height:auto!important;overflow:visible!important;margin:0 auto;padding:0 0 20px!important;background:var(--gd-roulette-felt)!important}
+html:root body.gd-roulette-game,html[data-gameday-page="casino-game"] body.gd-roulette-game{height:auto!important;overflow:visible!important;background:#070907!important;color:#f7eccb;padding-bottom:calc(96px + env(safe-area-inset-bottom))!important}
+html:root body.gd-roulette-game main{max-width:620px!important;height:auto!important;overflow:visible!important;margin:0 auto;padding:0 0 20px!important;background:#070907!important}
 html:root body.gd-roulette-game main::before{display:none!important;content:none!important}
 body.gd-roulette-game header{padding:12px max(12px,env(safe-area-inset-left));background:#09100b;border-bottom:1px solid #665125}
 .gd-roulette-header-row{display:flex;align-items:center;justify-content:space-between;gap:8px}
@@ -12,20 +12,20 @@ body.gd-roulette-game header{padding:12px max(12px,env(safe-area-inset-left));ba
 body.gd-roulette-game .account-row{display:flex;align-items:center;justify-content:flex-end;gap:8px;font-size:11px;color:#aabfb0;margin-top:5px;overflow-wrap:anywhere}
 body.gd-roulette-game .account-row strong{padding:7px 10px;background:#153d24;border:1px solid #3f8555;border-radius:9px;color:#dcf4e0;white-space:nowrap}
 body.gd-roulette-game #roulette-account{display:none!important}
-.gd-roulette-game .game-stage{display:flex;flex-direction:column;background:var(--gd-roulette-felt);overflow:hidden}
+.gd-roulette-game .game-stage{display:flex;flex-direction:column;background:#070907;overflow:hidden}
 .gd-roulette-wheel-area{position:relative;z-index:2;padding:26px 3px 0;margin-bottom:-7%}
 .gd-roulette-wheel-area .gd-roulette-spinner-plane{top:5%;left:8%;width:84%}
 /* A fixed walnut surround follows the same perspective as the bowl and joins
    the tabletop shoulders without covering the rotating disk or ball. */
 .gd-roulette-wheel-area .gd-roulette-spinner-plane::before{content:"";position:absolute;z-index:-1;inset:-9%;border-radius:50%;background:url("assets/roulette/wheel-surround.webp") center/contain no-repeat;pointer-events:none}
 .gd-roulette-wheel-caption{position:absolute;top:3px;left:12px;right:12px;margin:0;text-align:center;color:#f8dd97;font:700 12px/1.4 Georgia,serif;pointer-events:none}
-.gd-roulette-table{position:relative;width:100%;aspect-ratio:1024/1960;background:var(--gd-roulette-felt);isolation:isolate;container-type:inline-size}
+.gd-roulette-table{position:relative;width:100%;aspect-ratio:1024/1960;background:#070907;isolation:isolate;container-type:inline-size}
 .gd-roulette-table>img{position:absolute;inset:0;width:100%;height:100%;object-fit:fill;pointer-events:none;user-select:none}
 .gd-roulette-table-shoulders{position:absolute;z-index:1;top:-100cqw;left:0;width:100%;height:auto;aspect-ratio:1024/1356;overflow:visible;pointer-events:none}
 /* The open felt neck sits beneath the bowl. Only its top is replaced, preserving
    the photographed board and all 46 betting-cell coordinates below 17.2%. */
 .gd-roulette-table>img:not(.gd-roulette-table-neck){clip-path:inset(16.9% 0 0 0)}
-.gd-roulette-table>img.gd-roulette-table-neck{clip-path:inset(0 0 83.05% 0);mask-image:linear-gradient(transparent,#000 8px)}
+.gd-roulette-table>img.gd-roulette-table-neck{clip-path:polygon(8.73% 0,91.27% 0,100% 6.65%,100% 16.95%,0 16.95%,0 6.65%);mask-image:linear-gradient(transparent,#000 8px)}
 html:root body.gd-roulette-game .gd-roulette-bet{position:absolute;display:grid;place-items:center;min-width:0;min-height:0!important;margin:0;padding:0;border:1px solid #e5be68;border-radius:0;background:#034b25;color:#fff1cb;font:700 clamp(15px,5.4vw,29px)/1 Georgia,serif;text-shadow:0 2px 3px #000;touch-action:manipulation;cursor:pointer;box-shadow:inset 0 0 12px #0005}
 html:root body.gd-roulette-game .gd-roulette-bet-red{background:linear-gradient(115deg,#941212,#bc1d19,#830e11)}
 html:root body.gd-roulette-game .gd-roulette-bet-black{background:linear-gradient(115deg,#11110f,#1c1d19,#080a08)}
@@ -53,6 +53,4 @@ html:root body.gd-roulette-game .gd-roulette-retry,html:root body.gd-roulette-ga
 html:root body.gd-roulette-game .gd-roulette-sound{order:9}
 .gd-roulette-test-note{order:10;text-align:center;font-size:10px;letter-spacing:.08em;color:#9ead9e;margin:0 12px 4px}
 body.gd-roulette-game [hidden]{display:none!important}
-@media(min-width:620px){.gd-roulette-table{aspect-ratio:1024/1660}.gd-roulette-bet{font-size:28px}.gd-roulette-wheel-area{padding-inline:3px;margin-bottom:-6%}}
-/* Continue the wooden top beyond the centered cabinet on wide screens. */
-@media(min-width:620px){html:root body.gd-roulette-game{background-image:url("assets/roulette/walnut-top.webp")!important;background-position:center top!important;background-size:100% 718px!important;background-repeat:no-repeat!important}html:root body.gd-roulette-game.gd-in-shell{background-size:100% 616px!important}}
+@media(min-width:620px){.gd-roulette-table{aspect-ratio:1024/1660}.gd-roulette-bet{font-size:28px}.gd-roulette-wheel-area{padding-inline:3px;margin-bottom:-6%}.gd-roulette-table>img.gd-roulette-table-neck{clip-path:polygon(8.73% 0,91.27% 0,100% 7.85%,100% 16.95%,0 16.95%,0 7.85%)}}
