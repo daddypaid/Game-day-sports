@@ -17,6 +17,7 @@ export const GAMEDAY_CONFIG = Object.freeze({
     slots: 'slots-test',
     themedSlots: 'themed-slots-test',
     jacksOrBetter: 'jacks-or-better-test',
+    poker: 'poker-test',
   }),
   routes: Object.freeze({
     home: 'index.html',

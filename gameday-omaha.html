@@ -32,21 +32,23 @@ html:root body.poker-table-artwork-page :is(.stage,.game-stage,.stage img,.game-
 <link rel="stylesheet" href="gameday-table-wager.css">
 <link rel="stylesheet" href="gameday-standard-deck.css">
 <link rel="stylesheet" href="gameday-table-dealing.css">
+<link rel="stylesheet" href="gameday-poker-game.css">
 </head>
 <body class="poker-table-artwork-page">
 <header>
-  <div class="top"><h1>GameDay Omaha</h1><div class="badge">BUILDING · CARD PREVIEW</div></div>
+  <div class="top"><h1>GameDay Omaha</h1><div class="badge">HEADS-UP · TEST CREDITS</div></div>
   <a class="back" href="gameday-poker.html">‹ Back to Poker Room</a>
+  <div class="gd-poker-account"><span id="poker-account">Connecting…</span><span id="poker-balance" class="gd-poker-balance">Test balance —</span><a id="poker-signin" href="gameday-auth.html" hidden>Sign in</a></div>
 </header>
 <main>
   <section class="stage" aria-label="Omaha work area">
     <img src="assets/card-tables/gameday-omaha-table.png" alt="GameDay Omaha table artwork" fetchpriority="high">
   </section>
-  <div class="note">Card preview: deal through the river to see your best hand using two hole cards and three community cards. Opponents and betting are still building. Chips do not place wagers or change your wallet.</div>
+  <div class="gd-poker-rules">Heads-up Pot Limit Omaha against the computer. Your opening wager is an ante matched by the computer. Use exactly two hole cards and three community cards. Test credits only.</div>
 </main>
 <script src="gameday-app.js" defer></script>
 <script src="gameday-table-wager.js" defer></script>
-<script src="gameday-poker-hand-evaluation.js" defer></script>
 <script src="gameday-table-dealing.js" defer></script>
+<script type="module" src="gameday-poker-game.js"></script>
 </body>
 </html>

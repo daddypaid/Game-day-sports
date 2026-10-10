@@ -55,13 +55,13 @@
     blackjack: { dealer: ['Dealer hand',50,53,86,11.5], player: ['Your hand',50,65,86,11.5] },
     baccarat: { player: ['Player hand',28,61,38,10], banker: ['Banker hand',72,61,38,10] },
     jacks: { player: ['Your hand',50,52.5,96,13.4] },
-    holdem: { board: ['Community cards',50,43,57,10.4], player: ['Your hand',50,58,66,13.5] },
-    omaha: { board: ['Community cards',50,47.5,59,10.5], player: ['Your hand',50,61,82,13.5] },
-    stud: { player: ['Your hand',50,58,94,12.5] },
-    draw: { player: ['Your hand',50,57.5,87,14] }
+    holdem: { opponent: ['Computer cards',50,27.5,80,10], board: ['Community cards',50,43,57,10.4], player: ['Your hand',50,58,66,13.5] },
+    omaha: { opponent: ['Computer cards',50,27.5,80,10], board: ['Community cards',50,47.5,59,10.5], player: ['Your hand',50,61,82,13.5] },
+    stud: { opponent: ['Computer cards',50,27.5,86,9], player: ['Your hand',50,58,94,12.5] },
+    draw: { opponent: ['Computer cards',50,27.5,80,11], player: ['Your hand',50,57.5,87,14] }
   };
   let groups = {};
-  const authoritative = ['blackjack', 'baccarat', 'jacks'].includes(game);
+  const authoritative = ['blackjack', 'baccarat', 'jacks', 'holdem', 'omaha', 'stud', 'draw'].includes(game);
   let selectableCards = false;
   let onCardSelect = null;
   let deck = [];
