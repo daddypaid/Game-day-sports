@@ -90,7 +90,8 @@ async function initializeBlackjack() {
     balance = Number(next.balance);
     storeHand(id, next.id);
     const draftStake = baseStake(id, next);
-    wager.setAmount(isActive() ? Number(next.stake) : draftStake);
+    if (isActive()) wager.setAmount(Number(next.stake));
+    else wager.startNextWager(`${id}:${next.id}`, draftStake);
     result.hidden = true;
     const rendered = await view.render({ groups: { player: next.player_cards, dealer: next.dealer_cards }, phase: isActive() ? 'active' : 'complete', splitHands: next.player_hands, activeHandIndex: Number(next.active_hand_index) }, { animate });
     if (!rendered || !current(token, id)) return false;
@@ -114,7 +115,7 @@ async function initializeBlackjack() {
         result.appendChild(parts);
       }
       result.hidden = false;
-      message(`Round complete. Next wager ${money.format(draftStake)}. Choose a wager and press New Deal for the next hand.`);
+      message('Round complete. Choose a wager and press New Deal for the next hand.');
       announcement.textContent = `${resultNames[next.status]}. Test balance ${money.format(balance)}.`;
     }
     window.dispatchEvent(new CustomEvent('gameday:wallet-updated', { detail: { balance, userId: id } }));

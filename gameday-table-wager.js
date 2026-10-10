@@ -30,6 +30,9 @@
   const storageKey = `gameday:wager-draft:${game}`;
   let amount = 0;
   let selectedChip = null;
+  let chipDraftStarted = false;
+  let lastCompletedRound = null;
+  let feedbackText = '';
   let locked = false;
   const maxWager = game === 'gameday-jacks-or-better.html' ? 1000 : 10000;
   const validAmount = value => Number.isFinite(value) && value >= 0 && Number.isSafeInteger(Math.round(value * 100)) && Math.abs(Math.round(value * 100) / 100 - value) < 1e-9;
@@ -38,6 +41,8 @@
     if (saved && validAmount(saved.amount) && (saved.selectedChip === null || chips.some(([value]) => value === saved.selectedChip))) {
       amount = saved.amount;
       selectedChip = saved.selectedChip;
+      chipDraftStarted = saved.chipDraftStarted === true;
+      lastCompletedRound = typeof saved.lastCompletedRound === 'string' ? saved.lastCompletedRound : null;
     }
   } catch (_) { /* Wager adjustments also work without browser storage. */ }
 
@@ -56,8 +61,8 @@
   const row = document.createElement('div');
   row.className = 'gd-wager-chip-row';
   row.setAttribute('role', 'group');
-  row.setAttribute('aria-label', 'Choose a chip amount');
-  row.innerHTML = chips.map(([value, color], index) => `<button type="button" class="gd-wager-chip" data-wager-chip="${value}" style="--gd-chip-x:${x[index]}%;--gd-chip-curve:${curve[index]}%" aria-label="Select $${value} ${color} chip for wager" aria-pressed="false"><img src="assets/chips/gameday-${value}.webp" width="150" height="150" alt="" draggable="false"></button>`).join('');
+  row.setAttribute('aria-label', 'Add chips to your wager');
+  row.innerHTML = chips.map(([value, color], index) => `<button type="button" class="gd-wager-chip" data-wager-chip="${value}" style="--gd-chip-x:${x[index]}%;--gd-chip-curve:${curve[index]}%" aria-label="Add $${value} ${color} chip to wager" aria-pressed="false"><img src="assets/chips/gameday-${value}.webp" width="150" height="150" alt="" draggable="false"></button>`).join('');
   if (artworkWrapper) {
     row.classList.add('gd-wager-on-table');
     stage.style.setProperty('--gd-chip-rail-y', `${rail[game]}%`);
@@ -76,6 +81,11 @@
     ${existingStatus ? '' : `<p id="${statusId}" class="gd-table-actions-status">Gameplay is still building.</p>`}`;
   stage.appendChild(panel);
   const output = panel.querySelector('.gd-wager-total');
+  const feedback = document.createElement('span');
+  feedback.className = 'gd-wager-feedback';
+  feedback.setAttribute('role', 'status');
+  feedback.hidden = true;
+  output.after(feedback);
   const increase = panel.querySelector('[data-wager-adjust="increase"]');
   const decrease = panel.querySelector('[data-wager-adjust="decrease"]');
   const money = new Intl.NumberFormat('en-US', { style: 'currency', currency: 'USD' });
@@ -83,6 +93,8 @@
   function render() {
     stage.dataset.wagerAmount = String(amount);
     output.value = money.format(amount);
+    feedback.textContent = feedbackText;
+    feedback.hidden = !feedbackText;
     increase.disabled = locked || amount >= maxWager;
     decrease.disabled = locked || amount === 0;
     buttons.forEach(button => {
@@ -91,7 +103,7 @@
     });
   }
   function save() {
-    try { sessionStorage.setItem(storageKey, JSON.stringify({ amount, selectedChip })); } catch (_) {}
+    try { sessionStorage.setItem(storageKey, JSON.stringify({ amount, selectedChip, chipDraftStarted, lastCompletedRound })); } catch (_) {}
   }
   function changed() {
     render();
@@ -104,9 +116,22 @@
       if (!validAmount(value)) throw new TypeError('Invalid wager amount');
       amount = Math.round(value * 100) / 100;
       selectedChip = chips.some(([chip]) => chip === value) ? value : null;
+      chipDraftStarted = false;
+      feedbackText = '';
       changed();
     },
     setLocked(value) { locked = Boolean(value); render(); },
+    startNextWager(roundId, value = amount) {
+      // Reading the same completed result again must preserve the customer's next wager.
+      if (roundId && roundId === lastCompletedRound) return;
+      if (!validAmount(value)) throw new TypeError('Invalid wager amount');
+      lastCompletedRound = roundId || null;
+      amount = Math.round(value * 100) / 100;
+      selectedChip = chips.some(([chip]) => chip === amount) ? amount : null;
+      chipDraftStarted = false;
+      feedbackText = '';
+      changed();
+    },
     onChange(callback) {
       const listener = event => callback(event.detail.amount);
       stage.addEventListener('gameday:wager-change', listener);
@@ -116,17 +141,25 @@
   buttons.forEach(button => button.addEventListener('click', () => {
     if (locked || button.disabled) return;
     selectedChip = Number(button.dataset.wagerChip);
-    amount = selectedChip;
+    // The first chip starts the next wager; every further tap adds another chip.
+    const nextAmount = chipDraftStarted ? Math.round((amount + selectedChip) * 100) / 100 : selectedChip;
+    amount = Math.min(maxWager, nextAmount);
+    chipDraftStarted = true;
+    feedbackText = nextAmount > maxWager ? `Maximum wager ${money.format(maxWager)}` : '';
     changed();
   }));
   increase.addEventListener('click', () => {
     if (locked || amount >= maxWager) return;
     amount = Math.min(maxWager, Math.round((amount + 1) * 100) / 100);
+    chipDraftStarted = true;
+    feedbackText = '';
     changed();
   });
   decrease.addEventListener('click', () => {
     if (locked || amount === 0) return;
     amount = Math.max(0, Math.round((amount - 1) * 100) / 100);
+    chipDraftStarted = amount > 0;
+    feedbackText = '';
     changed();
   });
   render();

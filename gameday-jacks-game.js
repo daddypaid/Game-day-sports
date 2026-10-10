@@ -74,7 +74,8 @@ async function renderHand(value, animate = false, token = generation) {
     view.clear();
     say('Choose a chip, then Deal. Test credits only.');
   } else {
-    wager.setAmount(Number(hand.stake));
+    if (activeHand()) wager.setAmount(Number(hand.stake));
+    else wager.startNextWager(`${userId}:${hand.id}`, Number(hand.stake));
     if (!sameHand && animate) view.clear();
     if (activeHand()) {
       say('Select any cards to hold, then Draw to finish your hand.');
@@ -298,7 +299,7 @@ function attach() {
   stage.addEventListener('gameday:wager-change', () => {
     if (!busy && (!pending || pending.retryAllowed) && !activeHand() && (ready || pending?.retryAllowed)) {
       const amount = wager.getAmount();
-      say(amount <= 0 ? 'Choose a chip, then Deal.' : !Number.isInteger(amount) ? 'Choose a whole-dollar chip for your next Deal.' : amount > 1000 ? 'The maximum wager is $1,000. Decrease your wager to deal.' : amount > balance ? 'Your wager exceeds your test balance. Choose a smaller chip or decrease the wager.' : 'Press Deal to start your next hand.');
+      say(amount <= 0 ? 'Choose a chip, then Deal.' : !Number.isInteger(amount) ? 'Choose a whole-dollar chip for your next Deal.' : amount > 1000 ? 'The maximum wager is $1,000. Decrease your wager to deal.' : amount > balance ? 'Your wager exceeds your test balance. Use the down arrow to reduce it.' : 'Press Deal to start your next hand.');
     }
     updateControls();
   });

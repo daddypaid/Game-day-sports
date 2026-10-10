@@ -37,7 +37,7 @@ function controls() {
 function prompt() {
   if (busy || pending || !ready || !owner) return;
   if (!validAmount(amount())) setStatus('Choose a wager from $1 to $10,000.');
-  else if (amount() > wallet) setStatus('Your wager exceeds your test wallet. Choose a smaller chip or decrease it.');
+  else if (amount() > wallet) setStatus('Your wager exceeds your test wallet. Use the down arrow to reduce it.');
   else if (!selected) setStatus('Choose Player, Banker or Tie, then Deal.');
   else setStatus(`${selected[0].toUpperCase() + selected.slice(1)} selected · ${money.format(amount())} wager. Ready to deal.`);
 }
@@ -86,6 +86,7 @@ async function renderRound(round, token, animate) {
   latest = round;
   const rendered = await view.render({ groups: { player: round.player_cards, banker: round.banker_cards }, phase: 'complete' }, { animate });
   if (!current(token) || !rendered) return false;
+  wager.startNextWager(`${owner}:${round.id}`);
   const summary = resultText(round);
   view.announcement.textContent = summary;
   setStatus('Round complete. Choose your wager and side for the next deal.');

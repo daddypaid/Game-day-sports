@@ -449,6 +449,7 @@
   }
   function completedPreview() {
     const evaluated = window.GameDayPokerHands?.evaluate({ game, player:groups.player.cards.map(entry => entry.card), board:(groups.board?.cards || []).map(entry => entry.card) });
+    stage.gamedayWager?.startNextWager();
     announcement.textContent = `Preview hand complete${evaluated ? `: ${evaluated.label}` : ''}. No wallet credits were changed.`;
   }
   async function initialDeal(token) {
