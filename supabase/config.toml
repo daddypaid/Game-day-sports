@@ -1,0 +1,21 @@
+project_id = "game-day-sports"
+
+[functions.blackjack-test]
+verify_jwt = true
+
+[functions.baccarat-test]
+verify_jwt = true
+
+[functions.slots-test]
+verify_jwt = true
+
+[functions.themed-slots-test]
+verify_jwt = true
+
+[functions.place-test-wager]
+verify_jwt = true
+
+# The scheduled grading job verifies x-gameday-job-token inside its handler.
+# Cron uses that job secret rather than a customer session JWT.
+[functions.auto-settle-test-wagers]
+verify_jwt = false
