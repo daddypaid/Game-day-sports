@@ -26,7 +26,7 @@ const validCards = (cards, masked = false) => Array.isArray(cards) && cards.ever
 function message(text) { if (view?.status) view.status.textContent = text; }
 function showBalance(value) {
   balance = validMoney(value) ? value : null;
-  balanceLabel.textContent = balance === null ? 'Test balance —' : `Test balance ${money.format(balance)}`;
+  balanceLabel.textContent = balance === null ? '—' : money.format(balance);
   if (balance !== null && owner) window.dispatchEvent(new CustomEvent('gameday:wallet-updated', { detail:{balance,userId:owner} }));
 }
 function validateHand(value) {
@@ -230,7 +230,7 @@ async function connect() {
   } catch (error) {
     if (!hidden && token === generation) {
       unavailable = true;
-      if (error.auth) { view.clear(); hand = null; selected.clear(); resultBox.hidden = true; renderInfo(); ready = false; signin.hidden = false; }
+      if (error.auth) { showBalance(null); view.clear(); hand = null; selected.clear(); resultBox.hidden = true; renderInfo(); ready = false; signin.hidden = false; }
       account.textContent = error.auth ? 'Sign in required' : 'Connection unavailable';
       message(pending ? 'Your last action could not be confirmed. Retry the connection before continuing.' : `${error.message || 'Connection unavailable'} Use Retry Connection.`);
     }

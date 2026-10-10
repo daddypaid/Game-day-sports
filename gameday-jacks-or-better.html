@@ -43,9 +43,11 @@ html:root body.poker-table-artwork-page :is(.stage,.game-stage,.stage img,.game-
 <body class="jacks-artwork-page poker-table-artwork-page gd-table-fullscreen">
 
 <main>
-  <section class="game-stage" aria-label="Jacks or Better game area"><img data-table-trim-top="122" src="assets/card-tables/gameday-jacks-or-better-table.png" width="591" height="1280" alt="GameDay Jacks or Better table artwork" fetchpriority="high"></section>
+  <section class="game-stage" aria-label="Jacks or Better game area"><img data-table-trim-top="122" src="assets/card-tables/gameday-jacks-or-better-table.png" width="591" height="1280" alt="GameDay Jacks or Better table artwork" fetchpriority="high">
+    <div class="gd-table-balance"><span id="gd-table-balance-label" class="gd-table-balance-label">BALANCE</span><output id="gd-jacks-balance" aria-labelledby="gd-table-balance-label" aria-live="polite" aria-atomic="true">—</output></div>
+  </section>
 <footer class="gd-table-footer" aria-label="Game account and navigation">
-  <div class="gd-jacks-account"><span>Test balance: <output id="gd-jacks-balance">—</output></span><a id="gd-jacks-signin" href="gameday-auth.html" hidden>Sign in to play</a></div>
+  <div class="gd-jacks-account"><a id="gd-jacks-signin" href="gameday-auth.html" hidden>Sign in to play</a></div>
   <a class="back" href="gameday-poker.html">‹ Back to Poker Room</a>
 </footer>
 </main>

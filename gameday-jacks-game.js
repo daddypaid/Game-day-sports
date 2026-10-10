@@ -46,7 +46,7 @@ function updateControls() {
   stage.dataset.dealBusy = String(busy);
   stage.setAttribute('aria-busy', String(busy));
   signIn.hidden = Boolean(userId) && !authNeeded;
-  balanceView.value = Number.isFinite(balance) ? money(balance) : '—';
+  balanceView.value = !authNeeded && Number.isFinite(balance) && balance >= 0 ? money(balance) : '—';
   if (recovery) {
     recovery.hidden = !needsRefresh && !pending;
     recovery.disabled = busy || hidden || (pending?.retryAllowed && !validStake);
@@ -147,7 +147,7 @@ async function request(body, token) {
     if (!response.ok || !result?.ok) {
       const failure = new Error(result?.error || `GameDay is unavailable (${response.status}).`);
       failure.definitive = true;
-      if (response.status === 401) authNeeded = true;
+      if (response.status === 401 || response.status === 403) authNeeded = true;
       throw failure;
     }
     if (token !== generation || hidden) throw new DOMException('Cancelled', 'AbortError');

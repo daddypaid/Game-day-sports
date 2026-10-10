@@ -8,6 +8,22 @@ html:root body.gd-table-fullscreen main > :is(.game-stage,.stage) {
 html:root body.gd-table-fullscreen .gd-wager-artwork {
   margin-top:calc(-1 * var(--gd-artwork-top-trim, 0%));
 }
+/* The existing live wallet output sits above the deck, without reserving header space. */
+html:root body.gd-table-fullscreen .gd-table-balance {
+  position:absolute; z-index:4;
+  top:max(8px,env(safe-area-inset-top)); right:max(10px,env(safe-area-inset-right));
+  display:flex; flex-direction:column; align-items:center; gap:2px;
+  width:clamp(104px,34%,144px); box-sizing:border-box; margin:0; padding:5px 7px;
+  border:1px solid #b9964e; border-radius:9px; background:#091b10; color:#fff3ce;
+  text-align:center; pointer-events:none;
+}
+.gd-table-balance-label { font:700 9px/1.2 Arial,sans-serif; letter-spacing:.12em; }
+html:root body.gd-table-fullscreen .gd-table-balance output {
+  display:block; max-width:100%; margin:0; padding:0; border:0; border-radius:0;
+  background:transparent; color:#fff3ce; box-shadow:none;
+  font:700 clamp(12px,3.8vw,17px)/1.2 Arial,sans-serif; font-variant-numeric:tabular-nums;
+  overflow-wrap:anywhere;
+}
 .gd-table-footer {
   padding:10px 12px; color:#e8d89a; background:#08100b;
   font:700 12px/1.4 Arial,sans-serif;

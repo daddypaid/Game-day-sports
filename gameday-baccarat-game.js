@@ -42,8 +42,8 @@ function prompt() {
   else setStatus(`${selected[0].toUpperCase() + selected.slice(1)} selected · ${money.format(amount())} wager. Ready to deal.`);
 }
 function showWallet(value) {
-  wallet = value !== null && value !== undefined && Number.isFinite(Number(value)) ? Number(value) : null;
-  balanceLabel.textContent = wallet === null ? 'TEST WALLET —' : `TEST ${money.format(wallet)}`;
+  wallet = value !== null && value !== undefined && Number.isFinite(Number(value)) && Number(value) >= 0 ? Number(value) : null;
+  balanceLabel.textContent = wallet === null ? '—' : money.format(wallet);
 }
 function loadMarker(id) {
   try {
@@ -152,7 +152,7 @@ async function connect() {
     const id = sessionResponse.data?.session?.user?.id;
     if (!id) {
       owner = null; wallet = null; selected = null; latest = null; pending = null; view.clear(); resultBox.hidden = true;
-      account.textContent = 'Not signed in'; balanceLabel.textContent = 'TEST WALLET —'; signin.hidden = false;
+      account.textContent = 'Not signed in'; showWallet(null); signin.hidden = false;
       retry.hidden = true; setStatus('Sign in to play Baccarat with your GameDay test wallet.'); return;
     }
     if (owner !== id) { view.clear(); resultBox.hidden = true; latest = null; selected = null; }
@@ -161,7 +161,7 @@ async function connect() {
     await reconcile(token);
     if (current(token)) ready = true;
   } catch (error) {
-    if (current(token)) { account.textContent = owner ? 'Signed in · Connection unavailable' : 'Connection unavailable'; signin.hidden = Boolean(owner); showRetry(pending ? 'Your last deal could not be confirmed. Check the result before playing again.' : `${error.message || 'Connection unavailable'} Retry to reconnect.`, Boolean(pending)); }
+    if (current(token)) { if (error.auth) showWallet(null); account.textContent = owner ? 'Signed in · Connection unavailable' : 'Connection unavailable'; signin.hidden = Boolean(owner); showRetry(pending ? 'Your last deal could not be confirmed. Check the result before playing again.' : `${error.message || 'Connection unavailable'} Retry to reconnect.`, Boolean(pending)); }
   } finally {
     if (current(token)) { busy = false; controls(); if (!pending && ready && !latest) prompt(); }
   }
@@ -194,7 +194,7 @@ async function deal() {
     if (!invoked || error.definite) {
       clearMarker(id); setStatus(error.message || 'Your deal was not accepted. Choose your wager and try again.');
       if (latest) resultText(latest);
-      if (error.auth) { ready = false; account.textContent = 'Sign in required'; signin.hidden = false; showRetry('Sign in again or retry your connection before dealing.'); }
+      if (error.auth) { ready = false; showWallet(null); account.textContent = 'Sign in required'; signin.hidden = false; showRetry('Sign in again or retry your connection before dealing.'); }
     } else {
       try { await reconcile(token, true); }
       catch (_) { if (current(token)) showRetry('Your deal may have completed. Check the result before starting another round; your wager will not be sent again.', true); }

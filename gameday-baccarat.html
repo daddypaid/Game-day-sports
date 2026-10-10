@@ -39,9 +39,11 @@ html body.baccarat-artwork-page main{height:auto!important;overflow:visible!impo
 <body class="baccarat-artwork-page gd-table-fullscreen">
 
 <main>
-  <section class="game-stage" aria-label="Baccarat game area"><img data-table-trim-top="122" src="assets/card-tables/gameday-baccarat-table.png" width="591" height="1280" alt="GameDay Baccarat table artwork" fetchpriority="high"></section>
+  <section class="game-stage" aria-label="Baccarat game area"><img data-table-trim-top="122" src="assets/card-tables/gameday-baccarat-table.png" width="591" height="1280" alt="GameDay Baccarat table artwork" fetchpriority="high">
+    <div class="gd-table-balance"><span id="gd-table-balance-label" class="gd-table-balance-label">BALANCE</span><output id="balance" aria-labelledby="gd-table-balance-label" aria-live="polite" aria-atomic="true">—</output></div>
+  </section>
 <footer class="gd-table-footer" aria-label="Game account and navigation">
-  <div class="account-row"><span id="baccarat-account">Connecting…</span><strong id="balance">TEST WALLET —</strong><a id="baccarat-signin" href="gameday-auth.html" hidden>Sign in</a></div>
+  <div class="account-row"><span id="baccarat-account">Connecting…</span><a id="baccarat-signin" href="gameday-auth.html" hidden>Sign in</a></div>
   <div class="nav">
     <a href="gameday-sportsbook.html">Sportsbook</a>
     <a href="gameday-casino-v2.html">Casino</a>

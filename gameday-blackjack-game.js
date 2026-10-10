@@ -9,10 +9,11 @@ async function initializeBlackjack() {
   stage.dataset.blackjackInitialized = 'true';
   const { actions, status, announcement } = view;
   const panel = stage.querySelector('.gd-table-wager-panel');
+  const balanceOutput = document.getElementById('gd-blackjack-balance');
   announcement.classList.add('gd-blackjack-announcement');
   const info = document.createElement('div');
   info.className = 'gd-blackjack-info';
-  info.innerHTML = '<p class="gd-blackjack-balance">Test balance: loading…</p><p>Blackjack pays 3:2. Dealer hits soft 17.</p><p class="gd-blackjack-totals"></p>';
+  info.innerHTML = '<p>Blackjack pays 3:2. Dealer hits soft 17.</p><p class="gd-blackjack-totals"></p>';
   panel.querySelector('.gd-table-action-groups').after(info);
   const result = document.createElement('section');
   result.className = 'gd-blackjack-result';
@@ -69,7 +70,7 @@ async function initializeBlackjack() {
     retryButton.hidden = !recoveryRequired && !unavailable;
     retryButton.textContent = recoveryRequired ? 'Retry recovery' : 'Retry connection';
     signIn.hidden = Boolean(user);
-    info.querySelector('.gd-blackjack-balance').textContent = Number.isFinite(balance) ? `Test balance: ${money.format(balance)}` : user ? 'Test balance unavailable' : 'Sign in to play with test credits';
+    balanceOutput.value = Number.isFinite(balance) && balance >= 0 ? money.format(balance) : '—';
     if (!busy && user && !isActive() && !unavailable && !recoveryRequired && !valid) {
       message(amount < 1 ? 'Choose a chip to set a wager of at least $1.' : amount > 10000 ? 'The maximum wager is $10,000.' : 'Your wager exceeds your available test balance. Choose a smaller amount.');
     }
@@ -227,6 +228,7 @@ async function initializeBlackjack() {
           const nextId = session?.user?.id || null;
           if (nextId !== (user?.id || null)) {
             epoch++;
+            balance = null;
             requestController?.abort();
             view.cancel();
             busy = true;

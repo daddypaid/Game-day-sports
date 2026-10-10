@@ -40,10 +40,11 @@ html:root body.poker-table-artwork-page :is(.stage,.game-stage,.stage img,.game-
 <main>
   <section class="stage" aria-label="Omaha work area">
     <img width="591" height="1280" data-table-trim-top="118" src="assets/card-tables/gameday-omaha-table.png" alt="GameDay Omaha table artwork" fetchpriority="high">
+    <div class="gd-table-balance"><span id="gd-table-balance-label" class="gd-table-balance-label">BALANCE</span><output id="poker-balance" class="gd-poker-balance" aria-labelledby="gd-table-balance-label" aria-live="polite" aria-atomic="true">—</output></div>
   </section>
   <div class="gd-poker-rules">Heads-up Pot Limit Omaha against the computer. Your opening wager is an ante matched by the computer. Use exactly two hole cards and three community cards. Test credits only.</div>
 <footer class="gd-table-footer" aria-label="Game account and navigation">
-  <div class="gd-poker-account"><span id="poker-account">Connecting…</span><span id="poker-balance" class="gd-poker-balance">Test balance —</span><a id="poker-signin" href="gameday-auth.html" hidden>Sign in</a></div>
+  <div class="gd-poker-account"><span id="poker-account">Connecting…</span><a id="poker-signin" href="gameday-auth.html" hidden>Sign in</a></div>
   <a class="back" href="gameday-poker.html">‹ Back to Poker Room</a>
 </footer>
 </main>
