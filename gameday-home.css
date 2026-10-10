@@ -58,10 +58,7 @@ button:focus-visible, a:focus-visible, input:focus-visible { outline: 2px solid 
 .reference-art { position: relative; display: block; width: 100%; aspect-ratio: var(--art-ratio); overflow: hidden; background: #030403; }
 .reference-art > img { position: absolute; display: block; left: var(--art-left); top: var(--art-top); width: var(--art-scale); max-width: none; height: auto; pointer-events: none; user-select: none; }
 .home-hero { position: relative; margin: 0 calc(-1 * clamp(10px, 1.1vw, 22px)); overflow: hidden; border-bottom: 1px solid #6f542a; }
-.hero-cta { position: absolute; left: 32.3%; top: 68.9%; width: 18.5%; height: 14%; min-height: 44px; border-radius: 30px; }
-.hero-cta:hover { box-shadow: 0 0 22px #ffd87966; }
-.hero-cta:focus-visible { outline-offset: 1px; }
-.hero-action-label { display: none; }
+.home-banner { display: block; width: 100%; height: auto; }
 .section-heading { display: flex; justify-content: space-between; align-items: center; gap: 14px; min-height: 40px; }
 .section-heading h2 { margin: 0; color: var(--gold); font-size: clamp(13px, 1.5vw, 21px); line-height: 1.2; font-weight: 800; text-transform: uppercase; }
 .section-heading > a { display: inline-flex; align-items: center; gap: 8px; white-space: nowrap; font-size: 10px; letter-spacing: .04em; text-transform: uppercase; }
@@ -79,6 +76,7 @@ button:focus-visible, a:focus-visible, input:focus-visible { outline: 2px solid 
 .casino-grid { display: grid; gap: 8px; }
 .featured-games { grid-template-columns: 182fr 189fr 198fr 197fr; }
 .table-games { grid-template-columns: 147fr 151fr 149fr 159fr 155fr; margin-top: 8px; }
+.game-tile-title { position: absolute; inset: auto 0 0; padding: 16px 6px 7px; color: var(--gold-light); background: linear-gradient(transparent, #020403ed); text-align: center; font-family: Georgia, serif; font-size: clamp(12px, 1.2vw, 18px); font-weight: 700; }
 .game-unavailable { filter: saturate(.65); }
 .unavailable-label { position: absolute; top: 5px; right: 5px; padding: 4px 6px; border: 1px solid #b09554; border-radius: 4px; color: #ffe6a9; background: #080b08e8; font-size: clamp(7px, .7vw, 10px); }
 .home-footer { display: grid; grid-template-columns: repeat(4, 1fr); align-items: center; gap: 12px; min-height: 82px; margin-top: auto; padding: 16px 10px; border-top: 1px solid #43351d; }
@@ -136,9 +134,6 @@ dialog p { line-height: 1.6; font-size: 14px; }
   .account-link { width: 33px; height: 33px; }
   .account-link .icon { width: 20px; height: 20px; }
   .home-hero { margin-left: -10px; margin-right: -10px; }
-  .hero-cta { top: auto; bottom: 7%; left: calc(41.5% - 62px); width: 124px; height: 40px; border: 1px solid #f0ca79; background: linear-gradient(#ffe4a2, #ca8a2d); color: #171005; box-shadow: 0 2px 8px #0007; }
-  .hero-action-label { display: flex; align-items: center; justify-content: center; gap: 7px; height: 100%; font-size: 12px; font-weight: 900; text-transform: uppercase; }
-  .hero-action-label .icon { width: 15px; height: 15px; }
   .section-heading { min-height: 43px; gap: 10px; }
   .section-heading h2 { font-size: 15px; }
   .section-heading > a { min-height: 40px; font-size: 9px; gap: 4px; }

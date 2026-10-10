@@ -23,7 +23,7 @@ header{position:sticky;top:0;z-index:30;background:rgba(12,18,14,.97);border-bot
 main{max-width:900px;margin:auto;padding:12px 0 110px}
 .hero{width:min(calc(100% - 28px),520px);margin:0 auto 18px;border-radius:18px;overflow:hidden;border:1px solid #8c7130;background:#07120b;box-shadow:0 16px 38px rgba(0,0,0,.32)}
 .hero img{display:block;width:100%;height:auto;aspect-ratio:960/1219;object-fit:contain}
-.section{margin-top:18px}.section-head{display:flex;align-items:end;justify-content:space-between;padding:0 14px 9px;gap:10px}.section h3{margin:0;font-size:20px;letter-spacing:.01em}.section-note{font-size:10px;color:#85928a;white-space:nowrap}
+.section{margin-top:18px;scroll-margin-top:var(--casino-category-offset,12px)}.section-head{display:flex;align-items:end;justify-content:space-between;padding:0 14px 9px;gap:10px}.section h3{margin:0;font-size:20px;letter-spacing:.01em}.section-note{font-size:10px;color:#85928a;white-space:nowrap}
 .game-row{display:flex;gap:11px;overflow-x:auto;padding:0 14px 8px;scroll-snap-type:x proximity;scrollbar-width:none}.game-row::-webkit-scrollbar{display:none}
 .game-card{flex:0 0 215px;text-decoration:none;color:#fff;background:#111813;border:1px solid #29372e;border-radius:14px;overflow:hidden;box-shadow:0 8px 20px rgba(0,0,0,.22);scroll-snap-align:start;transition:transform .15s ease,border-color .15s ease}.game-card:active{transform:scale(.985)}
 .art{height:128px;position:relative;overflow:hidden}.art::after{content:"";position:absolute;inset:auto 0 0;height:46%;background:linear-gradient(transparent,rgba(0,0,0,.5))}
@@ -41,7 +41,7 @@ main{max-width:900px;margin:auto;padding:12px 0 110px}
 .game-info{padding:11px 12px 12px}.game-title{font-size:16px;font-weight:900}.game-meta{margin-top:4px;color:#94a198;font-size:10px}.play-row{display:flex;justify-content:space-between;align-items:center;margin-top:9px}.status{padding:5px 7px;border-radius:999px;background:#153d22;border:1px solid #2e7040;color:#bfe9c8;font-size:9px;font-weight:900}.play{font-size:11px;font-weight:900;color:#f2db88}
 .feature-strip{margin:20px 14px 0;border:1px solid #5f4e1e;border-radius:15px;background:linear-gradient(100deg,#3c2f0e,#16140c 56%,#0d1810);padding:14px 15px;display:flex;justify-content:space-between;align-items:center;gap:14px}.feature-strip strong{font-size:15px}.feature-strip span{display:block;margin-top:3px;color:#b8b39b;font-size:10px}.feature-badge{flex:0 0 auto;padding:8px 10px;border-radius:10px;background:#6a5418;color:#f7e399;font-size:10px;font-weight:900}
 @media(max-width:480px){.nav{grid-template-columns:repeat(2,1fr)}.hero{border-radius:16px}.game-card{flex-basis:205px}.art{height:122px}}
-.art{background-size:cover!important;background-position:center!important}.art::after{content:""!important;height:32%!important;background:linear-gradient(transparent,rgba(0,0,0,.28))!important}.blackjack-art::before,.roulette-art::before,.baccarat-art::before,.slots-art::before,.poker-art::before{content:none!important}.blackjack-art{background-image:url('assets/casino-premium/blackjack.webp')}.roulette-art{background-image:url('assets/casino-premium/roulette.webp')}.baccarat-art{background-image:url('assets/casino-premium/baccarat.webp')}.midnight-art{background-image:url('assets/casino-premium/midnight-monsters.webp')}.galactic-art{background-image:url('assets/casino-premium/galactic-rebellion.webp')}.poker-room-art{background-image:url('assets/casino-premium/poker-room.webp')}.jacks-art{background-image:url('assets/poker-premium/jacks-or-better.webp')!important;background-size:cover!important;background-position:center top!important}.jacks-art::before{content:none!important}.slots-art{background-image:url('assets/lucky-7s/lobby-preview.webp');background-position:center!important;background-size:contain!important;background-repeat:no-repeat;background-color:#040b05}
+.art{background-size:cover!important;background-position:center!important}.art::after{content:""!important;height:32%!important;background:linear-gradient(transparent,rgba(0,0,0,.28))!important}.blackjack-art::before,.roulette-art::before,.baccarat-art::before,.slots-art::before,.poker-art::before{content:none!important}.blackjack-art{background-image:url('assets/casino-premium/blackjack.webp')}.roulette-art{background-image:url('assets/casino-premium/roulette.webp')}.baccarat-art{background-image:url('assets/casino-premium/baccarat.webp')}.midnight-art{background-image:url('assets/casino-premium/midnight-monsters.webp')}.galactic-art{background-image:url('assets/casino-premium/galactic-rebellion.webp')}.poker-room-art{background-image:url('assets/casino-premium/poker-room.webp')}.slots-art{background-image:url('assets/lucky-7s/lobby-preview.webp');background-position:center!important;background-size:contain!important;background-repeat:no-repeat;background-color:#040b05}
 </style>
 <style>
 /* Reuse the approved Jacks scene without the poster's printed controls. */
@@ -108,6 +108,39 @@ main{max-width:900px;margin:auto;padding:12px 0 110px}
   </section>
   <div class="feature-strip"><div><strong>GameDay Test Casino</strong><span>All casino play uses test credits only. No real-money gambling is enabled.</span></div><div class="feature-badge">TEST MODE</div></div>
 </main>
+<script>
+// Keep category targets visible below the browser or installed-app header.
+(() => {
+  const header = document.querySelector('header');
+  const links = [...document.querySelectorAll('.categories a[href^="#"]')];
+  const currentLink = () => links.find(link => link.hash === location.hash) || links[0];
+  function selectCategory() {
+    const selected = currentLink();
+    links.forEach(link => {
+      const active = link === selected;
+      link.classList.toggle('active', active);
+      if (active) link.setAttribute('aria-current', 'location');
+      else link.removeAttribute('aria-current');
+    });
+  }
+  function revealCategory() {
+    selectCategory();
+    const selected = currentLink();
+    if (selected && selected.hash === location.hash) {
+      document.getElementById(selected.hash.slice(1))?.scrollIntoView({block: 'start'});
+    }
+  }
+  function measureHeader() {
+    document.documentElement.style.setProperty('--casino-category-offset', `${header.getBoundingClientRect().height + 12}px`);
+    if (location.hash) revealCategory();
+  }
+  measureHeader();
+  new ResizeObserver(measureHeader).observe(header);
+  window.addEventListener('hashchange', revealCategory);
+  window.addEventListener('load', revealCategory);
+  selectCategory();
+})();
+</script>
 <script type="module">
 import{createClient}from"https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/+esm";
 import{GAMEDAY_CONFIG}from'./gameday-config.js';

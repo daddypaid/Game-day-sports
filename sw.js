@@ -1,4 +1,4 @@
-const CACHE='gameday-shell-v104';
+const CACHE='gameday-shell-v105';
 const SHELL=[
   './',
   './index.html',
@@ -61,7 +61,7 @@ const SHELL=[
   './gameday-standard-deck.css',
   './assets/deck/gameday-approved-back.png',
   './gameday-app.js?v=12',
-  './gameday-home.css?v=1',
+  './gameday-home.css?v=2',
   './gameday-home.js?v=1',
   './gameday-card-wager-ui.js?v=34',
   './gameday-standard-deck.css?v=1',
@@ -99,6 +99,7 @@ const SHELL=[
   './art/gameday-sportsbook-hero.svg',
   './art/gameday-sportsbook-approved-hero.jpg',
   './assets/homepage/gameday-home-hero.webp',
+  './assets/homepage/gameday-home-banner.webp',
   './assets/homepage/gameday-homepage-approved.jpeg',
   './assets/gameday-blackjack-table-premium.svg',
   './assets/gameday-roulette-room.svg',
@@ -153,7 +154,7 @@ const SHELL=[
 ];
 
 self.addEventListener('install',event=>{
-  event.waitUntil(caches.open(CACHE).then(cache=>cache.addAll(SHELL.map(path=>/gameday-(?:app\.js|premium-app\.css|light-theme\.css|team-logos\.(?:js|css)|(?:midnight-monsters|galactic-rebellion|lucky-7s)-game\.(?:js|css)|table-(?:wager|dealing)\.(?:js|css)|(?:sportsbook|my-bets|auth|premium|casino-v2|slots-lobby|slots|(?:midnight-monsters|galactic-rebellion)(?:-v2)?|blackjack|baccarat|jacks-or-better|texas-holdem|omaha|seven-card-stud|five-card-draw)\.html)(?:\?.*)?$/.test(path)||/\/assets\/sportsbook\/team-logos\.json$/.test(path)?new Request(path,{cache:'reload'}):path))).then(()=>self.skipWaiting()));
+  event.waitUntil(caches.open(CACHE).then(cache=>cache.addAll(SHELL.map(path=>path==='./'||/(?:index\.html|gameday-(?:app\.js|premium-app\.css|light-theme\.css|team-logos\.(?:js|css)|(?:midnight-monsters|galactic-rebellion|lucky-7s)-game\.(?:js|css)|table-(?:wager|dealing)\.(?:js|css)|(?:sportsbook|my-bets|auth|premium|casino-v2|slots-lobby|slots|(?:midnight-monsters|galactic-rebellion)(?:-v2)?|blackjack|baccarat|jacks-or-better|texas-holdem|omaha|seven-card-stud|five-card-draw)\.html))(?:\?.*)?$/.test(path)||/\/assets\/sportsbook\/team-logos\.json$/.test(path)?new Request(path,{cache:'reload'}):path))).then(()=>self.skipWaiting()));
 });
 
 self.addEventListener('activate',event=>{
