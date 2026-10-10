@@ -51,10 +51,10 @@ body.gd-premium .blackjack-art{background-image:url('assets/casino/blackjack-lob
 body.gd-premium .roulette-art{background-image:url('assets/casino/roulette-lobby.svg')!important}
 body.gd-premium .baccarat-art{background-image:url('assets/casino/baccarat-lobby.svg')!important}
 body.gd-premium .poker-art{background-image:url('assets/casino/poker-lobby.svg')!important}
-body.gd-premium .slots-art{background-image:url('assets/casino/lucky-7s-lobby.svg')!important}
+body.gd-premium .slots-art{background-image:url('assets/lucky-7s/lobby-preview.webp')!important;background-size:contain!important;background-position:center!important}
 body.gd-premium a[href*='midnight-monsters'] .art{background-image:url('assets/casino/midnight-monsters-lobby.svg')!important}
 body.gd-premium a[href*='galactic-rebellion'] .art{background-image:url('assets/casino/galactic-rebellion-lobby.svg')!important}
-body.gd-premium a[href='gameday-slots.html'] .art{background-image:url('assets/casino/lucky-7s-lobby.svg')!important}
+body.gd-premium a[href='gameday-slots.html'] .art{background-image:url('assets/lucky-7s/lobby-preview.webp')!important;background-size:contain!important;background-position:center!important}
 body.gd-premium .game-card .art{height:148px!important;border-bottom:1px solid rgba(228,184,79,.28)!important}
 body.gd-premium .game-info{background:linear-gradient(180deg,rgba(14,16,13,.98),rgba(5,7,6,.99))!important}
 

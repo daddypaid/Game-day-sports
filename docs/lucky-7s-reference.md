@@ -5,9 +5,10 @@ The user's approved references show a green-and-gold sports stadium machine with
 ## Permanent artwork
 
 - `assets/lucky-7s/stadium-cabinet.webp`: full stadium cabinet with blank live reel windows.
+- `assets/lucky-7s/lobby-preview.webp`: dedicated landscape preview with the title and all nine symbols visible, used in Featured, Casino Slots and the Slots Lobby, including the premium shell.
 - `assets/lucky-7s/symbols-atlas.webp`: 3×3 square atlas, ordered red 7 / blue 7 / gold 7, football / soccer / hockey puck, basketball / boxing gloves / goalpost.
 
-Artwork was generated using the user's two sports-machine photos as references and encoded as WebP without resizing or recoloring. The Lucky 7s game is `gameday-slots.html`; its Slots Lobby card and the Casino's Slots Lobby artwork use the same cabinet.
+Artwork was generated using the user's two sports-machine photos as references and encoded as WebP without resizing or recoloring. The Lucky 7s game is `gameday-slots.html`; its preview cards use the filled landscape artwork, while the playable cabinet retains its separate live reel windows.
 
 ## Five active paylines
 
@@ -35,6 +36,6 @@ The authenticated `slots-test` function accepts the explicit `lucky-7s` / `five-
 
 Cached clients sending the older `{stake}` request retain the deployed version-3 single-line behavior. No database schema, grants, wallet service, or other games' functions changed. Failed or uncertain paid requests are never automatically repeated; the UI reconciles through read-only wallet and game-status requests.
 
-Focused function tests cover all 45 symbol/line awards, crossed diagonals, stake boundaries, exact expected return, authentication/error cases, and all 216 legacy outcomes. Browser checks cover mobile and installed-shell layouts, real reel animation/audio, controls, exact server rendering, errors without paid retries, and logout/navigation cancellation. PWA checks cover the version-103 cache upgrade and offline artwork.
+Focused function tests cover all 45 symbol/line awards, crossed diagonals, stake boundaries, exact expected return, authentication/error cases, and all 216 legacy outcomes. Browser checks cover mobile and installed-shell layouts, real reel animation/audio, controls, exact server rendering, errors without paid retries, and logout/navigation cancellation. PWA checks cover the version-104 cache upgrade and offline artwork.
 
 Verification passed locally and on the published site at 390px, including the browser, installed-app styles and premium shell. Tests used isolated account/API/RPC fixtures and did not make paid spins against a customer's wallet. The deployed `slots-test` version 4 source matches the repository, keeps JWT verification enabled, and rejects anonymous requests. Both GameDay deployment workflows passed. The existing Transferability and Final Sale Readiness workflows also failed on the parent commit; their unrelated HTML configuration and service-worker registration checks remain outside this change.
