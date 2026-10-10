@@ -112,18 +112,14 @@ jobs:
             exit 1
           fi
 
-      - name: Require workflow deployments after verification
+      - name: Verify Pages uses gated workflow deployments
         uses: actions/github-script@v7
         with:
           script: |
             const target = {owner: context.repo.owner, repo: context.repo.repo};
             const site = await github.rest.repos.getPages(target);
             if (site.data.build_type !== 'workflow') {
-              await github.rest.repos.updateInformationAboutPagesSite({...target, build_type: 'workflow'});
-            }
-            const verified = await github.rest.repos.getPages(target);
-            if (verified.data.build_type !== 'workflow') {
-              throw new Error('GitHub Pages must use verified workflow deployments.');
+              throw new Error('Repository owner must set Settings > Pages > Build and deployment > Source to GitHub Actions: https://github.com/' + target.owner + '/' + target.repo + '/settings/pages');
             }
 
       - name: Configure Pages
