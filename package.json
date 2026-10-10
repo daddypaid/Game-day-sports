@@ -1,0 +1,16 @@
+{
+  "name": "gameday-launch-verification",
+  "version": "1.0.0",
+  "private": true,
+  "scripts": {
+    "test": "node --test tests/*.test.cjs",
+    "test:slot-recovery": "node tests/slot-receipt-recovery.browser.cjs",
+    "test:slot-roundtrip": "node tests/slot-receipt-roundtrip.browser.cjs",
+    "test:card-recovery": "node tests/card-deal-recovery.browser.cjs",
+    "check:release": "node scripts/check-gameday-release.mjs"
+  },
+  "devDependencies": {
+    "@electric-sql/pglite": "0.3.14",
+    "playwright": "1.64.0"
+  }
+}

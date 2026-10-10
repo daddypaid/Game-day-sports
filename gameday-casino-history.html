@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html lang="en" class="gd-light-theme">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="theme-color" content="#ffffff">
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="apple-touch-icon" href="icons/gameday-192.png">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="default">
+<title>GameDay Casino History</title>
+<link rel="stylesheet" href="gameday-light-theme.css">
+<link rel="stylesheet" href="gameday-casino-history.css">
+</head>
+<body>
+<header><h1>GameDay Casino History</h1><p class="sub">Your settled slot spins · TEST MODE — no real money</p><nav aria-label="Account navigation"><a href="gameday-auth.html#accountPanel">Account</a><a href="gameday-my-bets.html">My Bets</a><a href="gameday-casino-v2.html">Casino</a></nav></header>
+<main>
+<div id="history-status" class="status" role="status" aria-live="polite">Loading your spin history…</div>
+<div class="history-actions"><button id="history-refresh" type="button">Refresh History</button><a id="history-signin" href="gameday-auth.html">Sign in</a></div>
+<section id="history-list" aria-label="Settled slot spins"></section>
+<button id="history-more" type="button" hidden>Load Earlier Spins</button>
+<noscript>Enable JavaScript to view your GameDay spin history.</noscript>
+</main>
+<script type="module" src="gameday-casino-history.js"></script>
+<script src="gameday-app.js"></script>
+</body>
+</html>

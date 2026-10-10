@@ -1,5 +1,5 @@
 import "jsr:@supabase/functions-js/edge-runtime.d.ts";
-import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
+import { createClient } from "npm:@supabase/supabase-js@2.115.0";
 
 const cors = {
   "Access-Control-Allow-Origin": "*",
@@ -103,6 +103,20 @@ function evaluateLucky(grid: string[][], totalCents: number) {
   return { payout: payoutCents / 100, activeLines, winCells, lineWins };
 }
 
+function requestId(value: unknown) {
+  if (typeof value !== "string" ||
+    !/^[0-9a-f]{8}-[0-9a-f]{4}-[1-8][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i.test(value))
+    throw new Error("A valid request_id is required");
+  return value;
+}
+async function receipt(admin: any, userId: string, id: string, payload: object | null) {
+  const { data, error } = await admin.rpc("get_slot_request_receipt", {
+    p_user_id: userId, p_request_id: id, p_game: "lucky-7s", p_payload: payload,
+  });
+  if (error) throw error;
+  return data;
+}
+
 Deno.serve(async (req)=>{
   if(req.method==="OPTIONS") return new Response("ok",{headers:cors});
   if(req.method!=="POST") return new Response(JSON.stringify({error:"Method not allowed"}),{status:405,headers:cors});
@@ -122,6 +136,31 @@ Deno.serve(async (req)=>{
     const body = await req.json();
     const luckyRequest = body?.game !== undefined || body?.math_version !== undefined;
     if (luckyRequest) {
+      if (body?.game === "lucky-7s" && body?.action === "receipt") {
+        const admin = createClient(url, service);
+        const stored = await receipt(admin, userData.user.id, requestId(body.request_id), null);
+        return new Response(JSON.stringify(stored ? { ...stored, found: true } :
+          { ok: true, found: false }), { headers: cors });
+      }
+      if (body?.game === "lucky-7s" && body?.action === "history") {
+        const admin = createClient(url, service);
+        const limit = body.limit === undefined ? 20 : body.limit;
+        if (!Number.isInteger(limit) || limit < 1 || limit > 50) throw new Error("Invalid history limit");
+        const before = body.before;
+        if (before && (!Number.isFinite(Date.parse(before.created_at)) || !before.id))
+          throw new Error("Invalid history cursor");
+        const { data, error } = await admin.rpc("get_slot_request_history", {
+          p_user_id: userData.user.id, p_limit: limit + 1,
+          p_before_created_at: before?.created_at || null,
+          p_before_id: before ? requestId(before.id) : null,
+        });
+        if (error) throw error;
+        const rows = data || [], receipts = rows.slice(0, limit);
+        const last = receipts.at(-1);
+        return new Response(JSON.stringify({ ok: true, receipts,
+          next_cursor: rows.length > limit && last ? { created_at: last.created_at, id: last.id } : null,
+        }), { headers: cors });
+      }
       if (body?.game !== "lucky-7s" || body?.math_version !== luckyVersion)
         throw new Error("Unsupported Lucky 7s game or math version");
       const action = body?.action === undefined ? "spin" : body.action;
@@ -136,10 +175,34 @@ Deno.serve(async (req)=>{
         typeof total !== "number" || !Number.isFinite(total) ||
         total !== cents / 100 || cents < 10 || cents > 20000 || cents % 10 !== 0
       ) throw new Error("Total bet must be $0.10 to $200.00 in $0.10 steps");
+      const admin = createClient(url, service);
+      const id = body.request_id === undefined ? null : requestId(body.request_id);
+      const payload = { game: "lucky-7s", action: "spin", math_version: luckyVersion, total_bet: total };
+      if (id) {
+        const stored = await receipt(admin, userData.user.id, id, payload);
+        if (stored) return new Response(JSON.stringify(stored), { headers: cors });
+      }
       const grid = makeLuckyGrid();
       const award = evaluateLucky(grid, cents);
       const result = award.payout > 0 ? "won" : "lost";
-      const admin = createClient(url, service);
+      if (id) {
+        const { data, error } = await admin.rpc("settle_slot_request_atomic", {
+          p_user_id: userData.user.id, p_request_id: id,
+          p_game: "lucky-7s", p_action: "spin", p_payload: payload,
+          p_response: { ok: true, game_config: luckyConfig, spin: {
+            game: "lucky-7s", math_version: luckyVersion, grid,
+            total_bet: total, stake: total, bet_per_line: cents / 5 / 100, lines: 5,
+            payout: award.payout, result, active_lines: award.activeLines,
+            win_lines: award.activeLines, win_cells: award.winCells, line_wins: award.lineWins,
+            free_spin: false, bonus_triggered: false,
+          } },
+          p_settlement: { reels: grid.flatMap((column, col) =>
+            column.map((symbol, row) => `lucky-7s:${col}:${row}:${symbol}`)) },
+        });
+        if (error) throw error;
+        if (!data?.spin) throw new Error("Unable to recover slot receipt");
+        return new Response(JSON.stringify(data), { headers: cors });
+      }
       const { data: rows, error: rpcError } = await admin.rpc(
         "play_slot_test_spin_atomic", {
           p_user_id: userData.user.id,
@@ -212,6 +275,10 @@ Deno.serve(async (req)=>{
       }
     }),{status:200,headers:cors});
   }catch(e){
-    return new Response(JSON.stringify({error:e instanceof Error?e.message:"Unable to play slots"}),{status:400,headers:cors});
+    const message = e instanceof Error ? e.message :
+      typeof e === "object" && e !== null && "message" in e ? String(e.message) : "Unable to play slots";
+    const conflict = message.includes("REQUEST_CONFLICT");
+    return new Response(JSON.stringify({error:conflict ? "This request was already used for a different wager" : message,
+      ...(conflict ? { code: "REQUEST_CONFLICT" } : {})}),{status:conflict ? 409 : 400,headers:cors});
   }
 });

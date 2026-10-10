@@ -1,4 +1,4 @@
-const CACHE='gameday-shell-v119';
+const CACHE='gameday-shell-v120';
 const SHELL=[
   './',
   './index.html',
@@ -8,6 +8,9 @@ const SHELL=[
   './gameday-casino-v2.html',
   './gameday-my-bets.html',
   './gameday-auth.html',
+  './gameday-casino-history.html',
+  './gameday-casino-history.js',
+  './gameday-casino-history.css',
   './gameday-blackjack.html',
   './gameday-roulette.html',
   './gameday-roulette-game.js',
@@ -203,11 +206,12 @@ self.addEventListener('fetch',event=>{
   const themeRuntime=/\/(?:gameday-light-theme\.css|gameday-app\.js|gameday-premium-app\.css)$/.test(url.pathname);
   const logoRuntime=/\/(?:gameday-team-logos\.(?:js|css)|assets\/sportsbook\/team-logos\.json)$/.test(url.pathname);
   const slotRuntime=/\/gameday-(?:midnight-monsters|galactic-rebellion|lucky-7s|blackjack|baccarat|jacks|roulette|poker)-game\.(?:js|css)$/.test(url.pathname);
+  const historyRuntime=/\/gameday-casino-history\.(?:js|css)$/.test(url.pathname);
   const pokerRuntime=/\/gameday-(?:poker-hand-evaluation|config)\.js$/.test(url.pathname);
   const rouletteSpinnerRuntime=/\/gameday-roulette-spinner\.(?:js|css)$/.test(url.pathname);
-  const criticalRuntime=rouletteSpinnerRuntime||pokerRuntime||tableWagerRuntime||themeRuntime||logoRuntime||slotRuntime||/\/(?:gameday-config|gameday-card-wager-ui|gameday-standard-deck|gameday-live-card-tables|gameday-blackjack-live|gameday-roulette-spinner|gameday-app|gameday-home)\.(?:js|css)$/.test(url.pathname);
+  const criticalRuntime=historyRuntime||rouletteSpinnerRuntime||pokerRuntime||tableWagerRuntime||themeRuntime||logoRuntime||slotRuntime||/\/(?:gameday-config|gameday-card-wager-ui|gameday-standard-deck|gameday-live-card-tables|gameday-blackjack-live|gameday-roulette-spinner|gameday-app|gameday-home)\.(?:js|css)$/.test(url.pathname);
   if(criticalRuntime){
-    event.respondWith(fetch(req,rouletteSpinnerRuntime||pokerRuntime||tableWagerRuntime||themeRuntime||logoRuntime||slotRuntime?{cache:'no-cache'}:undefined).then(res=>{
+    event.respondWith(fetch(req,historyRuntime||rouletteSpinnerRuntime||pokerRuntime||tableWagerRuntime||themeRuntime||logoRuntime||slotRuntime?{cache:'no-cache'}:undefined).then(res=>{
       const copy=res.clone();
       caches.open(CACHE).then(cache=>cache.put(req,copy));
       return res;

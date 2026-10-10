@@ -54,6 +54,7 @@ let bonus = null;
 let bonusProgress = { used: 0, total: 10 };
 let grid = INITIAL_GRID.map(column => [...column]);
 let spinning = false;
+let pendingSpin = null;
 let activeAnimation = null;
 let accountReady = false;
 let accountEpoch = 0;
@@ -287,16 +288,16 @@ function sync() {
   ui['bet-line'].textContent = money(lineBet());
   ui['total-bet'].textContent = money(totalBet());
   ui['free-spins'].textContent = `${bonusProgress.used} / ${bonusProgress.total}`;
-  const locked = spinning || !!bonus || !accountReady || pageGone;
+  const locked = spinning || !!pendingSpin || !!bonus || !accountReady || pageGone;
   ui['line-minus'].disabled = locked || betCents <= 10;
   ui['total-minus'].disabled = locked || betCents <= 10;
   ui['line-plus'].disabled = locked || betCents >= 1000;
   ui['total-plus'].disabled = locked || betCents >= 1000;
   ui.max.disabled = locked || affordableMax() < 10;
-  ui.spin.disabled = spinning || !accountReady || pageGone || (!bonus && Number(balance) < totalBet());
-  ui.spin.textContent = bonus ? 'FREE SPIN' : 'SPIN';
-  ui.spin.setAttribute('aria-label', bonus ? `Play free spin, ${bonus.spins_remaining} remaining` : `Spin for ${money(totalBet())} test credits`);
-  ui.auto.disabled = !autoRemaining && (spinning || ui.spin.disabled);
+  ui.spin.disabled = spinning || !accountReady || pageGone || (!pendingSpin && !bonus && Number(balance) < totalBet());
+  ui.spin.textContent = pendingSpin ? 'RECOVER SPIN' : bonus ? 'FREE SPIN' : 'SPIN';
+  ui.spin.setAttribute('aria-label', pendingSpin ? 'Recover your saved spin without placing a new wager' : bonus ? `Play free spin, ${bonus.spins_remaining} remaining` : `Spin for ${money(totalBet())} test credits`);
+  ui.auto.disabled = !autoRemaining && (!!pendingSpin || spinning || ui.spin.disabled);
   ui.auto.classList.toggle('is-active', autoRemaining > 0);
   ui.auto.setAttribute('aria-pressed', String(autoRemaining > 0));
   ui.auto.textContent = autoRemaining ? 'STOP' : 'AUTO';
@@ -323,7 +324,105 @@ function queueAuto() {
 }
 
 class SlotError extends Error {
-  constructor(message, uncertain = false) { super(message); this.uncertain = uncertain; }
+  constructor(message, uncertain = false, rejected = false) { super(message); this.uncertain = uncertain; this.rejected = rejected; }
+}
+
+// Save the immutable request before sending it. Recovery always looks up or
+// replays this owner-scoped UUID, including a bonus session's final free spin.
+const PENDING_VERSION = 1;
+const UUID = /^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i;
+const pendingKey = owner => `gameday-slot-pending:${GAME}:${owner}`;
+
+function readPending(owner) {
+  let saved;
+  try { saved = localStorage.getItem(pendingKey(owner)); }
+  catch { throw new SlotError('Enable site storage to save and recover your spins safely.'); }
+  if (!saved) return null;
+  try {
+    const value = JSON.parse(saved);
+    if (value.version !== PENDING_VERSION || value.owner !== owner || value.game !== GAME ||
+        !UUID.test(value.request_id) || value.body?.request_id !== value.request_id ||
+        value.body?.game !== GAME || !['spin', 'bonus_spin'].includes(value.body?.action) ||
+        !Number.isFinite(value.requestedTotal) || value.requestedTotal <= 0 ||
+        (value.body.action === 'bonus_spin' && (!value.bonus || value.body.session_id !== value.bonus.id))) {
+      throw new Error('Invalid saved request');
+    }
+    return value;
+  } catch { throw new SlotError('Your saved spin could not be recovered. Keep this browser data and contact support.'); }
+}
+
+function rememberSpin(body, requestBonus, requestedTotal) {
+  const requestId = crypto.randomUUID();
+  const record = { version: PENDING_VERSION, owner: user.id, game: GAME, request_id: requestId,
+    body: { ...body, game: GAME, request_id: requestId }, bonus: requestBonus,
+    requestedTotal, created_at: new Date().toISOString() };
+  const serialized = JSON.stringify(record);
+  try {
+    localStorage.setItem(pendingKey(record.owner), serialized);
+    if (localStorage.getItem(pendingKey(record.owner)) !== serialized) throw new Error('Storage write failed');
+  } catch { throw new SlotError('Your browser could not save this spin. Enable site storage before playing.'); }
+  pendingSpin = JSON.parse(serialized);
+  return pendingSpin;
+}
+
+function forgetSpin(record) {
+  try {
+    const saved = readPending(record.owner);
+    if (saved?.request_id === record.request_id) localStorage.removeItem(pendingKey(record.owner));
+  } catch { /* A retained UUID can safely recover the same receipt after reload. */ }
+  if (pendingSpin?.request_id === record.request_id) pendingSpin = null;
+}
+
+function checkedSpinResponse(result, record) {
+  validateSpin(result?.spin, record.requestedTotal);
+
+  return result;
+}
+
+async function receiptFor(record) {
+  const result = await invokeSlot({ game: GAME, action: 'receipt', request_id: record.request_id }, record.owner);
+  if (result.found === true) return checkedSpinResponse(result, record);
+  if (result.found !== false) throw new SlotError('The saved spin result could not be checked.', true);
+  return null;
+}
+
+async function resolveSpin(record, recovering, expectedEpoch) {
+  const guard = () => {
+    if (pageGone || expectedEpoch !== accountEpoch || user?.id !== record.owner) {
+      throw new SlotError('Your account changed while this spin was being checked.');
+    }
+  };
+  guard();
+  if (recovering) {
+    const receipt = await receiptFor(record);
+    guard();
+    if (receipt) return receipt;
+  }
+  try {
+    const result = await invokeSlot(record.body, record.owner);
+    guard();
+    return checkedSpinResponse(result, record);
+  } catch (error) {
+    if (!error.uncertain || expectedEpoch !== accountEpoch || user?.id !== record.owner || pageGone) throw error;
+    stopAuto();
+    setStatus('Checking your saved spin result…');
+    const receipt = await receiptFor(record);
+    guard();
+    if (receipt) return receipt;
+    // This retry cannot create a second debit: the service serializes this UUID
+    // and returns its receipt if the original request commits in the meantime.
+    try {
+      const result = await invokeSlot(record.body, record.owner);
+      guard();
+      return checkedSpinResponse(result, record);
+    } catch (retryError) {
+      if (!retryError.uncertain || expectedEpoch !== accountEpoch || user?.id !== record.owner || pageGone) throw retryError;
+      const completed = await receiptFor(record);
+      guard();
+      if (completed) return completed;
+      throw retryError;
+    }
+  }
 }
 
 async function invokeSlot(body, expectedUser = user?.id) {
@@ -346,7 +445,7 @@ async function invokeSlot(body, expectedUser = user?.id) {
     });
     let result;
     try { result = await response.json(); } catch { throw new SlotError('The server response could not be read.', true); }
-    if (!response.ok || result.error) throw new SlotError(result.error || 'The slot service is unavailable.', response.status >= 500);
+    if (!response.ok || result.error) throw new SlotError(result.error || 'The slot service is unavailable.', response.status >= 500 || response.status === 409, response.status >= 400 && response.status < 500 && ![401, 403, 409].includes(response.status));
     return result;
   } catch (error) {
     if (error instanceof SlotError) throw error;
@@ -380,6 +479,7 @@ async function loadAccount({ quiet = false } = {}) {
     if (load !== accountLoad || epoch !== accountEpoch || pageGone) return false;
     user = data.session?.user || null;
     if (!user) {
+      pendingSpin = null;
       balance = null;
       bonus = null;
       bonusProgress = { used: 0, total: 10 };
@@ -388,6 +488,7 @@ async function loadAccount({ quiet = false } = {}) {
       return false;
     }
     const currentUser = user.id;
+    pendingSpin = readPending(currentUser);
     const [wallet, status] = await Promise.all([
       supabase.from('wallets').select('balance').eq('user_id', currentUser).single(),
       invokeSlot({ game: GAME, action: 'status' }, currentUser),
@@ -402,6 +503,12 @@ async function loadAccount({ quiet = false } = {}) {
       bonusProgress = { used: bonus.total_spins - bonus.spins_remaining, total: bonus.total_spins };
     }
     accountReady = true;
+    if (pendingSpin) {
+      setStatus('Recovering your saved spin…');
+      sync();
+      await spin();
+      return !pendingSpin;
+    }
     if (!quiet) {
       if (bonus) setStatus(`${bonus.spins_remaining} free spins ready. Your wager is locked for this bonus.`);
       else if (balance < totalBet()) setStatus('Lower your bet or refill your test wallet in Account.', '', true);
@@ -429,12 +536,22 @@ function validateSpin(result) {
 }
 
 async function spin() {
-  if (spinning || !accountReady || !user || pageGone || ui.dialog.open) return;
-  const free = !!bonus;
-  if (!free && Number(balance) < totalBet()) { stopAuto(); setStatus('Lower your bet or refill your test wallet in Account.', 'error', true); return; }
+  if (spinning || !accountReady || !user || pageGone || (ui.dialog.open && !pendingSpin)) return;
   const epoch = accountEpoch;
   const currentUser = user.id;
-  const requestBonus = bonus ? { ...bonus } : null;
+  let record;
+  let recovering;
+  try {
+    pendingSpin = pendingSpin || readPending(currentUser);
+    if (!pendingSpin && !bonus && Number(balance) < totalBet()) { stopAuto(); setStatus('Lower your bet or refill your test wallet in Account.', 'error', true); return; }
+    recovering = !!pendingSpin;
+    record = pendingSpin || rememberSpin(bonus ? { game: GAME, action: 'bonus_spin', session_id: bonus.id } :
+      { game: GAME, action: 'spin', bet_per_line: lineBet() }, bonus ? { ...bonus } : null, totalBet());
+  } catch (error) { stopAuto(); setStatus(error.message, 'error'); return; }
+  const free = record.body.action === 'bonus_spin';
+  const requestBonus = record.bonus;
+  const requestedTotal = record.requestedTotal;
+  betCents = Math.round((free ? requestBonus.bet_per_line : record.body.bet_per_line) * 100);
   spinning = true; // Set before any await so fast repeated taps cannot place duplicate spins.
   ui.win.textContent = money(0);
   if (!free) bonusProgress = { used: 0, total: 10 };
@@ -445,8 +562,7 @@ async function spin() {
   unlockAudio().then(context => { if (context && spinning && epoch === accountEpoch && !pageGone) startSpinSound(); });
   let finished = false;
   try {
-    const result = await invokeSlot(free ? { game: GAME, action: 'bonus_spin', session_id: requestBonus.id } :
-      { game: GAME, action: 'spin', bet_per_line: lineBet() }, currentUser);
+    const result = await resolveSpin(record, recovering, epoch);
     const settled = result.spin;
     validateSpin(settled);
     if (epoch !== accountEpoch || user?.id !== currentUser || pageGone) return;
@@ -487,19 +603,23 @@ async function spin() {
       if (payout > 0) playSound('win');
       else if (feature) playSound('bonus');
     }
+    forgetSpin(record);
     finished = true;
+    if (recovering) pendingAccountRefresh = true;
   } catch (error) {
     if (epoch !== accountEpoch || activeAnimation !== animation || pageGone) return;
     stopAuto();
     animation.cancel(true);
-    if (epoch === accountEpoch && user?.id === currentUser) {
-      // A dropped response may follow a committed spin. Status is read-only:
-      // never repeat a paid or free-spin request automatically after an error.
-      spinning = false;
-      const reconnected = await loadAccount({ quiet: true });
-      if (epoch !== accountEpoch || activeAnimation !== animation || pageGone) return;
-      const message = error.uncertain ? `${error.message} Your last spin may have completed. ${reconnected ? 'Wallet and free spins refreshed; check Account before spinning again.' : 'Reconnect before spinning again.'}` : error.message;
-      setStatus(message, 'error', !!error.uncertain || !reconnected);
+    if (user?.id === currentUser) {
+      if (error.rejected) {
+        forgetSpin(record);
+        pendingAccountRefresh = true;
+        setStatus(error.message + ' No new spin was placed.', 'error');
+      } else {
+        // Keep the saved UUID and all wager controls locked until its exact
+        // receipt is recovered. A click or reload retries this same request.
+        setStatus('Your spin result is waiting to be recovered. Press RECOVER SPIN or reload to reconnect. A new wager stays locked.', 'error');
+      }
     }
   } finally {
     if (activeAnimation === animation) {
@@ -510,7 +630,7 @@ async function spin() {
       sync();
       if (pendingAccountRefresh) {
         pendingAccountRefresh = false;
-        await loadAccount({ quiet: finished });
+        await loadAccount({ quiet: true });
       }
       if (finished && epoch === accountEpoch && !pageGone) queueAuto();
     }
@@ -629,7 +749,7 @@ function showInfo() {
 }
 
 function adjustBet(direction) {
-  if (spinning || bonus || !accountReady || pageGone) return;
+  if (spinning || pendingSpin || bonus || !accountReady || pageGone) return;
   unlockAudio().then(() => playSound('tap'));
   betCents = Math.min(1000, Math.max(10, betCents + direction * 10));
   sync();
@@ -643,7 +763,7 @@ ui['total-minus'].addEventListener('click', () => adjustBet(-1));
 ui['line-plus'].addEventListener('click', () => adjustBet(1));
 ui['total-plus'].addEventListener('click', () => adjustBet(1));
 ui.max.addEventListener('click', () => {
-  if (spinning || bonus || !accountReady || pageGone || affordableMax() < 10) return;
+  if (spinning || pendingSpin || bonus || !accountReady || pageGone || affordableMax() < 10) return;
   unlockAudio().then(() => playSound('tap'));
   betCents = affordableMax();
   sync();
@@ -651,7 +771,7 @@ ui.max.addEventListener('click', () => {
 });
 ui.auto.addEventListener('click', () => {
   if (autoRemaining) { stopAuto(); return; }
-  if (spinning || ui.spin.disabled || pageGone || ui.dialog.open) return;
+  if (spinning || pendingSpin || ui.spin.disabled || pageGone || ui.dialog.open) return;
   autoRemaining = 5;
   sync();
   spin();
@@ -712,6 +832,7 @@ supabase.auth.onAuthStateChange((event, session) => {
     pendingAccountRefresh = false;
     stopSpinSound();
     user = nextUser;
+    pendingSpin = null;
     balance = null;
     bonus = null;
     bonusProgress = { used: 0, total: 10 };

@@ -1,5 +1,5 @@
 import "jsr:@supabase/functions-js/edge-runtime.d.ts";
-import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
+import { createClient } from "npm:@supabase/supabase-js@2.115.0";
 
 const cors = {
   "Access-Control-Allow-Origin": "*",
@@ -342,6 +342,32 @@ function bonusFeature(game: string, grid: string[][], cfg: Cfg) {
   return { name, cells, mult };
 }
 
+function requestId(value: unknown) {
+  if (typeof value !== "string" ||
+    !/^[0-9a-f]{8}-[0-9a-f]{4}-[1-8][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i.test(value))
+    throw new Error("A valid request_id is required");
+  return value;
+}
+async function receipt(admin: any, userId: string, id: string, game: string, payload: object | null) {
+  const { data, error } = await admin.rpc("get_slot_request_receipt", {
+    p_user_id: userId, p_request_id: id, p_game: game, p_payload: payload,
+  });
+  if (error) throw error;
+  return data;
+}
+async function settleReceipt(admin: any, userId: string, id: string, game: string,
+  action: string, payload: object, spin: object, settlement: object) {
+  const { data, error } = await admin.rpc("settle_slot_request_atomic", {
+    p_user_id: userId, p_request_id: id, p_game: game, p_action: action,
+    p_payload: payload, p_response: { ok: true, spin,
+      ...(game === "galactic-rebellion" ? { game_config: galacticGameConfig } : {}),
+    }, p_settlement: settlement,
+  });
+  if (error) throw error;
+  if (!data?.spin) throw new Error("Unable to recover slot receipt");
+  return new Response(JSON.stringify(data), { headers: cors });
+}
+
 Deno.serve(async (req) => {
   if (req.method === "OPTIONS") return new Response("ok", { headers: cors });
   if (req.method !== "POST")
@@ -367,9 +393,31 @@ Deno.serve(async (req) => {
     const admin = createClient(url, service);
     const body = await req.json();
     const game = String(body?.game || "");
+    if (body?.action === "history") {
+      const limit = body.limit === undefined ? 20 : body.limit;
+      if (!Number.isInteger(limit) || limit < 1 || limit > 50) throw new Error("Invalid history limit");
+      const before = body.before;
+      if (before && (!Number.isFinite(Date.parse(before.created_at)) || !before.id))
+        throw new Error("Invalid history cursor");
+      const { data, error } = await admin.rpc("get_slot_request_history", {
+        p_user_id: userData.user.id, p_limit: limit + 1,
+        p_before_created_at: before?.created_at || null,
+        p_before_id: before ? requestId(before.id) : null,
+      });
+      if (error) throw error;
+      const rows = data || [], receipts = rows.slice(0, limit), last = receipts.at(-1);
+      return new Response(JSON.stringify({ ok: true, receipts,
+        next_cursor: rows.length > limit && last ? { created_at: last.created_at, id: last.id } : null,
+      }), { headers: cors });
+    }
     let cfg = games[game];
     if (!cfg) throw new Error("Unknown themed slot");
     const action = body?.action === undefined ? "spin" : body.action;
+    if (action === "receipt") {
+      const stored = await receipt(admin, userData.user.id, requestId(body.request_id), game, null);
+      return new Response(JSON.stringify(stored ? { ...stored, found: true } :
+        { ok: true, found: false }), { headers: cors });
+    }
     if (
       !["spin", "status", "bonus_spin"].includes(action)
     )
@@ -397,6 +445,12 @@ Deno.serve(async (req) => {
     }
     if (action === "bonus_spin") {
       const sessionId = String(body?.session_id || "");
+      const id = body.request_id === undefined ? null : requestId(body.request_id);
+      const payload = { game, action: "bonus_spin", session_id: sessionId };
+      if (id) {
+        const stored = await receipt(admin, userData.user.id, id, game, payload);
+        if (stored) return new Response(JSON.stringify(stored), { headers: cors });
+      }
       const { data: session, error: se } = await admin
         .from("themed_slot_bonus_sessions")
         .select(
@@ -411,8 +465,15 @@ Deno.serve(async (req) => {
         !session ||
         session.status !== "active" ||
         session.spins_remaining <= 0
-      )
+      ) {
+        // The final free spin may have committed while this duplicate was
+        // reading its session. Recover the original instead of rejecting it.
+        if (id) {
+          const stored = await receipt(admin, userData.user.id, id, game, payload);
+          if (stored) return new Response(JSON.stringify(stored), { headers: cors });
+        }
         throw new Error("No active free-spin session");
+      }
       const bet = Number(session.bet_per_line);
       const wagerMeta = game === "galactic-rebellion" ? galacticWagerMeta(bet) : null;
       const ways = wagerMeta?.wager_mode === "ways";
@@ -420,7 +481,18 @@ Deno.serve(async (req) => {
       const grid = makeGrid(cfg);
       const feat = bonusFeature(game, grid, cfg);
       const out = ways ? evaluateWays(grid, cfg, bet) : evaluate(grid, cfg, bet);
-      const payout = Math.round(("rawPayout" in out ? out.rawPayout : out.payout) * feat.mult * 100) / 100;
+      const payout = Math.round(("rawPayout" in out ? out.rawPayout as number : out.payout) * feat.mult * 100) / 100;
+      if (id) return await settleReceipt(admin, userData.user.id, id, game,
+        "bonus_spin", payload, {
+          game, grid, bet_per_line: bet,
+          ...(wagerMeta || { lines: 20, total_bet: Math.round(bet * 20 * 100) / 100 }),
+          ...(ways && "winningWays" in out ? { winning_ways: out.winningWays } : {}),
+          stake: 0, payout, result: payout > 0 ? "won" : "lost",
+          active_lines: out.activeLines, win_cells: [...new Set([...out.winCells, ...feat.cells])],
+          scatters: out.scatters, feature_name: feat.name, feature_cells: feat.cells,
+          feature_multiplier: feat.mult, free_spin: true, bonus_session_id: sessionId,
+          bonus_total_spins: Number(session.total_spins),
+        }, { session_id: sessionId });
       const { data: rows, error: re } = await admin.rpc(
         "settle_themed_bonus_spin_atomic",
         {
@@ -493,10 +565,18 @@ Deno.serve(async (req) => {
       ways ? requestedBet : game === "midnight-monsters"
         ? Math.round(bet * 20 * 100) / 100
         : bet * 20;
+    const id = body.request_id === undefined ? null : requestId(body.request_id);
+    const payload = { game, action: "spin",
+      ...(ways ? { total_bet: requestedBet } : { bet_per_line: requestedBet }),
+    };
+    if (id) {
+      const stored = await receipt(admin, userData.user.id, id, game, payload);
+      if (stored) return new Response(JSON.stringify(stored), { headers: cors });
+    }
     const grid = makeGrid(cfg);
     const feat = paidFeature(game, grid, cfg);
     let out = ways ? evaluateWays(grid, cfg, bet) : evaluate(grid, cfg, bet);
-    let payout = Math.round(("rawPayout" in out ? out.rawPayout : out.payout) * feat.mult * 100) / 100;
+    let payout = Math.round(("rawPayout" in out ? out.rawPayout as number : out.payout) * feat.mult * 100) / 100;
     const scatters = out.scatters;
     let bonusSpins = scatters >= 3 ? cfg.freeSpins : 0;
     let bonusName = scatters >= 3 ? cfg.bonusName : null;
@@ -506,7 +586,7 @@ Deno.serve(async (req) => {
       feat.name = "FINAL ORBIT TRIGGER";
       feat.mult = Math.max(feat.mult, 2);
       out = ways ? evaluateWays(grid, cfg, bet) : evaluate(grid, cfg, bet);
-      payout = Math.round(("rawPayout" in out ? out.rawPayout : out.payout) * feat.mult * 100) / 100;
+      payout = Math.round(("rawPayout" in out ? out.rawPayout as number : out.payout) * feat.mult * 100) / 100;
     }
     if (game === "midnight-monsters" && scatters >= 3) {
       feat.name = feat.name || "CRYPT AWAKENING";
@@ -517,6 +597,17 @@ Deno.serve(async (req) => {
     const flat = grid.flatMap((col, c) =>
       col.map((s, r) => `${game}:${c}:${r}:${s}`),
     );
+    if (id) return await settleReceipt(admin, userData.user.id, id, game,
+      "spin", payload, {
+        game, grid, bet_per_line: bet,
+        ...(game === "galactic-rebellion" ? galacticWagerMeta(bet) : { lines: 20, total_bet: stake }),
+        ...(ways && "winningWays" in out ? { winning_ways: out.winningWays } : {}),
+        stake, payout, result, active_lines: out.activeLines,
+        win_cells: [...new Set([...out.winCells, ...feat.cells])], scatters,
+        feature_name: feat.name, feature_cells: feat.cells, feature_multiplier: feat.mult,
+        bonus_triggered: bonusSpins > 0, bonus_name: bonusName,
+        bonus_total_spins: bonusSpins > 0 ? cfg.freeSpins : 0, free_spin: false,
+      }, { reels: flat, bonus_spins: bonusSpins });
     const { data: rows, error: pe } = await admin.rpc(
       "play_themed_slot_paid_spin_atomic",
       {
@@ -563,11 +654,15 @@ Deno.serve(async (req) => {
       { headers: cors },
     );
   } catch (e) {
+    const message = e instanceof Error ? e.message :
+      typeof e === "object" && e !== null && "message" in e ? String(e.message) : "Unable to play themed slots";
+    const conflict = message.includes("REQUEST_CONFLICT");
     return new Response(
       JSON.stringify({
-        error: e instanceof Error ? e.message : "Unable to play themed slots",
+        error: conflict ? "This request was already used for a different wager" : message,
+        ...(conflict ? { code: "REQUEST_CONFLICT" } : {}),
       }),
-      { status: 400, headers: cors },
+      { status: conflict ? 409 : 400, headers: cors },
     );
   }
 });

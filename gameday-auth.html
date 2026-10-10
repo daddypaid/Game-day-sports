@@ -23,15 +23,17 @@
 </div>
 <div id="recoveryPanel" class="card hidden"><h2>Choose New Password</h2><div class="muted">Your recovery link is verified. Set a new GameDay password.</div><label>New Password</label><input id="newPassword" type="password" minlength="8" autocomplete="new-password"><label>Confirm New Password</label><input id="confirmPassword" type="password" minlength="8" autocomplete="new-password"><div class="password-help">Use at least 8 characters with one uppercase letter, one lowercase letter, one number, and one symbol.</div><button id="updatePasswordBtn" class="primary">Update Password</button></div>
 <div id="accountPanel" class="hidden">
-<div class="card"><h2>My GameDay Account</h2><div class="email" id="accountEmail">—</div><a class="link" href="gameday-sportsbook.html">Open Sportsbook</a><a class="link" href="gameday-my-bets.html">View My Bets</a><button id="signoutBtn" class="danger">Sign Out</button></div>
+<div class="card"><h2>My GameDay Account</h2><div class="email" id="accountEmail">—</div><a class="link" href="gameday-sportsbook.html">Open Sportsbook</a><a class="link" href="gameday-my-bets.html">View My Bets</a><a id="casinoHistoryLink" class="link" href="gameday-casino-history.html">View Casino History</a><button id="signoutBtn" class="danger">Sign Out</button></div>
 <div class="card"><div class="wallet-head"><div><h2 style="margin:0">Test Wallet</h2><div class="muted">TEST MODE — no real money</div></div><div id="walletBalance" class="wallet-balance">—</div></div><div class="wallet-rule">When your test balance drops below $25, you can refill it to $1,000 once every 24 hours.</div><button id="refillWallet" class="secondary" disabled>Refill Test Credits to $1,000</button><div id="transactions"><div class="empty">Loading transaction history...</div></div><button id="refreshWallet" class="refresh-wallet">Refresh Wallet</button></div>
 </div>
 </main>
 <script type="module">
-import{createClient}from"https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/+esm";
+import{createClient}from"https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.115.0/+esm";
 import{GAMEDAY_CONFIG}from"./gameday-config.js";
 const supabase=createClient(GAMEDAY_CONFIG.supabaseUrl,GAMEDAY_CONFIG.supabasePublishableKey);
-const statusEl=document.getElementById('status'),forms=document.getElementById('authForms'),recovery=document.getElementById('recoveryPanel'),panel=document.getElementById('accountPanel'),emailEl=document.getElementById('accountEmail'),walletEl=document.getElementById('walletBalance'),txEl=document.getElementById('transactions'),refillBtn=document.getElementById('refillWallet');let recoveryMode=false,currentWalletBalance=null;
+document.getElementById('casinoHistoryLink').href=GAMEDAY_CONFIG.routes.casinoHistory||'gameday-casino-history.html';
+const statusEl=document.getElementById('status'),forms=document.getElementById('authForms'),recovery=document.getElementById('recoveryPanel'),panel=document.getElementById('accountPanel'),emailEl=document.getElementById('accountEmail'),walletEl=document.getElementById('walletBalance'),txEl=document.getElementById('transactions'),refillBtn=document.getElementById('refillWallet');
+let recoveryMode=false,currentWalletBalance=null,currentUser=null,currentSession=null,sessionGeneration=0,sessionObserved=false,walletRequest=0,authOperation=0,resetOperation=0,passwordOperation=0,refillOperation=0,refillPending=false,signoutPending=false;
 function status(t,c=''){statusEl.textContent=t;statusEl.className='status'+(c?' '+c:'')}
 function money(v){return '$'+Math.abs(Number(v||0)).toFixed(2)}
 function dt(v){return v?new Intl.DateTimeFormat('en-US',{month:'short',day:'numeric',hour:'numeric',minute:'2-digit'}).format(new Date(v)):'—'}
@@ -40,20 +42,140 @@ function strongPassword(v){return typeof v==='string'&&v.length>=8&&/[a-z]/.test
 function txLabel(t){return({deposit:'Deposit',withdrawal:'Withdrawal',wager_debit:'Wager Placed',wager_credit:'Wager Win',refund:'Wager Refund',adjustment:'Test Credit Adjustment'})[t]||String(t||'Transaction').replaceAll('_',' ')}
 function isCredit(t,a){if(['deposit','wager_credit','refund'].includes(t))return true;if(['withdrawal','wager_debit'].includes(t))return false;return Number(a)>=0}
 function txCard(x){const credit=isCredit(x.transaction_type,x.amount),sign=credit?'+':'−';return `<div class="tx"><div><div class="tx-title">${esc(txLabel(x.transaction_type))}</div><div class="tx-meta">${esc(x.note||'GameDay test wallet transaction')}<br>${dt(x.created_at)}${x.balance_after!==null&&x.balance_after!==undefined?' • Balance '+money(x.balance_after):''}</div></div><div class="tx-amount ${credit?'credit':'debit'}">${sign}${money(x.amount)}</div></div>`}
-function setRefillState(){const eligible=currentWalletBalance!==null&&currentWalletBalance<25;refillBtn.disabled=!eligible;refillBtn.textContent=eligible?'Refill Test Credits to $1,000':'Refill Available Below $25'}
-async function loadWallet(){const{data:s}=await supabase.auth.getSession();if(!s.session){walletEl.textContent='—';currentWalletBalance=null;setRefillState();txEl.innerHTML='<div class="empty">Sign in to view your test wallet.</div>';return}const[{data:w,error:we},{data:t,error:te}]=await Promise.all([supabase.from('wallets').select('balance').eq('user_id',s.session.user.id).single(),supabase.from('wallet_transactions').select('transaction_type,amount,balance_after,note,created_at,wager_id').order('created_at',{ascending:false}).limit(50)]);currentWalletBalance=we?null:Number(w?.balance||0);walletEl.textContent=we?'—':money(currentWalletBalance);setRefillState();if(te){txEl.innerHTML='<div class="empty">Unable to load transaction history.</div>';return}txEl.innerHTML=t?.length?t.map(txCard).join(''):'<div class="empty">No wallet transactions yet.</div>'}
-function showRecovery(){recoveryMode=true;forms.classList.add('hidden');panel.classList.add('hidden');recovery.classList.remove('hidden');status('Recovery link verified. Choose a new password.','success')}
-function signedOut(){if(recoveryMode)return;forms.classList.remove('hidden');recovery.classList.add('hidden');panel.classList.add('hidden');status('You are not signed in.');walletEl.textContent='—';currentWalletBalance=null;setRefillState()}
-async function signedIn(u){if(recoveryMode)return;forms.classList.add('hidden');recovery.classList.add('hidden');panel.classList.remove('hidden');emailEl.textContent=u.email||'GameDay user';status('Your GameDay account is active.','success');await loadWallet()}
-async function check(){const{data,error}=await supabase.auth.getSession();if(error){status(error.message,'error');return}if(!recoveryMode){data.session?.user?await signedIn(data.session.user):signedOut()}}
-document.getElementById('signupBtn').onclick=async()=>{const email=document.getElementById('signupEmail').value.trim(),password=document.getElementById('signupPassword').value;if(!email){status('Enter a valid email address.','error');return}if(!strongPassword(password)){status('Password must be at least 8 characters and include uppercase, lowercase, a number, and a symbol.','error');return}status('Creating your GameDay account...');const{data,error}=await supabase.auth.signUp({email,password});if(error){status(error.message,'error');return}data.session?await signedIn(data.user):status('Account created. Check your email if confirmation is required.','success')};
-document.getElementById('signinBtn').onclick=async()=>{const email=document.getElementById('signinEmail').value.trim(),password=document.getElementById('signinPassword').value;if(!email||!password){status('Enter your email and password.','error');return}status('Signing in...');const{data,error}=await supabase.auth.signInWithPassword({email,password});if(error){status(error.message,'error');return}await signedIn(data.user)};
-document.getElementById('resetEmailBtn').onclick=async()=>{const email=document.getElementById('resetEmail').value.trim();if(!email){status('Enter the email address on your GameDay account.','error');return}status('Sending password reset link...');const redirectTo=new URL(GAMEDAY_CONFIG.routes.account,window.location.href).href;const{error}=await supabase.auth.resetPasswordForEmail(email,{redirectTo});if(error){status(error.message,'error');return}status('If that email is registered, a password reset link has been sent.','success')};
-document.getElementById('updatePasswordBtn').onclick=async()=>{const password=document.getElementById('newPassword').value,confirm=document.getElementById('confirmPassword').value;if(!strongPassword(password)){status('New password must be at least 8 characters and include uppercase, lowercase, a number, and a symbol.','error');return}if(password!==confirm){status('The two new passwords do not match.','error');return}status('Updating your password...');const{data,error}=await supabase.auth.updateUser({password});if(error){status(error.message,'error');return}recoveryMode=false;document.getElementById('newPassword').value='';document.getElementById('confirmPassword').value='';status('Password updated successfully.','success');if(data.user)await signedIn(data.user);else await check()};
-document.getElementById('signoutBtn').onclick=async()=>{const{error}=await supabase.auth.signOut();error?status(error.message,'error'):signedOut()};
+function context(){return{generation:sessionGeneration,userId:currentUser?.id||null,accessToken:currentSession?.access_token||null}}
+function isCurrent(c){return c.generation===sessionGeneration&&c.userId===(currentUser?.id||null)}
+function setRefillState(){const eligible=!!currentUser&&!recoveryMode&&currentWalletBalance!==null&&currentWalletBalance<25;refillBtn.disabled=!eligible||refillPending;refillBtn.textContent=refillPending?'Refilling Test Credits...':eligible?'Refill Test Credits to $1,000':'Refill Available Below $25'}
+function clearPrivate(){
+  emailEl.textContent='—';walletEl.textContent='—';currentWalletBalance=null;
+  txEl.innerHTML='<div class="empty">Sign in to view your test wallet.</div>';
+  for(const id of ['signupEmail','signupPassword','signinEmail','signinPassword','resetEmail','newPassword','confirmPassword'])document.getElementById(id).value='';
+  setRefillState();
+}
+function signedOutView(expiredRecovery=false){
+  recoveryMode=false;forms.classList.remove('hidden');recovery.classList.add('hidden');panel.classList.add('hidden');
+  status(expiredRecovery?'Your recovery session expired. Request a new reset link.':'You are not signed in.',expiredRecovery?'error':'');
+}
+function signedInView(){
+  if(recoveryMode){forms.classList.add('hidden');panel.classList.add('hidden');recovery.classList.remove('hidden');return}
+  forms.classList.add('hidden');recovery.classList.add('hidden');panel.classList.remove('hidden');
+  emailEl.textContent=currentUser.email||'GameDay user';status('Your GameDay account is active.','success');
+}
+// Auth events clear private DOM synchronously. The generation also invalidates every
+// in-flight read or mutation, including an A -> B -> A switch.
+function applySession(user,event='',session=null){
+  const expiredRecovery=recoveryMode&&!user,changed=!sessionObserved||(currentUser?.id||null)!==(user?.id||null)||event==='SIGNED_OUT'||event==='PASSWORD_RECOVERY';
+  sessionObserved=true;currentSession=session;
+  if(changed){
+    sessionGeneration++;walletRequest++;authOperation++;resetOperation++;passwordOperation++;refillOperation++;
+    currentUser=user||null;refillPending=false;recoveryMode=false;clearPrivate();
+  }else currentUser=user||null;
+  if(!currentUser){signedOutView(expiredRecovery);return}
+  if(event==='PASSWORD_RECOVERY'){recoveryMode=true;walletRequest++;currentWalletBalance=null;walletEl.textContent='—';txEl.innerHTML='';setRefillState();signedInView();status('Recovery link verified. Choose a new password.','success');return}
+  signedInView();
+}
+function scheduleWallet(){const c=context();setTimeout(()=>{if(isCurrent(c)&&currentUser&&!recoveryMode)void loadWallet()},0)}
+async function loadWallet(){
+  if(!currentUser||recoveryMode)return;
+  const c=context(),request=++walletRequest;
+  currentWalletBalance=null;walletEl.textContent='—';txEl.innerHTML='<div class="empty">Loading transaction history...</div>';setRefillState();
+  try{
+    const[{data:w,error:we},{data:t,error:te}]=await Promise.all([
+      supabase.from('wallets').select('balance').eq('user_id',c.userId).single(),
+      supabase.from('wallet_transactions').select('transaction_type,amount,balance_after,note,created_at,wager_id').eq('user_id',c.userId).order('created_at',{ascending:false}).limit(50)
+    ]);
+    if(!isCurrent(c)||request!==walletRequest||recoveryMode)return;
+    currentWalletBalance=we?null:Number(w?.balance||0);walletEl.textContent=we?'—':money(currentWalletBalance);setRefillState();
+    txEl.innerHTML=te?'<div class="empty">Unable to load transaction history.</div>':t?.length?t.map(txCard).join(''):'<div class="empty">No wallet transactions yet.</div>';
+    if(we||te)status('Unable to refresh your wallet. Try Refresh Wallet.','error');
+  }catch{
+    if(!isCurrent(c)||request!==walletRequest||recoveryMode)return;
+    currentWalletBalance=null;walletEl.textContent='—';setRefillState();txEl.innerHTML='<div class="empty">Unable to load transaction history.</div>';status('Unable to refresh your wallet. Try Refresh Wallet.','error');
+  }
+}
+async function check(){
+  const c=context();
+  try{
+    const{data,error}=await supabase.auth.getSession();if(!isCurrent(c))return;
+    if(error){applySession(null);status('Unable to verify your session. Please sign in again.','error');return}
+    applySession(data.session?.user||null,'',data.session);if(currentUser&&!recoveryMode)await loadWallet();
+  }catch{if(isCurrent(c)){applySession(null);status('Unable to verify your session. Please sign in again.','error')}}
+}
+document.getElementById('signupBtn').onclick=async()=>{
+  const email=document.getElementById('signupEmail').value.trim(),password=document.getElementById('signupPassword').value;
+  if(!email){status('Enter a valid email address.','error');return}
+  if(!strongPassword(password)){status('Password must be at least 8 characters and include uppercase, lowercase, a number, and a symbol.','error');return}
+  const c=context(),operation=++authOperation;status('Creating your GameDay account...');
+  try{
+    const{data,error}=await supabase.auth.signUp({email,password});if(!isCurrent(c)||operation!==authOperation)return;
+    if(error){status(error.message,'error');return}
+    if(data.session?.user){applySession(data.session.user,'',data.session);await loadWallet()}else status('Account created. Check your email if confirmation is required.','success');
+  }catch{if(isCurrent(c)&&operation===authOperation)status('Unable to create your account. Try again.','error')}
+};
+document.getElementById('signinBtn').onclick=async()=>{
+  const email=document.getElementById('signinEmail').value.trim(),password=document.getElementById('signinPassword').value;
+  if(!email||!password){status('Enter your email and password.','error');return}
+  const c=context(),operation=++authOperation;status('Signing in...');
+  try{
+    const{data,error}=await supabase.auth.signInWithPassword({email,password});if(!isCurrent(c)||operation!==authOperation)return;
+    if(error){status(error.message,'error');return}
+    if(data.session?.user){applySession(data.session.user,'',data.session);await loadWallet()}else status('Unable to verify your sign-in. Please try again.','error');
+  }catch{if(isCurrent(c)&&operation===authOperation)status('Unable to sign in. Try again.','error')}
+};
+document.getElementById('resetEmailBtn').onclick=async()=>{
+  const email=document.getElementById('resetEmail').value.trim();if(!email){status('Enter the email address on your GameDay account.','error');return}
+  const c=context(),operation=++resetOperation;status('Sending password reset link...');
+  try{
+    const redirectTo=new URL(GAMEDAY_CONFIG.routes.account,window.location.href).href;
+    const{error}=await supabase.auth.resetPasswordForEmail(email,{redirectTo});if(!isCurrent(c)||operation!==resetOperation)return;
+    error?status(error.message,'error'):status('If that email is registered, a password reset link has been sent.','success');
+  }catch{if(isCurrent(c)&&operation===resetOperation)status('Unable to send a reset link. Try again.','error')}
+};
+document.getElementById('updatePasswordBtn').onclick=async()=>{
+  const password=document.getElementById('newPassword').value,confirm=document.getElementById('confirmPassword').value;
+  if(!currentUser||!currentSession?.access_token||!recoveryMode){status('Your recovery session expired. Request a new reset link.','error');return}
+  if(!strongPassword(password)){status('New password must be at least 8 characters and include uppercase, lowercase, a number, and a symbol.','error');return}
+  if(password!==confirm){status('The two new passwords do not match.','error');return}
+  const c=context(),operation=++passwordOperation;status('Updating your password...');
+  try{
+    // auth.updateUser saves its captured session after the request. Use the Auth
+    // endpoint with this recovery token so a late response cannot replace a
+    // different session in SDK storage or emit an obsolete USER_UPDATED event.
+    const response=await fetch(new URL('/auth/v1/user',GAMEDAY_CONFIG.supabaseUrl),{method:'PUT',headers:{'Content-Type':'application/json',apikey:GAMEDAY_CONFIG.supabasePublishableKey,Authorization:`Bearer ${c.accessToken}`},body:JSON.stringify({password})});
+    const data=await response.json();if(!isCurrent(c)||operation!==passwordOperation)return;
+    if(!response.ok){status(data.msg||data.message||data.error_description||'Unable to update your password. Request a new reset link.','error');return}
+    if(data.id!==c.userId)return;
+    recoveryMode=false;document.getElementById('newPassword').value='';document.getElementById('confirmPassword').value='';signedInView();status('Password updated successfully.','success');await loadWallet();
+  }catch{if(isCurrent(c)&&operation===passwordOperation)status('Unable to update your password. Try again.','error')}
+};
+document.getElementById('signoutBtn').onclick=async()=>{
+  if(signoutPending)return;signoutPending=true;applySession(null,'SIGNED_OUT');const c=context();
+  try{
+    const{error}=await supabase.auth.signOut();if(!isCurrent(c))return;
+    if(error)status('Unable to finish signing out. Please try again.','error');
+  }catch{if(isCurrent(c))status('Unable to finish signing out. Please try again.','error')}
+  finally{signoutPending=false}
+};
 document.getElementById('refreshWallet').onclick=loadWallet;
-refillBtn.onclick=async()=>{if(currentWalletBalance===null||currentWalletBalance>=25)return;refillBtn.disabled=true;refillBtn.textContent='Refilling Test Credits...';status('Refilling your test wallet...');const{data,error}=await supabase.functions.invoke(GAMEDAY_CONFIG.functions.refillTestWallet,{body:{}});if(error||!data?.ok){status(data?.error||'Test wallet refill is not available yet. Try again later.','error');await loadWallet();return}status(`Test wallet refilled by ${money(data.credited)}. New balance: ${money(data.balance)}.`,'success');await loadWallet()};
-supabase.auth.onAuthStateChange((event,s)=>{if(event==='PASSWORD_RECOVERY'){showRecovery();return}s?.user?signedIn(s.user):signedOut()});await check();
+refillBtn.onclick=async()=>{
+  if(!currentUser||!currentSession?.access_token||recoveryMode||refillPending||currentWalletBalance===null||currentWalletBalance>=25)return;
+  const c=context(),operation=++refillOperation;refillPending=true;setRefillState();status('Refilling your test wallet...');
+  try{
+    const{data,error}=await supabase.functions.invoke(GAMEDAY_CONFIG.functions.refillTestWallet,{body:{},headers:{Authorization:`Bearer ${c.accessToken}`}});
+    if(!isCurrent(c)||operation!==refillOperation)return;
+    if(error||!data?.ok)status(data?.error||'Test wallet refill is not available yet. Try again later.','error');
+    else status(`Test wallet refilled by ${money(data.credited)}. New balance: ${money(data.balance)}.`,'success');
+    await loadWallet();
+  }catch{if(isCurrent(c)&&operation===refillOperation)status('Unable to confirm your refill. Refresh your wallet before trying again.','error')}
+  finally{if(isCurrent(c)&&operation===refillOperation){refillPending=false;setRefillState()}}
+};
+supabase.auth.onAuthStateChange((event,s)=>{
+  if(signoutPending&&s?.user)return;
+  applySession(s?.user||null,event,s);
+  // Supabase holds its auth lock while notifying subscribers. Never call or await
+  // an SDK operation from this callback; start reads after the callback returns.
+  if(currentUser&&!recoveryMode)scheduleWallet();
+});
+await check();
 </script>
 <script src="gameday-app.js" defer></script>
 </body></html>

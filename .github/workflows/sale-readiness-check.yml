@@ -120,7 +120,7 @@ jobs:
         shell: bash
         run: |
           set -euo pipefail
-          grep -q "serviceWorker.register('./sw.js'" gameday-app.js
+          node scripts/check-gameday-release.mjs
           test -s sw.js
           test -s manifest.webmanifest
           test -s scripts/gameday-transfer-config.mjs

@@ -15,7 +15,10 @@ concurrency:
   cancel-in-progress: true
 
 jobs:
+  verify:
+    uses: ./.github/workflows/launch-regression.yml
   deploy:
+    needs: verify
     environment:
       name: github-pages
       url: ${{ steps.deployment.outputs.page_url }}
@@ -35,6 +38,7 @@ jobs:
             gameday-casino-v2.html
             gameday-my-bets.html
             gameday-auth.html
+            gameday-casino-history.html
             gameday-blackjack.html
             gameday-roulette.html
             gameday-baccarat.html

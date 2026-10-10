@@ -1,5 +1,5 @@
 import "jsr:@supabase/functions-js/edge-runtime.d.ts";
-import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
+import { createClient } from "npm:@supabase/supabase-js@2.115.0";
 
 const cors = {
   "Access-Control-Allow-Origin": "*",
@@ -117,6 +117,8 @@ Deno.serve(async (req)=>{
     }
     const stake=Number(body?.stake);
     const betType=String(body?.bet_type||"");
+    const requestId=body?.request_id===undefined?null:String(body.request_id);
+    if(requestId!==null&&!/^[0-9a-f]{8}-[0-9a-f]{4}-[1-8][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i.test(requestId)) throw new Error("Invalid deal request ID");
 
     if(!Number.isFinite(stake) || stake<=0 || stake>10000) throw new Error("Invalid stake");
     if(!["player","banker","tie"].includes(betType)) throw new Error("Invalid baccarat bet");
@@ -134,8 +136,9 @@ Deno.serve(async (req)=>{
     }
 
     const admin=createClient(url,service);
-    const {data:rows,error:rpcError}=await admin.rpc("place_baccarat_test_round_atomic",{
+    const {data:rows,error:rpcError}=await admin.rpc(requestId?"place_baccarat_test_round_idempotent":"place_baccarat_test_round_atomic",{
       p_user_id:userData.user.id,
+      ...(requestId?{p_request_id:requestId}:{}),
       p_stake:stake,
       p_bet_type:betType,
       p_player_cards:dealt.player,
@@ -146,9 +149,19 @@ Deno.serve(async (req)=>{
       p_payout:payout
     });
 
-    if(rpcError) throw rpcError;
+    if(rpcError) throw new Error(rpcError.message||"Unable to save baccarat deal");
     const row=Array.isArray(rows)?rows[0]:rows;
     if(!row) throw new Error("Unable to settle baccarat round");
+    if(row.error) throw new Error(String(row.error));
+    if(requestId){
+      const {data:saved,error:savedError}=await admin.from("baccarat_rounds")
+        .select("id,bet_type,stake,player_cards,banker_cards,player_total,banker_total,result,payout,created_at")
+        .eq("user_id",userData.user.id).eq("id",row.round_id).single();
+      if(savedError||!saved) throw new Error("The saved deal could not be loaded; retry the same request");
+      const {data:wallet,error:walletError}=await admin.from("wallets").select("balance").eq("user_id",userData.user.id).single();
+      if(walletError) throw walletError;
+      return new Response(JSON.stringify({ok:true,request_id:requestId,replayed:Boolean(row.replayed),round:{...saved,balance:Number(wallet.balance)}}),{headers:cors});
+    }
 
     return new Response(JSON.stringify({
       ok:true,

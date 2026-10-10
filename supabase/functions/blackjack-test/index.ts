@@ -1,5 +1,5 @@
 import "jsr:@supabase/functions-js/edge-runtime.d.ts";
-import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
+import { createClient } from "npm:@supabase/supabase-js@2.115.0";
 
 const cors = {
   "Access-Control-Allow-Origin": "*",
@@ -217,7 +217,10 @@ Deno.serve(async (req) => {
     }
 
     if (action === "start") {
-      const existing = await loadActive();
+      const requestId = body?.request_id === undefined ? null : String(body.request_id);
+      if (requestId !== null && !/^[0-9a-f]{8}-[0-9a-f]{4}-[1-8][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i.test(requestId)) throw new Error("Invalid deal request ID");
+      // Receipt replays must be checked before any unrelated active hand.
+      const existing = requestId ? null : await loadActive();
       if (existing) {
         const balance = await loadBalance();
         return response({ ok: true, resumed: true, hand: publicHand({ ...existing, balance }, true) });
@@ -242,8 +245,9 @@ Deno.serve(async (req) => {
       } else if (dealerBlackjack) {
         status = "lost";
       }
-      const { data: rows, error } = await admin.rpc("start_blackjack_test_hand_v2", {
+      const { data: rows, error } = await admin.rpc(requestId ? "start_blackjack_test_hand_idempotent" : "start_blackjack_test_hand_v2", {
         p_user_id: userData.user.id,
+        ...(requestId ? { p_request_id: requestId } : {}),
         p_stake: stake,
         p_player_cards: player,
         p_dealer_cards: dealer,
@@ -261,10 +265,18 @@ Deno.serve(async (req) => {
             return response({ ok: true, resumed: true, hand: publicHand({ ...raced, balance }, true) });
           }
         }
-        throw error;
+        throw new Error(error.message || "Unable to save blackjack deal");
       }
       const result = Array.isArray(rows) ? rows[0] : rows;
       if (!result) throw new Error("Unable to start blackjack hand");
+      if (result.error) throw new Error(String(result.error));
+      if (requestId) {
+        const { data: saved, error: savedError } = await admin.from("blackjack_hands")
+          .select("id,user_id,stake,status,player_cards,player_hands,active_hand_index,dealer_cards,shoe,player_total,dealer_total,payout,action_count,created_at,settled_at")
+          .eq("user_id", userData.user.id).eq("id", result.hand_id).single();
+        if (savedError || !saved) throw new Error("The saved deal could not be loaded; retry the same request");
+        return response({ ok: true, request_id: requestId, resumed: Boolean(result.replayed), hand: publicHand({ ...saved, balance: await loadBalance() }, true) });
+      }
       const hand = {
         id: result.hand_id,
         status: result.hand_status,

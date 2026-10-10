@@ -25,6 +25,7 @@ export const GAMEDAY_CONFIG = Object.freeze({
     casino: 'gameday-casino-v2.html',
     myBets: 'gameday-my-bets.html',
     account: 'gameday-auth.html',
+    casinoHistory: 'gameday-casino-history.html',
     blackjack: 'gameday-blackjack.html',
     roulette: 'gameday-roulette.html',
     baccarat: 'gameday-baccarat.html',

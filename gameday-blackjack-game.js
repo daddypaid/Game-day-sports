@@ -33,14 +33,29 @@ async function initializeBlackjack() {
   let supabase, user = null, hand = null, balance = null;
   let busy = true, recoveryRequired = false, recoveryContext = null, unavailable = false;
   let epoch = 0, hidden = false, requestController = null, sdkAttempt = 0;
+  let rejectedDealMessage = '';
   const isActive = () => hand?.status === 'active';
   const knownKey = id => `gameday:blackjack:last-hand:${id}`;
   const pendingKey = id => `gameday:blackjack:pending:${id}`;
   const current = (token, id) => token === epoch && !hidden && user?.id === id;
   function storedHand(id) { try { return localStorage.getItem(knownKey(id)); } catch (_) { return null; } }
   function storeHand(id, handId) { try { localStorage.setItem(knownKey(id), handId); } catch (_) {} }
-  function savePending(id, context) { try { if (context) localStorage.setItem(pendingKey(id), JSON.stringify(context)); else localStorage.removeItem(pendingKey(id)); } catch (_) {} }
-  function pendingHand(id) { try { return JSON.parse(localStorage.getItem(pendingKey(id))); } catch (_) { return null; } }
+  function savePending(id, context) {
+    try {
+      if (context) {
+        localStorage.setItem(pendingKey(id), JSON.stringify(context));
+        sessionStorage.setItem(pendingKey(id), JSON.stringify(context));
+      } else {
+        const local = JSON.parse(localStorage.getItem(pendingKey(id)));
+        const own = JSON.parse(sessionStorage.getItem(pendingKey(id)));
+        // Completing this tab's deal must not erase another tab's pending deal.
+        if (!own || !local || (own.requestId || own.handId) === (local.requestId || local.handId)) localStorage.removeItem(pendingKey(id));
+        sessionStorage.removeItem(pendingKey(id));
+      }
+    }
+    catch (_) { if (context) throw new Error('Your deal could not be saved for recovery. Enable browser storage before dealing.'); }
+  }
+  function pendingHand(id) { try { return JSON.parse(sessionStorage.getItem(pendingKey(id)) || localStorage.getItem(pendingKey(id))); } catch (_) { return null; } }
   function baseStake(id, next) {
     let value;
     try { value = Number(localStorage.getItem(`${knownKey(id)}:base:${next.id}`)); } catch (_) {}
@@ -72,7 +87,7 @@ async function initializeBlackjack() {
     signIn.hidden = Boolean(user);
     balanceOutput.value = Number.isFinite(balance) && balance >= 0 ? money.format(balance) : '—';
     if (!busy && user && !isActive() && !unavailable && !recoveryRequired && !valid) {
-      message(amount < 1 ? 'Choose a chip to set a wager of at least $1.' : amount > 10000 ? 'The maximum wager is $10,000.' : 'Your wager exceeds your available test balance. Choose a smaller amount.');
+      message(rejectedDealMessage || (amount < 1 ? 'Choose a chip to set a wager of at least $1.' : amount > 10000 ? 'The maximum wager is $10,000.' : 'Your wager exceeds your available test balance. Choose a smaller amount.'));
     }
   }
   function validateHand(next) {
@@ -88,6 +103,7 @@ async function initializeBlackjack() {
     validateHand(next);
     if (!current(token, id)) return false;
     hand = next;
+    rejectedDealMessage = '';
     balance = Number(next.balance);
     storeHand(id, next.id);
     const draftStake = baseStake(id, next);
@@ -150,7 +166,27 @@ async function initializeBlackjack() {
   async function recover(context, token, id) {
     message('Checking the saved hand before any further wager…');
     let saved;
-    if (context.handId) saved = (await request({ action:'state', hand_id:context.handId }, token, id)).hand;
+    if (context.action === 'start' && context.requestId) {
+      // Re-sending this exact durable intent either accepts the original deal
+      // or returns its saved hand. It cannot debit a second wager.
+      let response;
+      try { response = await request({ action:'start', request_id:context.requestId, stake:context.baseStake }, token, id); }
+      catch (error) {
+        if (!error.rejected || !current(token, id)) throw error;
+        recoveryRequired = false; recoveryContext = null; savePending(id, null);
+        balance = null;
+        const { data:wallet, error:walletError } = await supabase.from('wallets').select('balance').eq('user_id', id).single();
+        if (!current(token, id)) return;
+        if (walletError || !wallet || !Number.isFinite(Number(wallet.balance))) { unavailable = true; throw new Error('Your deal was not accepted. Reconnect to refresh your test balance.'); }
+        balance = Number(wallet.balance);
+        rejectedDealMessage = `${error.message}. Your deal was not accepted and no credits were deducted. Choose a smaller wager or add test credits.`;
+        message(rejectedDealMessage);
+        return;
+      }
+      if (response.request_id !== context.requestId) throw new Error('The saved deal could not be confirmed.');
+      saved = response.hand;
+    }
+    else if (context.handId) saved = (await request({ action:'state', hand_id:context.handId }, token, id)).hand;
     else {
       const resumed = await request({ action:'resume', include_latest:true }, token, id);
       saved = resumed.hand;
@@ -162,7 +198,7 @@ async function initializeBlackjack() {
         message(context.message || 'No new hand was started. Adjust your wager and try again.');
         return;
       }
-      if (!saved) throw new Error('The last request is still unconfirmed. Retry recovery before placing another wager.');
+      if (!saved) throw new Error('This older deal has no recovery ID and could not be matched to a saved hand. Another wager stays blocked to avoid a duplicate debit.');
     }
     await applyHand(saved, token, id);
     if (!current(token, id)) return;
@@ -183,10 +219,12 @@ async function initializeBlackjack() {
         if (resumed.hand) { await applyHand(resumed.hand, token, id); return; }
         const stake = wager.getAmount();
         if (!Number.isInteger(stake) || stake < 1 || stake > 10000 || !Number.isFinite(balance) || stake > balance) throw new Error('Choose a valid wager within your test balance.');
-        context = { action:'start', baselineId:resumed.latest_hand?.id || null, baseStake:stake };
+        const intent = { action:'start', requestId:crypto.randomUUID(), baselineId:resumed.latest_hand?.id || null, baseStake:stake };
+        savePending(id, intent);
+        context = intent;
         recoveryContext = context;
-        savePending(id, context);
-        const response = await request({ action:'start', stake }, token, id);
+        const response = await request({ action:'start', request_id:context.requestId, stake }, token, id);
+        if (response.request_id !== context.requestId) throw new Error('The saved deal could not be confirmed.');
         await applyHand(response.hand, token, id);
       } else {
         if (!isActive() || hand[`can_${action}`] !== true) return;
@@ -205,7 +243,7 @@ async function initializeBlackjack() {
         context.rejected = Boolean(error.rejected);
         context.message = error.message;
         savePending(id, context);
-        try { await recover(context, token, id); } catch (_) { if (current(token, id)) message('The last request is unconfirmed. Press Retry recovery to check your saved hand. Another wager is blocked.'); }
+        try { await recover(context, token, id); } catch (recoveryError) { if (current(token, id)) message(!recoveryRequired || (context.action === 'start' && !context.requestId) ? recoveryError.message : 'The last request is unconfirmed. Press Retry recovery to safely retry the saved deal. Another wager is blocked.'); }
       } else message(error.message || 'Unable to check your hand. Please try again.');
     } finally { if (token === epoch) { busy = false; controls(); } }
   }
@@ -241,7 +279,7 @@ async function initializeBlackjack() {
       if (token !== epoch || hidden) return;
       if (error) throw error;
       const nextUser = data.session?.user || null;
-      if (nextUser?.id !== user?.id) { hand = null; balance = null; recoveryRequired = false; recoveryContext = null; view.clear(); result.hidden = true; info.querySelector('.gd-blackjack-totals').textContent = ''; }
+      if (nextUser?.id !== user?.id) { hand = null; balance = null; recoveryRequired = false; recoveryContext = null; rejectedDealMessage = ''; view.clear(); result.hidden = true; info.querySelector('.gd-blackjack-totals').textContent = ''; }
       user = nextUser;
       if (!user || !data.session?.access_token) { message('Sign in to deal a Blackjack hand with your GameDay test wallet.'); announcement.textContent = ''; return; }
       const id = user.id;
@@ -268,11 +306,11 @@ async function initializeBlackjack() {
       if (token !== epoch || hidden) return;
       unavailable = true;
       if (error.auth) { user = null; balance = null; view.clear(); hand = null; result.hidden = true; }
-      message(recoveryRequired ? 'Your hand needs recovery. Retry recovery before placing another wager.' : error.message || 'Blackjack could not connect. Retry connection or sign in.');
+      message(recoveryRequired ? (recoveryContext?.action === 'start' && !recoveryContext.requestId ? error.message : 'Your hand needs recovery. Retry recovery safely retries the saved deal before any further wager.') : error.message || 'Blackjack could not connect. Retry connection or sign in.');
     } finally { if (token === epoch) { busy = false; controls(); } }
   }
   for (const name of ['deal','hit','stand','double','split']) actions.get(name)?.addEventListener('click', () => perform(name));
-  stage.addEventListener('gameday:wager-change', controls);
+  stage.addEventListener('gameday:wager-change', () => { rejectedDealMessage = ''; controls(); });
   retryButton.addEventListener('click', connect);
   window.addEventListener('pagehide', () => { hidden = true; epoch++; requestController?.abort(); view.cancel(); });
   window.addEventListener('pageshow', event => { if (event.persisted || hidden) { hidden = false; connect(); } });

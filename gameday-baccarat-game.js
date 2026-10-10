@@ -10,6 +10,7 @@ const sides = ['player', 'banker', 'tie'];
 let client, view, wager, resultBox, retry;
 let owner = null, wallet = null, selected = null, latest = null, pending = null;
 let busy = false, hidden = false, ready = false, generation = 0, sdkAttempt = 0, authSubscription;
+let rejectedDealMessage = '';
 const requests = new Set();
 const markerKey = id => `gameday:baccarat-pending:${id}`;
 const validAmount = value => Number.isInteger(value) && value >= 1 && value <= 10000;
@@ -36,6 +37,7 @@ function controls() {
 }
 function prompt() {
   if (busy || pending || !ready || !owner) return;
+  if (rejectedDealMessage) { setStatus(rejectedDealMessage); return; }
   if (!validAmount(amount())) setStatus('Choose a wager from $1 to $10,000.');
   else if (amount() > wallet) setStatus('Your wager exceeds your test wallet. Use the down arrow to reduce it.');
   else if (!selected) setStatus('Choose Player, Banker or Tie, then Deal.');
@@ -47,16 +49,22 @@ function showWallet(value) {
 }
 function loadMarker(id) {
   try {
-    const value = JSON.parse(sessionStorage.getItem(markerKey(id)));
+    const value = JSON.parse(sessionStorage.getItem(markerKey(id)) || localStorage.getItem(markerKey(id)));
     return value && value.owner === id && validAmount(value.stake) && sides.includes(value.side) && (value.baseline === null || typeof value.baseline === 'string') ? value : null;
   } catch (_) { return null; }
 }
 function saveMarker(marker) {
-  sessionStorage.setItem(markerKey(marker.owner), JSON.stringify(marker));
+  try { localStorage.setItem(markerKey(marker.owner), JSON.stringify(marker)); sessionStorage.setItem(markerKey(marker.owner), JSON.stringify(marker)); }
+  catch (_) { throw new Error('Your deal could not be saved for recovery. Enable browser storage before dealing.'); }
   pending = marker;
 }
 function clearMarker(id) {
-  try { sessionStorage.removeItem(markerKey(id)); } catch (_) {}
+  try {
+    const local = JSON.parse(localStorage.getItem(markerKey(id)));
+    const own = JSON.parse(sessionStorage.getItem(markerKey(id)));
+    if (!own || !local || own.requestId === local.requestId) localStorage.removeItem(markerKey(id));
+    sessionStorage.removeItem(markerKey(id));
+  } catch (_) {}
   pending = null;
 }
 function validateRound(round) {
@@ -83,6 +91,7 @@ function resultText(round) {
 }
 async function renderRound(round, token, animate) {
   validateRound(round);
+  rejectedDealMessage = '';
   latest = round;
   const rendered = await view.render({ groups: { player: round.player_cards, banker: round.banker_cards }, phase: 'complete' }, { animate });
   if (!current(token) || !rendered) return false;
@@ -93,6 +102,11 @@ async function renderRound(round, token, animate) {
   return true;
 }
 async function request(body) {
+  const token = generation, id = owner;
+  const session = await client.auth.getSession();
+  if (!current(token) || !id || session.error || session.data?.session?.user?.id !== id) {
+    const error = new Error('Your session changed. Sign in again to continue.'); error.auth = true; throw error;
+  }
   const controller = new AbortController(); requests.add(controller);
   const timeout = setTimeout(() => controller.abort(), 15000);
   try {
@@ -101,7 +115,9 @@ async function request(body) {
       let text = response.data?.error || response.error?.message || 'Unable to contact Baccarat.';
       const status = response.error?.context?.status;
       try { const payload = await response.error?.context?.clone?.().json(); if (payload?.error) text = payload.error; } catch (_) {}
-      const error = new Error(text); error.definite = status === 400 || status === 401 || status === 403; error.auth = status === 401 || status === 403; throw error;
+      const error = new Error(text);
+      error.definite = status === 400 && /^(Invalid stake|Insufficient test balance|Invalid baccarat bet|Invalid deal request ID)(?:\b|$)/i.test(text);
+      error.auth = status === 401 || status === 403; throw error;
     }
     return response.data;
   } finally { clearTimeout(timeout); requests.delete(controller); }
@@ -111,6 +127,31 @@ function showRetry(text, checking = false) {
   setStatus(text); controls();
 }
 async function reconcile(token, animate = false) {
+  if (pending?.requestId) {
+    const marker = pending;
+    let data;
+    try { data = await request({ request_id:marker.requestId, stake:marker.stake, bet_type:marker.side }); }
+    catch (error) {
+      if (!error.definite || !current(token) || owner !== marker.owner) throw error;
+      clearMarker(marker.owner);
+      showWallet(null);
+      const state = await request({ action:'latest' });
+      if (!current(token) || owner !== marker.owner) return false;
+      if (!Number.isFinite(Number(state?.balance))) throw new Error('Your deal was not accepted. Reconnect to refresh your test balance.');
+      showWallet(state.balance); retry.hidden = true;
+      rejectedDealMessage = `${error.message}. Your deal was not accepted and no credits were deducted. Choose a smaller wager or add test credits.`;
+      setStatus(rejectedDealMessage);
+      return true;
+    }
+    if (!current(token) || owner !== marker.owner) return false;
+    const round = validateRound(data?.round);
+    if (data.request_id !== marker.requestId || Number(round.stake) !== marker.stake || round.bet_type !== marker.side || !Number.isFinite(Number(round.balance))) throw new Error('The saved deal could not be confirmed.');
+    showWallet(round.balance);
+    await renderRound(round, token, animate);
+    if (!current(token)) return false;
+    clearMarker(marker.owner); retry.hidden = true;
+    return true;
+  }
   const data = await request({ action: 'latest' });
   if (!current(token)) return false;
   if (!data || !Number.isFinite(Number(data.balance))) throw new Error('Your test wallet could not be confirmed.');
@@ -118,7 +159,7 @@ async function reconcile(token, animate = false) {
   const round = data.round ? validateRound(data.round) : null;
   if (pending) {
     if (!round || round.id === pending.baseline || Number(round.stake) !== pending.stake || round.bet_type !== pending.side) {
-      showRetry('Your last deal is not confirmed yet. Check the result before starting another round; your wager will not be sent again.', true);
+      showRetry('This older deal has no recovery ID and could not be matched to a saved result. Another wager stays blocked to avoid a duplicate debit.', true);
       return false;
     }
     clearMarker(owner);
@@ -142,7 +183,7 @@ async function connect() {
       authSubscription = client.auth.onAuthStateChange((event, session) => {
         if (event === 'INITIAL_SESSION' || (session?.user?.id === owner && !['SIGNED_OUT','USER_UPDATED'].includes(event))) return;
         generation++; requests.forEach(r => r.abort()); view.cancel(); ready = false; busy = false;
-        owner = null; pending = null; latest = null; selected = null; showWallet(null); resultBox.hidden = true; view.clear(); controls();
+        owner = null; pending = null; latest = null; selected = null; rejectedDealMessage = ''; showWallet(null); resultBox.hidden = true; view.clear(); controls();
         setTimeout(connect, 0);
       });
     }
@@ -161,7 +202,11 @@ async function connect() {
     await reconcile(token);
     if (current(token)) ready = true;
   } catch (error) {
-    if (current(token)) { if (error.auth) showWallet(null); account.textContent = owner ? 'Signed in · Connection unavailable' : 'Connection unavailable'; signin.hidden = Boolean(owner); showRetry(pending ? 'Your last deal could not be confirmed. Check the result before playing again.' : `${error.message || 'Connection unavailable'} Retry to reconnect.`, Boolean(pending)); }
+    if (current(token)) {
+      if (error.auth) { owner = null; pending = null; latest = null; selected = null; showWallet(null); view.clear(); resultBox.hidden = true; }
+      account.textContent = owner ? 'Signed in · Connection unavailable' : 'Connection unavailable'; signin.hidden = Boolean(owner);
+      showRetry(pending ? 'Your last deal could not be confirmed. Check result safely retries your saved deal before any further wager.' : `${error.message || 'Connection unavailable'} Retry to reconnect.`, Boolean(pending));
+    }
   } finally {
     if (current(token)) { busy = false; controls(); if (!pending && ready && !latest) prompt(); }
   }
@@ -179,25 +224,32 @@ async function deal() {
     showWallet(state.balance);
     if (stake > wallet) throw new Error('Insufficient test balance. Choose a smaller wager.');
     const baseline = state.round ? validateRound(state.round).id : null;
-    saveMarker({ owner: id, baseline, stake, side });
+    saveMarker({ owner: id, baseline, stake, side, requestId:crypto.randomUUID() });
     view.unlockAudio(); setStatus('Dealing…');
     const dealButton = view.actions.get('deal'); dealButton.textContent = 'Dealing…';
     invoked = true;
-    const data = await request({ stake, bet_type: side });
+    const data = await request({ request_id:pending.requestId, stake, bet_type: side });
     if (!current(token)) return;
     const round = validateRound(data?.round);
-    if (round.bet_type !== side || Number(round.stake) !== stake || !Number.isFinite(Number(round.balance))) throw new Error('The service returned a different wager.');
+    if (data.request_id !== pending.requestId || round.bet_type !== side || Number(round.stake) !== stake || !Number.isFinite(Number(round.balance))) throw new Error('The service returned a different wager.');
     clearMarker(id); showWallet(round.balance); retry.hidden = true;
     await renderRound(round, token, true);
   } catch (error) {
     if (!current(token)) return;
-    if (!invoked || error.definite) {
+    if (error.auth) {
+      ready = false; showWallet(null); account.textContent = 'Sign in required'; signin.hidden = false;
+      showRetry('Sign in again or retry your connection before dealing.', Boolean(pending));
+    } else if (!invoked) {
       clearMarker(id); setStatus(error.message || 'Your deal was not accepted. Choose your wager and try again.');
       if (latest) resultText(latest);
-      if (error.auth) { ready = false; showWallet(null); account.textContent = 'Sign in required'; signin.hidden = false; showRetry('Sign in again or retry your connection before dealing.'); }
     } else {
       try { await reconcile(token, true); }
-      catch (_) { if (current(token)) showRetry('Your deal may have completed. Check the result before starting another round; your wager will not be sent again.', true); }
+      catch (_) {
+        if (current(token)) {
+          if (!pending) { ready = false; showWallet(null); showRetry('Your deal was not accepted. Retry connection to refresh your test balance.'); }
+          else showRetry('Your deal may have completed. Check result safely retries the saved deal and cannot debit it twice.', true);
+        }
+      }
     }
   } finally { if (current(token)) { busy = false; controls(); } }
 }
@@ -211,11 +263,11 @@ function boot() {
   panel.insertBefore(resultBox, view.status || view.announcement); panel.appendChild(retry);
   sides.forEach(side => view.actions.get(side)?.addEventListener('click', () => {
     if (busy || !ready || !owner || pending) return;
-    selected = side; controls(); prompt();
+    selected = side; rejectedDealMessage = ''; controls(); prompt();
   }));
   view.actions.get('deal').addEventListener('click', deal);
   retry.addEventListener('click', connect);
-  stage.addEventListener('gameday:wager-change', () => { controls(); prompt(); });
+  stage.addEventListener('gameday:wager-change', () => { rejectedDealMessage = ''; controls(); prompt(); });
   controls(); connect();
 }
 stage.addEventListener('gameday:card-view-ready', boot); boot();

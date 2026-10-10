@@ -57,21 +57,18 @@ jobs:
           )
           for file in "${centralized[@]}"; do
             test -s "$file"
-            grep -q 'gameday-config.js' "$file"
             if grep -q 'qsvrvhcklnsbekxblpfo' "$file"; then
               echo "Legacy embedded project reference detected in $file"
               exit 1
             fi
           done
+          node scripts/check-gameday-release.mjs
 
       - name: Validate casino function mappings
         shell: bash
         run: |
           set -euo pipefail
-          grep -q 'GAMEDAY_CONFIG.functions.blackjack' gameday-blackjack.html
-          grep -q 'GAMEDAY_CONFIG.functions.roulette' gameday-roulette.html
-          grep -q 'GAMEDAY_CONFIG.functions.baccarat' gameday-baccarat.html
-          grep -q 'GAMEDAY_CONFIG.functions.slots' gameday-slots.html
+          node scripts/check-gameday-release.mjs
 
       - name: Validate buyer handoff surfaces
         shell: bash
