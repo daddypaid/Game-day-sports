@@ -73,7 +73,7 @@ main{max-width:900px;margin:auto;padding:12px 0 110px}
     <div class="section-head"><h3>Featured Games</h3><div class="section-note">Swipe to browse</div></div>
     <div class="game-row">
       <a class="game-card" href="gameday-blackjack.html?balance=live-v39"><div class="art blackjack-art"></div><div class="game-info"><div class="game-title">GameDay Blackjack</div><div class="game-meta">Deal • Hit • Stand</div><div class="play-row"><span class="status">CONNECTED</span><span class="play">PLAY ›</span></div></div></a>
-      <a class="game-card" href="gameday-roulette.html"><div class="art roulette-art"></div><div class="game-info"><div class="game-title">GameDay Roulette</div><div class="game-meta">0–36 • Red/Black • Wheel</div><div class="play-row"><span class="status">CONNECTED</span><span class="play">PLAY ›</span></div></div></a>
+      <a class="game-card" href="gameday-roulette.html"><div class="art roulette-art"></div><div class="game-info"><div class="game-title">GameDay Roulette</div><div class="game-meta">Table building • preview only</div><div class="play-row"><span class="status">BUILDING</span><span class="play">PREVIEW ›</span></div></div></a>
       <a class="game-card" href="gameday-baccarat.html"><div class="art baccarat-art"></div><div class="game-info"><div class="game-title">GameDay Baccarat</div><div class="game-meta">Player • Banker • Tie</div><div class="play-row"><span class="status">CONNECTED</span><span class="play">PLAY ›</span></div></div></a>
       <a class="game-card" href="gameday-slots-lobby.html"><div class="art slots-art"></div><div class="game-info"><div class="game-title">GameDay Slots</div><div class="game-meta">3 machines • Classic + 20-line video slots</div><div class="play-row"><span class="status">CONNECTED</span><span class="play">BROWSE ›</span></div></div></a>
       <a class="game-card" href="gameday-jacks-or-better.html"><div class="art gd-poker-art"><img src="assets/poker-premium/jacks-or-better-approved.jpg" width="591" height="1280" alt="GameDay Jacks or Better artwork"></div><div class="game-info"><div class="game-title">Jacks or Better</div><div class="game-meta">Deal • Hold • Draw</div><div class="play-row"><span class="status">CONNECTED</span><span class="play">PLAY ›</span></div></div></a>
@@ -83,7 +83,7 @@ main{max-width:900px;margin:auto;padding:12px 0 110px}
     <div class="section-head"><h3>Table Games</h3><div class="section-note">GameDay casino</div></div>
     <div class="game-row">
       <a class="game-card" href="gameday-blackjack.html?balance=live-v39"><div class="art blackjack-art"></div><div class="game-info"><div class="game-title">Blackjack</div><div class="game-meta">Classic GameDay table</div><div class="play-row"><span class="status">TEST MODE</span><span class="play">OPEN ›</span></div></div></a>
-      <a class="game-card" href="gameday-roulette.html"><div class="art roulette-art"></div><div class="game-info"><div class="game-title">Roulette</div><div class="game-meta">Wheel, ball and full board</div><div class="play-row"><span class="status">TEST MODE</span><span class="play">OPEN ›</span></div></div></a>
+      <a class="game-card" href="gameday-roulette.html"><div class="art roulette-art"></div><div class="game-info"><div class="game-title">Roulette</div><div class="game-meta">Table building • preview only</div><div class="play-row"><span class="status">BUILDING</span><span class="play">PREVIEW ›</span></div></div></a>
       <a class="game-card" href="gameday-baccarat.html"><div class="art baccarat-art"></div><div class="game-info"><div class="game-title">Baccarat</div><div class="game-meta">Player, Banker and Tie</div><div class="play-row"><span class="status">TEST MODE</span><span class="play">OPEN ›</span></div></div></a>
       <a class="game-card" href="gameday-jacks-or-better.html"><div class="art gd-poker-art"><img src="assets/poker-premium/jacks-or-better-approved.jpg" width="591" height="1280" alt="GameDay Jacks or Better artwork"></div><div class="game-info"><div class="game-title">Jacks or Better</div><div class="game-meta">Deal • Hold • Draw</div><div class="play-row"><span class="status">CONNECTED</span><span class="play">PLAY ›</span></div></div></a>
     </div>
@@ -148,7 +148,7 @@ const supabase=createClient(GAMEDAY_CONFIG.supabaseUrl,GAMEDAY_CONFIG.supabasePu
 const wallet=document.getElementById('wallet');
 function money(v){return '$'+Number(v||0).toFixed(2)}
 async function load(){const{data,error}=await supabase.auth.getSession();if(error||!data.session){wallet.textContent='Sign in';return}const{data:w,error:e}=await supabase.from('wallets').select('balance').eq('user_id',data.session.user.id).single();wallet.textContent=e?'—':money(w.balance)}
-supabase.auth.onAuthStateChange(load);await load();
+supabase.auth.onAuthStateChange(()=>setTimeout(load,0));await load();
 </script>
 <script src="gameday-app.js" defer></script>
 </body>

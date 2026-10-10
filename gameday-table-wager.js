@@ -30,9 +30,12 @@
   const storageKey = `gameday:wager-draft:${game}`;
   let amount = 0;
   let selectedChip = null;
+  let locked = false;
+  const maxWager = game === 'gameday-jacks-or-better.html' ? 1000 : 10000;
+  const validAmount = value => Number.isFinite(value) && value >= 0 && Number.isSafeInteger(Math.round(value * 100)) && Math.abs(Math.round(value * 100) / 100 - value) < 1e-9;
   try {
     const saved = JSON.parse(sessionStorage.getItem(storageKey));
-    if (saved && Number.isSafeInteger(saved.amount) && saved.amount >= 0 && (saved.selectedChip === null || chips.some(([value]) => value === saved.selectedChip))) {
+    if (saved && validAmount(saved.amount) && (saved.selectedChip === null || chips.some(([value]) => value === saved.selectedChip))) {
       amount = saved.amount;
       selectedChip = saved.selectedChip;
     }
@@ -80,32 +83,54 @@
   function render() {
     stage.dataset.wagerAmount = String(amount);
     output.value = money.format(amount);
-    increase.disabled = amount >= Number.MAX_SAFE_INTEGER;
-    decrease.disabled = amount === 0;
-    buttons.forEach(button => button.setAttribute('aria-pressed', String(Number(button.dataset.wagerChip) === selectedChip)));
+    increase.disabled = locked || amount >= maxWager;
+    decrease.disabled = locked || amount === 0;
+    buttons.forEach(button => {
+      button.disabled = locked;
+      button.setAttribute('aria-pressed', String(Number(button.dataset.wagerChip) === selectedChip));
+    });
   }
   function save() {
     try { sessionStorage.setItem(storageKey, JSON.stringify({ amount, selectedChip })); } catch (_) {}
   }
+  function changed() {
+    render();
+    save();
+    stage.dispatchEvent(new CustomEvent('gameday:wager-change', {bubbles:true, detail:{amount}}));
+  }
+  stage.gamedayWager = Object.freeze({
+    getAmount: () => amount,
+    setAmount(value) {
+      if (!validAmount(value)) throw new TypeError('Invalid wager amount');
+      amount = Math.round(value * 100) / 100;
+      selectedChip = chips.some(([chip]) => chip === value) ? value : null;
+      changed();
+    },
+    setLocked(value) { locked = Boolean(value); render(); },
+    onChange(callback) {
+      const listener = event => callback(event.detail.amount);
+      stage.addEventListener('gameday:wager-change', listener);
+      return () => stage.removeEventListener('gameday:wager-change', listener);
+    }
+  });
   buttons.forEach(button => button.addEventListener('click', () => {
+    if (locked || button.disabled) return;
     selectedChip = Number(button.dataset.wagerChip);
     amount = selectedChip;
-    render();
-    save();
+    changed();
   }));
   increase.addEventListener('click', () => {
-    if (amount >= Number.MAX_SAFE_INTEGER) return;
-    amount += 1;
-    render();
-    save();
+    if (locked || amount >= maxWager) return;
+    amount = Math.min(maxWager, Math.round((amount + 1) * 100) / 100);
+    changed();
   });
   decrease.addEventListener('click', () => {
-    if (amount === 0) return;
-    amount -= 1;
-    render();
-    save();
+    if (locked || amount === 0) return;
+    amount = Math.max(0, Math.round((amount - 1) * 100) / 100);
+    changed();
   });
   render();
+  stage.dispatchEvent(new CustomEvent('gameday:wager-ready', {bubbles:true}));
 
   if (artworkWrapper) {
     function placePanel() {

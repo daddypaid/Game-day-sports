@@ -77,6 +77,7 @@ let accountReady = false;
 let accountEpoch = 0;
 let accountLoad = 0;
 let pendingAccountRefresh = false;
+let pageGone = false;
 let autoRemaining = 0;
 let autoTimer = 0;
 let audio = null;
@@ -309,13 +310,13 @@ function sync() {
   if (ui['unit-label']) ui['unit-label'].textContent = bonus?.wager_mode === 'lines' ? 'BET PER LINE' : 'BET PER WAY';
   ui['total-bet'].textContent = money(totalBet());
   ui['free-spins'].textContent = `${bonusProgress.used} / ${bonusProgress.total}`;
-  const locked = spinning || !!bonus || !accountReady;
+  const locked = spinning || !!bonus || !accountReady || pageGone;
   ui['line-minus'].disabled = locked || betCents <= minBetCents();
   ui['total-minus'].disabled = locked || betCents <= minBetCents();
   ui['line-plus'].disabled = locked || betCents >= maxBetCents();
   ui['total-plus'].disabled = locked || betCents >= maxBetCents();
   ui.max.disabled = locked || affordableMax() < minBetCents();
-  ui.spin.disabled = spinning || !accountReady || (!bonus && Number(balance) < totalBet());
+  ui.spin.disabled = spinning || !accountReady || pageGone || (!bonus && Number(balance) < totalBet());
   ui.spin.textContent = bonus ? 'FREE SPIN' : 'SPIN';
   ui.spin.setAttribute('aria-label', bonus ? `Play free spin, ${bonus.spins_remaining} remaining` : `Spin for ${money(totalBet())} test credits`);
   ui.auto.disabled = !autoRemaining && (spinning || ui.spin.disabled);
@@ -346,9 +347,9 @@ function stopAuto() {
 function queueAuto() {
   if (!autoRemaining) return;
   autoRemaining--;
-  if (!autoRemaining || document.hidden || ui.dialog.open || ui.spin.disabled) { stopAuto(); return; }
+  if (!autoRemaining || document.hidden || pageGone || ui.dialog.open || ui.spin.disabled) { stopAuto(); return; }
   sync();
-  autoTimer = setTimeout(() => { if (autoRemaining && !document.hidden && !spinning) spin(); }, 1000);
+  autoTimer = setTimeout(() => { if (autoRemaining && !document.hidden && !spinning && !pageGone) spin(); }, 1000);
 }
 
 class SlotError extends Error {
@@ -356,8 +357,10 @@ class SlotError extends Error {
 }
 
 async function invokeSlot(body, expectedUser = user?.id) {
+  const expectedEpoch = accountEpoch;
   const { data, error } = await supabase.auth.getSession();
-  if (error || !data.session?.access_token || data.session.user.id !== expectedUser) {
+  if (pageGone || expectedEpoch !== accountEpoch || user?.id !== expectedUser ||
+      error || !data.session?.access_token || data.session.user.id !== expectedUser) {
     throw new SlotError('Sign in to play Galactic Rebellion.');
   }
   const controller = new AbortController();
@@ -373,7 +376,7 @@ async function invokeSlot(body, expectedUser = user?.id) {
     });
     let result;
     try { result = await response.json(); } catch { throw new SlotError('The server response could not be read.', true); }
-    if (!response.ok || result.error) throw new SlotError(result.error || 'The slot service is unavailable.');
+    if (!response.ok || result.error) throw new SlotError(result.error || 'The slot service is unavailable.', response.status >= 500);
     return result;
   } catch (error) {
     if (error instanceof SlotError) throw error;
@@ -421,6 +424,7 @@ function normalizeBonus(value) {
 }
 
 async function loadAccount({ quiet = false } = {}) {
+  if (pageGone) return false;
   if (spinning) { pendingAccountRefresh = true; return false; }
   const load = ++accountLoad;
   const epoch = accountEpoch;
@@ -429,7 +433,7 @@ async function loadAccount({ quiet = false } = {}) {
   try {
     const { data, error } = await supabase.auth.getSession();
     if (error) throw new SlotError('Your GameDay account could not be loaded.');
-    if (load !== accountLoad || epoch !== accountEpoch) return false;
+    if (load !== accountLoad || epoch !== accountEpoch || pageGone) return false;
     user = data.session?.user || null;
     if (!user) {
       balance = null;
@@ -444,7 +448,7 @@ async function loadAccount({ quiet = false } = {}) {
       supabase.from('wallets').select('balance').eq('user_id', currentUser).single(),
       invokeSlot({ game: GAME, action: 'status' }, currentUser),
     ]);
-    if (load !== accountLoad || epoch !== accountEpoch || user?.id !== currentUser) return false;
+    if (load !== accountLoad || epoch !== accountEpoch || user?.id !== currentUser || pageGone) return false;
     if (wallet.error || !Number.isFinite(Number(wallet.data?.balance))) throw new SlotError('Your GameDay test wallet could not be loaded.');
     rules = normalizeRules(status.game_config);
     const restoredBonus = normalizeBonus(status.bonus);
@@ -465,7 +469,7 @@ async function loadAccount({ quiet = false } = {}) {
     sync();
     return true;
   } catch (error) {
-    if (load !== accountLoad || epoch !== accountEpoch) return false;
+    if (load !== accountLoad || epoch !== accountEpoch || pageGone) return false;
     accountReady = false;
     setStatus(error.message + ' Reload this page to reconnect.', 'error', true);
     sync();
@@ -484,7 +488,7 @@ function validateSpin(result) {
 }
 
 async function spin() {
-  if (spinning || !accountReady || !user || ui.dialog.open) return;
+  if (spinning || !accountReady || !user || pageGone || ui.dialog.open) return;
   const free = !!bonus;
   if (!free && Number(balance) < totalBet()) { stopAuto(); setStatus('Lower your bet or refill your test wallet in Account.', 'error', true); return; }
   const epoch = accountEpoch;
@@ -498,16 +502,16 @@ async function spin() {
   sync();
   const animation = startReels();
   activeAnimation = animation;
-  unlockAudio().then(context => { if (context && spinning && epoch === accountEpoch) startSpinSound(); });
+  unlockAudio().then(context => { if (context && spinning && epoch === accountEpoch && !pageGone) startSpinSound(); });
   let finished = false;
   try {
     const result = await invokeSlot(free ? { game: GAME, action: 'bonus_spin', session_id: requestBonus.id } :
       { game: GAME, action: 'spin', total_bet: requestedTotal }, currentUser);
     const settled = result.spin;
     validateSpin(settled);
-    if (epoch !== accountEpoch || user?.id !== currentUser) return;
+    if (epoch !== accountEpoch || user?.id !== currentUser || pageGone) return;
     await animation.settle(settled.grid);
-    if (epoch !== accountEpoch || user?.id !== currentUser) return;
+    if (epoch !== accountEpoch || user?.id !== currentUser || pageGone) return;
     grid = settled.grid.map(column => [...column]);
     balance = Number(settled.balance);
     ui.win.textContent = money(settled.payout);
@@ -546,7 +550,7 @@ async function spin() {
     }
     finished = true;
   } catch (error) {
-    if (epoch !== accountEpoch || activeAnimation !== animation) return;
+    if (epoch !== accountEpoch || activeAnimation !== animation || pageGone) return;
     stopAuto();
     animation.cancel(true);
     if (epoch === accountEpoch && user?.id === currentUser) {
@@ -554,7 +558,7 @@ async function spin() {
       // never repeat a paid or free-spin request automatically after an error.
       spinning = false;
       const reconnected = await loadAccount({ quiet: true });
-      if (epoch !== accountEpoch || activeAnimation !== animation) return;
+      if (epoch !== accountEpoch || activeAnimation !== animation || pageGone) return;
       const message = error.uncertain ? `${error.message} Your last spin may have completed. ${reconnected ? 'Wallet and free spins refreshed; check Account before spinning again.' : 'Reconnect before spinning again.'}` : error.message;
       setStatus(message, 'error', !!error.uncertain || !reconnected);
     }
@@ -569,7 +573,7 @@ async function spin() {
         pendingAccountRefresh = false;
         await loadAccount({ quiet: finished });
       }
-      if (finished && epoch === accountEpoch) queueAuto();
+      if (finished && epoch === accountEpoch && !pageGone) queueAuto();
     }
   }
 }
@@ -683,7 +687,7 @@ function showInfo() {
 }
 
 function adjustBet(direction) {
-  if (spinning || bonus || !accountReady) return;
+  if (spinning || bonus || !accountReady || pageGone) return;
   unlockAudio().then(() => playSound('tap'));
   betCents = Math.min(maxBetCents(), Math.max(minBetCents(), betCents + direction * stepCents()));
   sync();
@@ -697,7 +701,7 @@ ui['total-minus'].addEventListener('click', () => adjustBet(-1));
 ui['line-plus'].addEventListener('click', () => adjustBet(1));
 ui['total-plus'].addEventListener('click', () => adjustBet(1));
 ui.max.addEventListener('click', () => {
-  if (spinning || bonus || !accountReady || affordableMax() < minBetCents()) return;
+  if (spinning || bonus || !accountReady || pageGone || affordableMax() < minBetCents()) return;
   unlockAudio().then(() => playSound('tap'));
   betCents = affordableMax();
   sync();
@@ -705,7 +709,7 @@ ui.max.addEventListener('click', () => {
 });
 ui.auto.addEventListener('click', () => {
   if (autoRemaining) { stopAuto(); return; }
-  if (spinning || ui.spin.disabled || ui.dialog.open) return;
+  if (spinning || ui.spin.disabled || pageGone || ui.dialog.open) return;
   autoRemaining = 5;
   sync();
   spin();
@@ -736,8 +740,22 @@ document.addEventListener('visibilitychange', () => {
   if (document.hidden) { stopAuto(); stopSpinSound(); }
 });
 window.addEventListener('pagehide', () => {
-  stopAuto(); stopSpinSound();
+  pageGone = true;
+  accountEpoch++;
+  accountLoad++;
+  accountReady = false;
+  pendingAccountRefresh = false;
+  activeAnimation?.cancel(true);
+  activeAnimation = null;
+  spinning = false;
+  stopAuto();
+  stopSpinSound();
   try { audio?.close(); } catch { /* The browser can already have closed it. */ }
+});
+window.addEventListener('pageshow', event => {
+  if (!event.persisted) return;
+  pageGone = false;
+  loadAccount();
 });
 window.addEventListener('resize', () => { if (!spinning) renderGrid(); });
 
@@ -766,7 +784,7 @@ supabase.auth.onAuthStateChange((event, session) => {
     sync();
   }
   // Keep Supabase calls outside its synchronous auth notification callback.
-  if (event !== 'TOKEN_REFRESHED') setTimeout(() => loadAccount(), 0);
+  if (event !== 'TOKEN_REFRESHED' && !pageGone) setTimeout(() => loadAccount(), 0);
 });
 renderGrid();
 sync();

@@ -38,7 +38,7 @@ function shuffle<T>(items: T[]): T[] {
   return result;
 }
 
-function total(cards: Card[]) {
+function handValue(cards: Card[]) {
   let sum = 0;
   let aces = 0;
   for (const card of cards) {
@@ -55,7 +55,11 @@ function total(cards: Card[]) {
     sum -= 10;
     aces--;
   }
-  return sum;
+  return { total: sum, soft: aces > 0 };
+}
+
+function total(cards: Card[]) {
+  return handValue(cards).total;
 }
 
 function cardValue(card: Card) {
@@ -102,6 +106,8 @@ function publicHand(row: any, hideDealer = true) {
     player_total: playerTotal,
     dealer_total: hideDealer && isActive ? null : (row.dealer_total ?? 0),
     action_count: actionCount,
+    created_at: row.created_at,
+    settled_at: row.settled_at,
     can_hit: isActive,
     can_stand: isActive,
     can_double: canDouble,
@@ -111,7 +117,11 @@ function publicHand(row: any, hideDealer = true) {
 }
 
 function playDealer(dealer: Card[], shoe: Card[]) {
-  while (total(dealer) < 17 && shoe.length) dealer.push(shoe.pop()!);
+  while (shoe.length) {
+    const value = handValue(dealer);
+    if (value.total > 17 || (value.total === 17 && !value.soft)) break;
+    dealer.push(shoe.pop()!);
+  }
 }
 
 function settleSingle(player: Card[], dealer: Card[], shoe: Card[], stake: number) {
@@ -177,8 +187,17 @@ Deno.serve(async (req) => {
 
     const loadActive = async () => {
       const { data, error } = await admin.from("blackjack_hands")
-        .select("id,user_id,stake,status,player_cards,player_hands,active_hand_index,dealer_cards,shoe,player_total,dealer_total,payout,action_count")
+        .select("id,user_id,stake,status,player_cards,player_hands,active_hand_index,dealer_cards,shoe,player_total,dealer_total,payout,action_count,created_at,settled_at")
         .eq("user_id", userData.user.id).eq("status", "active")
+        .order("created_at", { ascending: false }).limit(1).maybeSingle();
+      if (error) throw error;
+      return data;
+    };
+
+    const loadLatest = async () => {
+      const { data, error } = await admin.from("blackjack_hands")
+        .select("id,user_id,stake,status,player_cards,player_hands,active_hand_index,dealer_cards,shoe,player_total,dealer_total,payout,action_count,created_at,settled_at")
+        .eq("user_id", userData.user.id)
         .order("created_at", { ascending: false }).limit(1).maybeSingle();
       if (error) throw error;
       return data;
@@ -186,8 +205,15 @@ Deno.serve(async (req) => {
 
     if (action === "resume") {
       const active = await loadActive();
-      const balance = active ? await loadBalance() : undefined;
-      return response({ ok: true, hand: active ? publicHand({ ...active, balance }, true) : null, resumed: Boolean(active) });
+      const includeLatest = body?.include_latest === true;
+      const latest = includeLatest ? await loadLatest() : null;
+      const balance = active || latest ? await loadBalance() : undefined;
+      return response({
+        ok: true,
+        hand: active ? publicHand({ ...active, balance }, true) : null,
+        resumed: Boolean(active),
+        ...(includeLatest ? { latest_hand: latest ? publicHand({ ...latest, balance }, true) : null } : {}),
+      });
     }
 
     if (action === "start") {
@@ -260,12 +286,19 @@ Deno.serve(async (req) => {
     const handId = String(body?.hand_id || "");
     if (!handId) throw new Error("Hand ID is required");
     const { data: hand, error: handError } = await admin.from("blackjack_hands")
-      .select("id,user_id,stake,status,player_cards,player_hands,active_hand_index,dealer_cards,shoe,player_total,dealer_total,payout,action_count")
+      .select("id,user_id,stake,status,player_cards,player_hands,active_hand_index,dealer_cards,shoe,player_total,dealer_total,payout,action_count,created_at,settled_at")
       .eq("id", handId).single();
     if (handError || !hand) throw new Error("Blackjack hand not found");
     if (hand.user_id !== userData.user.id) throw new Error("You cannot access another user's hand");
     const startingBalance = await loadBalance();
     if (action === "state") return response({ ok: true, hand: publicHand({ ...hand, balance: startingBalance }, true) });
+    if (body?.expected_action_count !== undefined) {
+      const expectedCount = body.expected_action_count;
+      if (!Number.isSafeInteger(expectedCount) || expectedCount < 0) throw new Error("Invalid expected action count");
+      if (expectedCount !== Number(hand.action_count)) {
+        return response({ ok: true, hand: publicHand({ ...hand, balance: startingBalance }, true), recovered: true });
+      }
+    }
     if (hand.status !== "active") throw new Error("Blackjack hand already settled");
 
     let player: Card[] = [...(hand.player_cards ?? [])];

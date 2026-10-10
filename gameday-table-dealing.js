@@ -1,4 +1,4 @@
-/* Shared card presentation: dealing only. No wagers, settlement or backend calls. */
+/* Shared card presentation. Authoritative games supply their cards through gamedayCardView. */
 (() => {
   const games = {
     'gameday-blackjack.html': 'blackjack',
@@ -24,7 +24,7 @@
   layer.dataset.dealPhase = 'idle';
   artwork.appendChild(layer);
   const status = document.getElementById(actions.get('deal').getAttribute('aria-describedby'));
-  if (status) status.textContent = 'Card dealing is ready. Gameplay is still building.';
+  if (status && !['holdem','omaha','stud','draw'].includes(game)) status.textContent = 'Card dealing is ready. Gameplay is still building.';
   const announcement = document.createElement('p');
   announcement.className = 'gd-deal-announcement';
   announcement.setAttribute('aria-live', 'polite');
@@ -61,6 +61,9 @@
     draw: { player: ['Your hand',50,57.5,87,14] }
   };
   let groups = {};
+  const authoritative = ['blackjack', 'baccarat', 'jacks'].includes(game);
+  let selectableCards = false;
+  let onCardSelect = null;
   let deck = [];
   let phase = 'idle';
   let busy = false;
@@ -84,7 +87,7 @@
     }
   }
   function resetHand() {
-    newDeck();
+    if (!authoritative) newDeck();
     groups = {};
     layer.replaceChildren();
     Object.entries(positions[game]).forEach(([id, [label,x,y,width,cardWidth]]) => {
@@ -112,7 +115,7 @@
   }
   function paint(entry, group, index) {
     const card = entry.node;
-    const selectable = group.id === 'player' && ((game === 'jacks' && phase === 'initial') || (game === 'draw' && phase === 'initial'));
+    const selectable = group.id === 'player' && (authoritative ? selectableCards : ((game === 'jacks' && phase === 'initial') || (game === 'draw' && phase === 'initial')));
     const selection = game === 'jacks' ? 'held' : 'discard';
     card.className = `card gd-deal-card ${entry.faceUp ? `gameday-detailed-card${['♥','♦'].includes(entry.card.suit) ? ' gd-red' : ''}` : 'gameday-card-back'}${entry.selected ? ' gd-card-selected' : ''}`;
     card.dataset.cardPosition = String(index + 1);
@@ -154,20 +157,24 @@
   }
   function refreshCards() { Object.values(groups).forEach(layoutGroup); }
   function toggleSelection(group, entry) {
+    if (authoritative) {
+      if (!busy && !cancelled && selectableCards && group.id === 'player') onCardSelect?.(group.cards.indexOf(entry));
+      return;
+    }
     if (busy || cancelled || phase !== 'initial' || group.id !== 'player' || !['jacks','draw'].includes(game)) return;
     entry.selected = !entry.selected;
     refreshCards();
     updateControls();
   }
-  function makeEntry(group, faceUp, replaceIndex) {
-    if (!deck.length) throw new Error('Card deck exhausted');
-    const entry = { card: deck.pop(), faceUp, selected: false, node: document.createElement('div'), slot: document.createElement('div') };
+  function makeEntry(group, faceUp, replaceIndex, suppliedCard) {
+    if (!suppliedCard && !deck.length) throw new Error('Card deck exhausted');
+    const entry = { card: suppliedCard || deck.pop(), faceUp, selected: false, node: document.createElement('div'), slot: document.createElement('div') };
     entry.slot.className = 'gd-deal-slot';
     entry.slot.appendChild(entry.node);
     entry.node.addEventListener('click', () => toggleSelection(group, entry));
     entry.node.addEventListener('keydown', event => {
       if (event.key === 'Enter' || event.key === ' ') {
-        if (['jacks','draw'].includes(game) && phase === 'initial') event.preventDefault();
+        if (['jacks','draw'].includes(game) && (authoritative ? selectableCards : phase === 'initial')) event.preventDefault();
         toggleSelection(group, entry);
       }
     });
@@ -274,12 +281,130 @@
     }
     return wait(reducedMotion.matches ? 0 : 170, token);
   }
+  if (authoritative) {
+    let splitLayout = false;
+    function cancelView() {
+      actionToken++;
+      waits.forEach((resolve, id) => { clearTimeout(id); resolve(false); });
+      waits.clear();
+      animations.forEach(animation => animation.cancel());
+      animations.clear();
+      stopSounds();
+    }
+    function setSelection(indices = []) {
+      const selected = new Set(indices);
+      groups.player?.cards.forEach((entry, index) => { entry.selected = selected.has(index); });
+      refreshCards();
+    }
+    function configureSplit(split) {
+      if (split === splitLayout && Object.keys(groups).length) return;
+      resetHand();
+      splitLayout = split;
+      if (!split) return;
+      groups.player.element.remove();
+      delete groups.player;
+      [28, 72].forEach((x, index) => {
+        const id = `player-${index}`;
+        const element = document.createElement('div');
+        element.className = 'gd-deal-group gd-deal-split-group';
+        element.dataset.cardGroup = id;
+        element.setAttribute('role', 'group');
+        element.style.cssText = `left:${x}%;top:65%;width:42%;aspect-ratio:${42 / (11.5 * 1.1 * 1.4)}`;
+        layer.appendChild(element);
+        groups[id] = { id, element, cards: [], slots: 0, cardPercent: 11.5 * 1.1 / 42 * 100 };
+      });
+    }
+    async function renderView(model, options = {}) {
+      cancelView();
+      const token = actionToken;
+      const split = Array.isArray(model.splitHands) && model.splitHands.length === 2;
+      configureSplit(split);
+      setPhase(model.phase || 'active');
+      selectableCards = Boolean(model.selectable);
+      busy = true;
+      const supplied = { ...model.groups };
+      if (split) {
+        delete supplied.player;
+        model.splitHands.forEach((hand, index) => { supplied[`player-${index}`] = hand.cards; });
+      }
+      const initial = Object.values(groups).every(group => group.cards.length === 0);
+      const operations = [];
+      for (const [id, group] of Object.entries(groups)) {
+        const cards = supplied[id] || [];
+        group.slots = cards.length;
+        while (group.cards.length > cards.length) group.cards.pop().slot.remove();
+        if (split && id.startsWith('player-')) {
+          const index = Number(id.slice(-1));
+          group.element.classList.toggle('gd-deal-active-hand', model.phase === 'active' && model.activeHandIndex === index);
+          group.element.setAttribute('aria-label', `Split hand ${index + 1}${model.activeHandIndex === index && model.phase === 'active' ? ', active' : ''}`);
+          let caption = group.element.querySelector('.gd-deal-split-caption');
+          if (!caption) {
+            caption = document.createElement('span');
+            caption.className = 'gd-deal-caption gd-deal-split-caption';
+            group.element.appendChild(caption);
+          }
+          const hand = model.splitHands[index];
+          caption.textContent = `Hand ${index + 1} · ${hand.total}${hand.status !== 'active' ? ` · ${hand.status}` : ''}`;
+        }
+        for (let index = 0; index < cards.length; index++) {
+          operations.push({ group, index, card:cards[index] });
+        }
+      }
+      const groupOrder = id => id === 'dealer' || id === 'banker' ? 1 : 0;
+      operations.sort((a,b) => initial && !split && ['blackjack','baccarat'].includes(game) ? a.index - b.index || groupOrder(a.group.id) - groupOrder(b.group.id) : groupOrder(a.group.id) - groupOrder(b.group.id) || a.index - b.index);
+      for (const { group, index, card } of operations) {
+        if (cancelled || token !== actionToken) return false;
+        const faceUp = card.rank !== '?';
+        const old = group.cards[index];
+        const changed = !old || old.card.rank !== card.rank || old.card.suit !== card.suit;
+        if (changed) {
+          let entry;
+          if (old && !old.faceUp && faceUp) {
+            entry = old;
+            entry.card = card;
+            entry.faceUp = true;
+            layoutGroup(group);
+            if (options.animate !== false && !reducedMotion.matches && entry.node.animate) {
+              const flip = entry.node.animate([{ transform:'scaleX(.05)' },{ transform:'scaleX(1)' }], { duration:180, easing:'ease-out' });
+              animations.add(flip);
+              flip.finished.catch(() => {}).finally(() => animations.delete(flip));
+            }
+          } else {
+            entry = makeEntry(group, faceUp, old ? index : undefined, card);
+            if (options.animate !== false) animate(entry);
+          }
+          if (options.animate !== false && !await wait(reducedMotion.matches ? 10 : 110, token)) return false;
+        } else { old.faceUp = faceUp; }
+      }
+      Object.values(groups).forEach(layoutGroup);
+      if (options.animate !== false && !await wait(reducedMotion.matches ? 0 : 170, token)) return false;
+      busy = false;
+      setSelection(model.selectedIndices);
+      return true;
+    }
+    stage.gamedayCardView = {
+      render: renderView,
+      clear() { cancelView(); groups = {}; layer.replaceChildren(); splitLayout = false; selectableCards = false; busy = false; setPhase('idle'); },
+      unlockAudio,
+      cancel: cancelView,
+      setOnCardSelect(callback) { onCardSelect = callback; },
+      setSelection,
+      announcement,
+      status,
+      actions
+    };
+    if (status) status.textContent = 'Connecting to your GameDay test game…';
+    window.addEventListener('pagehide', () => { cancelled = true; cancelView(); try { audio?.suspend().catch(() => {}); } catch (_) {} });
+    window.addEventListener('pageshow', () => { cancelled = false; });
+    stage.dispatchEvent(new CustomEvent('gameday:card-view-ready', { bubbles: true }));
+    return;
+  }
   const item = (group, faceUp = true, replaceIndex) => ({ group, faceUp, replaceIndex });
   function cards(group, count, faceUp = true) { return Array.from({ length: count }, () => item(group, faceUp)); }
   function enable(name, enabled) { if (actions.has(name)) actions.get(name).disabled = busy || !enabled; }
   function updateControls() {
     actions.forEach(button => { button.disabled = true; });
-    enable('deal', true);
+    enable('deal', !(game === 'draw' && phase === 'initial'));
     let dealLabel = phase === 'idle' ? 'Deal' : 'New Deal';
     if (game === 'holdem' || game === 'omaha') dealLabel = ({ initial: 'Deal Flop', flop: 'Deal Turn', turn: 'Deal River' })[phase] || dealLabel;
     if (game === 'stud') dealLabel = ({ third: 'Deal 4th', fourth: 'Deal 5th', fifth: 'Deal 6th', sixth: 'Deal 7th', seventh: 'Show Cards' })[phase] || dealLabel;
@@ -299,11 +424,12 @@
     }
     if (game === 'draw') {
       enable('discard', phase === 'initial');
-      enable('draw', phase === 'initial' && groups.player.cards.some(entry => entry.selected));
+      enable('draw', phase === 'initial');
       actions.get('discard')?.setAttribute('aria-pressed', String(phase === 'initial' && groups.player.cards.every(entry => entry.selected)));
     }
     stage.dataset.dealBusy = String(busy);
     stage.setAttribute('aria-busy', String(busy));
+    stage.gamedayWager?.setLocked(busy || ['initial','flop','turn','third','fourth','fifth','sixth','seventh'].includes(phase));
   }
   let wagerLocks = [];
   function lockWager() {
@@ -320,6 +446,10 @@
   }
   function baccaratValue(group) {
     return groups[group].cards.reduce((total, entry) => total + (entry.card.rank === 'A' ? 1 : Number(entry.card.rank) || 0), 0) % 10;
+  }
+  function completedPreview() {
+    const evaluated = window.GameDayPokerHands?.evaluate({ game, player:groups.player.cards.map(entry => entry.card), board:(groups.board?.cards || []).map(entry => entry.card) });
+    announcement.textContent = `Preview hand complete${evaluated ? `: ${evaluated.label}` : ''}. No wallet credits were changed.`;
   }
   async function initialDeal(token) {
     resetHand();
@@ -371,12 +501,13 @@
         const count = phase === 'initial' ? 3 : 1;
         if (!await dealCards(cards('board', count), token)) return;
         setPhase(next);
-        announcement.textContent = `${next[0].toUpperCase() + next.slice(1)} dealt. ${next === 'river' ? 'All five community cards are on the table.' : 'Deal continues the community cards.'}`;
+        if (next === 'river') completedPreview();
+        else announcement.textContent = `${next[0].toUpperCase() + next.slice(1)} dealt. Deal continues the community cards.`;
       } else if (game === 'stud' && ['third','fourth','fifth','sixth','seventh'].includes(phase)) {
         if (phase === 'seventh') {
           reveal('player');
           setPhase('shown');
-          announcement.textContent = 'All seven cards revealed.';
+          completedPreview();
         } else {
           const next = { third:'fourth', fourth:'fifth', fifth:'sixth', sixth:'seventh' }[phase];
           if (!await dealCards([item('player', next !== 'seventh')], token)) return;
@@ -401,7 +532,7 @@
       if (!await dealCards(replacements, token)) return;
       groups.player.cards.forEach(entry => { entry.selected = false; });
       setPhase('drawn');
-      announcement.textContent = `${replacements.length} replacement ${replacements.length === 1 ? 'card' : 'cards'} dealt. Gameplay is still building.`;
+      completedPreview();
     }
   }
   actions.forEach((button, name) => button.addEventListener('click', async () => {

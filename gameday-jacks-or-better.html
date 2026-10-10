@@ -22,6 +22,12 @@ h1{margin:0;font-size:23px}
 main{max-width:760px;margin:auto;padding:14px}
 .game-stage{background:#000}
 .game-stage img{display:block;width:100%;height:auto;object-fit:contain}
+.gd-jacks-account{display:flex;flex-wrap:wrap;justify-content:space-between;align-items:center;gap:8px;padding:8px 12px;color:#e8d89a;font-size:13px;font-weight:700;background:#08100b}
+.gd-jacks-account a{color:#e8d89a}
+.gd-jacks-result{margin:8px 0;padding:10px 8px;border:1px solid #a68942;border-radius:10px;background:#0a1710;text-align:center;color:#f4e4ac;font:700 14px/1.5 Arial,sans-serif;overflow-wrap:anywhere}
+.gd-jacks-result span{display:block;color:#d2dcd5;font:400 12px/1.5 Arial,sans-serif}
+.gd-jacks-recovery{display:block;min-height:44px;margin:8px auto;padding:8px 14px;border:1px solid #a68942;border-radius:9px;background:#173321;color:#f4e4ac;font-weight:700;cursor:pointer}
+.gd-jacks-recovery[hidden],.gd-jacks-result[hidden],.gd-jacks-account [hidden]{display:none!important}
 html body.jacks-artwork-page{background:#08100b!important}
 @media(max-width:520px){header{padding:10px}h1{font-size:20px}}
 /* Keep approved poker table artwork free of added frames in every app view. */
@@ -42,10 +48,12 @@ html:root body.poker-table-artwork-page :is(.stage,.game-stage,.stage img,.game-
   <a class="back" href="gameday-poker.html">‹ Back to Poker Room</a>
 </header>
 <main>
+  <div class="gd-jacks-account"><span>Test balance: <output id="gd-jacks-balance">—</output></span><a id="gd-jacks-signin" href="gameday-auth.html" hidden>Sign in to play</a></div>
   <section class="game-stage" aria-label="Jacks or Better game area"><img src="assets/card-tables/gameday-jacks-or-better-table.png" width="591" height="1280" alt="GameDay Jacks or Better table artwork" fetchpriority="high"></section>
 </main>
 <script src="gameday-app.js" defer></script>
 <script src="gameday-table-wager.js" defer></script>
 <script src="gameday-table-dealing.js" defer></script>
+<script type="module" src="gameday-jacks-game.js"></script>
 </body>
 </html>
