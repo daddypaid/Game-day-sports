@@ -54,3 +54,5 @@ html:root body.gd-roulette-game .gd-roulette-sound{order:9}
 .gd-roulette-test-note{order:10;text-align:center;font-size:10px;letter-spacing:.08em;color:#9ead9e;margin:0 12px 4px}
 body.gd-roulette-game [hidden]{display:none!important}
 @media(min-width:620px){.gd-roulette-table{aspect-ratio:1024/1660}.gd-roulette-bet{font-size:28px}.gd-roulette-wheel-area{padding-inline:3px;margin-bottom:-6%}.gd-roulette-table>img.gd-roulette-table-neck{clip-path:polygon(8.73% 0,91.27% 0,100% 7.85%,100% 16.95%,0 16.95%,0 7.85%)}}
+/* Fill the space beside the wheel with the same walnut on wide screens. */
+@media(min-width:620px){html:root body.gd-roulette-game{background-image:url("assets/roulette/walnut-top.webp")!important;background-position:center top!important;background-size:100% 882px!important;background-repeat:no-repeat!important}html:root body.gd-roulette-game.gd-in-shell{background-size:100% 780px!important}}
