@@ -186,4 +186,5 @@ async function run() {
     if(process.env.GD_RECEIPT_RESULTS)fs.writeFileSync(process.env.GD_RECEIPT_RESULTS,JSON.stringify({passed:checks.length,productionRequests:0,cases:checks},null,2));
   } finally {await browser.close();await new Promise(resolve=>server.close(resolve));}
 }
-run().catch(error=>{console.error(error);process.exitCode=1;});
+module.exports = { fixture, waitResult, games, sdk, config };
+if (require.main === module) run().catch(error=>{console.error(error);process.exitCode=1;});

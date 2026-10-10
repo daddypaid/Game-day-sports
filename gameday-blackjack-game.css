@@ -13,3 +13,12 @@ html:root body.gd-table-dealing-page .gd-deal-split-group.gd-deal-active-hand::a
 .gd-deal-split-caption{font-size:11px;max-width:150px;white-space:normal;text-align:center}
 html:root body.gd-table-dealing-page .gd-blackjack-announcement{min-height:20px;font-size:12px;line-height:1.4}
 html:root body.gd-table-dealing-page .gd-blackjack-announcement:empty{display:none}
+
+.gd-blackjack-insurance{margin:8px 0;padding:12px;border:2px solid #c7a44a;border-radius:10px;background:#07170ff5;color:#f6e8bd;text-align:center}
+.gd-blackjack-insurance[hidden]{display:none!important}
+.gd-blackjack-insurance p{margin:0 0 8px;font:400 13px/1.45 Arial,sans-serif}
+.gd-blackjack-insurance div{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+.gd-blackjack-insurance button{min-height:48px;padding:10px 8px;border:1px solid #c7a44a;border-radius:9px;background:#102617;color:#f6e8bd;font:700 15px/1.2 Arial,sans-serif;cursor:pointer}
+.gd-blackjack-insurance button:first-child{background:linear-gradient(#f8e6a6,#bb8c22);color:#171303}
+.gd-blackjack-insurance button:disabled{opacity:.5;cursor:default}
+.gd-blackjack-insurance :focus-visible{outline:2px solid #fff3b4;outline-offset:2px}

@@ -85,6 +85,16 @@
     <div class="gd-table-action-groups" role="group" aria-label="Game actions">${actions[game].map(([columns, labels]) => `<div class="gd-table-action-row" style="--gd-action-columns:${columns}">${labels.map(label => `<button type="button" class="gd-table-action" data-table-action="${label.toLowerCase().replaceAll(' ', '-')}" aria-describedby="${statusId}" disabled>${label}</button>`).join('')}</div>`).join('')}</div>
     ${existingStatus ? '' : `<p id="${statusId}" class="gd-table-actions-status">Gameplay is still building.</p>`}`;
   stage.appendChild(panel);
+  const limits = document.createElement('p');
+  limits.className = 'gd-wager-limits';
+  limits.textContent = game === 'gameday-jacks-or-better.html'
+    ? 'Wagers: $1–$1,000 in whole test credits.'
+    : game === 'gameday-roulette.html'
+      ? 'Wagers: $1–$10,000 in test credits. Amounts use cents.'
+      : ['gameday-blackjack.html', 'gameday-baccarat.html'].includes(game)
+        ? 'Main wagers: $1–$10,000 in whole test credits.'
+        : 'Opening ante: $1–$10,000 in whole test credits. Later bets use the limits shown.';
+  panel.appendChild(limits);
   const output = panel.querySelector('.gd-wager-total');
   const feedback = document.createElement('span');
   feedback.className = 'gd-wager-feedback';

@@ -13,27 +13,45 @@
 </style><link rel="stylesheet" href="gameday-light-theme.css">
 </head>
 <body>
-<header><h1>GameDay Sports</h1><div class="sub">Account</div><div class="nav"><a href="gameday-sportsbook.html">Sportsbook</a><a href="gameday-casino-v2.html">Casino</a><a href="gameday-my-bets.html">My Bets</a><a class="active" href="gameday-auth.html">Account</a></div></header>
+<header><h1>GameDay Sports</h1><div class="sub">Account · TEST MODE — no real money</div><div class="nav"><a href="gameday-sportsbook.html">Sportsbook</a><a href="gameday-casino-v2.html">Casino</a><a href="gameday-my-bets.html">My Bets</a><a class="active" href="gameday-auth.html">Account</a></div></header>
 <main>
-<div id="status" class="status">Checking your GameDay account...</div>
-<div id="authForms">
-<div class="card"><h2>Create Account</h2><label>Email</label><input id="signupEmail" type="email" autocomplete="email"><label>Password</label><input id="signupPassword" type="password" minlength="8" autocomplete="new-password"><div class="password-help">Use at least 8 characters with one uppercase letter, one lowercase letter, one number, and one symbol.</div><button id="signupBtn" class="primary">Create GameDay Account</button></div>
-<div class="card"><h2>Sign In</h2><label>Email</label><input id="signinEmail" type="email" autocomplete="email"><label>Password</label><input id="signinPassword" type="password" autocomplete="current-password"><button id="signinBtn" class="primary">Sign In</button></div>
-<div class="card"><h2>Forgot Password</h2><div class="muted">Enter the email on your GameDay account and we’ll send a secure reset link.</div><label>Email</label><input id="resetEmail" type="email" autocomplete="email"><button id="resetEmailBtn" class="secondary">Send Reset Link</button></div>
+<div id="status" class="status" role="status" aria-live="polite">Checking your GameDay account...</div>
+<button id="retryConnection" class="secondary hidden" type="button">Retry connection</button>
+<div id="resetIssue" class="card hidden" role="alert"><div id="resetIssueText"></div><button id="requestNewResetLink" class="secondary" type="button">Request a new reset link</button></div>
+<div id="authForms" class="hidden">
+<div class="card"><h2>Create Account</h2><label for="signupEmail">Email</label><input id="signupEmail" type="email" autocomplete="email"><label for="signupPassword">Password</label><input id="signupPassword" type="password" minlength="8" autocomplete="new-password"><div class="password-help">Use at least 8 characters with one uppercase letter, one lowercase letter, one number, and one symbol.</div><p class="muted">GameDay uses your email for sign-in and recovery, and stores your test wagers, game results and wallet history. Read our <a href="gameday-privacy.html">Privacy Notice</a> before creating an account.</p><button id="signupBtn" class="primary">Create GameDay Account</button></div>
+<div class="card"><h2>Sign In</h2><label for="signinEmail">Email</label><input id="signinEmail" type="email" autocomplete="email"><label for="signinPassword">Password</label><input id="signinPassword" type="password" autocomplete="current-password"><button id="signinBtn" class="primary">Sign In</button></div>
+<div class="card"><h2>Forgot Password</h2><div class="muted">Enter the email on your GameDay account and we’ll send a secure reset link.</div><label for="resetEmail">Email</label><input id="resetEmail" type="email" autocomplete="email"><button id="resetEmailBtn" class="secondary">Send Reset Link</button></div>
 </div>
-<div id="recoveryPanel" class="card hidden"><h2>Choose New Password</h2><div class="muted">Your recovery link is verified. Set a new GameDay password.</div><label>New Password</label><input id="newPassword" type="password" minlength="8" autocomplete="new-password"><label>Confirm New Password</label><input id="confirmPassword" type="password" minlength="8" autocomplete="new-password"><div class="password-help">Use at least 8 characters with one uppercase letter, one lowercase letter, one number, and one symbol.</div><button id="updatePasswordBtn" class="primary">Update Password</button></div>
+<div id="recoveryPanel" class="card hidden"><h2>Choose New Password</h2><div class="muted">Your recovery link is verified. Set a new GameDay password.</div><label for="newPassword">New Password</label><input id="newPassword" type="password" minlength="8" autocomplete="new-password"><label for="confirmPassword">Confirm New Password</label><input id="confirmPassword" type="password" minlength="8" autocomplete="new-password"><div class="password-help">Use at least 8 characters with one uppercase letter, one lowercase letter, one number, and one symbol.</div><button id="updatePasswordBtn" class="primary">Update Password</button><button id="cancelRecovery" class="secondary" type="button">Request a new reset link</button></div>
 <div id="accountPanel" class="hidden">
-<div class="card"><h2>My GameDay Account</h2><div class="email" id="accountEmail">—</div><a class="link" href="gameday-sportsbook.html">Open Sportsbook</a><a class="link" href="gameday-my-bets.html">View My Bets</a><a id="casinoHistoryLink" class="link" href="gameday-casino-history.html">View Casino History</a><button id="signoutBtn" class="danger">Sign Out</button></div>
-<div class="card"><div class="wallet-head"><div><h2 style="margin:0">Test Wallet</h2><div class="muted">TEST MODE — no real money</div></div><div id="walletBalance" class="wallet-balance">—</div></div><div class="wallet-rule">When your test balance drops below $25, you can refill it to $1,000 once every 24 hours.</div><button id="refillWallet" class="secondary" disabled>Refill Test Credits to $1,000</button><div id="transactions"><div class="empty">Loading transaction history...</div></div><button id="refreshWallet" class="refresh-wallet">Refresh Wallet</button></div>
+<div class="card"><h2>My GameDay Account</h2><div class="email" id="accountEmail">—</div><a class="link" href="gameday-sportsbook.html">Open Sportsbook</a><a class="link" href="gameday-my-bets.html">View My Bets</a><a id="casinoHistoryLink" class="link" href="gameday-casino-history.html">View Casino History</a><a class="link" href="gameday-help.html">Help</a><a class="link" href="gameday-settings.html">Settings</a><button id="signoutBtn" class="danger">Sign Out</button></div>
+<div class="card"><div class="wallet-head"><div><h2 style="margin:0">Test Wallet</h2><div class="muted">TEST MODE — no real money</div></div><div id="walletBalance" class="wallet-balance">—</div></div><div class="wallet-rule">When your test balance drops below $25, you can refill it to $1,000 once every 24 hours.</div><div id="refillNotice" class="muted" aria-live="polite"></div><button id="refillWallet" class="secondary" disabled>Refill Test Credits to $1,000</button><div id="transactions"><div class="empty">Loading transaction history...</div></div><p id="historyNotice" class="muted" aria-live="polite"></p><button id="moreTransactions" class="secondary hidden" type="button">Load Earlier Transactions</button><button id="refreshWallet" class="refresh-wallet">Refresh Wallet</button></div>
 </div>
 </main>
 <script type="module">
-import{createClient}from"https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.115.0/+esm";
-import{GAMEDAY_CONFIG}from"./gameday-config.js";
-const supabase=createClient(GAMEDAY_CONFIG.supabaseUrl,GAMEDAY_CONFIG.supabasePublishableKey);
-document.getElementById('casinoHistoryLink').href=GAMEDAY_CONFIG.routes.casinoHistory||'gameday-casino-history.html';
-const statusEl=document.getElementById('status'),forms=document.getElementById('authForms'),recovery=document.getElementById('recoveryPanel'),panel=document.getElementById('accountPanel'),emailEl=document.getElementById('accountEmail'),walletEl=document.getElementById('walletBalance'),txEl=document.getElementById('transactions'),refillBtn=document.getElementById('refillWallet');
-let recoveryMode=false,currentWalletBalance=null,currentUser=null,currentSession=null,sessionGeneration=0,sessionObserved=false,walletRequest=0,authOperation=0,resetOperation=0,passwordOperation=0,refillOperation=0,refillPending=false,signoutPending=false;
+import { GAMEDAY_CONFIG } from './gameday-config.js';
+const $=id=>document.getElementById(id);
+const statusEl=$('status'),forms=$('authForms'),recovery=$('recoveryPanel'),panel=$('accountPanel'),emailEl=$('accountEmail'),walletEl=$('walletBalance'),txEl=$('transactions'),refillBtn=$('refillWallet'),retryBtn=$('retryConnection'),moreBtn=$('moreTransactions'),historyNotice=$('historyNotice'),refillNotice=$('refillNotice');
+$('casinoHistoryLink').href=GAMEDAY_CONFIG.routes.casinoHistory||'gameday-casino-history.html';
+const PAGE_SIZE=50,DEADLINE=12000;
+const AUTH_STORAGE_KEY='sb-'+new URL(GAMEDAY_CONFIG.supabaseUrl).hostname.split('.')[0]+'-auth-token';
+let localSignout=false,authenticationAttempt=false,sessionChecked=false;try{localSignout=sessionStorage.getItem('gameday-account-signed-out')==='1'}catch{}
+function signoutFence(value){localSignout=value;try{value?sessionStorage.setItem('gameday-account-signed-out','1'):sessionStorage.removeItem('gameday-account-signed-out')}catch{}}
+let authStorageCleanup=null,pendingSignoutToken=null,recoveryStorageAllowed=false;
+function ownsStoredSession(token){const raw=localStorage.getItem(AUTH_STORAGE_KEY);if(!raw)return true;try{return JSON.parse(raw)?.access_token===token}catch{return false}}
+// Use the documented storage adapter so late auth work cannot persist a signed-out session.
+const authStorage={getItem:key=>authStorageCleanup?null:localStorage.getItem(key),setItem:(key,value)=>{if(!localSignout||authenticationAttempt||recoveryStorageAllowed)localStorage.setItem(key,value)},removeItem:key=>{if(!authStorageCleanup||ownsStoredSession(authStorageCleanup.token))localStorage.removeItem(key)}};
+function clearOwnedAuthStorage(token){
+  if(!ownsStoredSession(token))return false;
+  const keys=Object.keys(localStorage).filter(key=>key===AUTH_STORAGE_KEY||key===AUTH_STORAGE_KEY+'-user'||key.startsWith(AUTH_STORAGE_KEY+'-code-verifier'));
+  for(const key of keys)if(key!==AUTH_STORAGE_KEY)localStorage.removeItem(key);
+  localStorage.removeItem(AUTH_STORAGE_KEY);return true;
+}
+function sdkFetch(input,options={}){const caller=options.signal||(input instanceof Request?input.signal:null);return fetch(input,{...options,signal:AbortSignal.any([...(caller?[caller]:[]),AbortSignal.timeout(DEADLINE)])})}
+
+let supabase=null,booting=false,sdkAttempt=0,recoveryMode=false,pendingRecovery=false,recoveryLinkIssue=false,currentWalletBalance=null,currentUser=null,currentSession=null,serverVerified=false,sessionGeneration=0,sessionObserved=false,walletRequest=0,historyRequest=0,validationRequest=0,authOperation=0,resetOperation=0,passwordOperation=0,refillOperation=0,refillPending=false,passwordPending=false,signoutPending=false,nextRefillAt=null,cooldownKnown=false,refillUnavailable=false,historyCursor=null;
+const seenTransactions=new Set();
 function status(t,c=''){statusEl.textContent=t;statusEl.className='status'+(c?' '+c:'')}
 function money(v){return '$'+Math.abs(Number(v||0)).toFixed(2)}
 function dt(v){return v?new Intl.DateTimeFormat('en-US',{month:'short',day:'numeric',hour:'numeric',minute:'2-digit'}).format(new Date(v)):'—'}
@@ -43,139 +61,204 @@ function txLabel(t){return({deposit:'Deposit',withdrawal:'Withdrawal',wager_debi
 function isCredit(t,a){if(['deposit','wager_credit','refund'].includes(t))return true;if(['withdrawal','wager_debit'].includes(t))return false;return Number(a)>=0}
 function txCard(x){const credit=isCredit(x.transaction_type,x.amount),sign=credit?'+':'−';return `<div class="tx"><div><div class="tx-title">${esc(txLabel(x.transaction_type))}</div><div class="tx-meta">${esc(x.note||'GameDay test wallet transaction')}<br>${dt(x.created_at)}${x.balance_after!==null&&x.balance_after!==undefined?' • Balance '+money(x.balance_after):''}</div></div><div class="tx-amount ${credit?'credit':'debit'}">${sign}${money(x.amount)}</div></div>`}
 function context(){return{generation:sessionGeneration,userId:currentUser?.id||null,accessToken:currentSession?.access_token||null}}
-function isCurrent(c){return c.generation===sessionGeneration&&c.userId===(currentUser?.id||null)}
-function setRefillState(){const eligible=!!currentUser&&!recoveryMode&&currentWalletBalance!==null&&currentWalletBalance<25;refillBtn.disabled=!eligible||refillPending;refillBtn.textContent=refillPending?'Refilling Test Credits...':eligible?'Refill Test Credits to $1,000':'Refill Available Below $25'}
+function isCurrent(c){return c.generation===sessionGeneration&&c.userId===(currentUser?.id||null)&&c.accessToken===(currentSession?.access_token||null)}
+function bounded(promise){let timer;return Promise.race([Promise.resolve(promise),new Promise((_,reject)=>{timer=setTimeout(()=>reject(new Error('Connection timed out.')),DEADLINE)})]).finally(()=>clearTimeout(timer))}
+function authExpired(error){return [401,403].includes(Number(error?.status||error?.context?.status))||/^(bad_jwt|invalid_token|jwt_expired|session_not_found|session_expired|user_not_found|refresh_token_not_found|PGRST301)$/.test(error?.code||'')||/session missing|session.*expired|jwt.*expired|invalid jwt/i.test(error?.message||'')}
+function setAuthButtons(){for(const id of ['signupBtn','signinBtn','resetEmailBtn'])$(id).disabled=!supabase||signoutPending;$('updatePasswordBtn').disabled=!supabase||!serverVerified||!recoveryMode||passwordPending||signoutPending}
+function setRefillState(){
+  const waiting=Number.isFinite(nextRefillAt)&&nextRefillAt>Date.now();
+  const eligible=serverVerified&&!!currentUser&&!recoveryMode&&currentWalletBalance!==null&&currentWalletBalance<25&&cooldownKnown&&!waiting&&!refillUnavailable;
+  refillBtn.disabled=!eligible||refillPending;
+  refillBtn.textContent=refillPending?'Refilling Test Credits...':waiting?'Refill Available '+dt(nextRefillAt):eligible?'Refill Test Credits to $1,000':refillUnavailable||!cooldownKnown?'Refresh Wallet to Check Refill':'Refill Available Below $25';
+  refillNotice.textContent=waiting?'Next refill available '+dt(nextRefillAt)+'.':refillUnavailable?'Refill is unavailable. Refresh Wallet to check when you can refill.':!cooldownKnown&&serverVerified?'Unable to verify refill availability. Refresh Wallet to try again.':'';
+}
 function clearPrivate(){
-  emailEl.textContent='—';walletEl.textContent='—';currentWalletBalance=null;
-  txEl.innerHTML='<div class="empty">Sign in to view your test wallet.</div>';
-  for(const id of ['signupEmail','signupPassword','signinEmail','signinPassword','resetEmail','newPassword','confirmPassword'])document.getElementById(id).value='';
-  setRefillState();
+  emailEl.textContent='—';walletEl.textContent='—';currentWalletBalance=null;nextRefillAt=null;cooldownKnown=false;refillUnavailable=false;
+  txEl.innerHTML='<div class="empty">Sign in to view your test wallet.</div>';historyCursor=null;seenTransactions.clear();moreBtn.classList.add('hidden');moreBtn.disabled=false;historyNotice.textContent='';
+  for(const id of ['signupEmail','signupPassword','signinEmail','signinPassword','resetEmail','newPassword','confirmPassword'])$(id).value='';
+  setRefillState();setAuthButtons();
+}
+function resetIssue(message='This password reset link is invalid or expired. Request a new reset link.'){
+  recoveryLinkIssue=true;pendingRecovery=false;recoveryMode=false;$('resetIssueText').textContent=message;$('resetIssue').classList.remove('hidden');recovery.classList.add('hidden');forms.classList.remove('hidden');panel.classList.add('hidden');setAuthButtons();status(message,'error');
 }
 function signedOutView(expiredRecovery=false){
-  recoveryMode=false;forms.classList.remove('hidden');recovery.classList.add('hidden');panel.classList.add('hidden');
-  status(expiredRecovery?'Your recovery session expired. Request a new reset link.':'You are not signed in.',expiredRecovery?'error':'');
+  recoveryMode=false;pendingRecovery=false;forms.classList.remove('hidden');recovery.classList.add('hidden');panel.classList.add('hidden');retryBtn.classList.add('hidden');
+  if(expiredRecovery||recoveryLinkIssue)resetIssue(expiredRecovery?'Your recovery session expired. Request a new reset link.':undefined);else status('You are not signed in.');
 }
 function signedInView(){
-  if(recoveryMode){forms.classList.add('hidden');panel.classList.add('hidden');recovery.classList.remove('hidden');return}
-  forms.classList.add('hidden');recovery.classList.add('hidden');panel.classList.remove('hidden');
-  emailEl.textContent=currentUser.email||'GameDay user';status('Your GameDay account is active.','success');
+  if(!serverVerified)return;
+  retryBtn.classList.add('hidden');
+  if(recoveryLinkIssue){resetIssue();return}
+  $('resetIssue').classList.add('hidden');
+  if(recoveryMode){forms.classList.add('hidden');panel.classList.add('hidden');recovery.classList.remove('hidden');status('Recovery link verified. Choose a new password.','success');setAuthButtons();return}
+  forms.classList.add('hidden');recovery.classList.add('hidden');panel.classList.remove('hidden');emailEl.textContent=currentUser.email||'GameDay user';status('Your GameDay account is active.','success');setAuthButtons();
 }
-// Auth events clear private DOM synchronously. The generation also invalidates every
-// in-flight read or mutation, including an A -> B -> A switch.
+// An auth event only adopts a candidate session. Private UI waits for getUser.
 function applySession(user,event='',session=null){
-  const expiredRecovery=recoveryMode&&!user,changed=!sessionObserved||(currentUser?.id||null)!==(user?.id||null)||event==='SIGNED_OUT'||event==='PASSWORD_RECOVERY';
+  const sameOwner=(currentUser?.id||null)===(user?.id||null),keepRecovery=sameOwner&&(pendingRecovery||recoveryMode)&&event!=='SIGNED_IN'&&event!=='SIGNED_OUT';
+  const expiredRecovery=(recoveryMode||pendingRecovery)&&!user,changed=!sessionObserved||!sameOwner||(currentSession?.access_token||null)!==(session?.access_token||null)||event==='SIGNED_OUT'||event==='PASSWORD_RECOVERY';
   sessionObserved=true;currentSession=session;
-  if(changed){
-    sessionGeneration++;walletRequest++;authOperation++;resetOperation++;passwordOperation++;refillOperation++;
-    currentUser=user||null;refillPending=false;recoveryMode=false;clearPrivate();
-  }else currentUser=user||null;
+  if(changed){sessionGeneration++;walletRequest++;historyRequest++;validationRequest++;authOperation++;resetOperation++;passwordOperation++;refillOperation++;currentUser=user||null;serverVerified=false;refillPending=false;passwordPending=false;recoveryMode=false;pendingRecovery=false;clearPrivate()}
+  else currentUser=user||null;
+  if(keepRecovery&&currentUser)pendingRecovery=true;
   if(!currentUser){signedOutView(expiredRecovery);return}
-  if(event==='PASSWORD_RECOVERY'){recoveryMode=true;walletRequest++;currentWalletBalance=null;walletEl.textContent='—';txEl.innerHTML='';setRefillState();signedInView();status('Recovery link verified. Choose a new password.','success');return}
-  signedInView();
+  if(event==='PASSWORD_RECOVERY'){pendingRecovery=true;recoveryLinkIssue=false;$('resetIssue').classList.add('hidden')}
+  if(changed){forms.classList.add('hidden');recovery.classList.add('hidden');panel.classList.add('hidden');status(pendingRecovery?'Verifying your recovery link...':'Verifying your GameDay account...')}
 }
-function scheduleWallet(){const c=context();setTimeout(()=>{if(isCurrent(c)&&currentUser&&!recoveryMode)void loadWallet()},0)}
-async function loadWallet(){
-  if(!currentUser||recoveryMode)return;
-  const c=context(),request=++walletRequest;
-  currentWalletBalance=null;walletEl.textContent='—';txEl.innerHTML='<div class="empty">Loading transaction history...</div>';setRefillState();
+function rejectSession(c,error){
+  if(!isCurrent(c))return;
+  const wasRecovery=recoveryMode||pendingRecovery||recoveryLinkIssue||hasRecoveryLink;
+  if(authExpired(error)){applySession(null,'SIGNED_OUT');if(wasRecovery)resetIssue('Your password reset link expired. Request a new reset link.');else status('Your session expired. Sign in again to view your account.','error');return}
+  sessionGeneration++;walletRequest++;historyRequest++;validationRequest++;authOperation++;resetOperation++;passwordOperation++;refillOperation++;serverVerified=false;refillPending=false;passwordPending=false;clearPrivate();forms.classList.remove('hidden');panel.classList.add('hidden');recovery.classList.add('hidden');retryBtn.classList.remove('hidden');status('Unable to verify your session. Check your connection and press Retry connection. Your wallet is hidden.','error');
+}
+async function verifySession(c){
+  if(!supabase||!c.userId||!c.accessToken)return false;
+  const request=++validationRequest;
   try{
-    const[{data:w,error:we},{data:t,error:te}]=await Promise.all([
-      supabase.from('wallets').select('balance').eq('user_id',c.userId).single(),
-      supabase.from('wallet_transactions').select('transaction_type,amount,balance_after,note,created_at,wager_id').eq('user_id',c.userId).order('created_at',{ascending:false}).limit(50)
-    ]);
-    if(!isCurrent(c)||request!==walletRequest||recoveryMode)return;
-    currentWalletBalance=we?null:Number(w?.balance||0);walletEl.textContent=we?'—':money(currentWalletBalance);setRefillState();
-    txEl.innerHTML=te?'<div class="empty">Unable to load transaction history.</div>':t?.length?t.map(txCard).join(''):'<div class="empty">No wallet transactions yet.</div>';
-    if(we||te)status('Unable to refresh your wallet. Try Refresh Wallet.','error');
-  }catch{
-    if(!isCurrent(c)||request!==walletRequest||recoveryMode)return;
-    currentWalletBalance=null;walletEl.textContent='—';setRefillState();txEl.innerHTML='<div class="empty">Unable to load transaction history.</div>';status('Unable to refresh your wallet. Try Refresh Wallet.','error');
-  }
+    const{data,error}=await bounded(supabase.auth.getUser(c.accessToken));if(!isCurrent(c)||request!==validationRequest)return false;
+    if(error){rejectSession(c,error);return false}
+    if(!data?.user||data.user.id!==c.userId){rejectSession(c,{status:401});return false}
+    currentUser=data.user;serverVerified=true;recoveryMode=pendingRecovery;signedInView();setRefillState();return true;
+  }catch(error){if(isCurrent(c)&&request===validationRequest)rejectSession(c,error);return false}
+}
+function transactionQuery(c,cursor=null){
+  let q=supabase.from('wallet_transactions').select('id,transaction_type,amount,balance_after,note,created_at,wager_id').eq('user_id',c.userId).order('created_at',{ascending:false}).order('id',{ascending:false}).limit(PAGE_SIZE+1);
+  if(cursor)q=q.or(`created_at.lt.${cursor.created_at},and(created_at.eq.${cursor.created_at},id.lt.${cursor.id})`);
+  return q;
+}
+function renderTransactions(rows,append=false){
+  if(!append){seenTransactions.clear();txEl.innerHTML=''}
+  const batch=rows.slice(0,PAGE_SIZE),fresh=batch.filter(row=>{if(seenTransactions.has(row.id))return false;seenTransactions.add(row.id);return true});
+  if(fresh.length)txEl.insertAdjacentHTML('beforeend',fresh.map(txCard).join(''));
+  if(!seenTransactions.size)txEl.innerHTML='<div class="empty">No wallet transactions yet.</div>';
+  const last=batch.at(-1);historyCursor=rows.length>PAGE_SIZE&&last?{created_at:last.created_at,id:last.id}:null;moreBtn.classList.toggle('hidden',!historyCursor);historyNotice.textContent=historyCursor?`Showing ${seenTransactions.size} transactions. Load earlier transactions to see more.`:`Showing all ${seenTransactions.size} transactions.`;
+}
+async function loadWallet({validate=false,manual=false}={}){
+  if(!supabase||!currentUser||recoveryMode||recoveryLinkIssue)return;
+  const c=context();if(validate&&!await verifySession(c))return;if(!isCurrent(c)||!serverVerified)return;
+  const request=++walletRequest;historyRequest++;currentWalletBalance=null;walletEl.textContent='—';txEl.innerHTML='<div class="empty">Loading transaction history...</div>';moreBtn.classList.add('hidden');historyCursor=null;seenTransactions.clear();historyNotice.textContent='';setRefillState();
+  try{
+    const[{data:w,error:we},{data:t,error:te},{data:refills,error:ce}]=await bounded(Promise.all([
+      supabase.from('wallets').select('balance').eq('user_id',c.userId).single(),transactionQuery(c),
+      supabase.from('wallet_transactions').select('created_at').eq('user_id',c.userId).eq('transaction_type','adjustment').eq('note','Test credit refill').order('created_at',{ascending:false}).limit(1)
+    ]));
+    if(!isCurrent(c)||request!==walletRequest||!serverVerified||recoveryMode)return;
+    const expired=[we,te,ce].find(authExpired);if(expired){rejectSession(c,expired);return}
+    currentWalletBalance=we||!Number.isFinite(Number(w?.balance))?null:Number(w.balance);walletEl.textContent=currentWalletBalance===null?'—':money(currentWalletBalance);
+    cooldownKnown=!ce;
+    if(!ce){const last=Date.parse(refills?.[0]?.created_at||''),derived=Number.isFinite(last)?last+24*60*60*1000:null;nextRefillAt=Math.max(nextRefillAt||0,derived||0)||null;if(manual)refillUnavailable=false}
+    setRefillState();
+    if(te)txEl.innerHTML='<div class="empty">Unable to load transaction history. Refresh Wallet to try again.</div>';else renderTransactions(t||[]);
+    if(we||te||ce)status('Unable to refresh all wallet information. Try Refresh Wallet.','error');
+  }catch(error){if(!isCurrent(c)||request!==walletRequest)return;currentWalletBalance=null;cooldownKnown=false;walletEl.textContent='—';setRefillState();txEl.innerHTML='<div class="empty">Unable to load transaction history. Refresh Wallet to try again.</div>';status('Unable to refresh your wallet. Try Refresh Wallet.','error')}
+}
+async function loadEarlierTransactions(){
+  if(!historyCursor||moreBtn.disabled||!serverVerified)return;
+  const c=context(),cursor=historyCursor,request=++historyRequest;moreBtn.disabled=true;
+  try{
+    if(!await verifySession(c)||!isCurrent(c)||request!==historyRequest)return;
+    const{data,error}=await bounded(transactionQuery(c,cursor));if(!isCurrent(c)||request!==historyRequest||!serverVerified)return;
+    if(error){if(authExpired(error))rejectSession(c,error);else status('Unable to load earlier transactions. Press Load Earlier Transactions to retry.','error');return}
+    renderTransactions(data||[],true);
+  }catch{if(isCurrent(c)&&request===historyRequest)status('Unable to load earlier transactions. Press Load Earlier Transactions to retry.','error')}
+  finally{if(isCurrent(c)&&request===historyRequest)moreBtn.disabled=false}
 }
 async function check(){
+  if(!supabase)return;if(localSignout){signedOutView();return}
   const c=context();
   try{
-    const{data,error}=await supabase.auth.getSession();if(!isCurrent(c))return;
-    if(error){applySession(null);status('Unable to verify your session. Please sign in again.','error');return}
-    applySession(data.session?.user||null,'',data.session);if(currentUser&&!recoveryMode)await loadWallet();
-  }catch{if(isCurrent(c)){applySession(null);status('Unable to verify your session. Please sign in again.','error')}}
+    const{data,error}=await bounded(supabase.auth.getSession());if(!isCurrent(c))return;
+    if(error){rejectSession(c,error);return}
+    sessionChecked=true;applySession(data.session?.user||null,'',data.session);if(!currentUser)return;
+    const owner=context();if(await verifySession(owner)&&isCurrent(owner)&&!recoveryMode)await loadWallet();
+  }catch(error){if(isCurrent(c))rejectSession(c,error)}
 }
-document.getElementById('signupBtn').onclick=async()=>{
-  const email=document.getElementById('signupEmail').value.trim(),password=document.getElementById('signupPassword').value;
-  if(!email){status('Enter a valid email address.','error');return}
-  if(!strongPassword(password)){status('Password must be at least 8 characters and include uppercase, lowercase, a number, and a symbol.','error');return}
-  const c=context(),operation=++authOperation;status('Creating your GameDay account...');
+async function boot(){
+  if(booting)return;booting=true;retryBtn.disabled=true;
   try{
-    const{data,error}=await supabase.auth.signUp({email,password});if(!isCurrent(c)||operation!==authOperation)return;
-    if(error){status(error.message,'error');return}
-    if(data.session?.user){applySession(data.session.user,'',data.session);await loadWallet()}else status('Account created. Check your email if confirmation is required.','success');
-  }catch{if(isCurrent(c)&&operation===authOperation)status('Unable to create your account. Try again.','error')}
+    if(!supabase){const attempt=sdkAttempt++;const{createClient}=await bounded(import('https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.117.3/+esm'+(attempt?'?gameday-account-retry='+attempt:'')));supabase=createClient(GAMEDAY_CONFIG.supabaseUrl,GAMEDAY_CONFIG.supabasePublishableKey,{auth:{storageKey:AUTH_STORAGE_KEY,storage:authStorage},global:{fetch:sdkFetch}});supabase.auth.onAuthStateChange((event,s)=>{
+      if(s?.user&&localSignout){if(event==='SIGNED_IN'&&authenticationAttempt||event==='PASSWORD_RECOVERY'&&hasRecoveryLink){signoutFence(false);authenticationAttempt=false}else return}
+      if(signoutPending&&s?.user)return;applySession(s?.user||null,event,s);
+      // Supabase holds its auth lock while notifying subscribers.
+      if(currentUser){const c=context();setTimeout(async()=>{if(isCurrent(c)&&await verifySession(c)&&isCurrent(c)&&!recoveryMode)await loadWallet()},0)}
+    })}
+    setAuthButtons();await check();
+  }catch{serverVerified=false;clearPrivate();forms.classList.remove('hidden');panel.classList.add('hidden');recovery.classList.add('hidden');retryBtn.classList.remove('hidden');status('Unable to connect to GameDay. Press Retry connection to reconnect.','error')}
+  finally{booting=false;retryBtn.disabled=false;setAuthButtons()}
+}
+retryBtn.onclick=()=>!supabase?location.reload():localSignout?signOutCurrentSession():boot();
+$('signupBtn').onclick=async()=>{
+  if(!supabase)return;const email=$('signupEmail').value.trim(),password=$('signupPassword').value;
+  if(!email){status('Enter a valid email address.','error');return}if(!strongPassword(password)){status('Password must be at least 8 characters and include uppercase, lowercase, a number, and a symbol.','error');return}
+  const c=context(),operation=++authOperation;authenticationAttempt=true;status('Creating your GameDay account...');
+  try{const{data,error}=await bounded(supabase.auth.signUp({email,password}));if(!isCurrent(c)||operation!==authOperation)return;if(error){status(error.message,'error');return}if(data.session?.user){signoutFence(false);authenticationAttempt=false;recoveryLinkIssue=false;applySession(data.session.user,'',data.session);await check()}else status('Account created. Check your email if confirmation is required.','success')}
+  catch{if(isCurrent(c)&&operation===authOperation)status('Unable to create your account. Check your connection and try again.','error')}finally{authenticationAttempt=false}
 };
-document.getElementById('signinBtn').onclick=async()=>{
-  const email=document.getElementById('signinEmail').value.trim(),password=document.getElementById('signinPassword').value;
-  if(!email||!password){status('Enter your email and password.','error');return}
-  const c=context(),operation=++authOperation;status('Signing in...');
+$('signinBtn').onclick=async()=>{
+  if(!supabase)return;const email=$('signinEmail').value.trim(),password=$('signinPassword').value;
+  if(!email||!password){status('Enter your email and password.','error');return}const c=context(),operation=++authOperation;authenticationAttempt=true;status('Signing in...');recoveryLinkIssue=false;$('resetIssue').classList.add('hidden');
+  try{const{data,error}=await bounded(supabase.auth.signInWithPassword({email,password}));if(!isCurrent(c)||operation!==authOperation)return;if(error){status(error.message,'error');return}if(data.session?.user){signoutFence(false);authenticationAttempt=false;applySession(data.session.user,'',data.session);await check()}else status('Unable to verify your sign-in. Please try again.','error')}
+  catch{if(isCurrent(c)&&operation===authOperation)status('Unable to sign in. Check your connection and try again.','error')}finally{authenticationAttempt=false}
+};
+$('resetEmailBtn').onclick=async()=>{
+  if(!supabase)return;const email=$('resetEmail').value.trim();if(!email){status('Enter the email address on your GameDay account.','error');return}const c=context(),operation=++resetOperation;status('Sending password reset link...');
+  try{const redirectTo=new URL(GAMEDAY_CONFIG.routes.account,window.location.href).href;const{error}=await bounded(supabase.auth.resetPasswordForEmail(email,{redirectTo}));if(!isCurrent(c)||operation!==resetOperation)return;if(error){status(error.message,'error');return}status('If that email is registered, a password reset link has been sent.','success');$('resetIssue').classList.add('hidden')}
+  catch{if(isCurrent(c)&&operation===resetOperation)status('Unable to send a reset link. Check your connection and try again.','error')}
+};
+function requestNewResetLink(){recoveryMode=false;pendingRecovery=false;recoveryLinkIssue=false;passwordOperation++;$('newPassword').value='';$('confirmPassword').value='';recovery.classList.add('hidden');panel.classList.add('hidden');forms.classList.remove('hidden');$('resetIssue').classList.add('hidden');setAuthButtons();status('Enter your account email below to request a new password reset link.');$('resetEmail').focus();$('resetEmail').scrollIntoView({block:'center'})}
+$('requestNewResetLink').onclick=requestNewResetLink;$('cancelRecovery').onclick=requestNewResetLink;
+$('updatePasswordBtn').onclick=async()=>{
+  if(!supabase||!serverVerified||!currentUser||!currentSession?.access_token||!recoveryMode||passwordPending){resetIssue('Your recovery session expired. Request a new reset link.');return}
+  const password=$('newPassword').value,confirm=$('confirmPassword').value;if(!strongPassword(password)){status('New password must be at least 8 characters and include uppercase, lowercase, a number, and a symbol.','error');return}if(password!==confirm){status('The two new passwords do not match.','error');return}
+  const c=context(),operation=++passwordOperation;passwordPending=true;setAuthButtons();status('Updating your password...');
   try{
-    const{data,error}=await supabase.auth.signInWithPassword({email,password});if(!isCurrent(c)||operation!==authOperation)return;
-    if(error){status(error.message,'error');return}
-    if(data.session?.user){applySession(data.session.user,'',data.session);await loadWallet()}else status('Unable to verify your sign-in. Please try again.','error');
-  }catch{if(isCurrent(c)&&operation===authOperation)status('Unable to sign in. Try again.','error')}
+    // Pin this request to its recovery token. SDK updateUser can save an obsolete
+    // captured session and emit USER_UPDATED after an account switch.
+    const response=await fetch(new URL('/auth/v1/user',GAMEDAY_CONFIG.supabaseUrl),{method:'PUT',headers:{'Content-Type':'application/json',apikey:GAMEDAY_CONFIG.supabasePublishableKey,Authorization:`Bearer ${c.accessToken}`},body:JSON.stringify({password}),signal:AbortSignal.timeout(DEADLINE)}),data=await response.json();if(!isCurrent(c)||operation!==passwordOperation)return;
+    if(!response.ok){if(authExpired({status:response.status,code:data.code,message:data.msg||data.message}))rejectSession(c,{status:401});else status(data.msg||data.message||data.error_description||'Unable to update your password. Request a new reset link.','error');return}
+    if(data.id!==c.userId){rejectSession(c,{status:401});return}recoveryMode=false;pendingRecovery=false;recoveryLinkIssue=false;$('newPassword').value='';$('confirmPassword').value='';signedInView();status('Password updated successfully.','success');await loadWallet();
+  }catch{if(isCurrent(c)&&operation===passwordOperation)status('Unable to update your password. Check your connection and try again.','error')}
+  finally{if(isCurrent(c)&&operation===passwordOperation){passwordPending=false;setAuthButtons()}}
 };
-document.getElementById('resetEmailBtn').onclick=async()=>{
-  const email=document.getElementById('resetEmail').value.trim();if(!email){status('Enter the email address on your GameDay account.','error');return}
-  const c=context(),operation=++resetOperation;status('Sending password reset link...');
+async function signOutCurrentSession(){
+  if(!supabase||signoutPending)return;pendingSignoutToken=currentSession?.access_token||pendingSignoutToken;signoutFence(true);authenticationAttempt=false;recoveryStorageAllowed=false;signoutPending=true;applySession(null,'SIGNED_OUT');let c=context();
   try{
-    const redirectTo=new URL(GAMEDAY_CONFIG.routes.account,window.location.href).href;
-    const{error}=await supabase.auth.resetPasswordForEmail(email,{redirectTo});if(!isCurrent(c)||operation!==resetOperation)return;
-    error?status(error.message,'error'):status('If that email is registered, a password reset link has been sent.','success');
-  }catch{if(isCurrent(c)&&operation===resetOperation)status('Unable to send a reset link. Try again.','error')}
-};
-document.getElementById('updatePasswordBtn').onclick=async()=>{
-  const password=document.getElementById('newPassword').value,confirm=document.getElementById('confirmPassword').value;
-  if(!currentUser||!currentSession?.access_token||!recoveryMode){status('Your recovery session expired. Request a new reset link.','error');return}
-  if(!strongPassword(password)){status('New password must be at least 8 characters and include uppercase, lowercase, a number, and a symbol.','error');return}
-  if(password!==confirm){status('The two new passwords do not match.','error');return}
-  const c=context(),operation=++passwordOperation;status('Updating your password...');
-  try{
-    // auth.updateUser saves its captured session after the request. Use the Auth
-    // endpoint with this recovery token so a late response cannot replace a
-    // different session in SDK storage or emit an obsolete USER_UPDATED event.
-    const response=await fetch(new URL('/auth/v1/user',GAMEDAY_CONFIG.supabaseUrl),{method:'PUT',headers:{'Content-Type':'application/json',apikey:GAMEDAY_CONFIG.supabasePublishableKey,Authorization:`Bearer ${c.accessToken}`},body:JSON.stringify({password})});
-    const data=await response.json();if(!isCurrent(c)||operation!==passwordOperation)return;
-    if(!response.ok){status(data.msg||data.message||data.error_description||'Unable to update your password. Request a new reset link.','error');return}
-    if(data.id!==c.userId)return;
-    recoveryMode=false;document.getElementById('newPassword').value='';document.getElementById('confirmPassword').value='';signedInView();status('Password updated successfully.','success');await loadWallet();
-  }catch{if(isCurrent(c)&&operation===passwordOperation)status('Unable to update your password. Try again.','error')}
-};
-document.getElementById('signoutBtn').onclick=async()=>{
-  if(signoutPending)return;signoutPending=true;applySession(null,'SIGNED_OUT');const c=context();
-  try{
-    const{error}=await supabase.auth.signOut();if(!isCurrent(c))return;
-    if(error)status('Unable to finish signing out. Please try again.','error');
-  }catch{if(isCurrent(c))status('Unable to finish signing out. Please try again.','error')}
-  finally{signoutPending=false}
-};
-document.getElementById('refreshWallet').onclick=loadWallet;
+    // Remove this account's persisted credentials before any network wait or navigation.
+    // The adapter protects a different account written by another tab during cleanup.
+    if(clearOwnedAuthStorage(pendingSignoutToken)){
+      authStorageCleanup={token:pendingSignoutToken};
+      try{await supabase.auth.stopAutoRefresh?.();const{error}=await bounded(supabase.auth.signOut({scope:'local'}));if(error)throw error}finally{authStorageCleanup=null}
+    }
+    c=context();
+    const{error}=pendingSignoutToken?await supabase.auth.admin.signOut(pendingSignoutToken,'global'):{error:null};
+    if(isCurrent(c)&&error){retryBtn.classList.remove('hidden');status('Unable to finish signing out. Press Retry connection to finish. You are signed out on this device.','error')}
+    else if(isCurrent(c))pendingSignoutToken=null;
+  }
+  catch{if(isCurrent(c)){retryBtn.classList.remove('hidden');status('Unable to finish signing out. Press Retry connection. You are signed out on this device.','error')}}finally{authStorageCleanup=null;signoutPending=false;setAuthButtons()}
+}
+$('signoutBtn').onclick=signOutCurrentSession;
+$('refreshWallet').onclick=()=>loadWallet({validate:true,manual:true});moreBtn.onclick=loadEarlierTransactions;
 refillBtn.onclick=async()=>{
-  if(!currentUser||!currentSession?.access_token||recoveryMode||refillPending||currentWalletBalance===null||currentWalletBalance>=25)return;
-  const c=context(),operation=++refillOperation;refillPending=true;setRefillState();status('Refilling your test wallet...');
+  if(!supabase||refillPending||refillBtn.disabled||!serverVerified)return;const c=context(),operation=++refillOperation;refillPending=true;setRefillState();status('Refilling your test wallet...');
   try{
-    const{data,error}=await supabase.functions.invoke(GAMEDAY_CONFIG.functions.refillTestWallet,{body:{},headers:{Authorization:`Bearer ${c.accessToken}`}});
+    if(!await verifySession(c)||!isCurrent(c)||operation!==refillOperation)return;
+    const{data,error}=await bounded(supabase.functions.invoke(GAMEDAY_CONFIG.functions.refillTestWallet,{body:{},headers:{Authorization:`Bearer ${c.accessToken}`}}));
+    let result=data;if(error?.context?.clone)try{result=await bounded(error.context.clone().json())}catch{}
     if(!isCurrent(c)||operation!==refillOperation)return;
-    if(error||!data?.ok)status(data?.error||'Test wallet refill is not available yet. Try again later.','error');
-    else status(`Test wallet refilled by ${money(data.credited)}. New balance: ${money(data.balance)}.`,'success');
+    const next=Date.parse(result?.next_refill_at||'');if(Number.isFinite(next)){nextRefillAt=Math.max(nextRefillAt||0,next);cooldownKnown=true}
+    if(error||!result?.ok){refillUnavailable=result?.code!=='REFILL_NOT_NEEDED'&&!Number.isFinite(next);status(result?.error||'Test wallet refill is unavailable. Refresh Wallet to check availability.','error')}
+    else{refillUnavailable=false;status(`Test wallet refilled by ${money(result.credited)}. New balance: ${money(result.balance)}.`,'success')}
     await loadWallet();
-  }catch{if(isCurrent(c)&&operation===refillOperation)status('Unable to confirm your refill. Refresh your wallet before trying again.','error')}
+  }catch{if(isCurrent(c)&&operation===refillOperation){refillUnavailable=true;status('Unable to confirm your refill. Refresh Wallet before trying again.','error');await loadWallet()}}
   finally{if(isCurrent(c)&&operation===refillOperation){refillPending=false;setRefillState()}}
 };
-supabase.auth.onAuthStateChange((event,s)=>{
-  if(signoutPending&&s?.user)return;
-  applySession(s?.user||null,event,s);
-  // Supabase holds its auth lock while notifying subscribers. Never call or await
-  // an SDK operation from this callback; start reads after the callback returns.
-  if(currentUser&&!recoveryMode)scheduleWallet();
-});
-await check();
+const linkParams=new URLSearchParams(location.hash.slice(1)),queryParams=new URLSearchParams(location.search);
+const hasRecoveryLink=linkParams.get('type')==='recovery'||queryParams.has('code');
+// A freshly opened recovery URL intentionally replaces the locally signed-out session.
+recoveryStorageAllowed=hasRecoveryLink&&!linkParams.has('error')&&!queryParams.has('error');
+if(linkParams.has('error')||queryParams.has('error')){resetIssue();const url=new URL(location.href);url.hash='';for(const key of ['error','error_code','error_description'])url.searchParams.delete(key);history.replaceState(null,'',url)}
+setAuthButtons();setInterval(setRefillState,1000);await boot();
+if(hasRecoveryLink&&sessionChecked&&!currentUser&&!recoveryLinkIssue)resetIssue();
 </script>
 <script src="gameday-app.js" defer></script>
 </body></html>

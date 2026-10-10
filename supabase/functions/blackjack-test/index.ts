@@ -90,8 +90,12 @@ function publicHand(row: any, hideDealer = true) {
   const balance = row.balance === undefined ? undefined : Number(row.balance);
   const isActive = status === "active";
   const actionCount = Number(row.action_count ?? 0);
-  const canDouble = isActive && playerCards.length === 2 && (balance === undefined || balance >= Number(splitHand?.stake ?? row.stake));
-  const canSplit = isActive && !Array.isArray(row.player_hands) && actionCount === 0 && canSplitCards(playerCards) && (balance === undefined || balance >= Number(row.stake));
+  const insuranceStatus = row.insurance_status ?? 'not_offered';
+  const insurancePending = isActive && insuranceStatus === 'pending';
+  const firstPlayCount = ['accepted','declined'].includes(insuranceStatus) ? 1 : 0;
+  const insuranceOffer = Number(row.original_stake ?? row.stake) / 2;
+  const canDouble = isActive && !insurancePending && playerCards.length === 2 && (balance === undefined || balance >= Number(splitHand?.stake ?? row.stake));
+  const canSplit = isActive && !insurancePending && !Array.isArray(row.player_hands) && actionCount === firstPlayCount && canSplitCards(playerCards) && (balance === undefined || balance >= Number(row.stake));
   return {
     id: row.id ?? row.hand_id,
     status,
@@ -108,8 +112,14 @@ function publicHand(row: any, hideDealer = true) {
     action_count: actionCount,
     created_at: row.created_at,
     settled_at: row.settled_at,
-    can_hit: isActive,
-    can_stand: isActive,
+    insurance_status: insuranceStatus,
+    insurance_stake: Number(row.insurance_stake ?? 0),
+    insurance_payout: Number(row.insurance_payout ?? 0),
+    insurance_offer: insurancePending ? insuranceOffer : 0,
+    can_insure: insurancePending && (balance === undefined || balance >= insuranceOffer),
+    can_decline_insurance: insurancePending,
+    can_hit: isActive && !insurancePending,
+    can_stand: isActive && !insurancePending,
     can_double: canDouble,
     can_split: canSplit,
     balance,
@@ -187,7 +197,7 @@ Deno.serve(async (req) => {
 
     const loadActive = async () => {
       const { data, error } = await admin.from("blackjack_hands")
-        .select("id,user_id,stake,status,player_cards,player_hands,active_hand_index,dealer_cards,shoe,player_total,dealer_total,payout,action_count,created_at,settled_at")
+        .select("id,user_id,stake,status,player_cards,player_hands,active_hand_index,dealer_cards,shoe,player_total,dealer_total,payout,action_count,created_at,settled_at,original_stake,insurance_status,insurance_stake,insurance_payout")
         .eq("user_id", userData.user.id).eq("status", "active")
         .order("created_at", { ascending: false }).limit(1).maybeSingle();
       if (error) throw error;
@@ -196,7 +206,7 @@ Deno.serve(async (req) => {
 
     const loadLatest = async () => {
       const { data, error } = await admin.from("blackjack_hands")
-        .select("id,user_id,stake,status,player_cards,player_hands,active_hand_index,dealer_cards,shoe,player_total,dealer_total,payout,action_count,created_at,settled_at")
+        .select("id,user_id,stake,status,player_cards,player_hands,active_hand_index,dealer_cards,shoe,player_total,dealer_total,payout,action_count,created_at,settled_at,original_stake,insurance_status,insurance_stake,insurance_payout")
         .eq("user_id", userData.user.id)
         .order("created_at", { ascending: false }).limit(1).maybeSingle();
       if (error) throw error;
@@ -219,6 +229,8 @@ Deno.serve(async (req) => {
     if (action === "start") {
       const requestId = body?.request_id === undefined ? null : String(body.request_id);
       if (requestId !== null && !/^[0-9a-f]{8}-[0-9a-f]{4}-[1-8][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i.test(requestId)) throw new Error("Invalid deal request ID");
+      const insuranceSupported = body?.supports_insurance === true;
+      if (insuranceSupported && !requestId) throw new Error("Insurance requires a deal request ID");
       // Receipt replays must be checked before any unrelated active hand.
       const existing = requestId ? null : await loadActive();
       if (existing) {
@@ -226,7 +238,7 @@ Deno.serve(async (req) => {
         return response({ ok: true, resumed: true, hand: publicHand({ ...existing, balance }, true) });
       }
       const stake = Number(body?.stake);
-      if (!Number.isFinite(stake) || !Number.isInteger(stake) || stake <= 0 || stake > 10000) throw new Error("Invalid stake");
+      if (!Number.isFinite(stake) || !Number.isInteger(stake) || stake <= 0 || stake > 10000) throw new Error("Invalid stake: choose $1–$10,000 in whole test credits");
       const shoe = shuffle(makeDeck());
       const player = [shoe.pop()!, shoe.pop()!];
       const dealer = [shoe.pop()!, shoe.pop()!];
@@ -236,7 +248,11 @@ Deno.serve(async (req) => {
       let payout = 0;
       const playerBlackjack = isBlackjack(player);
       const dealerBlackjack = isBlackjack(dealer);
-      if (playerBlackjack && dealerBlackjack) {
+      // Offer insurance before revealing whether an Ace-upcard dealer has blackjack.
+      // Naturals remain active until the saved decision performs the peek atomically.
+      if (insuranceSupported && dealer[0].rank === "A") {
+        status = "active";
+      } else if (playerBlackjack && dealerBlackjack) {
         status = "push";
         payout = stake;
       } else if (playerBlackjack) {
@@ -245,7 +261,7 @@ Deno.serve(async (req) => {
       } else if (dealerBlackjack) {
         status = "lost";
       }
-      const { data: rows, error } = await admin.rpc(requestId ? "start_blackjack_test_hand_idempotent" : "start_blackjack_test_hand_v2", {
+      const { data: rows, error } = await admin.rpc(insuranceSupported ? "start_blackjack_test_hand_insured" : requestId ? "start_blackjack_test_hand_idempotent" : "start_blackjack_test_hand_v2", {
         p_user_id: userData.user.id,
         ...(requestId ? { p_request_id: requestId } : {}),
         p_stake: stake,
@@ -272,33 +288,21 @@ Deno.serve(async (req) => {
       if (result.error) throw new Error(String(result.error));
       if (requestId) {
         const { data: saved, error: savedError } = await admin.from("blackjack_hands")
-          .select("id,user_id,stake,status,player_cards,player_hands,active_hand_index,dealer_cards,shoe,player_total,dealer_total,payout,action_count,created_at,settled_at")
+          .select("id,user_id,stake,status,player_cards,player_hands,active_hand_index,dealer_cards,shoe,player_total,dealer_total,payout,action_count,created_at,settled_at,original_stake,insurance_status,insurance_stake,insurance_payout")
           .eq("user_id", userData.user.id).eq("id", result.hand_id).single();
         if (savedError || !saved) throw new Error("The saved deal could not be loaded; retry the same request");
         return response({ ok: true, request_id: requestId, resumed: Boolean(result.replayed), hand: publicHand({ ...saved, balance: await loadBalance() }, true) });
       }
-      const hand = {
-        id: result.hand_id,
-        status: result.hand_status,
-        stake,
-        payout: Number(result.payout),
-        player_cards: player,
-        player_hands: null,
-        active_hand_index: null,
-        dealer_cards: dealer,
-        player_total: playerTotal,
-        dealer_total: dealerTotal,
-        action_count: result.action_count,
-        balance: Number(result.balance),
-      };
-      return response({ ok: true, resumed: false, hand: publicHand(hand, true) });
+      const saved = await loadActive() || await loadLatest();
+      if (!saved || saved.id !== result.hand_id) throw new Error("The saved hand could not be loaded");
+      return response({ ok: true, resumed: false, hand: publicHand({ ...saved, balance: await loadBalance() }, true) });
     }
 
-    if (!["hit", "stand", "double", "split", "state"].includes(action)) throw new Error("Invalid action");
+    if (!["hit", "stand", "double", "split", "insure", "decline_insurance", "state"].includes(action)) throw new Error("Invalid action");
     const handId = String(body?.hand_id || "");
     if (!handId) throw new Error("Hand ID is required");
     const { data: hand, error: handError } = await admin.from("blackjack_hands")
-      .select("id,user_id,stake,status,player_cards,player_hands,active_hand_index,dealer_cards,shoe,player_total,dealer_total,payout,action_count,created_at,settled_at")
+      .select("id,user_id,stake,status,player_cards,player_hands,active_hand_index,dealer_cards,shoe,player_total,dealer_total,payout,action_count,created_at,settled_at,original_stake,insurance_status,insurance_stake,insurance_payout")
       .eq("id", handId).single();
     if (handError || !hand) throw new Error("Blackjack hand not found");
     if (hand.user_id !== userData.user.id) throw new Error("You cannot access another user's hand");
@@ -311,6 +315,19 @@ Deno.serve(async (req) => {
         return response({ ok: true, hand: publicHand({ ...hand, balance: startingBalance }, true), recovered: true });
       }
     }
+    if (["insure", "decline_insurance"].includes(action)) {
+      const { error } = await admin.rpc("decide_blackjack_test_insurance", {
+        p_user_id: userData.user.id, p_hand_id: hand.id,
+        p_expected_action_count: Number(hand.action_count), p_accept: action === "insure",
+      });
+      if (error) throw new Error(error.message || "The insurance decision could not finish");
+      const { data: saved, error: savedError } = await admin.from("blackjack_hands")
+        .select("id,user_id,stake,status,player_cards,player_hands,active_hand_index,dealer_cards,shoe,player_total,dealer_total,payout,action_count,created_at,settled_at,original_stake,insurance_status,insurance_stake,insurance_payout")
+        .eq("id", hand.id).eq("user_id", userData.user.id).single();
+      if (savedError || !saved) throw new Error("The insurance decision could not be loaded; recover the saved hand");
+      return response({ ok: true, hand: publicHand({ ...saved, balance: await loadBalance() }, true) });
+    }
+    if (hand.insurance_status === "pending") throw new Error("Choose insurance or decline before playing");
     if (hand.status !== "active") throw new Error("Blackjack hand already settled");
 
     let player: Card[] = [...(hand.player_cards ?? [])];
@@ -326,7 +343,7 @@ Deno.serve(async (req) => {
     let additionalDebit = 0;
 
     if (action === "split") {
-      if (hands || Number(hand.action_count) !== 0 || !canSplitCards(player)) throw new Error("Split is not legal for this hand");
+      if (hands || Number(hand.action_count) !== (['accepted','declined'].includes(hand.insurance_status) ? 1 : 0) || !canSplitCards(player)) throw new Error("Split is not legal for this hand");
       if (startingBalance < totalStake) throw new Error("Insufficient test balance");
       if (shoe.length < 2) throw new Error("Shoe does not have enough cards");
       additionalDebit = totalStake;
@@ -430,6 +447,7 @@ Deno.serve(async (req) => {
     const result = Array.isArray(rows) ? rows[0] : rows;
     if (!result) throw new Error("Unable to update blackjack hand");
     const updated = {
+      ...hand,
       id: hand.id,
       status: result.hand_status,
       stake: totalStake,

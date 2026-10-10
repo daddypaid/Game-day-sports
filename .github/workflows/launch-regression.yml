@@ -24,4 +24,6 @@ jobs:
       - run: npm test
       - run: npm run test:slot-recovery
       - run: npm run test:slot-roundtrip
+      - run: npm run test:slot-startup
       - run: npm run test:card-recovery
+      - run: npm run test:casino-history

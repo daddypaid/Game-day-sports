@@ -19,3 +19,6 @@ verify_jwt = true
 # Cron uses that job secret rather than a customer session JWT.
 [functions.auto-settle-test-wagers]
 verify_jwt = false
+
+[functions.casino-history-test]
+verify_jwt = true

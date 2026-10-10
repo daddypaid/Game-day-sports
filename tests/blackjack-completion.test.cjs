@@ -163,11 +163,11 @@ test('Split aces receive one extra card each and settle without another player a
   assert.equal(result.hand.can_hit, false);
 });
 
-test('Initial naturals settle immediately with 3:2 blackjack, push, or dealer win', async () => {
+test('Naturals without an Ace upcard settle immediately with 3:2 blackjack, push, or dealer win', async () => {
   const examples = [
     [cards('A', 'K'), cards(9, 8), 'player_blackjack', 2.5],
-    [cards('A', 'K'), cards('A', 'Q'), 'push', 1],
-    [cards(10, 9), cards('A', 'Q'), 'lost', 0],
+    [cards('A', 'K'), cards('Q', 'A'), 'push', 1],
+    [cards(10, 9), cards('Q', 'A'), 'lost', 0],
   ];
   for (const [player, dealer, status, payout] of examples) {
     const e = engine();

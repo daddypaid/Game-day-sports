@@ -18,17 +18,19 @@
 <body>
 <header><h1>GameDay Sports</h1><div class="sub">My Bets</div><div class="nav"><a href="gameday-sportsbook.html">Sportsbook</a><a href="gameday-casino-v2.html">Casino</a><a class="active" href="gameday-my-bets.html">My Bets</a><a href="gameday-auth.html">Account</a></div></header>
 <main>
-<div id="status" class="status">Checking your GameDay account...<div class="auto">Auto-refreshes every 30 seconds while this page is visible.</div></div>
+<div class="status">TEST MODE · No real money. Bets use GameDay test credits.</div>
+<div id="status" class="status" role="status" aria-live="polite">Checking your GameDay account...<div class="auto">Auto-refreshes every 30 seconds while this page is visible.</div></div>
 <button id="refresh" class="refresh">Refresh Bets</button>
 <div class="section">Open Bets</div><div id="openBets"></div>
 <div class="section">Settled Bets</div><div id="settledBets"></div>
 </main>
 <script type="module">
-import{createClient}from"https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.115.0/+esm";
 import{GAMEDAY_CONFIG}from"./gameday-config.js";
-const supabase=createClient(GAMEDAY_CONFIG.supabaseUrl,GAMEDAY_CONFIG.supabasePublishableKey);
 const statusEl=document.getElementById('status'),openEl=document.getElementById('openBets'),settledEl=document.getElementById('settledBets'),refreshBtn=document.getElementById('refresh');
-let refreshTimer=null,currentSession=null,sessionObserved=false,sessionGeneration=0,requestId=0;
+let supabase=null,refreshTimer=null,currentSession=null,sessionObserved=false,sessionGeneration=0,requestId=0,connectionAttempt=0,connecting=false;
+const CONNECTION_TIMEOUT=12000;
+function bounded(promise){return new Promise((resolve,reject)=>{const timer=setTimeout(()=>reject(new Error('Connection timed out.')),CONNECTION_TIMEOUT);Promise.resolve(promise).then(value=>{clearTimeout(timer);resolve(value)},error=>{clearTimeout(timer);reject(error)})})}
+function expired(error){return [401,403].includes(Number(error?.status))||['bad_jwt','session_not_found','refresh_token_not_found','refresh_token_already_used','user_not_found'].includes(error?.code)}
 function money(v){return '$'+Number(v||0).toFixed(2)}
 function dt(v){return v?new Intl.DateTimeFormat('en-US',{month:'short',day:'numeric',hour:'numeric',minute:'2-digit'}).format(new Date(v)):'—'}
 function timeNow(){return new Intl.DateTimeFormat('en-US',{hour:'numeric',minute:'2-digit',second:'2-digit'}).format(new Date())}
@@ -36,7 +38,7 @@ function esc(v){return String(v??'').replaceAll('&','&amp;').replaceAll('<','&lt
 function price(v){const n=Number(v);return Number.isFinite(n)?(n>0?'+'+n:String(n)):'—'}
 function statusLabel(s){return String(s||'pending').toLowerCase()==='cancelled'?'CANCELED':String(s||'pending').toUpperCase()}
 function selectionCard(s){const point=s.point===null||s.point===undefined?'':` ${esc(s.point)}`;return `<div class="selection"><div class="selection-title">${esc(s.selection_name)}${point}</div><div class="selection-meta">${esc(s.event_name)}<br>${esc(s.market_title||s.market_key)} • ${price(s.american_odds)}${s.description?' • '+esc(s.description):''}${s.quoted_at?'<br>Quoted '+dt(s.quoted_at):''}</div></div>`}
-function actualReturn(w){const s=String(w.status||'pending').toLowerCase();if(['pending','accepted'].includes(s))return null;if(['lost','cancelled'].includes(s))return 0;return w._settlement_credit===null||w._settlement_credit===undefined?undefined:Number(w._settlement_credit)}
+function actualReturn(w){const s=String(w.status||'pending').toLowerCase();if(['pending','accepted'].includes(s))return null;return w._settlement_credit===null||w._settlement_credit===undefined?undefined:Number(w._settlement_credit)}
 function card(w){const s=String(w.status||'pending').toLowerCase(),sels=Array.isArray(w.wager_selections)?w.wager_selections:[],actual=actualReturn(w),settled=actual!==null,returnText=!settled?money(w.potential_return):actual===undefined?'—':money(actual);return `<div class="bet"><div class="row"><strong>${esc(String(w.wager_type||'Bet').toUpperCase())}</strong><span class="pill ${esc(s)}">${esc(statusLabel(s))}</span></div><div class="summary"><div class="summary-box"><span class="label">Stake</span><span class="value">${money(w.stake)}</span></div><div class="summary-box"><span class="label">${settled?'Actual Return':'Potential Return'}</span><span class="value">${returnText}</span></div></div>${sels.length?sels.map(selectionCard).join(''):'<div class="small">Selection details unavailable.</div>'}<div class="small">Placed ${dt(w.placed_at)}${w.settled_at?' • Settled '+dt(w.settled_at):''}</div></div>`}
 function setStatus(text){statusEl.innerHTML=`${esc(text)}<div class="auto">Auto-refreshes every 30 seconds while this page is visible.</div>`}
 function clearPrivate(){openEl.innerHTML='';settledEl.innerHTML=''}
@@ -44,42 +46,66 @@ function applySession(session,event=''){
   const changed=!sessionObserved||(currentSession?.user.id||null)!==(session?.user.id||null)||event==='SIGNED_OUT';sessionObserved=true;currentSession=session||null;
   if(changed){sessionGeneration++;requestId++;clearPrivate();refreshBtn.disabled=false}
   if(!currentSession){setStatus('Sign in to view your bets.');openEl.innerHTML='<div class="empty">No account session found.</div>';settledEl.innerHTML=''}
-  else if(changed){setStatus(`${currentSession.user.email||'Signed in'} • Loading bets...`);openEl.innerHTML='<div class="empty">Loading your bets...</div>'}
+  else if(changed){setStatus('Verifying your GameDay account...');openEl.innerHTML='<div class="empty">Loading your bets...</div>'}
 }
 function isCurrent(generation,request,userId){return generation===sessionGeneration&&request===requestId&&userId===(currentSession?.user.id||null)}
+function verificationFailed(error){clearPrivate();if(expired(error)){applySession(null);setStatus('Your session expired. Sign in again to view your bets.');openEl.innerHTML='<div class="empty">No account session found. <a href="gameday-auth.html">Sign in</a></div>'}else{setStatus('Unable to verify your account. Check your connection and try Refresh Bets.');openEl.innerHTML='<div class="error">Your bets are hidden until your account can be verified.</div>'}}
 async function load(){
+  if(!supabase){await connect();return}
   let generation=sessionGeneration,request=++requestId,userId=currentSession?.user.id||null;refreshBtn.disabled=true;
   try{
-    const{data:s,error:e}=await supabase.auth.getSession();
+    const{data:s,error:e}=await bounded(supabase.auth.getSession());
     if(!isCurrent(generation,request,userId))return;
-    if(e||!s.session){applySession(null);return}
+    if(e){verificationFailed(e);return}
+    if(!s.session){applySession(null);return}
     if(s.session.user.id!==userId){applySession(s.session);generation=sessionGeneration;request=++requestId;userId=s.session.user.id}
     else currentSession=s.session;
     refreshBtn.disabled=true;
-    const[{data,error},{data:ledger,error:ledgerError}]=await Promise.all([
+    const token=currentSession.access_token;
+    clearPrivate();setStatus('Verifying your GameDay account...');
+    const{data:verified,error:verificationError}=await bounded(supabase.auth.getUser(token));
+    if(!isCurrent(generation,request,userId)||token!==currentSession?.access_token)return;
+    if(verificationError){verificationFailed(verificationError);return}
+    if(!verified?.user||verified.user.id!==userId){verificationFailed({status:401});return}
+    currentSession={...currentSession,user:verified.user};
+    const[{data,error},{data:ledger,error:ledgerError}]=await bounded(Promise.all([
       supabase.from('wagers').select('id,wager_type,stake,potential_return,status,placed_at,settled_at,is_test,wager_selections(event_name,market_key,market_title,selection_name,description,point,american_odds,quoted_at)').eq('user_id',userId).eq('is_test',true).order('placed_at',{ascending:false}),
       supabase.from('wallet_transactions').select('wager_id,transaction_type,amount').eq('user_id',userId).in('transaction_type',['wager_credit','refund']).not('wager_id','is',null)
-    ]);
+    ]));
     if(!isCurrent(generation,request,userId))return;
-    if(error){setStatus('Signed in • refresh failed');openEl.innerHTML='<div class="error">Unable to load bets.</div>';settledEl.innerHTML='';return}
-    const credits=new Map();if(!ledgerError){for(const tx of ledger||[]){const id=String(tx.wager_id||'');if(!id)continue;credits.set(id,(credits.get(id)||0)+Number(tx.amount||0))}}
+    if(expired(error)||expired(ledgerError)){verificationFailed(expired(error)?error:ledgerError);return}
+    if(error){setStatus('Unable to load your bets. Try Refresh Bets.');openEl.innerHTML='<div class="error">Unable to load bets.</div>';settledEl.innerHTML='';return}
+    const credits=new Map();if(!ledgerError){for(const tx of ledger||[]){const id=String(tx.wager_id||''),amount=Number(tx.amount);if(!id||!Number.isFinite(amount))continue;credits.set(id,(credits.get(id)||0)+amount)}}
     const rows=(data||[]).map(w=>({...w,_settlement_credit:ledgerError?null:(credits.has(String(w.id))?credits.get(String(w.id)):0)}));
     const open=rows.filter(w=>['pending','accepted'].includes(String(w.status).toLowerCase())),settled=rows.filter(w=>['won','lost','void','cancelled'].includes(String(w.status).toLowerCase()));
-    openEl.innerHTML=open.length?open.map(card).join(''):'<div class="empty">No open bets.</div>';settledEl.innerHTML=settled.length?settled.map(card).join(''):'<div class="empty">No settled bets.</div>';setStatus(`${currentSession.user.email||'Signed in'} • Updated ${timeNow()}`);
+    openEl.innerHTML=open.length?open.map(card).join(''):'<div class="empty">No open bets.</div>';settledEl.innerHTML=settled.length?settled.map(card).join(''):'<div class="empty">No settled bets.</div>';setStatus(`${currentSession.user.email||'Signed in'} • Updated ${timeNow()}${ledgerError?' • Return amounts unavailable. Try Refresh Bets.':''}`);
   }catch{
-    if(isCurrent(generation,request,userId)){setStatus('Unable to refresh your bets. Try Refresh Bets.');openEl.innerHTML='<div class="error">Unable to load bets.</div>';settledEl.innerHTML=''}
-  }finally{if(isCurrent(generation,request,userId))refreshBtn.disabled=false}
+    if(isCurrent(generation,request,userId)){clearPrivate();setStatus('Unable to verify or refresh your bets. Check your connection and try Refresh Bets.');openEl.innerHTML='<div class="error">Unable to load bets.</div>'}
+  }finally{if(isCurrent(generation,request,userId)||(!currentSession&&generation<=sessionGeneration))refreshBtn.disabled=false}
 }
 function startAutoRefresh(){if(refreshTimer)clearInterval(refreshTimer);refreshTimer=setInterval(()=>{if(!document.hidden)void load()},30000)}
-refreshBtn.addEventListener('click',load);
-document.addEventListener('visibilitychange',()=>{if(!document.hidden)void load()});
-supabase.auth.onAuthStateChange((event,s)=>{
-  applySession(s,event);
-  // Schedule outside the Supabase auth notification lock. A new session always
-  // supersedes an older read instead of waiting for a global loading flag.
-  if(s?.user){const generation=sessionGeneration;setTimeout(()=>{if(generation===sessionGeneration)void load()},0)}
-});
-startAutoRefresh();await load();
+// A failed nested SDK import remains cached for this document. Reload to reset
+// that module graph; ordinary data/auth errors use the existing client's retry.
+refreshBtn.addEventListener('click',()=>{if(!supabase){location.reload();return}void load()});
+document.addEventListener('visibilitychange',()=>{if(supabase&&!document.hidden)void load()});
+async function connect(){
+  if(connecting)return;
+  connecting=true;const attempt=++connectionAttempt;refreshBtn.disabled=true;setStatus('Connecting to your GameDay account...');
+  try{
+    const{createClient}=await bounded(import(`https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.115.0/+esm?gameday_bets_retry=${attempt}`));
+    if(attempt!==connectionAttempt)return;
+    supabase=createClient(GAMEDAY_CONFIG.supabaseUrl,GAMEDAY_CONFIG.supabasePublishableKey);
+    supabase.auth.onAuthStateChange((event,s)=>{
+      applySession(s,event);
+      // Schedule SDK calls outside Supabase's auth notification lock.
+      if(s?.user){const generation=sessionGeneration;setTimeout(()=>{if(generation===sessionGeneration)void load()},0)}
+    });
+    refreshBtn.textContent='Refresh Bets';startAutoRefresh();await load();
+  }catch{
+    if(attempt===connectionAttempt){supabase=null;clearPrivate();setStatus('Unable to connect to GameDay. Check your connection and try Retry Connection.');refreshBtn.textContent='Retry Connection';refreshBtn.disabled=false}
+  }finally{if(attempt===connectionAttempt)connecting=false}
+}
+await connect();
 </script>
 
 <script src="gameday-app.js" defer></script>

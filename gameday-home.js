@@ -6,6 +6,8 @@ const mainContent = document.getElementById('mainContent');
 const mobileMenu = window.matchMedia('(max-width: 760px)');
 const focusableSelector = 'a[href], button:not([disabled]), input:not([disabled]), select:not([disabled]), textarea:not([disabled]), [tabindex]:not([tabindex="-1"])';
 let menuOpen = false;
+let sidebarHadFocus = false;
+document.addEventListener('focusin', event => { sidebarHadFocus = Boolean(sidebar?.contains(event.target)); });
 
 function sidebarControls() {
   return sidebar ? [...sidebar.querySelectorAll(focusableSelector)].filter(element => element.getClientRects().length && !element.closest('[hidden]')) : [];
@@ -25,7 +27,9 @@ function setMenu(open, restoreFocus = true) {
   if (menuOpen) {
     sidebar.setAttribute('role', 'dialog');
     sidebar.setAttribute('aria-modal', 'true');
-    (sidebarControls()[0] || sidebar).focus();
+    // Visibility is animated on small screens. Focus after the browser applies
+    // the open state so it cannot be left on the now-inert page behind it.
+    requestAnimationFrame(() => { if (menuOpen) (sidebarControls()[0] || sidebar).focus(); });
   } else {
     sidebar.removeAttribute('role');
     sidebar.removeAttribute('aria-modal');
@@ -62,7 +66,7 @@ document.addEventListener('keydown', event => {
     first.focus();
   }
 });
-mobileMenu.addEventListener('change', () => setMenu(false, false));
+mobileMenu.addEventListener('change', () => setMenu(false, Boolean(mobileMenu.matches && (sidebarHadFocus || sidebar?.contains(document.activeElement)))));
 setMenu(false, false);
 
 const searchForm = document.getElementById('homeSearch');
@@ -71,15 +75,28 @@ const searchResults = document.getElementById('searchResults');
 let results = [];
 let selectedResult = -1;
 const searchDestinations = new Map();
+const normalizeSearch = value => String(value).toLocaleLowerCase().replace(/[’']/g, '').replace(/[^a-z0-9]+/g, ' ').trim();
 for (const link of document.querySelectorAll('a[data-search]')) {
   const url = new URL(link.getAttribute('href'), window.location.href);
   if (url.origin !== window.location.origin) continue;
   const label = link.dataset.searchLabel || link.getAttribute('aria-label') || link.textContent.replace(/\s+/g, ' ').trim();
   if (!label) continue;
-  const keywords = `${link.dataset.search || ''} ${label}`.toLocaleLowerCase();
+  const keywords = normalizeSearch(`${link.dataset.search || ''} ${label}`);
   const existing = searchDestinations.get(url.href);
   if (existing) existing.keywords += ` ${keywords}`;
   else searchDestinations.set(url.href, { href: url.href, label, keywords });
+}
+// The homepage artwork features only part of the catalogue. Search covers every
+// playable game without adding tiles to the approved homepage design.
+for (const [path, label, keywords] of [
+  ['gameday-slots.html', 'GameDay Lucky 7s', 'lucky 7 lucky7 lucky7s lucky 7s lucky sevens slots sports seven'],
+  ['gameday-omaha.html', 'Omaha', 'omaha pot limit plo poker cards'],
+  ['gameday-texas-holdem.html', 'Texas Hold’em', 'texas holdem hold em hold’em hold\'em poker cards'],
+  ['gameday-seven-card-stud.html', 'Seven-Card Stud', 'stud seven card seven-card 7 card poker cards'],
+  ['gameday-five-card-draw.html', 'Five-Card Draw', 'draw five card five-card 5 card poker cards'],
+]) {
+  const href = new URL(path, window.location.href).href;
+  searchDestinations.set(href, { href, label, keywords: normalizeSearch(`${keywords} ${label}`) });
 }
 
 function closeSearch() {
@@ -105,7 +122,7 @@ function highlightResult(index) {
 
 function showSearch() {
   if (!searchInput || !searchResults) return;
-  const terms = searchInput.value.toLocaleLowerCase().trim().split(/\s+/).filter(Boolean);
+  const terms = normalizeSearch(searchInput.value).split(/\s+/).filter(Boolean);
   searchResults.replaceChildren();
   results = terms.length ? [...searchDestinations.values()].filter(destination => terms.every(term => destination.keywords.includes(term))).slice(0, 6) : [];
   if (!terms.length) {
@@ -203,7 +220,7 @@ if (promotionsButton && promotionsDialog) {
 
 if ('serviceWorker' in navigator) {
   window.addEventListener('load', () => {
-    navigator.serviceWorker.register('./sw.js?v=77', { scope: './', updateViaCache: 'none' }).catch(() => {});
+    navigator.serviceWorker.register('./sw.js?v=121', { scope: './', updateViaCache: 'none' }).then(registration => registration.update()).catch(() => {});
   });
 }
 

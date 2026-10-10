@@ -1,6 +1,6 @@
 (() => {
   const path = location.pathname.split('/').pop() || 'gameday-sportsbook.html';
-  if (['gameday-sportsbook.html', 'gameday-my-bets.html', 'gameday-auth.html', 'gameday-casino-history.html'].includes(path)) {
+  if (['gameday-sportsbook.html', 'gameday-my-bets.html', 'gameday-auth.html', 'gameday-casino-history.html', 'gameday-help.html', 'gameday-privacy.html', 'gameday-settings.html'].includes(path)) {
     document.documentElement.classList.add('gd-light-theme');
     if (!document.querySelector('link[href="gameday-light-theme.css"]')) {
       const theme = document.createElement('link');
@@ -13,7 +13,7 @@
   }
   if ('serviceWorker' in navigator) {
     window.addEventListener('load', () => {
-      navigator.serviceWorker.register('./sw.js?v=120', { scope: './', updateViaCache: 'none' }).then(registration => registration.update()).catch(() => {});
+      navigator.serviceWorker.register('./sw.js?v=121', { scope: './', updateViaCache: 'none' }).then(registration => registration.update()).catch(() => {});
     });
   }
 
@@ -27,6 +27,9 @@
     'gameday-my-bets.html':'mybets',
     'gameday-auth.html':'account',
     'gameday-casino-history.html':'account',
+    'gameday-help.html':'account',
+    'gameday-privacy.html':'account',
+    'gameday-settings.html':'account',
     'gameday-blackjack.html':'casino-game',
     'gameday-roulette.html':'casino-game',
     'gameday-baccarat.html':'casino-game',

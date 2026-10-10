@@ -13,8 +13,15 @@ async function initializeBlackjack() {
   announcement.classList.add('gd-blackjack-announcement');
   const info = document.createElement('div');
   info.className = 'gd-blackjack-info';
-  info.innerHTML = '<p>Blackjack pays 3:2. Dealer hits soft 17.</p><p class="gd-blackjack-totals"></p>';
+  info.innerHTML = '<p>Blackjack pays 3:2. Dealer hits soft 17. Insurance pays 2:1.</p><p>Main wager: $1–$10,000 in whole test credits. Insurance: half the original wager.</p><p class="gd-blackjack-totals"></p><p class="gd-blackjack-insurance-result"></p>';
   panel.querySelector('.gd-table-action-groups').after(info);
+  const insurance = document.createElement('section');
+  insurance.className = 'gd-blackjack-insurance';
+  insurance.setAttribute('aria-label', 'Insurance decision');
+  insurance.hidden = true;
+  insurance.innerHTML = '<p>Dealer shows an Ace. Insurance is a separate half-wager bet that wins only if the dealer has blackjack.</p><div><button type="button" data-table-action="insure">Insurance</button><button type="button" data-table-action="decline_insurance">No insurance</button></div>';
+  panel.querySelector('.gd-table-action-groups').before(insurance);
+  for (const name of ['insure','decline_insurance']) actions.set(name, insurance.querySelector(`[data-table-action="${name}"]`));
   const result = document.createElement('section');
   result.className = 'gd-blackjack-result';
   result.setAttribute('aria-label', 'Hand result');
@@ -76,6 +83,11 @@ async function initializeBlackjack() {
       const extraStake = name === 'double' ? Number(hand?.player_hands?.[hand.active_hand_index]?.stake ?? hand?.stake) : Number(hand?.stake);
       actions.get(name).disabled = !(active && hand[`can_${name}`] === true && (!['double','split'].includes(name) || (Number.isFinite(balance) && balance >= extraStake)));
     }
+    const offer = Number(hand?.insurance_offer || 0);
+    insurance.hidden = !isActive() || hand?.insurance_status !== 'pending';
+    actions.get('insure').textContent = `Insurance ${money.format(offer)}`;
+    actions.get('insure').disabled = !(active && hand.can_insure === true && Number.isFinite(balance) && balance >= offer);
+    actions.get('decline_insurance').disabled = !(active && hand.can_decline_insurance === true);
     const amount = wager.getAmount();
     const valid = Number.isInteger(amount) && amount >= 1 && amount <= 10000 && Number.isFinite(balance) && amount <= balance;
     actions.get('deal').textContent = hand && !isActive() ? 'New Deal' : 'Deal';
@@ -115,7 +127,13 @@ async function initializeBlackjack() {
     const split = Array.isArray(next.player_hands);
     const playerTotals = split ? next.player_hands.map((part, index) => `Hand ${index + 1}: ${part.total}`).join(' · ') : `Total: ${next.player_total}`;
     info.querySelector('.gd-blackjack-totals').textContent = `${playerTotals}${isActive() ? '' : ` · Dealer: ${next.dealer_total}`}`;
-    if (isActive()) {
+    const insuranceStake = Number(next.insurance_stake || 0);
+    const insurancePayout = Number(next.insurance_payout || 0);
+    info.querySelector('.gd-blackjack-insurance-result').textContent = insuranceStake > 0 ? `Insurance ${money.format(insuranceStake)} · Returned ${money.format(insurancePayout)}${insurancePayout > 0 ? ' · Dealer has blackjack' : ' · Dealer has no blackjack'}` : '';
+    if (isActive() && next.insurance_status === 'pending') {
+      message(next.can_insure ? `Insurance costs ${money.format(next.insurance_offer)} and pays 2:1. Choose Insurance or No insurance before playing.` : 'Your available test balance cannot cover insurance. Choose No insurance to continue.');
+      announcement.textContent = 'Dealer shows an Ace. Choose Insurance or No insurance before the dealer checks the hidden card.';
+    } else if (isActive()) {
       message(split ? `Play highlighted hand ${Number(next.active_hand_index) + 1}.` : 'Choose Hit, Stand, Double or Split when available.');
       announcement.textContent = split ? 'Both split hands remain on the table. Finish the highlighted hand to continue.' : 'Your hand is active. Stand lets the dealer finish the round.';
     } else {
@@ -123,8 +141,10 @@ async function initializeBlackjack() {
       const title = document.createElement('h2');
       title.textContent = resultNames[next.status];
       const settlement = document.createElement('p');
-      const net = Number(next.payout) - Number(next.stake);
-      settlement.textContent = `Wager ${money.format(next.stake)} · Returned ${money.format(next.payout)} · Net ${net > 0 ? '+' : ''}${money.format(net)}`;
+      const totalWager = Number(next.stake) + insuranceStake;
+      const totalPayout = Number(next.payout) + insurancePayout;
+      const net = totalPayout - totalWager;
+      settlement.textContent = `Wager ${money.format(totalWager)} · Returned ${money.format(totalPayout)} · Net ${net > 0 ? '+' : ''}${money.format(net)}`;
       result.append(title, settlement);
       if (split) {
         const parts = document.createElement('p');
@@ -170,7 +190,7 @@ async function initializeBlackjack() {
       // Re-sending this exact durable intent either accepts the original deal
       // or returns its saved hand. It cannot debit a second wager.
       let response;
-      try { response = await request({ action:'start', request_id:context.requestId, stake:context.baseStake }, token, id); }
+      try { response = await request({ action:'start', request_id:context.requestId, stake:context.baseStake, supports_insurance:context.supportsInsurance === true }, token, id); }
       catch (error) {
         if (!error.rejected || !current(token, id)) throw error;
         recoveryRequired = false; recoveryContext = null; savePending(id, null);
@@ -219,11 +239,11 @@ async function initializeBlackjack() {
         if (resumed.hand) { await applyHand(resumed.hand, token, id); return; }
         const stake = wager.getAmount();
         if (!Number.isInteger(stake) || stake < 1 || stake > 10000 || !Number.isFinite(balance) || stake > balance) throw new Error('Choose a valid wager within your test balance.');
-        const intent = { action:'start', requestId:crypto.randomUUID(), baselineId:resumed.latest_hand?.id || null, baseStake:stake };
+        const intent = { action:'start', requestId:crypto.randomUUID(), baselineId:resumed.latest_hand?.id || null, baseStake:stake, supportsInsurance:true };
         savePending(id, intent);
         context = intent;
         recoveryContext = context;
-        const response = await request({ action:'start', request_id:context.requestId, stake }, token, id);
+        const response = await request({ action:'start', request_id:context.requestId, stake, supports_insurance:context.supportsInsurance === true }, token, id);
         if (response.request_id !== context.requestId) throw new Error('The saved deal could not be confirmed.');
         await applyHand(response.hand, token, id);
       } else {
@@ -279,13 +299,13 @@ async function initializeBlackjack() {
       if (token !== epoch || hidden) return;
       if (error) throw error;
       const nextUser = data.session?.user || null;
-      if (nextUser?.id !== user?.id) { hand = null; balance = null; recoveryRequired = false; recoveryContext = null; rejectedDealMessage = ''; view.clear(); result.hidden = true; info.querySelector('.gd-blackjack-totals').textContent = ''; }
+      if (nextUser?.id !== user?.id) { hand = null; balance = null; recoveryRequired = false; recoveryContext = null; rejectedDealMessage = ''; view.clear(); result.hidden = true; info.querySelector('.gd-blackjack-totals').textContent = ''; info.querySelector('.gd-blackjack-insurance-result').textContent = ''; insurance.hidden = true; }
       user = nextUser;
       if (!user || !data.session?.access_token) { message('Sign in to deal a Blackjack hand with your GameDay test wallet.'); announcement.textContent = ''; return; }
       const id = user.id;
       if (!recoveryContext) {
         const pending = pendingHand(id);
-        if (pending && ['start','hit','stand','double','split'].includes(pending.action) && (pending.action === 'start' || typeof pending.handId === 'string')) { recoveryContext = pending; recoveryRequired = true; }
+        if (pending && ['start','hit','stand','double','split','insure','decline_insurance'].includes(pending.action) && (pending.action === 'start' || typeof pending.handId === 'string')) { recoveryContext = pending; recoveryRequired = true; }
       }
       if (recoveryRequired && recoveryContext) { await recover(recoveryContext, token, id); return; }
       const resumed = await request({ action:'resume' }, token, id);
@@ -309,7 +329,7 @@ async function initializeBlackjack() {
       message(recoveryRequired ? (recoveryContext?.action === 'start' && !recoveryContext.requestId ? error.message : 'Your hand needs recovery. Retry recovery safely retries the saved deal before any further wager.') : error.message || 'Blackjack could not connect. Retry connection or sign in.');
     } finally { if (token === epoch) { busy = false; controls(); } }
   }
-  for (const name of ['deal','hit','stand','double','split']) actions.get(name)?.addEventListener('click', () => perform(name));
+  for (const name of ['deal','hit','stand','double','split','insure','decline_insurance']) actions.get(name)?.addEventListener('click', () => perform(name));
   stage.addEventListener('gameday:wager-change', () => { rejectedDealMessage = ''; controls(); });
   retryButton.addEventListener('click', connect);
   window.addEventListener('pagehide', () => { hidden = true; epoch++; requestController?.abort(); view.cancel(); });

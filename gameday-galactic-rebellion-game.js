@@ -1,9 +1,11 @@
-import { createClient } from 'https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/+esm';
 import { GAMEDAY_CONFIG, functionUrl } from './gameday-config.js';
 
 // The reel strips are visual animation only. The authenticated slot service
 // supplies every settled symbol, payout, wallet balance, and free-spin count.
-const supabase = createClient(GAMEDAY_CONFIG.supabaseUrl, GAMEDAY_CONFIG.supabasePublishableKey);
+let supabase = null;
+const SDK_URL = 'https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/+esm';
+let sdkAttempt = 0;
+let sdkConnecting = false;
 const GAME = 'galactic-rebellion';
 const ART = 'assets/galactic-rebellion/';
 const ATLAS = ART + 'symbols-atlas.webp';
@@ -107,6 +109,51 @@ function setStatus(message, kind = '', accountLink = false) {
     link.textContent = user ? ' Open Account' : ' Sign in';
     ui.status.appendChild(link);
   }
+}
+
+function bounded(promise, milliseconds, message) {
+  let timer;
+  return Promise.race([promise, new Promise((resolve, reject) => {
+    timer = setTimeout(() => reject(new SlotError(message)), milliseconds);
+  })]).finally(() => clearTimeout(timer));
+}
+
+function showReconnect(message) {
+  setStatus(message, 'error', true);
+  const retry = document.createElement('button');
+  retry.type = 'button';
+  retry.className = 'gr-dialog-action';
+  retry.textContent = 'RETRY CONNECTION';
+  retry.style.cssText = 'display:block;margin:10px auto;min-height:44px;padding:10px 16px';
+  retry.addEventListener('click', () => {
+    retry.disabled = true;
+    // Reload clears cached failures anywhere in the SDK's dependency graph.
+    // The saved owner-scoped spin UUID remains in site storage.
+    if (!supabase) window.location.reload();
+    else connectSlotService();
+  });
+  ui.status.appendChild(retry);
+}
+
+async function connectSlotService() {
+  if (pageGone || sdkConnecting) return;
+  if (supabase) { await loadAccount(); return; }
+  sdkConnecting = true;
+  const attempt = ++sdkAttempt;
+  setStatus('Connecting to your GameDay test wallet…');
+  try {
+    // Failed module URLs are cached by browsers. A retry gets a fresh URL;
+    // a late module load never creates a second client or duplicates a wager.
+    const url = SDK_URL + (attempt > 1 ? `?gameday_retry=${attempt}` : '');
+    const sdk = await bounded(import(url), 8000, 'GameDay could not connect. Check your connection and retry.');
+    if (pageGone) return;
+    if (typeof sdk.createClient !== 'function') throw new Error('Invalid account service');
+    supabase = sdk.createClient(GAMEDAY_CONFIG.supabaseUrl, GAMEDAY_CONFIG.supabasePublishableKey);
+    watchAccount();
+    await loadAccount();
+  } catch {
+    if (!pageGone) showReconnect('GameDay could not connect. Check your connection and retry.');
+  } finally { sdkConnecting = false; }
 }
 
 function makeSymbol(code, cellIndex) {
@@ -306,10 +353,12 @@ function playSound(kind) {
 }
 
 function sync() {
+  ui.info.setAttribute('aria-label', 'Paytable, game rules and wager limits');
   ui.wallet.textContent = user && balance !== null ? money(balance) : '—';
   ui['bet-line'].textContent = unitMoney();
   if (ui['unit-label']) ui['unit-label'].textContent = bonus?.wager_mode === 'lines' ? 'BET PER LINE' : 'BET PER WAY';
   ui['total-bet'].textContent = money(totalBet());
+  ui['total-bet'].title = `Total bet: ${money(rules.min_total_bet)}–${money(rules.max_total_bet)} in ${money(rules.total_bet_step)} steps. Wager limits are in Info.`;
   ui['free-spins'].textContent = `${bonusProgress.used} / ${bonusProgress.total}`;
   const locked = spinning || !!pendingSpin || !!bonus || !accountReady || pageGone;
   ui['line-minus'].disabled = locked || betCents <= minBetCents();
@@ -457,7 +506,7 @@ async function resolveSpin(record, recovering, expectedEpoch) {
 
 async function invokeSlot(body, expectedUser = user?.id) {
   const expectedEpoch = accountEpoch;
-  const { data, error } = await supabase.auth.getSession();
+  const { data, error } = await bounded(supabase.auth.getSession(), 10000, 'Your GameDay session could not be checked.');
   if (pageGone || expectedEpoch !== accountEpoch || user?.id !== expectedUser ||
       error || !data.session?.access_token || data.session.user.id !== expectedUser) {
     throw new SlotError('Sign in to play Galactic Rebellion.');
@@ -523,6 +572,7 @@ function normalizeBonus(value) {
 }
 
 async function loadAccount({ quiet = false } = {}) {
+  if (!supabase) { await connectSlotService(); return false; }
   if (pageGone) return false;
   if (spinning) { pendingAccountRefresh = true; return false; }
   const load = ++accountLoad;
@@ -530,7 +580,7 @@ async function loadAccount({ quiet = false } = {}) {
   accountReady = false;
   sync();
   try {
-    const { data, error } = await supabase.auth.getSession();
+    const { data, error } = await bounded(supabase.auth.getSession(), 10000, 'Your GameDay session could not be checked.');
     if (error) throw new SlotError('Your GameDay account could not be loaded.');
     if (load !== accountLoad || epoch !== accountEpoch || pageGone) return false;
     user = data.session?.user || null;
@@ -578,7 +628,8 @@ async function loadAccount({ quiet = false } = {}) {
   } catch (error) {
     if (load !== accountLoad || epoch !== accountEpoch || pageGone) return false;
     accountReady = false;
-    setStatus(error.message + ' Reload this page to reconnect.', 'error', true);
+    balance = null;
+    showReconnect(error.message + ' Retry to reconnect.');
     sync();
     return false;
   }
@@ -845,7 +896,7 @@ ui.info.addEventListener('click', showInfo);
 ui.menu.addEventListener('click', () => {
   const content = document.createElement('div');
   content.className = 'gr-menu-links';
-  for (const [label, destination] of [['Back to Slots Lobby', GAMEDAY_CONFIG.routes.slotsLobby], ['GameDay Casino', GAMEDAY_CONFIG.routes.casino], ['Account / test wallet', GAMEDAY_CONFIG.routes.account]]) {
+  for (const [label, destination] of [['Back to Slots Lobby', GAMEDAY_CONFIG.routes.slotsLobby], ['GameDay Casino', GAMEDAY_CONFIG.routes.casino], ['Casino history', GAMEDAY_CONFIG.routes.casinoHistory], ['Account / test wallet', GAMEDAY_CONFIG.routes.account]]) {
     const link = document.createElement('a');
     link.href = destination;
     link.textContent = label;
@@ -878,6 +929,7 @@ window.addEventListener('pageshow', event => {
 });
 window.addEventListener('resize', () => { if (!spinning) renderGrid(); });
 
+function watchAccount() {
 supabase.auth.onAuthStateChange((event, session) => {
   const nextUser = session?.user || null;
   if (nextUser?.id !== user?.id) {
@@ -906,6 +958,8 @@ supabase.auth.onAuthStateChange((event, session) => {
   // Keep Supabase calls outside its synchronous auth notification callback.
   if (event !== 'TOKEN_REFRESHED' && !pageGone) setTimeout(() => loadAccount(), 0);
 });
+}
+
 renderGrid();
 sync();
-loadAccount();
+connectSlotService();

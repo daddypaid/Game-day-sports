@@ -111,7 +111,7 @@ dialog p { line-height: 1.6; font-size: 14px; }
   :root { --sidebar-width: 238px; }
   .home-shell { display: block; }
   .home-content { width: 100%; padding-left: max(10px, env(safe-area-inset-left)); padding-right: max(10px, env(safe-area-inset-right)); }
-  .sidebar { position: fixed; z-index: 60; left: 0; top: 0; width: var(--sidebar-width); height: 100dvh; padding: max(20px, env(safe-area-inset-top)) 12px 20px; transform: translateX(-100%); visibility: hidden; transition: transform .2s ease, visibility .2s; }
+  .sidebar { position: fixed; z-index: 60; left: 0; top: 0; width: var(--sidebar-width); height: 100dvh; padding: max(20px, env(safe-area-inset-top)) 12px 20px; transform: translateX(-100%); visibility: hidden; transition: transform .2s ease; }
   body.menu-open { overflow: hidden; }
   body.menu-open .sidebar { transform: none; visibility: visible; }
   .sidebar .brand strong { font-size: 28px; }

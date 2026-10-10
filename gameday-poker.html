@@ -14,7 +14,7 @@
 *{box-sizing:border-box}:root{--bg:#090d0a;--panel:#121914;--line:#2a382f;--green:#174829;--gold:#d3b45b;--muted:#98a59d}
 body{margin:0;background:radial-gradient(circle at 50% -10%,#183522 0,#0b120e 35%,#070b08 100%);color:#fff;font-family:Arial,sans-serif;min-height:100vh;padding-bottom:100px}
 header{position:sticky;top:0;z-index:20;background:rgba(10,15,12,.97);border-bottom:1px solid var(--line);backdrop-filter:blur(14px);-webkit-backdrop-filter:blur(14px)}
-.top{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:13px 14px 9px}.brand h1{margin:0;font-size:26px}.brand div{margin-top:4px;color:var(--muted);font-size:11px}.wallet{background:#153f24;border:1px solid #2e7040;border-radius:12px;padding:7px 10px;text-align:right}.wallet span{font-size:9px;color:#a9cdb2;font-weight:800}.wallet strong{display:block;color:#d7f3dd;font-size:14px;margin-top:2px}
+.top{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:13px 14px 9px}.brand h1{margin:0;font-size:26px}.brand div{margin-top:4px;color:var(--muted);font-size:11px}.wallet{background:#153f24;border:1px solid #2e7040;border-radius:12px;padding:7px 10px;text-align:right;text-decoration:none}.wallet:focus-visible{outline:3px solid #f5de88;outline-offset:3px}.wallet span{font-size:9px;color:#a9cdb2;font-weight:800}.wallet strong{display:block;color:#d7f3dd;font-size:14px;margin-top:2px}
 .tabs{display:flex;gap:7px;overflow:auto;padding:8px 14px 11px;scrollbar-width:none}.tabs::-webkit-scrollbar{display:none}.tab{flex:0 0 auto;text-decoration:none;color:#d9e0db;background:#151d18;border:1px solid #2c3931;border-radius:999px;padding:8px 12px;font-size:11px;font-weight:800}.tab.active{background:#edf3ef;color:#0b120e}
 main{max-width:900px;margin:auto;padding:14px}.hero{border:1px solid #806520;background:linear-gradient(90deg,rgba(5,17,10,.98) 0%,rgba(5,17,10,.9) 42%,rgba(5,17,10,.16) 76%),url('assets/casino-premium/poker-hero.webp') center/cover no-repeat;border-radius:18px;padding:20px;min-height:230px;box-shadow:0 18px 42px rgba(0,0,0,.38)}.eyebrow{font-size:10px;letter-spacing:.14em;color:#d4e8d8;font-weight:900}.hero h2{font-size:30px;line-height:1.02;margin:7px 0}.hero p{margin:0;color:#c5d0c8;font-size:13px;line-height:1.4;max-width:52%}.chip{display:inline-block;margin-top:12px;padding:7px 10px;border-radius:999px;background:rgba(75,59,19,.92);border:1px solid #987a29;color:#f5de88;font-size:10px;font-weight:900}
 .section{margin-top:20px}.section h3{font-size:20px;margin:0 0 10px}.grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:11px}.card{background:#111813;border:1px solid #2a382f;border-radius:15px;overflow:hidden;min-height:182px;display:flex;flex-direction:column;min-width:0}
@@ -30,7 +30,7 @@ main{max-width:900px;margin:auto;padding:14px}.hero{border:1px solid #806520;bac
 </head>
 <body>
 <header>
-<div class="top"><div class="brand"><h1>GameDay Poker</h1><div>Five poker games • one test wallet</div></div><div class="wallet"><span>TEST WALLET</span><strong id="wallet">—</strong></div></div>
+<div class="top"><div class="brand"><h1>GameDay Poker</h1><div>Five poker games • one test wallet</div></div><a class="wallet" id="pokerWalletLink" href="gameday-auth.html" aria-label="Sign in to your GameDay account"><span>TEST WALLET</span><strong id="wallet">Sign in</strong></a></div>
 <div class="tabs"><a class="tab" href="gameday-casino-v2.html">Casino</a><a class="tab active" href="gameday-poker.html">Poker</a></div>
 </header>
 <main>
@@ -49,11 +49,23 @@ main{max-width:900px;margin:auto;padding:14px}.hero{border:1px solid #806520;bac
 <div class="note">Test credits only. Texas Hold’em, Omaha, Seven-Card Stud and Five-Card Draw play against a computer opponent. Jacks or Better uses its displayed paytable.</div>
 </main>
 <script type="module">
-import{createClient}from"https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/+esm";
-const supabase=createClient("https://qsvrvhcklnsbekxblpfo.supabase.co","sb_publishable_-yCYGvDqIzVFgu90lgoVpw_uoWnYmO0");
-const wallet=document.getElementById('wallet');function money(v){return '$'+Number(v||0).toFixed(2)}
-async function load(){const{data,error}=await supabase.auth.getSession();if(error||!data.session){wallet.textContent='Sign in';return}const{data:w,error:e}=await supabase.from('wallets').select('balance').eq('user_id',data.session.user.id).single();wallet.textContent=e?'—':money(w.balance)}
-supabase.auth.onAuthStateChange(()=>setTimeout(load,0));await load();
+import { GAMEDAY_CONFIG } from './gameday-config.js';
+const wallet=document.getElementById('wallet'),walletLink=document.getElementById('pokerWalletLink');
+let generation=0,owner=null;
+const bounded=promise=>Promise.race([promise,new Promise((_,reject)=>setTimeout(()=>reject(new Error('Connection timed out')),12000))]);
+const display=(text,signedIn=false)=>{wallet.textContent=text;walletLink.href=GAMEDAY_CONFIG.routes.account+(signedIn?'#accountPanel':'');walletLink.setAttribute('aria-label',signedIn?'Open your GameDay test wallet':'Sign in to your GameDay account')};
+try {
+ const {createClient}=await bounded(import('https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.117.3/+esm'));
+ const supabase=createClient(GAMEDAY_CONFIG.supabaseUrl,GAMEDAY_CONFIG.supabasePublishableKey);
+ const apply=session=>{
+  const version=++generation;owner=session?.user?.id||null;display(owner?'Loading…':'Sign in',Boolean(owner));
+  if(!owner)return;const requestedOwner=owner;
+  setTimeout(async()=>{try{const{data,error}=await bounded(supabase.from('wallets').select('balance').eq('user_id',requestedOwner).single());if(version!==generation||owner!==requestedOwner)return;const balance=Number(data?.balance);display(error||!data||!Number.isFinite(balance)?'Open wallet':'$'+balance.toFixed(2),true)}catch{if(version===generation&&owner===requestedOwner)display('Open wallet',true)}},0);
+ };
+ supabase.auth.onAuthStateChange((_event,session)=>apply(session));
+ const version=generation;const{data,error}=await bounded(supabase.auth.getSession());
+ if(version===generation)apply(error?null:data.session);
+}catch{if(generation===0)display('Sign in')}
 </script>
 <script src="gameday-app.js" defer></script>
 </body>

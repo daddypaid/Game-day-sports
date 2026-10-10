@@ -13,14 +13,15 @@ const sdk = `export function createClient(){
   const result=async(action,value)=>{unlocked();return __request(action,value)};
   return {auth:{
     getSession:()=>result('getSession',{data:{session:structuredClone(__session)},error:null}),
+    getUser:()=>result('getUser',{data:{user:structuredClone(__session?.user)},error:null}),
     onAuthStateChange(fn){__authCallbacks.push(fn);return {data:{subscription:{unsubscribe(){}}}}},
-    signOut:async()=>{const r=await result('signOut',{error:null});__emit('SIGNED_OUT',null);return r},
+    signOut:async()=>{const r=await result('localSignOut',{error:null});__emit('SIGNED_OUT',null);return r},admin:{signOut:()=>result('signOut',{error:null})},
     signInWithPassword:async({email})=>{const session={user:{id:'A',email},access_token:'fixture-A'};const r=await result('signIn',{data:{user:session.user,session},error:__authError});if(!r.error)__emit('SIGNED_IN',session);return r},
     signUp:()=>result('signUp',{data:{session:null,user:null},error:__authError}),
     resetPasswordForEmail:()=>result('reset',{error:__authError}),
     updateUser:async()=>{const user=structuredClone(__session?.user);const r=await result('password',{data:{user},error:__authError});return r}
   },from(table){
-    unlocked();const owner=__session?.user.id;const q={table,owner,filters:[],select(){return this},eq(...args){this.filters.push(args);return this},in(){return this},not(){return this},order(){return this},limit(){return this},single(){return __query(this)},then(resolve,reject){return __query(this).then(resolve,reject)}};return q
+    unlocked();const owner=__session?.user.id;const q={table,owner,filters:[],select(fields){this.fields=fields;return this},eq(...args){this.filters.push(args);return this},in(){return this},not(){return this},order(){return this},or(){return this},limit(){return this},single(){return __query(this)},then(resolve,reject){return __query(this).then(resolve,reject)}};return q
   },functions:{invoke:(name,options)=>{__calls.push({action:'refillAuthorization',authorization:options.headers.Authorization});return result('refill',{data:{ok:true,credited:976,balance:1000},error:null})}}};
 }`;
 test.before(async () => {
@@ -38,11 +39,11 @@ async function open(t,file,{gate=[],gateActions=[],signedOut=false}={}){
   await context.addInitScript(({gate,gateActions,signedOut})=>{
     const user=id=>({user:{id,email:id+'@example.invalid'},access_token:'fixture-'+id});
     const wagers=id=>[{id,wager_type:'single',stake:5,potential_return:10,status:'accepted',placed_at:'2026-10-10T12:00:00Z',wager_selections:[{selection_name:id+' private selection',event_name:id+' private event',market_key:'h2h',american_odds:100}]}];
-    window.__fixtures={A:{wallets:{balance:24},wallet_transactions:[{transaction_type:'adjustment',amount:24,note:'A private wallet note',created_at:'2026-10-10T12:00:00Z'}],wagers:wagers('A')},B:{wallets:{balance:500},wallet_transactions:[{transaction_type:'adjustment',amount:500,note:'B private wallet note',created_at:'2026-10-10T12:00:00Z'}],wagers:wagers('B')}};
+    window.__fixtures={A:{wallets:{balance:24},wallet_transactions:[{id:'a0000000-0000-4000-8000-000000000001',transaction_type:'adjustment',amount:24,note:'A private wallet note',created_at:'2026-10-10T12:00:00Z'}],wagers:wagers('A')},B:{wallets:{balance:500},wallet_transactions:[{id:'b0000000-0000-4000-8000-000000000001',transaction_type:'adjustment',amount:500,note:'B private wallet note',created_at:'2026-10-10T12:00:00Z'}],wagers:wagers('B')}};
     window.__user=user;window.__session=signedOut?null:user('A');window.__authCallbacks=[];window.__authLock=false;window.__calls=[];window.__gate=gate;window.__gateActions=gateActions;window.__pending=[];window.__pendingActions=[];window.__authError=null;window.__queryError=null;
     window.__request=async(action,value)=>{__calls.push({action});if(__gateActions.includes(action))await new Promise(resolve=>__pendingActions.push({action,resolve}));return value};
     window.__emit=(event,s)=>{__session=s;__authLock=true;try{for(const fn of __authCallbacks)fn(event,s)}finally{__authLock=false}};
-    window.__query=async q=>{const entry={table:q.table,owner:q.owner,filters:structuredClone(q.filters)};__calls.push(entry);const data=structuredClone(__fixtures[q.owner]?.[q.table]||[]),error=__queryError;if(__gate.includes(q.owner))await new Promise(resolve=>__pending.push({owner:q.owner,resolve}));return {data,error}};
+    window.__query=async q=>{const entry={table:q.table,owner:q.owner,filters:structuredClone(q.filters)};__calls.push(entry);const data=q.fields==='created_at'?[]:structuredClone(__fixtures[q.owner]?.[q.table]||[]),error=__queryError;if(q.fields!=='created_at'&&__gate.includes(q.owner))await new Promise(resolve=>__pending.push({owner:q.owner,resolve}));return {data,error}};
     window.__release=owner=>{__gate=__gate.filter(x=>x!==owner);for(const p of __pending.filter(x=>x.owner===owner))p.resolve();__pending=__pending.filter(x=>x.owner!==owner)};
     window.__releaseAction=action=>{__gateActions=__gateActions.filter(x=>x!==action);for(const p of __pendingActions.filter(x=>x.action===action))p.resolve();__pendingActions=__pendingActions.filter(x=>x.action!==action)};
   },{gate,gateActions,signedOut});
@@ -69,7 +70,7 @@ async function assertNoOwner(page,owner){const text=await page.locator('main').t
 test('Account clears A data and refill eligibility synchronously while B loads',async t=>{
   const p=await open(t,'gameday-auth.html');await accountReady(p);
   const snapshot=await p.evaluate(()=>{__gate=['B'];__emit('SIGNED_IN',__user('B'));return {email:accountEmail.textContent,wallet:walletBalance.textContent,tx:transactions.textContent,disabled:refillWallet.disabled}});
-  assert.equal(snapshot.email,'B@example.invalid');assert.equal(snapshot.wallet,'—');assert(!snapshot.tx.includes('A private'));assert(snapshot.disabled);
+  assert.equal(snapshot.email,'—');assert.equal(snapshot.wallet,'—');assert(!snapshot.tx.includes('A private'));assert(snapshot.disabled);
   await p.waitForFunction(()=>__pending.length===2);await p.evaluate(()=>__release('B'));await accountReady(p,'B');
 });
 test('Account discards a late A wallet/history response after B loaded',async t=>{

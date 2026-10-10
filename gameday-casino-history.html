@@ -13,13 +13,14 @@
 <link rel="stylesheet" href="gameday-casino-history.css">
 </head>
 <body>
-<header><h1>GameDay Casino History</h1><p class="sub">Your settled slot spins · TEST MODE — no real money</p><nav aria-label="Account navigation"><a href="gameday-auth.html#accountPanel">Account</a><a href="gameday-my-bets.html">My Bets</a><a href="gameday-casino-v2.html">Casino</a></nav></header>
+<header><h1>GameDay Casino History</h1><p class="sub">Your settled casino rounds · TEST MODE — no real money</p><nav aria-label="Account navigation"><a href="gameday-auth.html#accountPanel">Account</a><a href="gameday-my-bets.html">My Bets</a><a href="gameday-casino-v2.html">Casino</a></nav></header>
 <main>
+<div class="history-filter"><label for="history-game">Game</label><select id="history-game"><option value="slots">All slots</option><option value="blackjack">Blackjack</option><option value="baccarat">Baccarat</option><option value="roulette">Roulette</option><option value="jacks-or-better">Jacks or Better</option><option value="holdem">Texas Hold’em</option><option value="omaha">Omaha</option><option value="stud">Seven-Card Stud</option><option value="draw">Five-Card Draw</option></select></div>
 <div id="history-status" class="status" role="status" aria-live="polite">Loading your spin history…</div>
 <div class="history-actions"><button id="history-refresh" type="button">Refresh History</button><a id="history-signin" href="gameday-auth.html">Sign in</a></div>
-<section id="history-list" aria-label="Settled slot spins"></section>
-<button id="history-more" type="button" hidden>Load Earlier Spins</button>
-<noscript>Enable JavaScript to view your GameDay spin history.</noscript>
+<section id="history-list" aria-label="Settled casino rounds"></section>
+<button id="history-more" type="button" hidden>Load Earlier Rounds</button>
+<noscript>Enable JavaScript to view your GameDay casino history.</noscript>
 </main>
 <script type="module" src="gameday-casino-history.js"></script>
 <script src="gameday-app.js"></script>

@@ -1,9 +1,11 @@
-import { createClient } from 'https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/+esm';
 import { GAMEDAY_CONFIG, functionUrl } from './gameday-config.js';
 
 // The reel strips are visual animation only. The authenticated slot service
 // supplies every settled symbol, payout, wallet balance, and free-spin count.
-const supabase = createClient(GAMEDAY_CONFIG.supabaseUrl, GAMEDAY_CONFIG.supabasePublishableKey);
+let supabase = null;
+const SDK_URL = 'https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/+esm';
+let sdkAttempt = 0;
+let sdkConnecting = false;
 const GAME = 'midnight-monsters';
 const ART = 'assets/midnight-monsters/';
 const ATLAS = ART + 'extended-symbols-atlas.webp';
@@ -85,6 +87,51 @@ function setStatus(message, kind = '', accountLink = false) {
     link.textContent = user ? ' Open Account' : ' Sign in';
     ui.status.appendChild(link);
   }
+}
+
+function bounded(promise, milliseconds, message) {
+  let timer;
+  return Promise.race([promise, new Promise((resolve, reject) => {
+    timer = setTimeout(() => reject(new SlotError(message)), milliseconds);
+  })]).finally(() => clearTimeout(timer));
+}
+
+function showReconnect(message) {
+  setStatus(message, 'error', true);
+  const retry = document.createElement('button');
+  retry.type = 'button';
+  retry.className = 'mm-dialog-action';
+  retry.textContent = 'RETRY CONNECTION';
+  retry.style.cssText = 'display:block;margin:10px auto;min-height:44px;padding:10px 16px';
+  retry.addEventListener('click', () => {
+    retry.disabled = true;
+    // Reload clears cached failures anywhere in the SDK's dependency graph.
+    // The saved owner-scoped spin UUID remains in site storage.
+    if (!supabase) window.location.reload();
+    else connectSlotService();
+  });
+  ui.status.appendChild(retry);
+}
+
+async function connectSlotService() {
+  if (pageGone || sdkConnecting) return;
+  if (supabase) { await loadAccount(); return; }
+  sdkConnecting = true;
+  const attempt = ++sdkAttempt;
+  setStatus('Connecting to your GameDay test wallet…');
+  try {
+    // Failed module URLs are cached by browsers. A retry gets a fresh URL;
+    // a late module load never creates a second client or duplicates a wager.
+    const url = SDK_URL + (attempt > 1 ? `?gameday_retry=${attempt}` : '');
+    const sdk = await bounded(import(url), 8000, 'GameDay could not connect. Check your connection and retry.');
+    if (pageGone) return;
+    if (typeof sdk.createClient !== 'function') throw new Error('Invalid account service');
+    supabase = sdk.createClient(GAMEDAY_CONFIG.supabaseUrl, GAMEDAY_CONFIG.supabasePublishableKey);
+    watchAccount();
+    await loadAccount();
+  } catch {
+    if (!pageGone) showReconnect('GameDay could not connect. Check your connection and retry.');
+  } finally { sdkConnecting = false; }
 }
 
 function makeSymbol(code, cellIndex) {
@@ -284,9 +331,11 @@ function playSound(kind) {
 }
 
 function sync() {
+  ui.info.setAttribute('aria-label', 'Paytable, game rules and wager limits');
   ui.wallet.textContent = user && balance !== null ? money(balance) : '—';
   ui['bet-line'].textContent = money(lineBet());
   ui['total-bet'].textContent = money(totalBet());
+  ui['total-bet'].title = 'Total bet: $2.00–$200.00 in $2.00 steps. Wager limits are in Info.';
   ui['free-spins'].textContent = `${bonusProgress.used} / ${bonusProgress.total}`;
   const locked = spinning || !!pendingSpin || !!bonus || !accountReady || pageGone;
   ui['line-minus'].disabled = locked || betCents <= 10;
@@ -427,7 +476,7 @@ async function resolveSpin(record, recovering, expectedEpoch) {
 
 async function invokeSlot(body, expectedUser = user?.id) {
   const expectedEpoch = accountEpoch;
-  const { data, error } = await supabase.auth.getSession();
+  const { data, error } = await bounded(supabase.auth.getSession(), 10000, 'Your GameDay session could not be checked.');
   if (pageGone || expectedEpoch !== accountEpoch || user?.id !== expectedUser ||
       error || !data.session?.access_token || data.session.user.id !== expectedUser) {
     throw new SlotError('Sign in to play Midnight Monsters.');
@@ -467,6 +516,7 @@ function normalizeBonus(value) {
 }
 
 async function loadAccount({ quiet = false } = {}) {
+  if (!supabase) { await connectSlotService(); return false; }
   if (pageGone) return false;
   if (spinning) { pendingAccountRefresh = true; return false; }
   const load = ++accountLoad;
@@ -474,7 +524,7 @@ async function loadAccount({ quiet = false } = {}) {
   accountReady = false;
   sync();
   try {
-    const { data, error } = await supabase.auth.getSession();
+    const { data, error } = await bounded(supabase.auth.getSession(), 10000, 'Your GameDay session could not be checked.');
     if (error) throw new SlotError('Your GameDay account could not be loaded.');
     if (load !== accountLoad || epoch !== accountEpoch || pageGone) return false;
     user = data.session?.user || null;
@@ -519,7 +569,8 @@ async function loadAccount({ quiet = false } = {}) {
   } catch (error) {
     if (load !== accountLoad || epoch !== accountEpoch || pageGone) return false;
     accountReady = false;
-    setStatus(error.message + ' Reload this page to reconnect.', 'error', true);
+    balance = null;
+    showReconnect(error.message + ' Retry to reconnect.');
     sync();
     return false;
   }
@@ -719,7 +770,7 @@ function showFeatures() {
 function showInfo() {
   const content = document.createElement('div');
   content.append(paragraph('Choose your bet per line or total bet, then press SPIN. All 20 paylines are active. Three or more matching symbols pay consecutively from the leftmost reel.'));
-  content.append(paragraph('Bet per line: $0.10–$10.00 in $0.10 steps. Total bet is bet per line × 20. AUTO runs up to five spins and stops on a new bonus, insufficient balance, an error, or when you leave the game. MAX BET chooses the highest wager your test wallet can cover.'));
+  content.append(paragraph('Bet per line: $0.10–$10.00 in $0.10 steps. Total bet: $2.00–$200.00 in $2.00 steps across all 20 paylines. Total bet is bet per line × 20. AUTO runs up to five spins and stops on a new bonus, insufficient balance, an error, or when you leave the game. MAX BET chooses the highest wager your test wallet can cover.'));
   const title = document.createElement('h3');
   title.textContent = '20 paylines';
   content.appendChild(title);
@@ -788,7 +839,7 @@ ui.info.addEventListener('click', showInfo);
 ui.menu.addEventListener('click', () => {
   const content = document.createElement('div');
   content.className = 'mm-menu-links';
-  for (const [label, destination] of [['Back to Slots Lobby', GAMEDAY_CONFIG.routes.slotsLobby], ['GameDay Casino', GAMEDAY_CONFIG.routes.casino], ['Account / test wallet', GAMEDAY_CONFIG.routes.account]]) {
+  for (const [label, destination] of [['Back to Slots Lobby', GAMEDAY_CONFIG.routes.slotsLobby], ['GameDay Casino', GAMEDAY_CONFIG.routes.casino], ['Casino history', GAMEDAY_CONFIG.routes.casinoHistory], ['Account / test wallet', GAMEDAY_CONFIG.routes.account]]) {
     const link = document.createElement('a');
     link.href = destination;
     link.textContent = label;
@@ -821,6 +872,7 @@ window.addEventListener('pageshow', event => {
 });
 window.addEventListener('resize', () => { if (!spinning) renderGrid(); });
 
+function watchAccount() {
 supabase.auth.onAuthStateChange((event, session) => {
   const nextUser = session?.user || null;
   if (nextUser?.id !== user?.id) {
@@ -849,6 +901,8 @@ supabase.auth.onAuthStateChange((event, session) => {
   // Keep Supabase calls outside its synchronous auth notification callback.
   if (event !== 'TOKEN_REFRESHED' && !pageGone) setTimeout(() => loadAccount(), 0);
 });
+}
+
 renderGrid();
 sync();
-loadAccount();
+connectSlotService();

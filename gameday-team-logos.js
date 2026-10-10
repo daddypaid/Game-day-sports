@@ -26,6 +26,9 @@ function sportKey(value) {
 
 function approvedLogo(value) {
   if (typeof value !== 'string') return null;
+  if (/^assets\/sportsbook\/team-monograms\/[a-z0-9_]+-\d+\.svg$/.test(value)) {
+    return new URL('./' + value, import.meta.url).href;
+  }
   try {
     const url = new URL(value);
     const approvedHost = LOGO_HOSTS.has(url.hostname) ||
@@ -54,7 +57,7 @@ function makeIndexes(catalog) {
     const isSoccer = sports.some(key => key.startsWith('soccer_') || ['mls', 'epl', 'ucl'].includes(key));
     for (const record of league.teams) {
       if (!record || typeof record.name !== 'string') continue;
-      const team = { id: String(record.id ?? ''), name: record.name, logo: approvedLogo(record.logo) };
+      const team = { id: String(record.id ?? ''), name: record.name, logo: approvedLogo(record.logo), logoType: record.logoType === 'monogram' ? 'monogram' : 'crest' };
       const names = [record.name, ...(Array.isArray(record.names) ? record.names : [])];
       for (const alias of names) {
         if (typeof alias !== 'string') continue;
@@ -172,6 +175,8 @@ export async function hydrateTeamLogos(root = document) {
     badge.querySelector('img')?.remove();
     badge.classList.remove('gd-team-logo--loaded');
     badge.dataset.gdLogo = team.logo;
+    badge.dataset.gdLogoType = team.logoType;
+    badge.title = team.logoType === 'monogram' ? `${team.name} — team initials; crest unavailable` : team.name;
     const image = identity.ownerDocument.createElement('img');
     image.alt = '';
     image.loading = 'lazy';

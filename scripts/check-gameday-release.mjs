@@ -37,7 +37,7 @@ for (const [page, key] of [['gameday-blackjack.html','blackjack'],['gameday-roul
 assert(/serviceWorker\.register\(['"]\.\/sw\.js(?:\?[^'"]*)?['"]/.test(read('gameday-app.js')), 'Missing service worker registration');
 const shell = [...read('sw.js').match(/const SHELL=\[([\s\S]*?)\];/)[1].matchAll(/'([^']+)'/g)].map(m => m[1]);
 for (const file of shell) assert(fs.existsSync(path.join(root,file.split('?')[0])), `Missing shell resource: ${file}`);
-for (const file of ['gameday-casino-history.html','gameday-casino-history.js','gameday-casino-history.css']) assert(shell.includes('./' + file), `Missing new history shell entry: ${file}`);
+for (const file of ['gameday-casino-history.html','gameday-casino-history.js','gameday-casino-history.css','gameday-help.html','gameday-help.js','gameday-privacy.html','gameday-settings.html','gameday-settings.js','gameday-account-pages.css']) assert(shell.includes('./' + file), `Missing new history shell entry: ${file}`);
 function walk(dir) {
   for (const entry of fs.readdirSync(dir,{withFileTypes:true})) {
     if (['.git','.github','node_modules','test-results','playwright-report'].includes(entry.name)) continue;

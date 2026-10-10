@@ -32,3 +32,4 @@ html:root body.gd-table-wager-page .gd-table-action[data-table-action="split"]{b
 html:root body.gd-table-wager-page .gd-wager-no-art{display:flex;flex-direction:column;justify-content:flex-end}
 html:root body.gd-table-wager-page .gd-wager-no-art .gd-wager-chip-row{position:static;margin-top:auto}
 html:root body.gd-table-wager-page .gd-wager-no-art .gd-table-wager-panel{margin-top:8px}
+.gd-wager-limits{margin:8px 6px 0;text-align:center;font-size:12px;line-height:1.5;color:#cbd4c9}

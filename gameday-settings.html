@@ -1,0 +1,16 @@
+<!doctype html>
+<html lang="en" class="gd-light-theme">
+<head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><meta name="theme-color" content="#ffffff"><link rel="manifest" href="manifest.webmanifest"><link rel="apple-touch-icon" href="icons/gameday-192.png"><title>GameDay Settings</title><link rel="stylesheet" href="gameday-light-theme.css"><link rel="stylesheet" href="gameday-account-pages.css"></head>
+<body><header><h1>GameDay Settings</h1><p class="sub">Sound and account preferences</p><nav aria-label="Account navigation"><a href="index.html">Home</a><a href="gameday-auth.html">Account</a><a href="gameday-help.html">Help &amp; FAQ</a><a href="gameday-privacy.html">Privacy</a></nav></header>
+<main><p class="test-notice">TEST MODE — no real money. Test credits have no cash value.</p>
+<section class="card"><fieldset><legend>Game sound</legend><p class="muted">Apply these preferences when you open or reload a game. Slots save sound preferences in this browser; table and roulette preferences apply in this tab.</p>
+<label class="preference"><input type="checkbox" id="sound-midnight" data-sound="midnight"><span>Midnight Monsters<small>Reel and win sounds</small></span></label>
+<label class="preference"><input type="checkbox" id="sound-galactic" data-sound="galactic"><span>Galactic Rebellion<small>Reel and win sounds</small></span></label>
+<label class="preference"><input type="checkbox" id="sound-lucky" data-sound="lucky"><span>Lucky 7s<small>Reel and win sounds</small></span></label>
+<label class="preference"><input type="checkbox" id="sound-cards" data-sound="cards"><span>Card tables<small>Card dealing sounds</small></span></label>
+<label class="preference"><input type="checkbox" id="sound-roulette" data-sound="roulette"><span>Roulette<small>Wheel and ball sounds</small></span></label>
+</fieldset><p id="settings-status" class="status" role="status" aria-live="polite">Loading sound preferences…</p></section>
+<section class="card"><h2>Motion</h2><p id="motion-status" role="status">GameDay follows your device’s reduced motion setting.</p><p class="muted">To reduce reel and card animation, turn on Reduce Motion or Remove Animations in your device’s accessibility settings.</p></section>
+<section class="card"><h2>Account and security</h2><p>Manage your sign-in, password recovery and test wallet from Account.</p><div class="page-links"><a href="gameday-auth.html">Open Account</a><a href="gameday-casino-history.html">Casino History</a><a href="gameday-my-bets.html">My Bets</a></div></section>
+<noscript>Enable JavaScript to change sound preferences. Account and Help links remain available.</noscript></main>
+<script src="gameday-settings.js" defer></script><script src="gameday-app.js" defer></script></body></html>
