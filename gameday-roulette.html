@@ -16,13 +16,12 @@
 </head>
 <body class="gd-roulette-game">
 <header>
-  <div class="gd-roulette-header-row"><a href="gameday-casino-v2.html" class="gd-roulette-back">‹ Casino</a><h1>GameDay Roulette</h1><span class="gd-roulette-test">TEST</span></div>
-  <div class="account-row"><span id="roulette-account">Connecting…</span><strong id="balance">TEST WALLET —</strong><a id="roulette-signin" href="gameday-auth.html" hidden>Sign in</a></div>
+  <div class="gd-roulette-header-row"><a href="gameday-casino-v2.html" class="gd-roulette-back">‹ Casino</a><h1>GameDay Roulette</h1></div>
+  <div class="account-row"><span id="roulette-account" hidden></span><strong id="balance">Balance —</strong></div>
 </header>
 <main>
   <section class="game-stage" aria-label="GameDay single-zero Roulette">
     <div class="gd-roulette-wheel-area"><div id="roulette-wheel" class="gd-roulette-wheel" data-bowl-src="assets/roulette/wheel.webp" data-rotor-src="assets/roulette/wheel.webp" aria-label="European Roulette wheel"></div><p id="roulette-wheel-caption" class="gd-roulette-wheel-caption" aria-live="polite">European Roulette · Single zero</p></div>
-    <p class="gd-roulette-instructions">Choose a bet on the table, add chips, then Spin.</p>
     <div class="gd-roulette-table" role="group" aria-label="Roulette betting table">
       <img src="assets/roulette/betting-table.webp" width="1024" height="1536" alt="GameDay Roulette emerald felt with walnut and gold table border" fetchpriority="high">
       <button type="button" class="gd-roulette-bet gd-roulette-bet-green" data-roulette-bet="number" data-roulette-value="0" data-roulette-label="0" aria-label="Bet on 0" aria-pressed="false" style="left:25.400%;top:17.200%;width:57.500%;height:5.100%">0</button>
@@ -72,9 +71,10 @@
       <button type="button" class="gd-roulette-bet gd-roulette-bet-green" data-roulette-bet="column2" data-roulette-label="Column 2" aria-label="Bet on column 2, pays 2 to 1" aria-pressed="false" style="left:44.850%;top:85.000%;width:21.200%;height:5.700%">2 to 1</button>
       <button type="button" class="gd-roulette-bet gd-roulette-bet-green" data-roulette-bet="column3" data-roulette-label="Column 3" aria-label="Bet on column 3, pays 2 to 1" aria-pressed="false" style="left:66.000%;top:85.000%;width:21.200%;height:5.700%">2 to 1</button>
     </div>
-    <p id="roulette-selected-bet" class="gd-roulette-selection" aria-live="polite">Choose a bet on the table</p>
+    <p id="roulette-selected-bet" class="gd-roulette-selection" aria-live="polite"></p>
     <div id="roulette-result" class="gd-roulette-result" role="status" aria-live="polite" hidden></div>
     <p id="roulette-status" class="gd-roulette-status" role="status" aria-live="polite">Connecting to your test wallet…</p>
+    <a id="roulette-signin" class="gd-roulette-signin" href="gameday-auth.html" hidden>Sign in</a>
     <button id="roulette-retry" class="gd-roulette-retry" type="button" hidden>Check result</button>
     <button id="roulette-sound" class="gd-roulette-sound" type="button" aria-pressed="true">Sound on</button>
     <p class="gd-roulette-test-note">European Roulette · Single zero · Test credits only</p>

@@ -68,7 +68,7 @@ function clearPending(id) {
 function showBalance(value) {
   if (value === null || value === undefined || !currency(Number(value))) throw new Error('Your test balance could not be confirmed.');
   balance = Number(value);
-  ui.balance.textContent = `TEST ${money(balance)}`;
+  ui.balance.textContent = `Balance ${money(balance)}`;
 }
 function renderSelection() {
   const total = amount();
@@ -80,7 +80,7 @@ function renderSelection() {
     else delete button.dataset.rouletteWager;
     button.setAttribute('aria-label', `${button.dataset.rouletteLabel || label(bet)}${selected ? `, selected, wager ${money(total)}` : ''}`);
   });
-  if (ui.selected) ui.selected.textContent = selection ? `${label(selection)} · ${money(total)}` : 'Choose a bet on the table';
+  if (ui.selected) ui.selected.textContent = selection ? `${label(selection)} · ${money(total)}` : '';
 }
 function controls() {
   if (!ui) return;
@@ -208,7 +208,7 @@ async function loadSdk() {
         if (event === 'INITIAL_SESSION' || hidden || (session?.user?.id || null) === owner) return;
         cancelWork(); connectAttempt = null;
         owner = null; balance = null; selection = null; latest = null; pending = null;
-        wheel.reset(); ui.result.hidden = true; ui.balance.textContent = 'TEST WALLET —';
+        wheel.reset(); ui.result.hidden = true; ui.balance.textContent = 'Balance —';
         setWheelCaption();
         ui.signin.hidden = Boolean(session?.user);
         setStatus(session?.user ? 'Connecting to Roulette…' : 'Sign in to play Roulette with test credits.');
@@ -287,7 +287,7 @@ async function connect() {
         owner = null; balance = null; selection = null; latest = null; pending = null;
         wheel.reset(); ui.result.hidden = true; ui.signin.hidden = false;
         setWheelCaption();
-        ui.account.textContent = 'Not signed in'; ui.balance.textContent = 'TEST WALLET —';
+        ui.account.textContent = 'Not signed in'; ui.balance.textContent = 'Balance —';
         setStatus('Sign in to play Roulette with test credits.'); return;
       }
       owner = id; ui.signin.hidden = true; ui.account.textContent = 'Signed in · Test credits';
