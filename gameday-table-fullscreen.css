@@ -1,0 +1,27 @@
+/* Table games begin with their artwork, without a title bar or top gutter. */
+html:root body.gd-table-fullscreen main {
+  margin:0 auto!important; padding:0!important; height:auto!important;
+}
+html:root body.gd-table-fullscreen main > :is(.game-stage,.stage) {
+  margin-top:0!important; padding:0!important; overflow:hidden!important;
+}
+html:root body.gd-table-fullscreen .gd-wager-artwork {
+  margin-top:calc(-1 * var(--gd-artwork-top-trim, 0%));
+}
+.gd-table-footer {
+  padding:10px 12px; color:#e8d89a; background:#08100b;
+  font:700 12px/1.4 Arial,sans-serif;
+}
+.gd-table-footer :is(.account-row,.gd-jacks-account,.gd-poker-account) {
+  display:flex; flex-wrap:wrap; align-items:center; justify-content:space-between;
+  gap:8px; margin:0 0 8px; padding:0;
+}
+.gd-table-footer .account-row strong { font-weight:700; }
+.gd-table-footer a { color:#e8d89a; }
+.gd-table-footer > a { display:inline-flex; align-items:center; min-height:44px; margin:0; text-decoration:none; }
+/* The shell's navigation menu floats over the artwork; no bar reserves space. */
+body.gd-table-fullscreen-shell .bar { display:none!important; }
+body.gd-table-fullscreen-shell .frame { height:100dvh!important; }
+/* Roulette keeps its wheel and all betting-cell coordinates on one surface. */
+html:root body.gd-table-fullscreen.gd-roulette-game .gd-roulette-wheel-area { padding-top:2%; }
+html:root body.gd-table-fullscreen.gd-roulette-game .gd-roulette-wheel-caption { display:none; }

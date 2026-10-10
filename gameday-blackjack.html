@@ -31,22 +31,20 @@ html body.blackjack-artwork-page main{height:auto!important;overflow:visible!imp
 <link rel="stylesheet" href="gameday-standard-deck.css">
 <link rel="stylesheet" href="gameday-table-dealing.css">
 <link rel="stylesheet" href="gameday-blackjack-game.css">
+<link rel="stylesheet" href="gameday-table-fullscreen.css">
 </head>
-<body class="blackjack-artwork-page">
-<header>
-  <div class="header-row">
-    <h1>GameDay Blackjack</h1>
-    <div class="badge">TEST CASINO</div>
-  </div>
-</header>
+<body class="blackjack-artwork-page gd-table-fullscreen">
+
 <main>
+  <section class="game-stage" aria-label="Blackjack game area"><img data-table-trim-top="10" src="assets/card-tables/gameday-blackjack-table.png" width="702" height="1280" alt="GameDay Blackjack table artwork" fetchpriority="high"></section>
+<footer class="gd-table-footer" aria-label="Game account and navigation">
   <div class="nav">
     <a href="gameday-sportsbook.html">Sportsbook</a>
     <a href="gameday-casino-v2.html">Casino</a>
     <a href="gameday-my-bets.html">My Bets</a>
     <a href="gameday-auth.html">Account</a>
   </div>
-  <section class="game-stage" aria-label="Blackjack game area"><img src="assets/card-tables/gameday-blackjack-table.png" width="702" height="1280" alt="GameDay Blackjack table artwork" fetchpriority="high"></section>
+</footer>
 </main>
 <script src="gameday-app.js" defer></script>
 <script src="gameday-table-wager.js" defer></script>

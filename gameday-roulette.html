@@ -13,12 +13,10 @@
 <link rel="stylesheet" href="gameday-table-wager.css">
 <link rel="stylesheet" href="gameday-roulette-spinner.css">
 <link rel="stylesheet" href="gameday-roulette-game.css">
+<link rel="stylesheet" href="gameday-table-fullscreen.css">
 </head>
-<body class="gd-roulette-game">
-<header>
-  <div class="gd-roulette-header-row"><a href="gameday-casino-v2.html" class="gd-roulette-back">‹ Casino</a><h1>GameDay Roulette</h1></div>
-  <div class="account-row"><span id="roulette-account" hidden></span><strong id="balance">Balance —</strong></div>
-</header>
+<body class="gd-roulette-game gd-table-fullscreen">
+
 <main>
   <section class="game-stage" aria-label="GameDay single-zero Roulette">
     <div class="gd-roulette-wheel-area"><div id="roulette-wheel" class="gd-roulette-wheel" data-bowl-src="assets/roulette/wheel.webp" data-rotor-src="assets/roulette/wheel.webp" aria-label="European Roulette wheel"></div><p id="roulette-wheel-caption" class="gd-roulette-wheel-caption" aria-live="polite">European Roulette · Single zero</p></div>
@@ -93,6 +91,10 @@
     <button id="roulette-sound" class="gd-roulette-sound" type="button" aria-pressed="true">Sound on</button>
     <p class="gd-roulette-test-note">European Roulette · Single zero · Test credits only</p>
   </section>
+<footer class="gd-table-footer" aria-label="Game account and navigation">
+  <div class="account-row"><span id="roulette-account" hidden></span><strong id="balance">Balance —</strong></div>
+  <a class="gd-roulette-back" href="gameday-casino-v2.html">‹ Casino</a>
+</footer>
 </main>
 <script src="gameday-app.js" defer></script>
 <script src="gameday-table-wager.js" defer></script>

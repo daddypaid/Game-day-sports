@@ -34,23 +34,21 @@ html body.baccarat-artwork-page main{height:auto!important;overflow:visible!impo
 <link rel="stylesheet" href="gameday-standard-deck.css">
 <link rel="stylesheet" href="gameday-table-dealing.css">
 <link rel="stylesheet" href="gameday-baccarat-game.css">
+<link rel="stylesheet" href="gameday-table-fullscreen.css">
 </head>
-<body class="baccarat-artwork-page">
-<header>
-  <div class="header-row">
-    <h1>GameDay Baccarat</h1>
-    <div class="badge">TEST CASINO</div>
-  </div>
-  <div class="account-row"><span id="baccarat-account">Connecting…</span><strong id="balance">TEST WALLET —</strong><a id="baccarat-signin" href="gameday-auth.html" hidden>Sign in</a></div>
-</header>
+<body class="baccarat-artwork-page gd-table-fullscreen">
+
 <main>
+  <section class="game-stage" aria-label="Baccarat game area"><img data-table-trim-top="122" src="assets/card-tables/gameday-baccarat-table.png" width="591" height="1280" alt="GameDay Baccarat table artwork" fetchpriority="high"></section>
+<footer class="gd-table-footer" aria-label="Game account and navigation">
+  <div class="account-row"><span id="baccarat-account">Connecting…</span><strong id="balance">TEST WALLET —</strong><a id="baccarat-signin" href="gameday-auth.html" hidden>Sign in</a></div>
   <div class="nav">
     <a href="gameday-sportsbook.html">Sportsbook</a>
     <a href="gameday-casino-v2.html">Casino</a>
     <a href="gameday-my-bets.html">My Bets</a>
     <a href="gameday-auth.html">Account</a>
   </div>
-  <section class="game-stage" aria-label="Baccarat game area"><img src="assets/card-tables/gameday-baccarat-table.png" width="591" height="1280" alt="GameDay Baccarat table artwork" fetchpriority="high"></section>
+</footer>
 </main>
 <script src="gameday-app.js" defer></script>
 <script src="gameday-table-wager.js" defer></script>

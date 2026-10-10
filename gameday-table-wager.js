@@ -55,6 +55,11 @@
     artworkWrapper.className = 'gd-wager-artwork';
     stage.insertBefore(artworkWrapper, artwork);
     artworkWrapper.appendChild(artwork);
+    const trimRows = Number(artwork.dataset.tableTrimTop) || 0;
+    const imageWidth = Number(artwork.getAttribute('width')) || artwork.naturalWidth;
+    if (trimRows > 0 && imageWidth > 0) {
+      artworkWrapper.style.setProperty('--gd-artwork-top-trim', `${trimRows / imageWidth * 100}%`);
+    }
   } else {
     stage.classList.add('gd-wager-no-art');
   }
@@ -169,7 +174,8 @@
     function placePanel() {
       const imageHeight = artwork.getBoundingClientRect().height;
       if (!imageHeight) return;
-      stage.style.minHeight = `${imageHeight}px`;
+      const topMargin = Math.min(0, parseFloat(getComputedStyle(artworkWrapper).marginTop) || 0);
+      stage.style.minHeight = `${Math.max(0, imageHeight + topMargin)}px`;
       const chipRadius = Math.max(...buttons.map(button => button.getBoundingClientRect().height)) / 2;
       const panelTop = imageHeight * rail[game] / 100 + chipRadius + 8;
       stage.style.setProperty('--gd-panel-overlap', `${Math.max(0, imageHeight - panelTop)}px`);

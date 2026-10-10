@@ -33,18 +33,19 @@ html:root body.poker-table-artwork-page :is(.stage,.game-stage,.stage img,.game-
 <link rel="stylesheet" href="gameday-standard-deck.css">
 <link rel="stylesheet" href="gameday-table-dealing.css">
 <link rel="stylesheet" href="gameday-poker-game.css">
+<link rel="stylesheet" href="gameday-table-fullscreen.css">
 </head>
-<body class="poker-table-artwork-page">
-<header>
-  <div class="top"><h1>GameDay Omaha</h1><div class="badge">HEADS-UP · TEST CREDITS</div></div>
-  <a class="back" href="gameday-poker.html">‹ Back to Poker Room</a>
-  <div class="gd-poker-account"><span id="poker-account">Connecting…</span><span id="poker-balance" class="gd-poker-balance">Test balance —</span><a id="poker-signin" href="gameday-auth.html" hidden>Sign in</a></div>
-</header>
+<body class="poker-table-artwork-page gd-table-fullscreen">
+
 <main>
   <section class="stage" aria-label="Omaha work area">
-    <img src="assets/card-tables/gameday-omaha-table.png" alt="GameDay Omaha table artwork" fetchpriority="high">
+    <img width="591" height="1280" data-table-trim-top="118" src="assets/card-tables/gameday-omaha-table.png" alt="GameDay Omaha table artwork" fetchpriority="high">
   </section>
   <div class="gd-poker-rules">Heads-up Pot Limit Omaha against the computer. Your opening wager is an ante matched by the computer. Use exactly two hole cards and three community cards. Test credits only.</div>
+<footer class="gd-table-footer" aria-label="Game account and navigation">
+  <div class="gd-poker-account"><span id="poker-account">Connecting…</span><span id="poker-balance" class="gd-poker-balance">Test balance —</span><a id="poker-signin" href="gameday-auth.html" hidden>Sign in</a></div>
+  <a class="back" href="gameday-poker.html">‹ Back to Poker Room</a>
+</footer>
 </main>
 <script src="gameday-app.js" defer></script>
 <script src="gameday-table-wager.js" defer></script>
