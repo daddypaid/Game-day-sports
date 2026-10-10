@@ -101,7 +101,9 @@ test('a pre-rejection board response cannot overwrite automatically refreshed li
  assert.match(await p.locator('#slipItems').textContent(),/-120/);assert.match(await p.locator('#content .odd').first().textContent(),/-120/);assert.equal(s.calls.length,1);assert.equal(await p.locator('#return').textContent(),'$18.33');
 });
 
-test('rejecting an opposing second pick leaves the original single wager type intact',async t=>{
- const {p,state:s}=await open(t,{rejectNext:false});await p.locator('.odd').first().click();await showSlip(p);await p.evaluate(()=>document.querySelectorAll('#content .odd')[1].click());assert.equal(await p.locator('#count').textContent(),'1');assert.match(await p.locator('#selectionNotice').textContent(),/one selection from each event/);
- await p.click('#place');await p.locator('.success').waitFor();assert.equal(s.calls.length,1);assert.equal(s.calls[0].body.wager_type,'single');assert.equal(s.calls[0].body.selections.length,1);assert.equal(s.balances.A,90);
+test('opposing picks remain available while invalid automatic Parlay blocks a charge and Single preserves the other pick',async t=>{
+ const {p,state:s}=await open(t,{rejectNext:false});await p.locator('.odd').first().click();await showSlip(p);await p.click('#closeSlip');await p.locator('.odd').nth(1).click();await p.click('#openSlip');
+ assert.equal(await p.locator('#count').textContent(),'2');assert.equal(await p.locator('.slip-item').count(),2);assert(await p.locator('#parlay').evaluate(e=>e.classList.contains('active')));assert(await p.locator('#place').isDisabled());assert.equal(await p.locator('#place').textContent(),'Use Different Events');assert.equal(await p.locator('#return').textContent(),'$0.00');assert.match(await p.locator('#betModeHelp').textContent(),/Single/);
+ await p.evaluate(()=>document.querySelector('#place').click());assert.equal(s.calls.length,0);assert.equal(s.balances.A,100);await p.click('#single');assert.equal(await p.locator('#count').textContent(),'2');assert.equal(await p.locator('input[name="singlePick"]').count(),2);assert.equal(await p.locator('#return').textContent(),'$20.00');
+ await p.click('#place');await p.locator('.success').waitFor();assert.equal(s.calls.length,1);assert.equal(s.calls[0].body.wager_type,'single');assert.equal(s.calls[0].body.selections.length,1);assert.equal(s.calls[0].body.selections[0].selection_name,'NFL Home');assert.equal(s.balances.A,90);assert.equal(await p.locator('#count').textContent(),'1');assert.match(await p.locator('.slip-item').textContent(),/NFL Away/);
 });
