@@ -230,7 +230,6 @@ async function initializeBlackjack() {
             requestController?.abort();
             view.cancel();
             busy = true;
-            balance = null;
             controls();
             setTimeout(() => { if (!hidden) connect(); }, 0);
           }
