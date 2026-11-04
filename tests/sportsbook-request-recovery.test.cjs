@@ -24,6 +24,10 @@ async function fixture() {
   const settleIndex=teaserSQL.indexOf('-- Keep all preexisting settlement invariants');
   assert(settleIndex>0);
   await db.exec(teaserSQL.slice(0,settleIndex));
+  const sportSpecificSQL=fs.readFileSync(path.join(root,'supabase/migrations/20261104140000_sport_specific_teaser_sets.sql'),'utf8');
+  const sportSettleIndex=sportSpecificSQL.indexOf('-- Reapply the full atomic settlement routine');
+  assert(sportSettleIndex>0);
+  await db.exec(sportSpecificSQL.slice(0,sportSettleIndex));
   await db.query('insert into auth.users values($1),($2)',[user,other]);
   await db.query('insert into wallets(user_id,balance) values($1,1000),($2,1000)',[user,other]);
   const rpc = async (name,args) => (await db.query(`select public.${name}(${args.map((_,i) => '$'+(i+1)).join(',')}) as result`,args)).rows[0].result;
@@ -250,6 +254,10 @@ async function addProductionSettlementToFixture(f) {
   const cut=teaser.indexOf('-- Keep all preexisting settlement invariants');
   assert(cut>0);
   await f.db.exec(teaser.slice(cut));
+  const current=fs.readFileSync(path.join(root,'supabase/migrations/20261104140000_sport_specific_teaser_sets.sql'),'utf8');
+  const currentStart=current.indexOf('-- Reapply the full atomic settlement routine');
+  assert(currentStart>0);
+  await f.db.exec(current.slice(currentStart));
   const rights=(await f.db.query("select has_function_privilege('service_role','public.settle_test_wager_auto_atomic(uuid,text,numeric,jsonb)','EXECUTE') as service,has_function_privilege('authenticated','public.settle_test_wager_auto_atomic(uuid,text,numeric,jsonb)','EXECUTE') as browser")).rows[0];
   assert.deepEqual(rights,{service:true,browser:false});
 }
@@ -474,7 +482,7 @@ sqlTest('Three-leg football Teaser push reduces to verified two-leg payout, with
   const f=await fixture(),e=edge(f),body=teaserRequest(['event-a','event-b','event-c'],6,10);
   const placed=await e.send(body);
   assert.equal(placed.data.state,'accepted',JSON.stringify(placed.data));
-  assert.equal(Number(placed.data.wager.potential_return),24);
+  assert.equal(Number(placed.data.wager.potential_return),24.5);
   await addProductionSettlementToFixture(f);
   const grades=await teaserGrades(f,placed.data.wager.id,{'event-a':'won','event-b':'won','event-c':'void'});
   const result=await f.db.query('select * from public.settle_test_wager_auto_atomic($1,$2,$3,$4::jsonb)',[placed.data.wager.id,'won',17.41,JSON.stringify(grades)]);
@@ -498,5 +506,49 @@ sqlTest('Teaser with a push leaving one winner refunds stake; altered payout can
   assert.equal(settled.rows[0].status,'void');
   assert.equal(Number(settled.rows[0].credited_amount),10);
   assert.equal(await f.balance(),1000);
+  await f.db.close();
+});
+
+sqlTest('NFL, College Football and Basketball sport sets stay priced by league and leg count',async()=>{
+  const f=await fixture();
+  const q=async (sport,points,legs)=>{const r=await f.db.query('select public.test_teaser_american_odds($1,$2::numeric,$3) as price',[sport,points,legs]);return r.rows[0].price};
+  assert.equal(await q('americanfootball_nfl',6.5,3),135);
+  assert.equal(await q('americanfootball_nfl',10,3),-130);
+  assert.equal(await q('americanfootball_ncaaf',6,3),180);
+  assert.equal(await q('americanfootball_ncaaf',11,3),-125);
+  assert.equal(await q('basketball_nba',4.5,3),160);
+  assert.equal(await q('basketball_ncaab',7,3),100);
+  assert.equal(await q('basketball_wnba',4,3),180);
+  assert.equal(await q('basketball_nba',4.5,2),null);
+  assert.equal(await q('americanfootball_nfl',8,2),null);
+  assert.equal(await q('basketball_nba',6.5,3),null);
+  assert.equal(await f.debits(),0);
+  await f.db.close();
+});
+sqlTest('A basketball 4.5-point three-leg teaser settles with the referenced price and correct wallet debit',async()=>{
+  const f=await fixture();
+  const picks=['event-a','event-b','event-c'].map(event=>teaserLeg(event,4.5)).map(p=>({...p,sport_key:'basketball_nba'}));
+  const body={request_id:uuid(),wager_type:'teaser',teaser_points:4.5,stake:10,selections:picks};
+  const placed=await edge(f).send(body);
+  assert.equal(placed.data.state,'accepted',JSON.stringify(placed.data));
+  assert.equal(Number(placed.data.wager.potential_return),26);
+  assert.equal(Number(placed.data.wager.teaser_points),4.5);
+  assert.equal(placed.data.wager.teaser_american_odds,160);
+  assert.equal(await f.balance(),990);assert.equal(await f.debits(),1);
+  await addProductionSettlementToFixture(f);
+  const grades=await teaserGrades(f,placed.data.wager.id,{'event-a':'won','event-b':'won','event-c':'won'});
+  const receipt=await f.db.query('select * from public.settle_test_wager_auto_atomic($1,$2,$3,$4::jsonb)',[placed.data.wager.id,'won',26,JSON.stringify(grades)]);
+  assert.equal(receipt.rows[0].status,'won');assert.equal(await f.balance(),1016);
+  await f.db.close();
+});
+sqlTest('A three-pick basketball teaser push with no two-pick reference tier refunds instead of guessing payout',async()=>{
+  const f=await fixture();
+  const picks=['event-a','event-b','event-c'].map(event=>({...teaserLeg(event,4),sport_key:'basketball_nba'}));
+  const placed=await edge(f).send({request_id:uuid(),wager_type:'teaser',teaser_points:4,stake:5,selections:picks});
+  assert.equal(placed.data.state,'accepted',JSON.stringify(placed.data));
+  await addProductionSettlementToFixture(f);
+  const grades=await teaserGrades(f,placed.data.wager.id,{'event-a':'won','event-b':'won','event-c':'void'});
+  const credit=await f.db.query('select * from public.settle_test_wager_auto_atomic($1,$2,$3,$4::jsonb)',[placed.data.wager.id,'void',5,JSON.stringify(grades)]);
+  assert.equal(credit.rows[0].status,'void');assert.equal(await f.balance(),1000);
   await f.db.close();
 });
