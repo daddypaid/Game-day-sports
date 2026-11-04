@@ -224,6 +224,7 @@ function selectionChanged(){
   selectionGeneration++;
   if(quoteRefreshBusy){quoteRefreshSequence++;quoteRefreshBusy=false}
   if(!pendingWager&&ticketSelections().some(x=>x.lineStatus==='needs_refresh'))void refreshSelectedQuotes(lastQuoteReason);
+  if($('panel').classList.contains('open'))loadBuyPointsQuotes();
 }
 function quoteUnavailable(x){x.lineStatus='suspended';x.currentPrice=null;x.currentPoint=null}
 function applySelectionQuote(x,g){
@@ -353,7 +354,55 @@ function setBetMode(mode){
   if(pendingWager||placementBusy||!['single','parlay'].includes(mode))return;
   modePreference=mode;syncBetMode();selectionChanged();updateSlip();
 }
-function buyPointsSlipControl(x,i){if(!['spreads','totals'].includes(x.market))return '';const g=games.find(g=>String(g.id)===String(x.eventId));const base=g?.bookmakers?.[0];const marketKey=x.market==='spreads'?'spread':'total';const alternate=(base?.markets||[]).filter(m=>m.key!==x.market&&/alternate|alt_/i.test(m.key)&&m.key.includes(marketKey));const choices=alternate.flatMap(m=>(m.outcomes||[]).filter(o=>norm(o.name)===norm(x.name)&&Number.isFinite(Number(o.point))&&Math.abs(Number(o.point)*2-Math.round(Number(o.point)*2))<1e-8&&Number.isInteger(Number(o.price))&&Number(o.price)!==0).map(o=>({line:o.point,odds:o.price}))).filter(o=>x.market==='totals'?(x.name.toLowerCase()==='over'?Number(o.line)<Number(x.point):Number(o.line)>Number(x.point)):(norm(x.name)===norm(g?.home_team)?Number(o.line)>Number(x.point):Number(o.line)>Number(x.point)));const unique=[...new Map(choices.map(o=>[String(o.line),o])).values()].sort((a,b)=>Math.abs(a.line-x.point)-Math.abs(b.line-x.point));return `<div style="margin-top:10px"><label for="buy-points-${i}" style="display:block;margin-bottom:5px">Buy Points</label><select id="buy-points-${i}" data-buy-points="${i}" style="width:100%;padding:10px;border-radius:8px" aria-label="Buy points for ${esc(x.name)}"><option value="">Original line ${esc(x.point)} (${price(x.price)})</option>${unique.map(o=>`<option disabled>Buy ${Math.abs(o.line-x.point)} point(s) · ${o.line} (${price(o.odds)}) — Awaiting wager validation</option>`).join('')}</select><small>${unique.length?'Verified alternate prices are view-only until backend wager validation is enabled.':'No verified half-point prices available for this selection.'}</small></div>`}
+
+const buyPointsQuotes=new Map();
+function buyPointsQuoteKey(x){return [x.sport,x.eventId,x.market].join('|')}
+function buyPointsChoices(x){
+  const entry=buyPointsQuotes.get(buyPointsQuoteKey(x));
+  if(entry?.status!=='ready'||Date.now()-entry.at>60000)return [];
+  const event=entry.event;
+  if(String(event?.id)!==String(x.eventId))return [];
+  const marketKey=x.market==='spreads'?'alternate_spreads':'alternate_totals';
+  const options=event?.bookmakers?.[0]?.markets?.find(m=>m.key===marketKey)?.outcomes||[];
+  const candidates=[];
+  for(const o of options){
+    const line=Number(o.point),odds=Number(o.price),original=Number(x.point);
+    if(norm(o.name)!==norm(x.name)||norm(o.description||'')!==norm(x.description||'')||!Number.isFinite(line)||!Number.isFinite(original)||!Number.isInteger(odds)||odds===0)continue;
+    const points=x.market==='spreads'?line-original:norm(x.name)==='over'?original-line:norm(x.name)==='under'?line-original:0;
+    if(points<=0||Math.abs(points*2-Math.round(points*2))>0.000001)continue;
+    candidates.push({line,odds,points});
+  }
+  return [...new Map(candidates.map(o=>[String(o.line),o])).values()].sort((a,b)=>a.points-b.points).slice(0,12);
+}
+function loadBuyPointsQuotes(){
+  if(!$('panel').classList.contains('open')||pendingWager)return;
+  for(const x of slip.filter(s=>['spreads','totals'].includes(s.market))){
+    const key=buyPointsQuoteKey(x),cached=buyPointsQuotes.get(key);
+    if(cached&&(cached.status==='loading'||Date.now()-cached.at<45000))continue;
+    const nonce=crypto.randomUUID(),marketKey=x.market==='spreads'?'alternate_spreads':'alternate_totals';
+    buyPointsQuotes.set(key,{status:'loading',at:Date.now(),nonce});
+    void(async()=>{
+      let entry;
+      try{
+        const data=await timed(api({mode:'alternate_lines',sport:x.sport,event_id:String(x.eventId),markets:[marketKey]}),15000);
+        const valid=data?.mode==='alternate_lines'&&data?.source==='live'&&data?.stale!==true&&data?.wagerable===false&&String(data?.event?.id)===String(x.eventId);
+        entry={status:valid?'ready':'unavailable',event:valid?data.event:null,at:Date.now(),nonce};
+      }catch{entry={status:'unavailable',event:null,at:Date.now(),nonce}}
+      if(buyPointsQuotes.get(key)?.nonce!==nonce)return;
+      buyPointsQuotes.set(key,entry);
+      if($('panel').classList.contains('open'))updateSlip();
+    })();
+  }
+}
+function buyPointsSlipControl(x,i){
+  if(!['spreads','totals'].includes(x.market))return '';
+  const entry=buyPointsQuotes.get(buyPointsQuoteKey(x)),choices=buyPointsChoices(x);
+  const locked=Boolean(pendingWager)||placementBusy;
+  const options=choices.map((o,j)=>'<option value="'+j+'">Buy '+o.points.toFixed(1)+' point'+(o.points===1?'':'s')+' · '+(o.line>0?'+':'')+o.line+' ('+price(o.odds)+')</option>').join('');
+  const loading=entry?.status==='loading';
+  const guidance=loading?'Retrieving verified alternate prices…':choices.length?'Choose a quoted adjustment to preview it. Adjusted wagers are not enabled yet.':'No verified half-point prices for this selection. Standard wagering is unaffected.';
+  return '<div class="buy-points-preview" style="margin-top:10px"><label for="buy-points-'+i+'" style="display:block;margin-bottom:5px">Buy Points — quote preview</label><select id="buy-points-'+i+'" data-buy-points="'+i+'" style="width:100%;padding:11px;border-radius:8px" aria-label="Preview buy points for '+esc(x.name)+'" '+(locked||!choices.length?'disabled':'')+'><option value="">Original line '+esc(x.point)+' ('+price(x.price)+')</option>'+options+'</select><small id="buy-points-preview-'+i+'" aria-live="polite" style="display:block;margin-top:5px">'+guidance+'</small></div>';
+}
 function updateSlip(){
   syncBetMode();
   const locked=Boolean(pendingWager)||placementBusy,picks=ticketSelections(),blocked=picks.some(changedPick),
@@ -365,6 +414,12 @@ function updateSlip(){
   $('slipItems').innerHTML=slip.length?slip.map((x,i)=>`<div class="slip-item ${x.lineStatus&&x.lineStatus!=='ok'?'stale':''} ${betType==='single'&&x.pickKey===singlePickKey?'chosen':''}">${betType==='single'?`<label class="single-choice"><input type="radio" name="singlePick" data-single-pick="${i}" ${x.pickKey===singlePickKey?'checked':''} ${locked?'disabled':''}><span>Bet ${esc(x.name)}${x.description?' — '+esc(x.description):''} individually</span></label>`:''}<div style="font-size:12px;color:#aab6ae;margin-bottom:6px">${esc(x.event)}</div><div class="slip-row"><div><strong>${['h2h','spreads'].includes(x.market)?teamLabel(x.name,x.sport,{fallback:false}):esc(x.name)} ${esc(x.point??'')}</strong><div>${esc(x.marketTitle)} • ${price(x.price)}</div></div><button class="remove" data-remove="${i}" ${locked?'disabled':''}>Remove</button></div>${buyPointsSlipControl(x,i)}${warningFor(x)}</div>`).join(''):'<div class="empty">Select a GameDay line to add it to your bet slip.</div>';
   hydrateTeamLogos($('slipItems'));
   document.querySelectorAll('[data-single-pick]').forEach(r=>r.onchange=()=>{if(pendingWager||placementBusy)return;const pick=slip[Number(r.dataset.singlePick)];if(!pick)return;singlePickKey=pick.pickKey;selectionChanged();updateSlip()});
+  document.querySelectorAll('[data-buy-points]').forEach(control=>control.onchange=()=>{
+    const i=Number(control.dataset.buyPoints),x=slip[i],target=$('buy-points-preview-'+i);
+    if(!x||!target)return;
+    const selected=Number(control.value),choice=buyPointsChoices(x)[selected];
+    target.textContent=control.value!==''&&choice?'Preview: '+(choice.line>0?'+':'')+choice.line+' at '+price(choice.odds)+'. This quote is not selected for wagering; your original bet remains unchanged.':'Your original spread or total remains selected for wagering.';
+  });
   document.querySelectorAll('[data-remove]').forEach(b=>b.onclick=()=>{if(pendingWager||placementBusy)return;slip.splice(Number(b.dataset.remove),1);selectionChanged();notice('');updateSlip();if(view==='games'||view==='live')renderGames()});
   document.querySelectorAll('[data-sel]').forEach(b=>{b.disabled=locked;b.classList.toggle('selected',selected(JSON.parse(decodeURIComponent(b.dataset.sel))))});
   $('place').disabled=placementBusy||quoteRefreshBusy||Boolean(pendingWager?.unreadable)||(!pendingWager&&(missing||tooFew||blocked||incompatible||!user||wallet===null));
@@ -436,7 +491,7 @@ renderFeatured();
 document.querySelectorAll('[data-view]').forEach(x=>{x.classList.toggle('active',x.dataset.view===view);x.classList.toggle('live-active',x.dataset.view===view&&view==='live')});
 document.querySelectorAll('[data-view]').forEach(b=>b.onclick=()=>{view=b.dataset.view;document.querySelectorAll('[data-view]').forEach(x=>{x.classList.toggle('active',x===b);x.classList.toggle('live-active',x===b&&view==='live')});event=null;propMarkets=[];loadView()});
 $('sportSelect').onchange=()=>{if($('sportSelect').value)selectSport($('sportSelect').value)};
-$('refresh').onclick=async()=>{await Promise.all([account(),loadView(),lastQuoteReason&&slip.some(x=>x.lineStatus!=='ok')?refreshSelectedQuotes(lastQuoteReason):Promise.resolve()])};$('openSlip').onclick=async()=>{$('panel').classList.add('open');await account();updateSlip()};$('closeSlip').onclick=()=>$('panel').classList.remove('open');$('single').onclick=()=>setBetMode('single');$('parlay').onclick=()=>setBetMode('parlay');$('stake').oninput=updateReturn;$('place').onclick=place;document.addEventListener('visibilitychange',()=>{if(!document.hidden){if(view==='live'){games=games.map(g=>({...g,live_state:stateFor(g)}));renderGames();loadGames()}if(pendingWager&&!placementBusy)resolvePending(true)}});supabase.auth.onAuthStateChange((_event,session)=>{setSession(session);const epoch=authEpoch;setTimeout(()=>{if(epoch===authEpoch)void account(session)},0)});await account();await loadSports();await loadView();updateSlip();if(location.hash==='#sportSelect')requestAnimationFrame(()=>$('sportSelect').scrollIntoView({block:'center'}));
+$('refresh').onclick=async()=>{await Promise.all([account(),loadView(),lastQuoteReason&&slip.some(x=>x.lineStatus!=='ok')?refreshSelectedQuotes(lastQuoteReason):Promise.resolve()])};$('openSlip').onclick=async()=>{$('panel').classList.add('open');await account();updateSlip();loadBuyPointsQuotes()};$('closeSlip').onclick=()=>$('panel').classList.remove('open');$('single').onclick=()=>setBetMode('single');$('parlay').onclick=()=>setBetMode('parlay');$('stake').oninput=updateReturn;$('place').onclick=place;document.addEventListener('visibilitychange',()=>{if(!document.hidden){if(view==='live'){games=games.map(g=>({...g,live_state:stateFor(g)}));renderGames();loadGames()}if(pendingWager&&!placementBusy)resolvePending(true)}});supabase.auth.onAuthStateChange((_event,session)=>{setSession(session);const epoch=authEpoch;setTimeout(()=>{if(epoch===authEpoch)void account(session)},0)});await account();await loadSports();await loadView();updateSlip();if(location.hash==='#sportSelect')requestAnimationFrame(()=>$('sportSelect').scrollIntoView({block:'center'}));
 }
 initializeSportsbook().catch(()=>connectionFailure(()=>location.reload()));
 </script>
