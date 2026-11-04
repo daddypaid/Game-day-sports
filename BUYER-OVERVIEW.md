@@ -46,7 +46,7 @@ GameDay is **not** represented as a licensed real-money gambling operation. The 
 
 ## Buyer / operator features
 
-- Sale Room — buyer diligence hub, suggested asking price and sale documents
+- Sale Room — buyer diligence hub, current Flippa asking range and sale documents
 - Platform Architecture — frontend/backend/data/provider boundaries
 - Buyer Readiness — transferable software vs buyer-owned and regulated-launch requirements
 - Admin Takeover — structured acquisition handoff sequence
@@ -155,4 +155,4 @@ GameDay should be marketed as a **sportsbook + casino software platform / techno
 
 ## Suggested commercial starting point
 
-The current seller-preparation package uses a **$29,500 USD suggested initial asking price** and **14 calendar days of suggested post-closing technical handoff support**. Those are negotiation defaults only and must be confirmed by the seller in the final transaction documents.
+The seller reports a current Flippa **$5,000–$7,000 USD Open to Offers** range as of November 4, 2026. The package also discusses **14 calendar days of suggested post-closing technical handoff support**. These are nonbinding negotiation assumptions; verify live listing terms and specify any final obligations in the signed purchase agreement.

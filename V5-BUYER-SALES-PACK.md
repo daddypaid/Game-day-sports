@@ -1,4 +1,4 @@
-# GameDay Sports & Casino — V5 Buyer Sales Pack
+# GameDay Sports & Casino — Buyer Software Pack
 
 ## What is being sold
 
@@ -6,18 +6,11 @@ GameDay is a transferable sportsbook-and-casino software product presented in TE
 
 The sale is for software, source code, product design, technical architecture, deployment assets, and associated documentation. It is not represented as a licensed real-money gambling business.
 
-## V5 buyer demo
+## Current buyer demo
 
-Open `gameday-v5.html` first. V5 is an account-free sales demonstration that lets a buyer:
+Open `gameday-sportsbook.html` first to review the current Sportsbook, then `gameday-casino-v2.html` for connected casino experiences. The Sportsbook includes supported Round Robin combinations, sport-specific Teaser sets and Buy Points, in addition to Single and Parlay options. A buyer must sign into an account to place actual TEST MODE wagers; browsing does not create a wager.
 
-- tap sample sportsbook odds;
-- build a single or parlay demo slip;
-- enter a demo stake;
-- see the calculated potential return;
-- create a clearly labeled demo receipt;
-- jump directly into the connected TEST MODE sportsbook, buyer walkthrough, or Sale Room.
-
-No backend wager, wallet debit, payment, or real-money transaction is created by the V5 sales demo.
+Use `gameday-buyer-demo.html` for a guided tour and `gameday-sale-room.html` for technical diligence and sale materials. The earlier `gameday-v5.html` account-free sample slip remains a historical illustrative demo, not the current product; it creates no wallet debit, payment or backend wager.
 
 ## Connected product surfaces
 
@@ -51,7 +44,7 @@ Sportsbook:
 - moneyline, spread, and total markets;
 - player-prop browsing;
 - futures browsing;
-- authenticated single/parlay test-credit bet slip;
+- authenticated Single/Parlay test-credit bet slip, Round Robin combinations, supported 4–7-point Teasers and verified Buy Points up to 2 points;
 - fresh-quote validation before supported wager placement;
 - automatic grading for documented supported markets;
 - wager history and test-wallet ledger.
@@ -85,17 +78,17 @@ Operator/buyer tooling:
 4. Existing Supabase architecture and transfer documentation, subject to the agreed infrastructure-transfer method.
 5. Buyer overview and due-diligence materials.
 6. Asset inventory and release checklist.
-7. V5 interactive sales demonstration.
+7. Current buyer walkthrough plus an optional historical V5 sample demo.
 8. Existing GitHub Actions deployment/readiness/transferability checks.
 
 ## Buyer diligence sequence
 
 Recommended review order:
 
-1. `gameday-v5.html`
-2. `gameday-buyer-demo.html`
-3. `gameday-sportsbook.html`
-4. `gameday-casino-v2.html`
+1. `gameday-sportsbook.html`
+2. `gameday-casino-v2.html`
+3. `gameday-buyer-demo.html`
+4. `gameday-sale-room.html`
 5. `gameday-auth.html`
 6. `gameday-my-bets.html`
 7. `gameday-control-center.html`
@@ -117,6 +110,6 @@ GameDay remains TEST MODE software. A buyer must independently satisfy all legal
 
 ## Suggested short listing copy
 
-GameDay is a mobile-first sportsbook and casino software platform built as a transferable TEST MODE product. The package includes a polished sportsbook, casino portfolio, test-credit wallet, authentication, wager history, automated settlement architecture, operator analytics, health monitoring, PWA support, centralized buyer configuration, and a complete acquisition-handoff package. V5 adds an instant interactive bet-slip demo so a buyer can experience the product before creating an account.
+GameDay is a mobile-first sportsbook and casino software platform built as a transferable TEST MODE product. The package includes a polished sportsbook, casino portfolio, test-credit wallet, authentication, wager history, automated settlement architecture, operator analytics, health monitoring, PWA support, centralized buyer configuration, and a complete acquisition-handoff package. The current buyer path highlights the connected Sportsbook and Casino; historical V5 sample data is labeled separately.
 
 This listing is for software/source code and related IP/assets only, not a licensed real-money gambling operation.

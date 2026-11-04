@@ -27,7 +27,7 @@ GameDay is prepared to be marketed as a **TEST MODE sportsbook + casino software
 - Baccarat present
 - Slots present
 - Poker-family customer pages present
-- V5 buyer-facing interactive demo present and intentionally isolated from backend wager creation
+- The current Sportsbook and Casino are the primary buyer-facing demo entry points; historical V5 simulated demo remains isolated from backend wager creation
 
 ### Transferability
 
@@ -89,7 +89,7 @@ Security advisor findings reviewed on 2026-09-08:
 - Acquisition Handoff Guide
 - Handoff Rehearsal
 - Buyer Release Checklist
-- Sale Room now starts buyers with the V5 interactive demo and exposes the V5 sales pack directly
+- Sale Room starts buyers at the current Sportsbook and Casino and retains the buyer software pack and technical documentation
 
 ## Known disclosures that remain intentionally open
 
@@ -110,7 +110,7 @@ These items do not prevent sale as a TEST MODE software asset, but must remain d
 
 These are suggested seller defaults, not binding transaction terms:
 
-- Asking price: **$29,500 USD**
+- Seller-reported Flippa range (November 4, 2026): **$5,000–$7,000 USD, Open to Offers**, subject to verification on Flippa
 - Suggested post-closing handoff support: **14 calendar days**
 - Transaction type: asset sale of agreed software/IP and transferable assets
 - Buyer must use buyer-controlled production infrastructure and rotate all privileged credentials

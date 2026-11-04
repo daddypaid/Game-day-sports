@@ -9,7 +9,7 @@ GameDay Sports & Casino is offered as a **TEST MODE sportsbook + casino software
 Subject to the final asset purchase agreement and ownership confirmation, the intended transfer package includes:
 
 - GameDay source repository and customer-facing web/PWA code
-- Sportsbook TEST MODE experience with pregame, live, props/futures display, bet slip, single/parlay test wagering, fresh-quote validation and automated supported settlement
+- Sportsbook TEST MODE experience with pregame, live, props/futures display, Single and Parlay wagers, Round Robin combinations, supported 4–7-point Teaser selections and verified Buy Points in 0.5-point steps up to 2.0 points, fresh-quote validation and automated supported settlement
 - Casino TEST MODE experiences including Blackjack, Roulette, Baccarat, Slots and poker-family games
 - Supabase-backed authentication, Postgres schema, RLS, Edge Functions, test-wallet ledger, wager records, casino records, provider cache and scheduled jobs
 - Buyer/operator surfaces: Control Center, Operator Analytics, System Health, Buyer Readiness, Transfer Audit, Configuration Check, Admin Takeover and Platform Architecture
@@ -17,9 +17,9 @@ Subject to the final asset purchase agreement and ownership confirmation, the in
 - Buyer handoff documentation, transfer checklist and release acceptance checklist
 - Repository artwork/assets only to the extent the seller confirms ownership and transfer rights
 
-## V5 buyer demonstration
+## Current buyer demonstration
 
-`gameday-v5.html` is the current buyer-facing V5 demonstration surface. It is designed to let a prospective buyer review the premium presentation and interact with a self-contained demo bet slip without creating an account or mutating the production TEST wallet. It is a demonstration surface only; canonical authenticated sportsbook wagering remains in `gameday-sportsbook.html`.
+Start at `gameday-sportsbook.html` for the latest customer-facing Sportsbook and at `gameday-casino-v2.html` for casino games. `gameday-buyer-demo.html` gives a guided walkthrough. Browsing is available where supported; supported TEST MODE wager placement requires the buyer to sign into an account with test credits. The historical `gameday-v5.html` sample slip remains available as a standalone simulated demonstration only and does not create backend wagers.
 
 ## Current operating state
 
@@ -43,11 +43,9 @@ GameDay does not currently accept or enable real-money deposits, withdrawals or 
 
 Position GameDay as a **sportsbook + casino software platform / technology asset** suitable for a buyer that already has, or plans to build, the regulated operating layer required for a commercial gaming launch.
 
-## Suggested asking price
+## Current Flippa price range
 
-**Suggested initial ask: $29,500 USD**
-
-This is a seller-side starting point for negotiation, not an independent appraisal. The seller may change the asking price at any time based on buyer interest, included assets, support obligations, exclusivity, traffic/revenue evidence, intellectual-property diligence and transaction structure.
+**$5,000–$7,000 USD — Open to Offers**, as stated by the seller on November 4, 2026. Confirm the current range on Flippa before negotiating; this document is not an independent appraisal, binding sale price or guaranteed valuation. The final purchase price and terms are negotiated with the buyer.
 
 ## Suggested deal structure
 
@@ -76,7 +74,7 @@ The transfer package should **not** be represented as including gambling licensu
 ## Buyer review path
 
 1. Review `BUYER-OVERVIEW.md`.
-2. Open `gameday-v5.html` for the current premium buyer demo.
+2. Open `gameday-sportsbook.html` and `gameday-casino-v2.html` to review the current customer product.
 3. Open `gameday-buyer-demo.html` for the guided acquisition walkthrough.
 4. Open `gameday-platform-architecture.html`.
 5. Open `gameday-buyer-readiness.html`.
