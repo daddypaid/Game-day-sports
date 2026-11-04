@@ -1,0 +1,18 @@
+{
+  "schema_version": 1,
+  "release_state": "staged_not_deployed",
+  "description": "Explicit, content-pinned Round Robin candidates excluded from production inventory until deployed and independently recaptured.",
+  "pending_migrations": [
+    {
+      "path": "supabase/migrations/20261104050000_sportsbook_round_robin_atomic_test_wagers.sql",
+      "git_blob_sha1": "b9bc77df2780ea260ca44c32ffb219156b786577"
+    }
+  ],
+  "pending_edge_sources": [
+    {
+      "path": "supabase/functions/place-test-wager/index.ts",
+      "git_blob_sha1": "ebf873d30c3419e5f8f1ef179dc667415c582714",
+      "deployed_sha256": "d0db924acf15324418e9dcf6798cdcb5bc4ea0094fc3f42c7f074e85463b379d"
+    }
+  ]
+}
