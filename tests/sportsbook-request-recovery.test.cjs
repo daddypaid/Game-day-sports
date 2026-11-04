@@ -137,7 +137,7 @@ function edge(f,options = {}) {
         return new Response(JSON.stringify({source:options.staleAlternate?'stored':'live',stale:Boolean(options.staleAlternate),mode:'alternate_lines',wagerable:true,event:game}));
       }
       const game = {id:'event-a',home_team:'Home',away_team:'Away',bookmakers:[{markets:[
-        {key:'h2h',outcomes:[{name:'Home',price:options.changedOdds ? -110 : 100},{name:'Away',price:100}]},
+        {key:'h2h',outcomes:[{name:'Home',price:options.invalidLiveOdds?-1:options.changedOdds ? -110 : 100},{name:'Away',price:100}]},
         {key:'spreads',outcomes:[{name:'Home',point:options.changedAnchor?-4.5:-3.5,price:-110}]},
         {key:'totals',outcomes:[{name:'Over',point:43,price:-110},{name:'Under',point:43,price:-110}]}
       ]}]};
@@ -183,6 +183,23 @@ sqlTest('Bought half-point spreads and totals validate live alternate prices and
   assert.equal(max.data.state,'accepted');assert.equal(await f.debits(),3);
   await f.db.close();
 });
+sqlTest('Invalid American odds including -1 cannot be placed or charged on Singles or Round Robins',async()=>{
+ const f=await fixture();
+ for(const bad of [-99,-1,0,1,99]){
+   const ticket=await edge(f).send({request_id:uuid(),wager_type:'single',stake:2,selections:[selection('event-a',{american_odds:bad})]});
+   assert.equal(ticket.data.code,'INVALID_REQUEST',JSON.stringify(ticket.data));
+   assert.equal(ticket.data.no_credits_charged,true);
+ }
+ const rr=['event-a','event-b','event-c'].map((event,i)=>selection(event,{american_odds:i===1?-1:100}));
+ const ticket=await edge(f).send({request_id:uuid(),wager_type:'round_robin',round_robin_legs:2,stake:2,selections:rr});
+ assert.equal(ticket.data.code,'INVALID_REQUEST');assert.equal(ticket.data.no_credits_charged,true);
+ const badLive=await edge(f,{invalidLiveOdds:true}).send({request_id:uuid(),wager_type:'single',stake:2,selections:[selection('event-a')]});
+ assert.equal(badLive.data.code,'LINE_SUSPENDED');
+ assert.equal(badLive.data.no_credits_charged,true);
+ assert.equal(await f.debits(),0);assert.equal(await f.balance(),1000);
+ await f.db.close();
+});
+
 sqlTest('Round Robin atomically creates each 2-leg parlay, charges the total, and recovers an owner-scoped group receipt',async () => {
   const f=await fixture(),e=edge(f),requestId=uuid();
   const picks=['event-a','event-b','event-c'].map(id=>selection(id,{market_key:'h2h',selection_name:'Home',american_odds:100}));
