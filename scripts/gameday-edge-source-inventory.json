@@ -1,7 +1,7 @@
 {
   "schema_version": 1,
   "project_ref": "qsvrvhcklnsbekxblpfo",
-  "observed_at": "2026-11-04T02:52:20.092Z",
+  "observed_at": "2026-11-04T03:10:15.918Z",
   "source": "Supabase list_edge_functions and get_edge_function read-only snapshots",
   "hash_algorithm": "sha256",
   "notes": [
@@ -28,17 +28,17 @@
     },
     {
       "slug": "place-test-wager",
-      "deployed_version": 13,
+      "deployed_version": 14,
       "deployed_status": "ACTIVE",
       "verify_jwt": true,
       "import_map": false,
-      "deployed_bundle_sha256": "f36e40d2abab6f82e6be1c0f73d007c49a7bc459a08ba053e884639d0c08aa5e",
+      "deployed_bundle_sha256": "068447632fbe0502d44b01d63d31d3faf27d866d69bdc94636f9d6757b99f21b",
       "source_status": "local_matches_deployment",
       "files": [
         {
           "path": "supabase/functions/place-test-wager/index.ts",
-          "deployed_sha256": "02e390ec6441262f083b9f9b56ef7bf59563fcbc1dfc3c8caf0739f610e07141",
-          "local_sha256": "02e390ec6441262f083b9f9b56ef7bf59563fcbc1dfc3c8caf0739f610e07141"
+          "deployed_sha256": "7a2cd19e4e29b8ae34fede8460acb33694d39408f88709c937667232e5fd2e5b",
+          "local_sha256": "7a2cd19e4e29b8ae34fede8460acb33694d39408f88709c937667232e5fd2e5b"
         },
         {
           "path": "supabase/functions/place-test-wager/sport-keys.ts",
