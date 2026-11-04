@@ -34,10 +34,10 @@ function marketTitle(key: string) {
   return key.replaceAll('_', ' ').replace(/\b\w/g, (c) => c.toUpperCase())
 }
 function outcomeKey(outcome: any) { return `${String(outcome?.name ?? '')}|||${String(outcome?.description ?? '')}` }
-const MODES=new Set(['sports','games','events','prop_markets','props','future_markets','futures'])
+const MODES=new Set(['sports','games','events','prop_markets','props','alternate_lines','future_markets','futures'])
 function safeToken(v:unknown,max=120){const s=clean(v,max);return /^[A-Za-z0-9_.:-]*$/.test(s)?s:''}
 function safeMarkets(v:unknown){const raw=Array.isArray(v)?v:String(v??'').split(',');return raw.map(x=>safeToken(x,80)).filter(Boolean).slice(0,20)}
-function cacheTtl(mode:string){if(mode==='sports')return 3600;if(mode==='future_markets')return 900;if(mode==='events'||mode==='prop_markets'||mode==='futures')return 300;if(mode==='props'||mode==='games')return 60;return 60}
+function cacheTtl(mode:string){if(mode==='sports')return 3600;if(mode==='future_markets')return 900;if(mode==='events'||mode==='prop_markets'||mode==='futures')return 300;if(mode==='props'||mode==='games'||mode==='alternate_lines')return 60;return 60}
 function requestCacheKey(mode:string,body:any){return JSON.stringify({mode,sport:body.sport??'',event_id:body.event_id??'',future_key:body.future_key??'',all:body.all??'',markets:body.markets??[]})}
 function filterSportsCatalog(data:any){
   if(!data||!Array.isArray(data.sports))return data
@@ -152,8 +152,9 @@ Deno.serve(async (req: Request) => {
   const all=(allRaw===true||String(allRaw).toLowerCase()==='true'||String(allRaw)==='1')?'true':''
   const markets=safeMarkets(requestUrl.searchParams.get('markets')??rawBody?.markets??rawBody?.market)
   if(requestedMode!=='sports'&&!sport)return json({error:'Sport is required'},400)
-  if(['prop_markets','props'].includes(requestedMode)&&!eventId)return json({error:'Event is required'},400)
+  if(['prop_markets','props','alternate_lines'].includes(requestedMode)&&!eventId)return json({error:'Event is required'},400)
   if(requestedMode==='props'&&!markets.length)return json({error:'At least one prop market is required'},400)
+  if(requestedMode==='alternate_lines'&&markets.some(m=>!['alternate_spreads','alternate_totals'].includes(m)))return json({error:'Unsupported alternate market'},400)
   if(requestedMode==='futures'&&!futureKey)return json({error:'Future market is required'},400)
   const body:any={mode:requestedMode}
   if(sport)body.sport=sport
