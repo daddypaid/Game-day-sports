@@ -1,5 +1,5 @@
 {
-  "captured_at": "2026-10-10",
+  "captured_at": "2026-11-04T04:55:06.893Z",
   "remote_history_mutated": false,
   "deployed_migrations": [
     {
@@ -639,6 +639,15 @@
       "source": "deployed_migration_history",
       "source_payload_sha256": "567f98f6d304b8f8a1f34882b923a6f7ee617463d5dab4aaba297b51e24c7b8f",
       "local_file_sha256": "567f98f6d304b8f8a1f34882b923a6f7ee617463d5dab4aaba297b51e24c7b8f",
+      "previous_local_path": null
+    },
+    {
+      "version": "20261104045004",
+      "name": "sportsbook_round_robin_atomic_test_wagers",
+      "path": "supabase/migrations/20261104045004_sportsbook_round_robin_atomic_test_wagers.sql",
+      "source": "deployed_migration_history",
+      "source_payload_sha256": "220578f643ee26af365fd452d389d07ee02af259b0fb10cb29bcf6695875d1df",
+      "local_file_sha256": "220578f643ee26af365fd452d389d07ee02af259b0fb10cb29bcf6695875d1df",
       "previous_local_path": null
     }
   ],

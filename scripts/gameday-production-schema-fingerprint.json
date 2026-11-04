@@ -1,20 +1,20 @@
 {
   "project_ref": "qsvrvhcklnsbekxblpfo",
-  "observed_at": "2026-10-10T13:36:41.264Z",
+  "observed_at": "2026-11-04T04:52:35.861Z",
   "read_only": true,
   "fingerprint": {
     "scope": "public_non_extension_catalog",
     "counts": {
       "type": 4,
-      "index": 90,
-      "column": 367,
+      "index": 91,
+      "column": 369,
       "policy": 14,
       "schema": 1,
-      "routine": 51,
+      "routine": 52,
       "trigger": 9,
       "relation": 39,
       "sequence": 2,
-      "constraint": 165,
+      "constraint": 166,
       "default_acl": 6
     },
     "entries": [
@@ -5295,6 +5295,36 @@
         "metadata_md5": "11bc0a738e5c09ab47ab81f823753b16"
       },
       {
+        "key": "public.wagers.round_robin_group_id",
+        "kind": "column",
+        "metadata": {
+          "acl": [],
+          "type": "uuid",
+          "storage": "p",
+          "identity": "",
+          "not_null": false,
+          "collation": null,
+          "generated": "",
+          "default_md5": null
+        },
+        "metadata_md5": "1e2a18abebda597e68c404923d702b18"
+      },
+      {
+        "key": "public.wagers.round_robin_leg_count",
+        "kind": "column",
+        "metadata": {
+          "acl": [],
+          "type": "integer",
+          "storage": "p",
+          "identity": "",
+          "not_null": false,
+          "collation": null,
+          "generated": "",
+          "default_md5": null
+        },
+        "metadata_md5": "3219993a22f9452926d581b02d9ce9f9"
+      },
+      {
         "key": "public.wagers.settled_at",
         "kind": "column",
         "metadata": {
@@ -7920,6 +7950,21 @@
         "metadata_md5": "42dd62f9641019cbb671afb830757403"
       },
       {
+        "key": "public.wagers.wagers_round_robin_metadata_check",
+        "kind": "constraint",
+        "metadata": {
+          "type": "c",
+          "validated": true,
+          "deferrable": false,
+          "no_inherit": false,
+          "definition_md5": "3ffb9c6bc5153d8c7df1c3f004234ea2",
+          "parent_constraint": null,
+          "initially_deferred": false,
+          "referenced_relation": null
+        },
+        "metadata_md5": "dcff7d5379a75dcb67010844b1ec2d19"
+      },
+      {
         "key": "public.wagers.wagers_stake_check",
         "kind": "constraint",
         "metadata": {
@@ -10444,6 +10489,27 @@
           "replica_identity": false
         },
         "metadata_md5": "434bb060f6d162816eff1f4e673a2880"
+      },
+      {
+        "key": "public.wagers_round_robin_group_idx",
+        "kind": "index",
+        "metadata": {
+          "ready": true,
+          "valid": true,
+          "method": "btree",
+          "unique": false,
+          "options": [],
+          "primary": false,
+          "relation": "public.wagers",
+          "clustered": false,
+          "exclusion": false,
+          "immediate": true,
+          "predicate_md5": "e48ac1acee6cea2a932138bb1b3bcab7",
+          "definition_md5": "e380aa829d0170338eb54ddb47c96465",
+          "expression_md5": null,
+          "replica_identity": false
+        },
+        "metadata_md5": "45566ac4cb1a0e30bf381f0a0db7fcb0"
       },
       {
         "key": "public.wagers_status_idx",
@@ -17090,6 +17156,47 @@
         "metadata_md5": "b3ae3079e413cc2a17ad71390102c6a4"
       },
       {
+        "key": "public.sportsbook_test_request_commit_round_robin(p_user_id uuid, p_request_id uuid, p_processing_token uuid, p_selections jsonb)",
+        "kind": "routine",
+        "metadata": {
+          "acl": [
+            {
+              "grantee": "postgres",
+              "grantor": "postgres",
+              "grantable": false,
+              "privilege": "EXECUTE"
+            },
+            {
+              "grantee": "service_role",
+              "grantor": "postgres",
+              "grantable": false,
+              "privilege": "EXECUTE"
+            }
+          ],
+          "cost": 100,
+          "kind": "f",
+          "rows": 0,
+          "owner": "postgres",
+          "strict": false,
+          "returns": "jsonb",
+          "body_md5": "460af772a47bc8605a227a4c911ff1c3",
+          "language": "plpgsql",
+          "parallel": "u",
+          "leakproof": false,
+          "binary_md5": null,
+          "volatility": "v",
+          "returns_set": false,
+          "arguments_md5": "461e1a7b630366c59538a8c5ad92d4d3",
+          "configuration": [
+            "search_path=public"
+          ],
+          "definition_md5": "6f8a1a253aaa9d11eddef80f630f0e71",
+          "security_definer": true,
+          "other_configuration_md5": "d41d8cd98f00b204e9800998ecf8427e"
+        },
+        "metadata_md5": "aa3c72cf513eb85ae41bf22bb641ca16"
+      },
+      {
         "key": "public.sportsbook_test_request_prepare(p_user_id uuid, p_request_id uuid, p_payload jsonb, p_processing_token uuid)",
         "kind": "routine",
         "metadata": {
@@ -17154,7 +17261,7 @@
           "owner": "postgres",
           "strict": false,
           "returns": "jsonb",
-          "body_md5": "07f397021bcc215e8b7ea979c54567a2",
+          "body_md5": "2ce81980d8998b8a4d94828a50e7dfd5",
           "language": "plpgsql",
           "parallel": "u",
           "leakproof": false,
@@ -17165,11 +17272,11 @@
           "configuration": [
             "search_path=public"
           ],
-          "definition_md5": "19851260c0d5f19166201ea9a1061ea3",
+          "definition_md5": "24fc2e09df0baa5da3ca9d29e8e8d917",
           "security_definer": true,
           "other_configuration_md5": "d41d8cd98f00b204e9800998ecf8427e"
         },
-        "metadata_md5": "d0f2ac93d5b8726efa87fe7485d9c12a"
+        "metadata_md5": "41c8dcf07f75326ea61963a515b99d27"
       },
       {
         "key": "public.sportsbook_test_request_reject(p_user_id uuid, p_request_id uuid, p_processing_token uuid, p_code text, p_message text)",
@@ -17717,7 +17824,7 @@
       }
     ],
     "ordering": "kind,key COLLATE C",
-    "schema_md5": "c67682a936e171ce1d08c4c7efe67e5f",
+    "schema_md5": "705b022417361ea76527c19947afb398",
     "schema_version": 1,
     "definition_hash_algorithm": "md5"
   }
