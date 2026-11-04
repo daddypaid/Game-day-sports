@@ -60,5 +60,5 @@ test('Historical restore evidence remains intact while the new catalog is replay
   assert.equal(evidence.live_schema_md5, 'c67682a936e171ce1d08c4c7efe67e5f', 'Historical evidence remains attributed to the old verified catalog');
   assert.notEqual(snapshot.schema_md5, evidence.live_schema_md5, 'New live catalog differs from historical proof');
   assert(snapshot.entries.some(e=>e.kind==='column'&&e.key==='public.wagers.round_robin_group_id'), 'New live catalog includes Round Robin schema');
-  assert.equal(snapshot.entries.length, evidence.catalog_entries);
+  assert.equal(snapshot.entries.length - evidence.catalog_entries, 5, 'The live Round Robin migration adds five catalog objects; historical evidence remains unchanged');
 });
