@@ -133,7 +133,7 @@ function edge(f,options = {}) {
           {key:'alternate_spreads',outcomes:[{name:'Home',point:-3,price:-120},{name:'Home',point:-2.5,price:options.changedAlternateOdds?-140:-125},{name:'Home',point:-2,price:-150}]},
           {key:'alternate_totals',outcomes:[{name:'Over',point:42.5,price:-125},{name:'Under',point:43.5,price:-125}]}
         ]}]};
-        return new Response(JSON.stringify({source:options.staleAlternate?'stored':'live',stale:Boolean(options.staleAlternate),mode:'alternate_lines',event:game}));
+        return new Response(JSON.stringify({source:options.staleAlternate?'stored':'live',stale:Boolean(options.staleAlternate),mode:'alternate_lines',wagerable:true,event:game}));
       }
       const game = {id:'event-a',home_team:'Home',away_team:'Away',bookmakers:[{markets:[
         {key:'h2h',outcomes:[{name:'Home',price:options.changedOdds ? -110 : 100},{name:'Away',price:100}]},
