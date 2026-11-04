@@ -114,11 +114,11 @@ function edge(f,options = {}) {
       return {rpc:async (name,args) => {
         try {
           const values = name.endsWith('prepare') ? [args.p_user_id,args.p_request_id,JSON.stringify(args.p_payload),args.p_processing_token]
-            : name.endsWith('commit') ? [args.p_user_id,args.p_request_id,args.p_processing_token,JSON.stringify(args.p_selections)]
+            : (name.endsWith('commit')||name.endsWith('commit_round_robin')) ? [args.p_user_id,args.p_request_id,args.p_processing_token,JSON.stringify(args.p_selections)]
             : name.endsWith('reject') ? [args.p_user_id,args.p_request_id,args.p_processing_token,args.p_code,args.p_message]
             : [args.p_user_id,args.p_request_id];
           const data = await f.rpc(name,values);
-          if (name.endsWith('commit')) { calls.commits++; if (options.loseCommitResponse) throw new Error('Commit response was lost'); }
+          if ((name.endsWith('commit')||name.endsWith('commit_round_robin'))) { calls.commits++; if (options.loseCommitResponse) throw new Error('Commit response was lost'); }
           return {data,error:null};
         } catch (error) {return {data:null,error};}
       }};
