@@ -512,13 +512,27 @@ function updateSlip(){
   updateReturn();
 }
 function updateReturn(){
-  const stake=Number(pendingWager?.payload?.stake??$('stake').value),picks=ticketSelections();
-  if(!Number.isFinite(stake)||stake<0.01||stake>100000||Math.abs(stake*100-Math.round(stake*100))>.000001||!picks.length||picks.some(changedPick)||(betType==='parlay'&&(picks.length<2||incompatibleParlay(picks)))){$('return').textContent='$0.00';return}
-  // Keep cents and American odds exact, then round half cents up as the service does.
-  let numerator=BigInt(Math.round(stake*100)),denominator=1n;
-  for(const pick of picks){const odds=BigInt(Number(pick.price)),absolute=odds<0n?-odds:odds;numerator*=absolute+100n;denominator*=odds>0n?100n:absolute}
-  const cents=(numerator*2n+denominator)/(denominator*2n);
-  $('return').textContent='$'+String(cents/100n)+'.'+String(cents%100n).padStart(2,'0');
+  const stake=Number(pendingWager?.payload?.stake??$('stake').value),picks=ticketSelections(),rr=betType==='round_robin';
+  if(rr){
+    if(!pendingWager&&(roundRobinLegs>=picks.length||roundRobinLegs<2))roundRobinLegs=2;
+    const selector=$('roundRobinLegs'),options=[];
+    for(let k=2;k<picks.length&&k<=5&&picks.length<=6;k++)options.push('<option value="'+k+'" '+(k===roundRobinLegs?'selected':'')+'>By '+k+'s ('+roundRobinWays(picks.length,k)+' wagers)</option>');
+    selector.innerHTML=options.length?options.join(''):'<option value="">Add 3–6 picks</option>';
+    selector.disabled=Boolean(pendingWager)||placementBusy||!options.length;
+  }
+  const cents=Math.round(stake*100),validStake=Number.isFinite(stake)&&stake>=0.01&&stake<=100000&&Math.abs(stake*100-cents)<0.000001;
+  const ways=rr?roundRobinWays(picks.length,roundRobinLegs):1,total=rr?ways*stake:stake;
+  if(rr)$('roundRobinBreakdown').textContent=ways?
+    ways+' combinations × '+money(validStake?stake:0)+' each = '+money(validStake?total:0)+' total test credits. Each winning combination pays separately.':
+    'Select 3–6 picks from different events to see combination costs.';
+  if(!validStake||!picks.length||picks.some(changedPick)||(['parlay','round_robin'].includes(betType)&&incompatibleParlay(picks))||
+    (betType==='parlay'&&picks.length<2)||(rr&&(!ways||total>100000||total>(wallet??0)))){
+    $('return').textContent='$0.00';return;
+  }
+  const groups=rr?roundRobinCombinations(picks,roundRobinLegs):[picks];
+  let maximum=0n;
+  for(const group of groups)maximum+=wagerReturnCents(group,cents);
+  $('return').textContent=formatReturnCents(maximum);
 }
 async function place(){
   if(placementBusy||quoteRefreshBusy)return;
