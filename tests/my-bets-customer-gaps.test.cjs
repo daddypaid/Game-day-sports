@@ -45,6 +45,28 @@ async function open(t,{sdkFailures=0,sdkHang=false,sdkNestedFailure=false,fastTi
 async function ready(page,owner='A'){await page.waitForFunction(owner=>document.querySelector('#openBets').textContent.includes(owner+' private pick')&&document.querySelector('#status').textContent.includes(owner+'@example.invalid'),owner)}
 async function hidden(page,owner='A'){const text=await page.locator('main').textContent();assert(!text.includes(owner+' private'),text);assert(!text.includes(owner+'@example.invalid'),text)}
 async function flush(page){await page.waitForTimeout(60)}
+function roundRobinFixture(statuses=['won','lost','void'],tag='A private'){
+  const groupId='11111111-1111-4111-8111-111111111111',
+    combos=[['event-a','event-b'],['event-a','event-c'],['event-b','event-c']];
+  const wagers=combos.map((events,i)=>({
+    id:'rr-'+i,round_robin_group_id:groupId,round_robin_leg_count:2,
+    wager_type:'parlay',stake:'2.00',potential_return:'8.00',status:statuses[i],
+    placed_at:'2026-10-10T12:00:00Z',
+    wager_selections:events.map(e=>({event_id:e,event_name:e,selection_name:tag+' '+e,
+      point:null,market_key:'h2h',american_odds:100}))
+  }));
+  const wallet_transactions=[];
+  if(statuses[0]==='won')wallet_transactions.push({wager_id:'rr-0',transaction_type:'wager_credit',amount:'8.00'});
+  if(statuses[2]==='void')wallet_transactions.push({wager_id:'rr-2',transaction_type:'refund',amount:'2.00'});
+  return {wagers,wallet_transactions};
+}
+async function setRoundRobin(page,fixture){
+  await page.waitForFunction(()=>__callbacks.length===1);
+  await page.evaluate(data=>{__fixtures.A=data;__emit('SIGNED_IN',__user('A'))},fixture);
+  await page.waitForFunction(()=>document.querySelector('#roundRobinBets .rr-group')&&document.querySelector('#status').textContent.includes('A@example.invalid'));
+}
+async function rrMetric(page,name){return page.locator('#roundRobinBets [data-rr-metric="'+name+'"] .value').textContent()}
+
 test('failed SDK import has a usable Retry Connection that reloads the document',async t=>{
   const {page:p,imports,urls}=await open(t,{sdkFailures:1});await p.waitForFunction(()=>refresh.textContent==='Retry Connection'&&!refresh.disabled);assert.match(await p.locator('#status').textContent(),/Unable to connect/);await Promise.all([p.waitForEvent('domcontentloaded'),p.click('#refresh')]);await ready(p);assert.equal(imports(),2);assert.equal(urls[0],urls[1]);assert.equal(await p.locator('#refresh').textContent(),'Refresh Bets');
 });
@@ -72,6 +94,104 @@ test('stalled getSession is bounded and does not leave Checking or Refresh locke
 test('stalled account verification is bounded and late completion does not reveal old data',async t=>{
   const {page:p}=await open(t,{fastTimeout:true,gateVerify:['A']});await p.waitForFunction(()=>document.querySelector('#status').textContent.includes('Unable to verify or refresh'));await hidden(p);assert(await p.locator('#refresh').isEnabled());await p.evaluate(()=>__release('verify','A'));await flush(p);await hidden(p);await p.click('#refresh');await ready(p);
 });
+test('Three Round Robin tickets appear as one summary with ledger-based win/loss/void amounts',async t=>{
+  const {page:p}=await open(t,{signedOut:true});
+  await setRoundRobin(p,roundRobinFixture());
+  assert.equal(await p.locator('#roundRobinBets .rr-group').count(),1);
+  assert.equal(await p.locator('#openBets .bet').count(),0);
+  assert.equal(await p.locator('#settledBets .bet').count(),0);
+  assert.match(await p.locator('#roundRobinBets .rr-title').textContent(),/By 2s/);
+  assert.match(await p.locator('#roundRobinBets [data-rr-counts]').textContent(),/3 combinations · 1 won · 1 lost · 1 void · 0 canceled · 0 pending/);
+  assert.equal(await p.locator('#roundRobinBets .pill.settled').first().textContent(),'SETTLED');
+  assert.equal(await rrMetric(p,'stake'),'$6.00');
+  assert.equal(await rrMetric(p,'return'),'$10.00');
+  assert.equal(await rrMetric(p,'net'),'+$4.00');
+  assert.equal(await rrMetric(p,'count'),'3 / 3');
+  assert.equal(await p.locator('#roundRobinBets .rr-child').count(),3);
+  await p.locator('#roundRobinBets .rr-details summary').click();
+  assert(await p.locator('#roundRobinBets .rr-details').evaluate(el=>el.open));
+  assert.match(await p.locator('#roundRobinBets .rr-details').textContent(),/A private event-a/);
+  assert.equal(await p.evaluate(()=>document.documentElement.scrollWidth<=innerWidth+2),true);
+});
+test('Mixed settled and pending combinations show credits so far but no premature net profit',async t=>{
+  const {page:p}=await open(t,{signedOut:true});
+  await setRoundRobin(p,roundRobinFixture(['won','lost','pending']));
+  assert.equal(await rrMetric(p,'stake'),'$6.00');
+  assert.equal(await rrMetric(p,'return'),'$8.00');
+  assert.equal(await rrMetric(p,'net'),'—');
+  assert.equal(await p.locator('#roundRobinBets .pill.open').first().textContent(),'OPEN');
+  assert.match(await p.locator('#roundRobinBets .rr-note').textContent(),/after every combination settles/);
+  await p.evaluate(()=>{
+    __fixtures.A.wagers[2].status='void';
+    __fixtures.A.wallet_transactions.push({wager_id:'rr-2',transaction_type:'refund',amount:'2.00'});
+  });
+  await p.click('#refresh');
+  await p.waitForFunction(()=>document.querySelector('#roundRobinBets [data-rr-metric="net"] .value')?.textContent==='+$4.00');
+  assert.equal(await rrMetric(p,'return'),'$10.00');
+  assert.equal(await p.locator('#roundRobinBets .pill.settled').first().textContent(),'SETTLED');
+});
+test('Round Robin cannot claim a final net if a ticket is missing or a winning credit has not posted',async t=>{
+  const {page:p}=await open(t,{signedOut:true});
+  const fixture=roundRobinFixture();
+  fixture.wagers.pop();fixture.wallet_transactions.pop();
+  await setRoundRobin(p,fixture);
+  assert.equal(await rrMetric(p,'stake'),'—');
+  assert.equal(await rrMetric(p,'net'),'—');
+  assert.equal(await rrMetric(p,'count'),'2 / 3');
+  assert.match(await p.locator('#roundRobinBets .rr-note').textContent(),/tickets or selection details could not be verified/);
+  await p.evaluate(()=>{
+    __fixtures.A=JSON.parse(JSON.stringify(__fixtures.A));
+    __fixtures.A.wagers.push({id:'rr-2',round_robin_group_id:'11111111-1111-4111-8111-111111111111',round_robin_leg_count:2,
+      wager_type:'parlay',stake:'2.00',potential_return:'8.00',status:'void',
+      placed_at:'2026-10-10T12:00:00Z',
+      wager_selections:[{event_id:'event-b',selection_name:'A private event-b'},{event_id:'event-c',selection_name:'A private event-c'}]});
+  });
+  await p.click('#refresh');
+  await p.waitForFunction(()=>document.querySelector('#roundRobinBets .rr-note')?.textContent.includes('missing its expected credit'));
+  assert.equal(await rrMetric(p,'net'),'—');
+});
+test('Round Robin return and profit stay unknown when wallet settlement ledger is unavailable',async t=>{
+  const {page:p}=await open(t,{signedOut:true});
+  await setRoundRobin(p,roundRobinFixture());
+  await p.evaluate(()=>{__ledgerError={status:503,message:'Ledger temporarily unavailable'}});
+  await p.click('#refresh');
+  await p.waitForFunction(()=>document.querySelector('#status').textContent.includes('Return amounts unavailable'));
+  assert.equal(await rrMetric(p,'return'),'—');
+  assert.equal(await rrMetric(p,'net'),'—');
+  assert.match(await p.locator('#roundRobinBets .rr-note').textContent(),/Settlement\/refund ledger unavailable/);
+});
+test('Round Robin grouping never leaks A tickets after account switches to B or signs out',async t=>{
+  const {page:p}=await open(t,{signedOut:true});
+  await setRoundRobin(p,roundRobinFixture());
+  await p.evaluate(()=>__emit('SIGNED_IN',__user('B')));
+  await ready(p,'B');
+  assert(await p.locator('#roundRobinSection').isHidden());
+  assert.equal(await p.locator('#roundRobinBets').textContent(),'');
+  await hidden(p,'A');
+  await p.evaluate(()=>__emit('SIGNED_OUT',null));
+  await p.waitForFunction(()=>document.querySelector('#status').textContent.includes('Sign in'));
+  assert(await p.locator('#roundRobinSection').isHidden());
+  assert.equal(await p.locator('#roundRobinBets').textContent(),'');
+});
+test('Four-leg source slip grouping preserves tickets when By 3s produces four separate parlays',async t=>{
+  const {page:p}=await open(t,{signedOut:true});
+  const combos=[['a','b','c'],['a','b','d'],['a','c','d'],['b','c','d']];
+  const wagers=combos.map((events,i)=>({
+    id:'rr4-'+i,round_robin_group_id:'22222222-2222-4222-8222-222222222222',
+    round_robin_leg_count:3,wager_type:'parlay',stake:'1.00',potential_return:'8.00',
+    status:['won','lost','won','void'][i],placed_at:'2026-10-10T12:00:00Z',
+    wager_selections:events.map(event_id=>({event_id,selection_name:'A private '+event_id,market_key:'h2h',american_odds:100}))
+  }));
+  const wallet_transactions=[{wager_id:'rr4-0',transaction_type:'wager_credit',amount:'8.00'},
+    {wager_id:'rr4-2',transaction_type:'wager_credit',amount:'8.00'},
+    {wager_id:'rr4-3',transaction_type:'refund',amount:'1.00'}];
+  await setRoundRobin(p,{wagers,wallet_transactions});
+  assert.equal(await rrMetric(p,'count'),'4 / 4');
+  assert.equal(await rrMetric(p,'stake'),'$4.00');
+  assert.equal(await rrMetric(p,'return'),'$17.00');
+  assert.equal(await rrMetric(p,'net'),'+$13.00');
+});
+
 test('cancelled Actual Return comes from refund ledger, without adding stake or potential return',async t=>{
   const {page:p}=await open(t,{signedOut:true});await p.waitForFunction(()=>__callbacks.length===1);await p.evaluate(()=>{
     const row=(id,status)=>({id,wager_type:'single',stake:7,potential_return:21,status,placed_at:'2026-10-10T12:00:00Z',wager_selections:[{selection_name:id,event_name:'Fixture',market_key:'h2h',american_odds:200}]});
