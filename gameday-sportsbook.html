@@ -411,7 +411,7 @@ function loadBuyPointsQuotes(){
       let entry;
       try{
         const data=await timed(api({mode:'alternate_lines',sport:x.sport,event_id:String(x.eventId),markets:[marketKey]}),15000);
-        const valid=data?.mode==='alternate_lines'&&data?.source==='live'&&data?.stale!==true&&data?.wagerable===false&&String(data?.event?.id)===String(x.eventId);
+        const valid=data?.mode==='alternate_lines'&&data?.source==='live'&&data?.stale!==true&&data?.wagerable===true&&String(data?.event?.id)===String(x.eventId);
         entry={status:valid?'ready':'unavailable',event:valid?data.event:null,at:Date.now(),nonce};
       }catch{entry={status:'unavailable',event:null,at:Date.now(),nonce}}
       if(buyPointsQuotes.get(key)?.nonce!==nonce)return;
