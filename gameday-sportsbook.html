@@ -469,23 +469,46 @@ function bindBuyPointsControls(){
     slipMessage('Buy Points selected. Review the adjusted line, odds and new potential return before placing your test wager.','notice');
   });
 }
+function roundRobinWays(n,k){
+  if(!Number.isInteger(n)||!Number.isInteger(k)||n<3||n>6||k<2||k>=n)return 0;
+  let total=1;for(let i=1;i<=k;i++)total=total*(n-i+1)/i;return total;
+}
+function roundRobinCombinations(picks,k){
+  const combos=[],group=[];
+  function choose(start){if(group.length===k){combos.push(group.slice());return}
+    for(let i=start;i<=picks.length-(k-group.length);i++){group.push(picks[i]);choose(i+1);group.pop()}}
+  choose(0);return combos;
+}
+function wagerReturnCents(picks,cents){
+  let numerator=BigInt(cents),denominator=1n;
+  for(const pick of picks){const odds=BigInt(Number(pick.price)),abs=odds<0n?-odds:odds;
+    numerator*=abs+100n;denominator*=odds>0n?100n:abs}
+  return (numerator*2n+denominator)/(denominator*2n);
+}
+function formatReturnCents(cents){return '$'+String(cents/100n)+'.'+String(cents%100n).padStart(2,'0')}
 function updateSlip(){
   syncBetMode();
   const locked=Boolean(pendingWager)||placementBusy,picks=ticketSelections(),blocked=picks.some(changedPick),
-    tooFew=betType==='parlay'&&picks.length<2,incompatible=betType==='parlay'&&incompatibleParlay(picks),missing=!picks.length;
+    tooFew=(betType==='parlay'&&picks.length<2)||(betType==='round_robin'&&picks.length<3),tooMany=betType==='round_robin'&&picks.length>6,incompatible=['parlay','round_robin'].includes(betType)&&incompatibleParlay(picks),missing=!picks.length;
   $('count').textContent=slip.length;
   $('buyPointsBadge').hidden=!slip.some(x=>['spreads','totals'].includes(x.market));
-  for(const mode of ['single','parlay']){const button=$(mode);button.disabled=locked;button.classList.toggle('active',betType===mode);button.setAttribute('aria-pressed',String(betType===mode))}
+  for(const mode of ['single','parlay','round_robin']){const button=$(mode);button.disabled=locked;button.classList.toggle('active',betType===mode);button.setAttribute('aria-pressed',String(betType===mode))}
   $('stake').disabled=locked;
-  $('betModeHelp').textContent=betType==='single'?'Choose one pick below. Only that pick is wagered; your other picks stay in this slip.':tooFew?'Add at least two picks from different events to place a parlay.':incompatible?'Parlays require different events. Remove a conflicting pick, or switch to Single.':`${picks.length} picks on one parlay ticket.`;
+  $('stakeLabel').textContent=betType==='round_robin'?'Stake per combination':'Stake';
+  $('stakeLimits').textContent=betType==='round_robin'?'Each combination: $0.01–$100,000. Total across all combinations cannot exceed your balance or $100,000.':'Stake: $0.01–$100,000 per wager, up to your available balance. Use cents only.';
+  $('roundRobinSettings').hidden=betType!=='round_robin';
+  $('returnLabel').textContent=betType==='round_robin'?'Max Potential Return':'Potential Return';
+  $('betModeHelp').textContent=betType==='single'?'Choose one pick below. Only that pick is wagered; your other picks stay in this slip.':
+    betType==='round_robin'?(tooFew?'Select 3–6 picks from different events to create a Round Robin.':tooMany?'Round Robin supports a maximum of 6 picks.':incompatible?'Round Robin requires one selection per event.':'Every combination becomes its own parlay ticket; partial winners can return credits.'):
+    tooFew?'Add at least two picks from different events to place a parlay.':incompatible?'Parlays require different events. Remove a conflicting pick, or switch to Single.':picks.length+' picks on one parlay ticket.';
   $('slipItems').innerHTML=slip.length?slip.map((x,i)=>`<div class="slip-item ${x.lineStatus&&x.lineStatus!=='ok'?'stale':''} ${betType==='single'&&x.pickKey===singlePickKey?'chosen':''}">${betType==='single'?`<label class="single-choice"><input type="radio" name="singlePick" data-single-pick="${i}" ${x.pickKey===singlePickKey?'checked':''} ${locked?'disabled':''}><span>Bet ${esc(x.name)}${x.description?' — '+esc(x.description):''} individually</span></label>`:''}<div style="font-size:12px;color:#aab6ae;margin-bottom:6px">${esc(x.event)}</div><div class="slip-row"><div><strong>${['h2h','spreads'].includes(x.market)?teamLabel(x.name,x.sport,{fallback:false}):esc(x.name)} ${esc(x.point??'')}</strong><div>${esc(x.marketTitle)} • ${price(x.price)}</div></div><button class="remove" data-remove="${i}" ${locked?'disabled':''}>Remove</button></div>${buyPointsSlipControl(x,i)}${warningFor(x)}</div>`).join(''):'<div class="empty">Select a GameDay line to add it to your bet slip.</div>';
   hydrateTeamLogos($('slipItems'));
   document.querySelectorAll('[data-single-pick]').forEach(r=>r.onchange=()=>{if(pendingWager||placementBusy)return;const pick=slip[Number(r.dataset.singlePick)];if(!pick)return;singlePickKey=pick.pickKey;selectionChanged();updateSlip()});
   bindBuyPointsControls();
   document.querySelectorAll('[data-remove]').forEach(b=>b.onclick=()=>{if(pendingWager||placementBusy)return;slip.splice(Number(b.dataset.remove),1);selectionChanged();notice('');updateSlip();if(view==='games'||view==='live')renderGames()});
   document.querySelectorAll('[data-sel]').forEach(b=>{b.disabled=locked;b.classList.toggle('selected',selected(JSON.parse(decodeURIComponent(b.dataset.sel))))});
-  $('place').disabled=placementBusy||quoteRefreshBusy||Boolean(pendingWager?.unreadable)||(!pendingWager&&(missing||tooFew||blocked||incompatible||!user||wallet===null));
-  $('place').textContent=placementBusy?'Checking wager...':pendingWager?(pendingWager.state==='not_found'?'Retry This Wager':'Check Wager'):tooFew?'Add Another Pick':incompatible?'Use Different Events':blocked?'Review Changed Line':'Place Test Wager';
+  $('place').disabled=placementBusy||quoteRefreshBusy||Boolean(pendingWager?.unreadable)||(!pendingWager&&(missing||tooFew||tooMany||blocked||incompatible||!user||wallet===null));
+  $('place').textContent=placementBusy?'Checking wager...':pendingWager?(pendingWager.state==='not_found'?'Retry This Wager':'Check Wager'):tooFew?'Add Another Pick':tooMany?'Maximum 6 Picks':incompatible?'Use Different Events':blocked?'Review Changed Line':'Place Test Wager';
   updateReturn();
 }
 function updateReturn(){
