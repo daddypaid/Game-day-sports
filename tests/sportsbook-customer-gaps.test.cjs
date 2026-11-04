@@ -204,6 +204,50 @@ test('Round Robin blocks the total if combined stake exceeds wallet without send
  assert.equal(await p.evaluate(()=>__f.calls.length),0);
 });
 
+test('iPhone bet slip retains a three-column betting-mode row and properly spaced controls in light theme',async t=>{
+  const {p}=await open(t,{roundRobinEvents:2});
+  for(let i=0;i<3;i++)await p.locator('.card').nth(i).locator('.odd').first().click();
+  await p.click('#openSlip');await p.click('#round_robin');await p.fill('#stake','2');
+  const layout=await p.evaluate(()=>{
+    const box=e=>e.getBoundingClientRect(),tabs=document.querySelector('.tabs'),
+      buttons=[...tabs.querySelectorAll('button')].map(box),body=document.querySelector('.panel-body'),
+      pick=document.querySelector('.slip-item'),settings=document.querySelector('#roundRobinSettings'),
+      stake=document.querySelector('#stake'),place=document.querySelector('#place');
+    return {columns:getComputedStyle(tabs).gridTemplateColumns.trim().split(/\s+/).length,display:getComputedStyle(tabs).display,
+      tabs:buttons.map(x=>({top:x.top,left:x.left,right:x.right,width:x.width,height:x.height})),
+      cardPadding:parseFloat(getComputedStyle(pick).paddingLeft),cardRadius:parseFloat(getComputedStyle(pick).borderTopLeftRadius),
+      settingsWidth:box(settings).width,stakeWidth:box(stake).width,placeWidth:box(place).width,
+      bodyWidth:box(body).width,documentWidth:document.documentElement.scrollWidth,windowWidth:window.innerWidth};
+  });
+  assert.equal(layout.display,'grid');assert.equal(layout.columns,3);
+  assert(layout.tabs.every(x=>x.height>=40&&x.width>=60));
+  assert(layout.tabs.every(x=>Math.abs(x.top-layout.tabs[0].top)<=2),'Tabs must share one horizontal row');
+  assert(layout.tabs[0].right<layout.tabs[1].left&&layout.tabs[1].right<layout.tabs[2].left,'Tabs must not overlap');
+  assert(layout.cardPadding>=10&&layout.cardRadius>=8,'Each bet must be presented in a padded card');
+  assert(layout.stakeWidth>=layout.bodyWidth-60,'Stake input should fill the card');
+  assert(layout.placeWidth>=layout.bodyWidth-65,'Wager action should be a full-width tap target');
+  assert(layout.documentWidth<=layout.windowWidth+2,'Mobile layout must not overflow horizontally');
+  assert.equal(await p.locator('#return').textContent(),'$24.00');
+});
+test('iPhone Buy Points selector is vertically stacked inside the selected team card',async t=>{
+  const {p}=await open(t);
+  await p.locator('[data-market="spreads"]').first().click();
+  await p.locator('.odd').first().click();
+  await p.click('#openSlip');
+  await p.locator('.slip-item .buy-points-preview select').waitFor();
+  const geometry=await p.evaluate(()=>{
+    const b=e=>e.getBoundingClientRect(),wrap=document.querySelector('.slip-item .buy-points-preview'),
+      label=wrap.querySelector('label'),select=wrap.querySelector('select'),help=wrap.querySelector('small'),card=document.querySelector('.slip-item');
+    return {wrap:b(wrap).toJSON(),label:b(label).toJSON(),select:b(select).toJSON(),help:b(help).toJSON(),
+      card:b(card).toJSON(),display:getComputedStyle(wrap).display,selectDisplay:getComputedStyle(select).display};
+  });
+  assert.equal(geometry.display,'block');assert.equal(geometry.selectDisplay,'block');
+  assert(geometry.select.top>=geometry.label.bottom+3,'Select must be below label');
+  assert(geometry.help.top>=geometry.select.bottom+3,'Help must be below select');
+  assert(geometry.select.width>=geometry.wrap.width-35,'Buy Points selector must span its card');
+  assert(geometry.wrap.left>=geometry.card.left&&geometry.wrap.right<=geometry.card.right+1,'Buy Points must not exceed selection card');
+});
+
 test('Mobile sportsbook reveals the Buy Points dropdown inline after selecting a spread, without opening the bet slip',async t=>{
  const {p}=await open(t);
  await p.locator('[data-market="spreads"]').first().click();
