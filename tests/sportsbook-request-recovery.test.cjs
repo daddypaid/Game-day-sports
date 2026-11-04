@@ -126,7 +126,20 @@ function edge(f,options = {}) {
       calls.freshQuotes++; const body = JSON.parse(opts.body);
       assert.equal(body.sport,'americanfootball_nfl');
       if (options.failQuotes) throw new Error('Quote provider unavailable');
-      const game = {id:'event-a',home_team:'Home',away_team:'Away',bookmakers:[{markets:[{key:'h2h',outcomes:[{name:'Home',price:options.changedOdds ? -110 : 100},{name:'Away',price:100}]}]}]};
+      const alternate = body.mode==='alternate_lines';
+      if(alternate){
+        if(options.failAlternateQuotes)throw new Error('Alternate price feed unavailable');
+        const game={id:'event-a',home_team:'Home',away_team:'Away',bookmakers:[{markets:[
+          {key:'alternate_spreads',outcomes:[{name:'Home',point:-3,price:-120},{name:'Home',point:-2.5,price:options.changedAlternateOdds?-140:-125},{name:'Home',point:-2,price:-150}]},
+          {key:'alternate_totals',outcomes:[{name:'Over',point:42.5,price:-125},{name:'Under',point:43.5,price:-125}]}
+        ]}]};
+        return new Response(JSON.stringify({source:options.staleAlternate?'stored':'live',stale:Boolean(options.staleAlternate),mode:'alternate_lines',event:game}));
+      }
+      const game = {id:'event-a',home_team:'Home',away_team:'Away',bookmakers:[{markets:[
+        {key:'h2h',outcomes:[{name:'Home',price:options.changedOdds ? -110 : 100},{name:'Away',price:100}]},
+        {key:'spreads',outcomes:[{name:'Home',point:options.changedAnchor?-4.5:-3.5,price:-110}]},
+        {key:'totals',outcomes:[{name:'Over',point:43,price:-110},{name:'Under',point:43,price:-110}]}
+      ]}]};
       return new Response(JSON.stringify({games:[game]}));
     },
   });
@@ -148,6 +161,43 @@ sqlTest('Authenticated endpoint recovers committed response loss without fresh o
   assert.equal((await edge(f,{user:other}).send({request_id:id,recover:true})).data.state,'not_found');
   assert.equal((await edge(f,{unauthorized:true}).send({request_id:id,recover:true})).status,401);
   assert.equal(await f.balance(),990); await f.db.close();
+});
+sqlTest('Bought half-point spreads and totals validate live alternate prices and settle through standard market records',async () => {
+  const f=await fixture();
+  const bet=extra=>selection('event-a',{market_key:'spreads',selection_name:'Home',point:-2.5,american_odds:-125,original_point:-3.5,buy_points:true,...extra});
+  const e=edge(f);
+  const first=await e.send({request_id:uuid(),wager_type:'single',stake:10,selections:[bet()]});
+  assert.equal(first.data.state,'accepted');assert.equal(await f.debits(),1);assert.equal(await f.balance(),990);
+  const stored=(await f.db.query('select market_key,point,american_odds from wager_selections where wager_id=$1',[first.data.wager.id])).rows[0];
+  assert.equal(stored.market_key,'spreads');assert.equal(Number(stored.point),-2.5);assert.equal(stored.american_odds,-125);
+  assert.equal(first.data.wager.potential_return,18);
+  const total=edge(f).send({request_id:uuid(),wager_type:'single',stake:5,selections:[selection('event-a',{
+    market_key:'totals',selection_name:'Over',point:42.5,american_odds:-125,original_point:43,buy_points:true
+  })]});
+  const second=await total;assert.equal(second.data.state,'accepted');assert.equal(await f.debits(),2);
+  const totalRow=(await f.db.query('select market_key,point from wager_selections where wager_id=$1',[second.data.wager.id])).rows[0];
+  assert.equal(totalRow.market_key,'totals');assert.equal(Number(totalRow.point),42.5);
+  await f.db.close();
+});
+sqlTest('Buy Points reject invented prices, moved original lines, unavailable feeds and invalid increments without charging',async () => {
+  const f=await fixture();
+  const bet=extra=>selection('event-a',{market_key:'spreads',selection_name:'Home',point:-2.5,american_odds:-125,original_point:-3.5,buy_points:true,...extra});
+  const attempts=[
+    [edge(f,{changedAlternateOdds:true}),bet(), 'LINE_CHANGED'],
+    [edge(f,{changedAnchor:true}),bet(), 'LINE_CHANGED'],
+    [edge(f,{failAlternateQuotes:true}),bet(), 'PLACEMENT_REJECTED'],
+    [edge(f,{staleAlternate:true}),bet(), 'LINE_SUSPENDED'],
+    [edge(f),bet({point:-2.75}), 'INVALID_REQUEST'],
+    [edge(f),bet({point:-4}), 'INVALID_REQUEST'],
+    [edge(f),bet({original_point:-6.5}), 'LINE_CHANGED']
+  ];
+  for(const [e,pick,expected] of attempts){
+    const r=await e.send({request_id:uuid(),wager_type:'single',stake:10,selections:[pick]});
+    assert.equal(r.data.code,expected);
+    assert.equal(r.data.no_credits_charged,true);
+  }
+  assert.equal(await f.debits(),0);assert.equal(await f.balance(),1000);
+  await f.db.close();
 });
 sqlTest('Endpoint durably rejects unsupported sports/props, same-event parlays, changed odds and quote outages without debit',async () => {
   const f = await fixture();
