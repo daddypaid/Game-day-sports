@@ -251,12 +251,17 @@ async function refreshSelectedQuotes(reason=''){
   // A board request begun before server rejection must not restore an older quote.
   if((view==='games'||view==='live')&&ticketSelections().some(x=>x.sport===currentSport&&['h2h','spreads','totals'].includes(x.market)))boardSequence++;
   const board={generation:boardGeneration,sequence:boardSequence,sport:currentSport,view};
-  const targets=ticketSelections().map(item=>({item,beforeId:item.id})),standard=new Map(),props=new Map();
+  const targets=ticketSelections().map(item=>({item,beforeId:item.id})),standard=new Map(),props=new Map(),alternates=new Map();
   quoteRefreshBusy=true;lastQuoteReason=reason;
   targets.forEach(({item:x})=>{
     x.lineStatus='needs_refresh';
     if(['h2h','spreads','totals'].includes(x.market)){
       if(!standard.has(x.sport))standard.set(x.sport,[]);standard.get(x.sport).push(x);
+      if(x.buyPoints===true){
+        const marketKey=x.market==='spreads'?'alternate_spreads':'alternate_totals',key=buyPointsQuoteKey(x);
+        if(!alternates.has(key))alternates.set(key,{items:[],sport:x.sport,body:{mode:'alternate_lines',sport:x.sport,event_id:String(x.eventId),markets:[marketKey]}});
+        alternates.get(key).items.push(x);
+      }
     }else if(propWagerable(x.market,x.sport)){
       const key=JSON.stringify([x.sport,String(x.eventId)]);
       if(!props.has(key))props.set(key,[]);props.get(key).push(x);
@@ -267,6 +272,7 @@ async function refreshSelectedQuotes(reason=''){
   const current=()=>sequence===quoteRefreshSequence&&generation===selectionGeneration&&ownerIsCurrent(owner,epoch)&&!pendingWager&&targets.every(({item,beforeId})=>slip.includes(item)&&item.id===beforeId);
   try{
     const jobs=[...standard.entries()].map(([sport,items])=>({items,sport,body:{mode:'games',sport}}));
+    jobs.push(...alternates.values());
     for(const items of props.values()){
       const markets=[...new Set(items.map(x=>x.market))];
       for(let i=0;i<markets.length;i+=8){const chunk=markets.slice(i,i+8);jobs.push({items:items.filter(x=>chunk.includes(x.market)),body:{mode:'props',sport:items[0].sport,event_id:String(items[0].eventId),markets:chunk}})}
@@ -275,6 +281,13 @@ async function refreshSelectedQuotes(reason=''){
     if(!current())return;
     const checked=new Set();let visibleGames=null;
     jobs.forEach((job,i)=>{
+      if(job.body.mode!=='alternate_lines')return;
+      const result=results[i],data=result.status==='fulfilled'?result.value:null;
+      const x=job.items[0],key=buyPointsQuoteKey(x),valid=data?.mode==='alternate_lines'&&data?.source==='live'&&data?.stale!==true&&data?.wagerable===false&&String(data?.event?.id)===String(x.eventId);
+      buyPointsQuotes.set(key,{status:valid?'ready':'unavailable',event:valid?data.event:null,at:Date.now(),nonce:crypto.randomUUID()});
+    });
+    jobs.forEach((job,i)=>{
+      if(job.body.mode==='alternate_lines')return;
       const result=results[i],data=result.status==='fulfilled'?result.value:null;
       const candidates=job.body.mode==='games'?(Array.isArray(data?.games)?data.games:[]):data?.event?[data.event]:[];
       job.items.forEach(x=>{checked.add(x);applySelectionQuote(x,candidates.find(g=>String(g.id)===String(x.eventId)))});
@@ -322,6 +335,7 @@ function syncSlipWithGames(){
   });
   if(updated)slipMessage(updated+' selection'+(updated===1?' was':'s were')+' automatically updated to current quoted lines. Review the recalculated potential return before placing your test wager.','notice');
   updateSlip();
+  if($('panel').classList.contains('open'))loadBuyPointsQuotes();
 }
 function renderGame(g){const b=g.bookmakers?.[0],m=market(b,gameMarket),eventName=`${g.away_team} @ ${g.home_team}`,live=isLive(g),marketBody=m?.outcomes?.length?`<div class="book"><div class="book-name">GameDay Sports</div><div class="odds">${m.outcomes.map(o=>odd({eventId:g.id,event:eventName,sport:g._sport||currentSport,market:gameMarket,marketTitle:title(gameMarket),name:o.name,description:o.description||'',point:o.point??null,price:o.price})).join('')}</div></div>`:live?'<div class="suspended">SUSPENDED<small>Market temporarily unavailable. Waiting for the next live quote.</small></div>':'<div class="empty">No line available.</div>';return `<div class="card ${live?'live-card':''}"><div class="card-head"><div class="time">${dt(g.commence_time)}${live?'<span class="inplay">IN-PLAY</span>':''}</div>${live?`<div class="game-state"><strong>${liveStateText(g)}</strong></div>`:''}<div class="team">${teamLabel(g.away_team,currentSport,{fallback:!isCombatSport()})}<span class="team-right"><span class="score">${live?esc(scoreFor(g,g.away_team)):''}</span><span class="tag">AWAY</span></span></div><div class="team">${teamLabel(g.home_team,currentSport,{fallback:!isCombatSport()})}<span class="team-right"><span class="score">${live?esc(scoreFor(g,g.home_team)):''}</span><span class="tag">HOME</span></span></div></div><div class="market-tabs">${['h2h','spreads','totals'].map(k=>`<button class="market ${gameMarket===k?'active':''}" data-market="${k}">${title(k)}</button>`).join('')}</div><div class="books">${marketBody}</div></div>`}
 function renderGames(){const list=view==='live'?games.filter(isLive):games.filter(g=>!isLive(g)),isMlb=['mlb','baseball'].includes(String(currentSport).toLowerCase()),isCombat=isCombatSport(),stale=Boolean(oddsMeta.stale),notice=oddsMeta.notice?`<div class="notice">${esc(oddsMeta.notice)}</div>`:'',empty=view==='live'?`No in-play ${esc(sportLabel(currentSport))} betting lines right now.`:isMlb?'No current MLB games are available. The stored MLB schedule is stale or the live provider quota is unavailable; GameDay is not fabricating matchups. Use Refresh when the provider is available.':isCombat?`No current ${esc(sportLabel(currentSport))} betting lines are available from the live provider. No bouts or odds have been fabricated.`:'No upcoming games are currently available.';content.innerHTML=notice+(!gradingSport(currentSport)?'<div class="notice">VIEW ONLY — wagering is unavailable for this sport until automatic grading is verified.</div>':'')+(list.length?list.map(renderGame).join(''):`<div class="empty">${empty}</div>`);status.textContent=(view==='live'?`${list.length} live games • updates every 15s${list.some(g=>!liveTimeAvailable(g))?' • score/clock updates unavailable':''}`:`${list.length} upcoming games`)+(stale?' • stale data shown':'');document.querySelectorAll('[data-market]').forEach(b=>b.onclick=()=>{gameMarket=b.dataset.market;renderGames()});bindOdds();scheduleLiveExpiry()}
@@ -375,10 +389,12 @@ function buyPointsChoices(x){
   return [...new Map(candidates.map(o=>[String(o.line),o])).values()].sort((a,b)=>a.points-b.points).slice(0,12);
 }
 function applyBuyPointsQuote(x,g){
-  if(!g||g.completed||String(g.id)!==String(x.eventId)){quoteUnavailable(x);return false}
-  const base=g.bookmakers?.[0]?.markets?.find(m=>m.key===x.market)?.outcomes||[];
-  const anchor=base.find(o=>norm(o.name)===norm(x.name)&&norm(o.description||'')===norm(x.description||'')&&samePoint(o.point,x.buyPointsOriginal));
-  if(!anchor){quoteUnavailable(x);return false}
+  if(g&&(g.completed||String(g.id)!==String(x.eventId))){quoteUnavailable(x);return false}
+  if(g){
+    const base=g.bookmakers?.[0]?.markets?.find(m=>m.key===x.market)?.outcomes||[];
+    const anchor=base.find(o=>norm(o.name)===norm(x.name)&&norm(o.description||'')===norm(x.description||'')&&samePoint(o.point,x.buyPointsOriginal));
+    if(!anchor){quoteUnavailable(x);return false}
+  }else if(x.sport===currentSport){quoteUnavailable(x);return false}
   const options=buyPointsChoices(x),current=options.find(o=>samePoint(o.line,x.point));
   if(!current){x.lineStatus='needs_refresh';x.currentPrice=null;x.currentPoint=null;return false}
   x.price=current.odds;x.currentPrice=current.odds;x.currentPoint=current.line;
@@ -400,6 +416,12 @@ function loadBuyPointsQuotes(){
       }catch{entry={status:'unavailable',event:null,at:Date.now(),nonce}}
       if(buyPointsQuotes.get(key)?.nonce!==nonce)return;
       buyPointsQuotes.set(key,entry);
+      if(!pendingWager){
+        for(const selected of slip.filter(s=>s.buyPoints===true&&buyPointsQuoteKey(s)===key)){
+          const g=games.find(g=>String(g.id)===String(selected.eventId));
+          applyBuyPointsQuote(selected,g);
+        }
+      }
       if($('panel').classList.contains('open'))updateSlip();
     })();
   }
