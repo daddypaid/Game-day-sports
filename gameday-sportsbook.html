@@ -476,18 +476,18 @@ function teaserLeague(x){return gradingSport(x?.sport)}
 function teaserPriceFor(picks,points){
   const sport=teaserLeague(picks[0]);
   const value=TEASER_TABLE[sport]?.[String(points)]?.[picks.length];
-  return Number.isInteger(value)&&Math.abs(value)>=100?value:null;
+  return points>=4&&points<=7&&Number.isInteger(value)&&Math.abs(value)>=100?value:null;
 }
 function teaserOptions(picks){
   const sport=teaserLeague(picks[0]),table=TEASER_TABLE[sport];
   if(!table||picks.length<2||picks.length>6)return [];
   return Object.entries(table).map(([point,tier])=>({point:Number(point),odds:tier[picks.length]}))
-    .filter(item=>Number.isInteger(item.odds)&&Math.abs(item.odds)>=100)
+    .filter(item=>item.point>=4&&item.point<=7&&Number.isInteger(item.odds)&&Math.abs(item.odds)>=100)
     .sort((a,b)=>a.point-b.point);
 }
 function teaserDisplayLabel(picks,option){
-  const sport=teaserLeague(picks[0]),prefix=Number(option.point)>=10&&sport?.startsWith('americanfootball_')?'Sweetheart ':'';
-  return prefix+(TEASER_LEAGUE_NAME[sport]||'Teaser')+' '+option.point+' points · '+price(option.odds);
+  const sport=teaserLeague(picks[0]);
+  return (TEASER_LEAGUE_NAME[sport]||'Teaser')+' '+option.point+' points · '+price(option.odds);
 }
 function teasedPoint(x,points){
   const original=Number(x?.point);

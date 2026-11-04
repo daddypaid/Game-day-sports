@@ -23,6 +23,7 @@ const TEASER_PRICES:Record<string,Record<string,Record<number,number>>>={
   basketball_nba:TEASER_BASKETBALL,basketball_ncaab:TEASER_BASKETBALL,basketball_wnba:TEASER_BASKETBALL
 };
 function teaserPrice(sport:string,points:number,legs:number):number|null{
+  if(!Number.isFinite(points)||points<4||points>7)return null;
   const n=TEASER_PRICES[sport]?.[String(points)]?.[legs];
   return Number.isInteger(n)&&Math.abs(n)>=100?n:null;
 }
@@ -92,7 +93,7 @@ Deno.serve(async (req: Request) => {
       (wagerType === 'round_robin' && (selections.length < 3 || selections.length > 6)) ||
       (wagerType === 'teaser' && (selections.length < 2 || selections.length > 6))) throw new Error('Invalid selection count');
     const teaserPoints=Number(body?.teaser_points);
-    if(wagerType==='teaser'&&(![4,4.5,5,6,6.5,7,8,9,10,11].includes(teaserPoints)))throw new Error('Unsupported Teaser point set');
+    if(wagerType==='teaser'&&(![4,4.5,5,6,6.5,7].includes(teaserPoints)))throw new Error('Unsupported Teaser point set');
     const rrLegs=Number(body?.round_robin_legs),rrWays=wagerType==='round_robin'?roundRobinWays(selections.length,rrLegs):0;
     if(wagerType==='round_robin'&&(!rrWays||rrWays>20||stake*rrWays>100000))throw new Error('Round Robin requires 3–6 picks and 2 to N−1 legs per combination; total cost cannot exceed 100,000 test credits');
     const validationTime = new Date().toISOString();
