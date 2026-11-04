@@ -333,7 +333,7 @@ function playSound(kind) {
 function sync() {
   ui.info.setAttribute('aria-label', 'Paytable, game rules and wager limits');
   ui.wallet.textContent = user && balance !== null ? money(balance) : '—';
-  ui['bet-line'].textContent = money(lineBet());
+  ui['bet-line'].textContent = money(totalBet());
   ui['total-bet'].textContent = money(totalBet());
   ui['total-bet'].title = 'Total bet: $2.00–$200.00 in $2.00 steps. Wager limits are in Info.';
   ui['free-spins'].textContent = `${bonusProgress.used} / ${bonusProgress.total}`;
