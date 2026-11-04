@@ -453,7 +453,7 @@ function updateSlip(){
     const x=slip[Number(control.dataset.buyPoints)];
     if(!x||pendingWager||placementBusy)return;
     if(control.value===''){
-      if(x.buyPoints){x.point=x.buyPointsOriginal;x.price=x.buyPointsBasePrice;delete x.buyPoints;delete x.buyPointsOriginal;delete x.buyPointsBasePrice;x.id=selId(x);x.lineStatus='needs_refresh';selectionChanged();updateSlip();void refreshSelectedQuotes('Original line restored.');}
+      if(x.buyPoints){x.point=x.buyPointsOriginal;x.price=x.buyPointsBasePrice;delete x.buyPoints;delete x.buyPointsOriginal;delete x.buyPointsBasePrice;x.id=selId(x);x.lineStatus='needs_refresh';selectionChanged();updateSlip();}
       return;
     }
     const choice=buyPointsChoices(x)[Number(control.value)];
