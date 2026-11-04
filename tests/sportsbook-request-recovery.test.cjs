@@ -410,3 +410,93 @@ test('Settlement uses one canonical provider fetch for short aliases and raw Wor
   assert(calls.fetches.some(u => u.includes('/basketball_nba/scores/'))); assert(calls.fetches.some(u => u.includes('/soccer_germany_bundesliga/scores/')));
   assert(calls.settlements.every(({args}) => args.p_result === 'won' && args.p_credit === 20));
 });
+
+function teaserLeg(event,points=6){
+  return selection(event,{market_key:'spreads',market_title:'Spread',selection_name:'Home',
+    point:-3.5+points,american_odds:-110,teaser_original_point:-3.5});
+}
+function teaserRequest(events,points=6,stake=10){
+  return {request_id:uuid(),wager_type:'teaser',teaser_points:points,stake,
+    selections:events.map(e=>teaserLeg(e,points))};
+}
+async function teaserGrades(f,wagerId,results){
+  const selected=(await f.db.query('select id,event_id from public.wager_selections where wager_id=$1 order by event_id',[wagerId])).rows;
+  return selected.map(x=>({selection_id:x.id,result:results[x.event_id]}));
+}
+sqlTest('Two-leg 6-point football Teaser quotes -135, debits exactly once and stores original lines',async()=>{
+  const f=await fixture(),e=edge(f),body=teaserRequest(['event-a','event-b'],6,10);
+  const first=await e.send(body);
+  assert.equal(first.data.state,'accepted',JSON.stringify(first.data));
+  assert.equal(first.data.wager.wager_type,'teaser');
+  assert.equal(Number(first.data.wager.stake),10);
+  assert.equal(Number(first.data.wager.potential_return),17.41);
+  assert.equal(first.data.wager.teaser_points,6);
+  assert.equal(first.data.wager.teaser_american_odds,-135);
+  assert.equal(await f.balance(),990);
+  assert.equal(await f.debits(),1);
+  assert.equal(e.calls.commits,1);
+  const dbTicket=(await f.db.query('select wager_type,teaser_points,teaser_american_odds from public.wagers where id=$1',[first.data.wager.id])).rows[0];
+  assert.deepEqual(dbTicket,{wager_type:'parlay',teaser_points:6,teaser_american_odds:-135});
+  const legs=(await f.db.query('select point,teaser_original_point from public.wager_selections where wager_id=$1',[first.data.wager.id])).rows;
+  assert.equal(legs.length,2);
+  assert(legs.every(x=>Number(x.point)===2.5&&Number(x.teaser_original_point)===-3.5));
+  const replay=await e.send(body);
+  assert.equal(replay.data.wager.id,first.data.wager.id);
+  assert.equal(await f.balance(),990);
+  assert.equal(await f.debits(),1);
+  assert.equal((await edge(f,{user:other}).send({request_id:body.request_id,recover:true})).data.state,'not_found');
+  await f.db.close();
+});
+sqlTest('Seven-point football Teasers use their own test-price tier and reject stale or fabricated lines',async()=>{
+  const f=await fixture(),e=edge(f),body=teaserRequest(['event-a','event-b'],7,15);
+  const accepted=await e.send(body);
+  assert.equal(accepted.data.state,'accepted',JSON.stringify(accepted.data));
+  assert.equal(Number(accepted.data.wager.potential_return),25);
+  assert.equal(accepted.data.wager.teaser_american_odds,-150);
+  assert.equal(await f.balance(),985);assert.equal(await f.debits(),1);
+  const cases=[
+    {client:edge(f),request:teaserRequest(['event-a','event-a'])},
+    {client:edge(f),request:{...teaserRequest(['event-a','event-b']),teaser_points:6,
+      selections:[teaserLeg('event-a',6),teaserLeg('event-b',6)].map(x=>({...x,point:x.point+1}))}},
+    {client:edge(f),request:{...teaserRequest(['event-a','event-b']),selections:[teaserLeg('event-a',6),teaserLeg('event-b',6)].map(x=>({...x,buy_points:true}))}},
+    {client:edge(f,{changedAnchor:true}),request:teaserRequest(['event-a','event-b'])},
+    {client:edge(f,{staleGames:true}),request:teaserRequest(['event-a','event-b'])}
+  ];
+  for(const item of cases){
+    const outcome=await item.client.send(item.request);
+    assert.notEqual(outcome.data.state,'accepted',JSON.stringify(outcome));
+    assert.equal(outcome.data.no_credits_charged,true,JSON.stringify(outcome));
+  }
+  assert.equal(await f.balance(),985);assert.equal(await f.debits(),1);
+  await f.db.close();
+});
+sqlTest('Three-leg football Teaser push reduces to verified two-leg payout, with no duplicate credit',async()=>{
+  const f=await fixture(),e=edge(f),body=teaserRequest(['event-a','event-b','event-c'],6,10);
+  const placed=await e.send(body);
+  assert.equal(placed.data.state,'accepted',JSON.stringify(placed.data));
+  assert.equal(Number(placed.data.wager.potential_return),24);
+  await addProductionSettlementToFixture(f);
+  const grades=await teaserGrades(f,placed.data.wager.id,{'event-a':'won','event-b':'won','event-c':'void'});
+  const result=await f.db.query('select * from public.settle_test_wager_auto_atomic($1,$2,$3,$4::jsonb)',[placed.data.wager.id,'won',17.41,JSON.stringify(grades)]);
+  assert.equal(result.rows[0].status,'won');
+  assert.equal(Number(result.rows[0].credited_amount),17.41);
+  assert.equal(await f.balance(),1007.41);
+  await assert.rejects(f.db.query('select * from public.settle_test_wager_auto_atomic($1,$2,$3,$4::jsonb)',[placed.data.wager.id,'won',17.41,JSON.stringify(grades)]),/already settled/);
+  assert.equal(await f.balance(),1007.41);
+  await f.db.close();
+});
+sqlTest('Teaser with a push leaving one winner refunds stake; altered payout cannot credit wallet',async()=>{
+  const f=await fixture(),e=edge(f),body=teaserRequest(['event-a','event-b'],6,10);
+  const placed=await e.send(body);
+  assert.equal(placed.data.state,'accepted',JSON.stringify(placed.data));
+  await addProductionSettlementToFixture(f);
+  const grades=await teaserGrades(f,placed.data.wager.id,{'event-a':'won','event-b':'void'});
+  await assert.rejects(f.db.query('select * from public.settle_test_wager_auto_atomic($1,$2,$3,$4::jsonb)',[placed.data.wager.id,'won',17.41,JSON.stringify(grades)]),/Overall wager result/);
+  await assert.rejects(f.db.query('select * from public.settle_test_wager_auto_atomic($1,$2,$3,$4::jsonb)',[placed.data.wager.id,'void',11,JSON.stringify(grades)]),/Teaser settlement credit/);
+  assert.equal(await f.balance(),990);
+  const settled=await f.db.query('select * from public.settle_test_wager_auto_atomic($1,$2,$3,$4::jsonb)',[placed.data.wager.id,'void',10,JSON.stringify(grades)]);
+  assert.equal(settled.rows[0].status,'void');
+  assert.equal(Number(settled.rows[0].credited_amount),10);
+  assert.equal(await f.balance(),1000);
+  await f.db.close();
+});
