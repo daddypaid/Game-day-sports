@@ -25,8 +25,8 @@ test.before(async () => {
 });
 test.after(async () => { await browser?.close(); await new Promise(resolve => server.close(resolve)); });
 
-async function open(t, { sport = 'nfl', payload, clock = false } = {}) {
- const fixture = { payload: payload || feed(sport), failure: false, requests: [], held: [], response: null };
+async function open(t, { sport = 'nfl', payload, clock = false, gamesFixture = null } = {}) {
+ const fixture = { payload: payload || feed(sport), gamesFixture, failure: false, requests: [], held: [], response: null };
  const context = await browser.newContext({ viewport: { width: 390, height: 844 }, serviceWorkers: 'block' });
  t.after(async () => { fixture.held.splice(0).forEach(release => release()); await context.setOffline(true); await context.unrouteAll({ behavior: 'wait' }); await context.close(); });
  const page = await context.newPage(), errors = []; page.on('pageerror', error => errors.push(error.message));
@@ -47,7 +47,7 @@ async function open(t, { sport = 'nfl', payload, clock = false } = {}) {
   const body = route.request().postDataJSON(); fixture.requests.push(body);
   let result;
   if (body.mode === 'sports') result = { sports: ['nfl', 'nba', 'mls', 'nhl', 'mlb', 'tennis_atp'].map(key => ({ key, group: 'Fixture', title: key, active: true })) };
-  else if (body.mode === 'games') result = { games: [game(body.sport)] };
+  else if (body.mode === 'games') result = { games: fixture.gamesFixture ? (body.sport === 'basketball_nba_preseason' ? [] : fixture.gamesFixture) : [game(body.sport)] };
   else {
    if (fixture.response) result = await fixture.response(body.sport);
    else result = structuredClone(fixture.payload);
@@ -181,4 +181,23 @@ test('a different scheduled game between the same teams cannot lend its clock', 
 test('provider labels are rendered as text, with no injected markup', async t => {
  const { page } = await open(t, { payload: feed('nfl', [state('nfl', { period: '<img src=x onerror=alert(1)>', clock: '<b>08:42</b>' })]) });
  assert.equal(await label(page), '<img src=x onerror=alert(1)> · <b>08:42</b>'); assert.equal(await page.locator('.game-state img,.game-state b').count(), 0);
+});
+
+test('NBA game cards refuse synthetic quarter-point spreads and display valid half-point quotes',async t=>{
+ const g=game('nba');
+ g.sport_key='basketball_nba';
+ g.bookmakers[0].markets.push({key:'spreads',outcomes:[
+  {name:'Fixture Home',point:-2.25,price:-110},
+  {name:'Fixture Away',point:2.25,price:-110}
+ ]});
+ const {page,fixture}=await open(t,{sport:'nba',gamesFixture:[g]});
+ await page.locator('[data-market="spreads"]').first().click();
+ assert.equal(await page.locator('.odd').count(),0,'Invalid quarter-point NBA lines must not be selectable');
+ fixture.gamesFixture[0].bookmakers[0].markets[1].outcomes=[
+  {name:'Fixture Home',point:-2.5,price:-110},
+  {name:'Fixture Away',point:2.5,price:-110}
+ ];
+ await page.click('#refresh');
+ await page.waitForFunction(()=>document.querySelectorAll('#content .odd').length===2);
+ assert.deepEqual(await page.locator('.odd-point').allTextContents(),['-2.5','2.5']);
 });
