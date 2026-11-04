@@ -24,7 +24,7 @@
   layer.dataset.dealPhase = 'idle';
   artwork.appendChild(layer);
   const status = document.getElementById(actions.get('deal').getAttribute('aria-describedby'));
-  if (status && !['holdem','omaha','stud','draw'].includes(game)) status.textContent = 'Card dealing is ready. Gameplay is still building.';
+  if (status && !['holdem','omaha','stud','draw'].includes(game)) status.textContent = '';
   const announcement = document.createElement('p');
   announcement.className = 'gd-deal-announcement';
   announcement.setAttribute('aria-live', 'polite');
@@ -458,7 +458,7 @@
       groups.player.slots = groups.dealer.slots = 2;
       setPhase('initial');
       if (!await dealCards([item('player'), item('dealer'), item('player'), item('dealer', false)], token)) return;
-      announcement.textContent = 'Two cards dealt to each hand. Hit deals another card; Stand reveals the dealer card.';
+      announcement.textContent = 'Cards dealt.';
     } else if (game === 'baccarat') {
       groups.player.slots = groups.banker.slots = 3;
       if (!await dealCards([item('player'), item('banker'), item('player'), item('banker')], token)) return;
@@ -475,24 +475,24 @@
         if (drawBanker && !await dealCards([item('banker')], token)) return;
       }
       setPhase('complete');
-      announcement.textContent = 'Baccarat hands dealt, including third cards when required. Gameplay is still building.';
+      announcement.textContent = 'Cards dealt.';
     } else if (game === 'jacks' || game === 'draw') {
       groups.player.slots = 5;
       setPhase('initial');
       if (!await dealCards(cards('player', 5), token)) return;
-      announcement.textContent = game === 'jacks' ? 'Five cards dealt. Select cards to hold, then Draw.' : 'Five cards dealt. Select cards to discard, then Draw.';
+      announcement.textContent = 'Five cards dealt.';
     } else if (game === 'holdem' || game === 'omaha') {
       const count = game === 'omaha' ? 4 : 2;
       groups.player.slots = count;
       groups.board.slots = 5;
       setPhase('initial');
       if (!await dealCards(cards('player', count), token)) return;
-      announcement.textContent = `${count} hole cards dealt. Deal Flop adds three community cards.`;
+      announcement.textContent = `${count} cards dealt.`;
     } else {
       groups.player.slots = 7;
       setPhase('third');
       if (!await dealCards([item('player', false), item('player', false), item('player')], token)) return;
-      announcement.textContent = 'Two face-down cards and one face-up card dealt. Deal 4th continues the hand.';
+      announcement.textContent = 'Cards dealt.';
     }
   }
   async function perform(name, token) {
@@ -503,7 +503,7 @@
         if (!await dealCards(cards('board', count), token)) return;
         setPhase(next);
         if (next === 'river') completedPreview();
-        else announcement.textContent = `${next[0].toUpperCase() + next.slice(1)} dealt. Deal continues the community cards.`;
+        else announcement.textContent = `${next[0].toUpperCase() + next.slice(1)} dealt.`;
       } else if (game === 'stud' && ['third','fourth','fifth','sixth','seventh'].includes(phase)) {
         if (phase === 'seventh') {
           reveal('player');
@@ -513,7 +513,7 @@
           const next = { third:'fourth', fourth:'fifth', fifth:'sixth', sixth:'seventh' }[phase];
           if (!await dealCards([item('player', next !== 'seventh')], token)) return;
           setPhase(next);
-          announcement.textContent = `${next[0].toUpperCase() + next.slice(1)} card dealt${next === 'seventh' ? ' face down. Show Cards reveals them.' : ' face up.'}`;
+          announcement.textContent = `${next[0].toUpperCase() + next.slice(1)} card dealt.`;
         }
       } else await initialDeal(token);
     } else if (name === 'hit' || name === 'double') {
@@ -523,11 +523,11 @@
         reveal('dealer');
         setPhase('complete');
       }
-      announcement.textContent = name === 'double' ? 'One additional card dealt. No wager was changed.' : 'One additional card dealt.';
+      announcement.textContent = 'Card dealt.';
     } else if (name === 'stand') {
       reveal('dealer');
       setPhase('complete');
-      announcement.textContent = 'Dealer card revealed. Gameplay is still building.';
+      announcement.textContent = 'Dealer card revealed.';
     } else if (name === 'draw') {
       const replacements = groups.player.cards.flatMap((entry, index) => (game === 'jacks' ? !entry.selected : entry.selected) ? [item('player', true, index)] : []);
       if (!await dealCards(replacements, token)) return;
@@ -547,7 +547,7 @@
       groups.player.cards.forEach(entry => { entry.selected = select; });
       refreshCards();
       updateControls();
-      announcement.textContent = select ? 'All five cards selected to discard. Tap a card to keep it.' : 'All five cards kept. Tap cards to select them for discard.';
+      announcement.textContent = select ? 'Five cards selected.' : 'Cards kept.';
       return;
     }
     if (!['deal','hit','double','stand','draw'].includes(name)) return;

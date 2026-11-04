@@ -152,12 +152,8 @@
         input.dataset.gdCustomBound='1';
         input.addEventListener('blur',()=>normalizeAmount(input));
       }
-      if (!input.nextElementSibling?.classList?.contains('gameday-custom-hint')){
-        const hint=document.createElement('div');
-        hint.className='gameday-custom-hint';
-        hint.textContent='Custom bet: type any whole $ amount';
-        input.insertAdjacentElement('afterend',hint);
-      }
+      // Old releases injected a tutorial beneath the amount box.
+      if (input.nextElementSibling?.classList?.contains('gameday-custom-hint')) input.nextElementSibling.remove();
     });
   }
 
