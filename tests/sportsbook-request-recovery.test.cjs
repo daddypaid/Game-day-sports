@@ -18,6 +18,12 @@ async function fixture() {
   await db.exec(fs.readFileSync(path.join(__dirname,'fixtures/sportsbook-placement-baseline.sql'),'utf8'));
   await db.exec(fs.readFileSync(path.join(root,'supabase/migrations/20261010110728_sportsbook_durable_requests_and_safe_parlays.sql'),'utf8'));
   await db.exec(fs.readFileSync(path.join(root,'supabase/migrations/20261104045004_sportsbook_round_robin_atomic_test_wagers.sql'),'utf8'));
+  // The isolated baseline adds grading columns separately, so first load the
+  // wager schema and commit RPC, then replace settlement after that setup.
+  const teaserSQL=fs.readFileSync(path.join(root,'supabase/migrations/20261104133500_add_football_teaser_test_wagers.sql'),'utf8');
+  const settleIndex=teaserSQL.indexOf('-- Keep all preexisting settlement invariants');
+  assert(settleIndex>0);
+  await db.exec(teaserSQL.slice(0,settleIndex));
   await db.query('insert into auth.users values($1),($2)',[user,other]);
   await db.query('insert into wallets(user_id,balance) values($1,1000),($2,1000)',[user,other]);
   const rpc = async (name,args) => (await db.query(`select public.${name}(${args.map((_,i) => '$'+(i+1)).join(',')}) as result`,args)).rows[0].result;
@@ -32,7 +38,7 @@ async function fixture() {
 const sqlTest = (name,fn) => test(name,{skip:PGlite ? false : 'Set GAMEDAY_PGLITE_MODULE for PostgreSQL verification.'},fn);
 sqlTest('Sportsbook receipt storage and all privileged RPCs are inaccessible to browser roles',async () => {
   const f = await fixture();
-  for (const signature of ['sportsbook_test_request_receipt(uuid,uuid)','sportsbook_test_request_prepare(uuid,uuid,jsonb,uuid)',
+  for (const signature of ['sportsbook_test_request_commit_teaser(uuid,uuid,uuid,jsonb)','sportsbook_test_request_receipt(uuid,uuid)','sportsbook_test_request_prepare(uuid,uuid,jsonb,uuid)',
     'sportsbook_test_request_reject(uuid,uuid,uuid,text,text)','sportsbook_test_request_commit(uuid,uuid,uuid,jsonb)','sportsbook_test_request_commit_round_robin(uuid,uuid,uuid,jsonb)']) {
     const rights = (await f.db.query("select has_function_privilege('anon',$1,'EXECUTE') as anon,has_function_privilege('authenticated',$1,'EXECUTE') as customer,has_function_privilege('service_role',$1,'EXECUTE') as service",[signature])).rows[0];
     assert.deepEqual(rights,{anon:false,customer:false,service:true});
@@ -114,11 +120,11 @@ function edge(f,options = {}) {
       return {rpc:async (name,args) => {
         try {
           const values = name.endsWith('prepare') ? [args.p_user_id,args.p_request_id,JSON.stringify(args.p_payload),args.p_processing_token]
-            : (name.endsWith('commit')||name.endsWith('commit_round_robin')) ? [args.p_user_id,args.p_request_id,args.p_processing_token,JSON.stringify(args.p_selections)]
+            : (name.endsWith('commit')||name.endsWith('commit_round_robin')||name.endsWith('commit_teaser')) ? [args.p_user_id,args.p_request_id,args.p_processing_token,JSON.stringify(args.p_selections)]
             : name.endsWith('reject') ? [args.p_user_id,args.p_request_id,args.p_processing_token,args.p_code,args.p_message]
             : [args.p_user_id,args.p_request_id];
           const data = await f.rpc(name,values);
-          if ((name.endsWith('commit')||name.endsWith('commit_round_robin'))) { calls.commits++; if (options.loseCommitResponse) throw new Error('Commit response was lost'); }
+          if ((name.endsWith('commit')||name.endsWith('commit_round_robin')||name.endsWith('commit_teaser'))) { calls.commits++; if (options.loseCommitResponse) throw new Error('Commit response was lost'); }
           return {data,error:null};
         } catch (error) {return {data:null,error};}
       }};
@@ -136,13 +142,13 @@ function edge(f,options = {}) {
         ]}]};
         return new Response(JSON.stringify({source:options.staleAlternate?'stored':'live',stale:Boolean(options.staleAlternate),mode:'alternate_lines',wagerable:true,event:game}));
       }
-      const game = {id:'event-a',home_team:'Home',away_team:'Away',bookmakers:[{markets:[
+      const game = {id:'event-a',home_team:'Home',away_team:'Away',commence_time:new Date(Date.now()+3600000).toISOString(),bookmakers:[{markets:[
         {key:'h2h',outcomes:[{name:'Home',price:options.invalidLiveOdds?-1:options.changedOdds ? -110 : 100},{name:'Away',price:100}]},
         {key:'spreads',outcomes:[{name:'Home',point:options.changedAnchor?-4.5:-3.5,price:-110}]},
         {key:'totals',outcomes:[{name:'Over',point:43,price:-110},{name:'Under',point:43,price:-110}]}
       ]}]};
-      const others=['event-b','event-c','event-d','event-e','event-f'].map(id=>({id,home_team:'Home',away_team:'Away',bookmakers:[{markets:[{key:'h2h',outcomes:[{name:'Home',price:100},{name:'Away',price:110}]}]}]}));
-      return new Response(JSON.stringify({games:[game,...others]}));
+      const others=['event-b','event-c','event-d','event-e','event-f'].map(id=>({id,home_team:'Home',away_team:'Away',commence_time:new Date(Date.now()+3600000).toISOString(),bookmakers:[{markets:[{key:'h2h',outcomes:[{name:'Home',price:100},{name:'Away',price:110}]},{key:'spreads',outcomes:[{name:'Home',point:-3.5,price:-110}]}]}]}));
+      return new Response(JSON.stringify({source:options.staleGames?'stored':'live',stale:Boolean(options.staleGames),mode:'games',games:[game,...others]}));
     },
   });
   new vm.Script(executable('supabase/functions/place-test-wager/index.ts')).runInContext(context);
@@ -240,6 +246,10 @@ async function addProductionSettlementToFixture(f) {
   const end=source.indexOf('-- Internal grading state.');
   assert(end>0,'Production settlement source must contain the exact function and its grants');
   await f.db.exec(source.slice(0,end));
+  const teaser=fs.readFileSync(path.join(root,'supabase/migrations/20261104133500_add_football_teaser_test_wagers.sql'),'utf8');
+  const cut=teaser.indexOf('-- Keep all preexisting settlement invariants');
+  assert(cut>0);
+  await f.db.exec(teaser.slice(cut));
   const rights=(await f.db.query("select has_function_privilege('service_role','public.settle_test_wager_auto_atomic(uuid,text,numeric,jsonb)','EXECUTE') as service,has_function_privilege('authenticated','public.settle_test_wager_auto_atomic(uuid,text,numeric,jsonb)','EXECUTE') as browser")).rows[0];
   assert.deepEqual(rights,{service:true,browser:false});
 }
