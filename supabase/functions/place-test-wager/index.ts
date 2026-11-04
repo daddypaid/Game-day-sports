@@ -2,6 +2,30 @@ import "jsr:@supabase/functions-js/edge-runtime.d.ts";
 import { createClient } from "npm:@supabase/supabase-js@2.115.0";
 import { resolveGradingSport, isFootballGradingSport, isMlbGradingSport } from "./sport-keys.ts";
 const cors={"Access-Control-Allow-Origin":"*","Access-Control-Allow-Headers":"authorization, x-client-info, apikey, content-type","Access-Control-Allow-Methods":"POST, OPTIONS","Content-Type":"application/json"};
+// Three-leg sport-specific TEST MODE prices come from the owner-supplied
+// menu references, not from live bookmaker teaser quotes. Only priced
+// combinations are eligible for placement.
+const TEASER_NFL:Record<string,Record<number,number>>={
+  '6':{2:-135,3:145,4:240,5:333,6:500},'6.5':{3:135},
+  '7':{2:-150,3:120,4:180,5:250,6:350},'8':{3:100},
+  '9':{3:-115},'10':{3:-130},'11':{3:-155}
+};
+const TEASER_NCAAF:Record<string,Record<number,number>>={
+  '6':{2:-115,3:180,4:260,5:475,6:750},'6.5':{3:165},
+  '7':{2:-125,3:150,4:230,5:380,6:600},'8':{3:125},
+  '9':{3:105},'10':{3:-110},'11':{3:-125}
+};
+const TEASER_BASKETBALL:Record<string,Record<number,number>>={
+  '4':{3:180},'4.5':{3:160},'5':{3:150},'6':{3:125},'7':{3:100}
+};
+const TEASER_PRICES:Record<string,Record<string,Record<number,number>>>={
+  americanfootball_nfl:TEASER_NFL,americanfootball_ncaaf:TEASER_NCAAF,
+  basketball_nba:TEASER_BASKETBALL,basketball_ncaab:TEASER_BASKETBALL,basketball_wnba:TEASER_BASKETBALL
+};
+function teaserPrice(sport:string,points:number,legs:number):number|null{
+  const n=TEASER_PRICES[sport]?.[String(points)]?.[legs];
+  return Number.isInteger(n)&&Math.abs(n)>=100?n:null;
+}
 const MAX_BUY_POINTS=2;
 const STANDARD=new Set(['h2h','spreads','totals']);
 function roundRobinWays(n:number,k:number){if(!Number.isInteger(n)||!Number.isInteger(k)||n<3||n>6||k<2||k>=n)return 0;let ways=1;for(let i=1;i<=k;i++)ways=ways*(n-i+1)/i;return ways}
@@ -68,7 +92,7 @@ Deno.serve(async (req: Request) => {
       (wagerType === 'round_robin' && (selections.length < 3 || selections.length > 6)) ||
       (wagerType === 'teaser' && (selections.length < 2 || selections.length > 6))) throw new Error('Invalid selection count');
     const teaserPoints=Number(body?.teaser_points);
-    if(wagerType==='teaser'&&(![6,7].includes(teaserPoints)))throw new Error('Football Teaser must adjust all legs by 6 or 7 points');
+    if(wagerType==='teaser'&&(![4,4.5,5,6,6.5,7,8,9,10,11].includes(teaserPoints)))throw new Error('Unsupported Teaser point set');
     const rrLegs=Number(body?.round_robin_legs),rrWays=wagerType==='round_robin'?roundRobinWays(selections.length,rrLegs):0;
     if(wagerType==='round_robin'&&(!rrWays||rrWays>20||stake*rrWays>100000))throw new Error('Round Robin requires 3–6 picks and 2 to N−1 legs per combination; total cost cannot exceed 100,000 test credits');
     const validationTime = new Date().toISOString();
@@ -93,7 +117,7 @@ Deno.serve(async (req: Request) => {
         const expected=market==='spreads'?teaserOriginalPoint+teaserPoints:
            side==='over'?teaserOriginalPoint-teaserPoints:
            side==='under'?teaserOriginalPoint+teaserPoints:NaN;
-        if(!Number.isFinite(expected)||Math.abs(point-expected)>0.000001)throw new Error('Invalid Teaser adjustment: every leg must move in the selected direction by 6 or 7 points');
+        if(!Number.isFinite(expected)||Math.abs(point-expected)>0.000001)throw new Error('Invalid Teaser adjustment: every leg must move by the selected point set');
       }
       let originalPoint:number|null=null;
       if(bought){
@@ -129,8 +153,8 @@ Deno.serve(async (req: Request) => {
       (!STANDARD.has(s.market_key) && !isSupportedProp(s.market_key,s.sport_key)));
     if(wagerType==='teaser'&&(
       new Set(normalized.map((s:any)=>s.sport_key)).size!==1||
-      normalized.some((s:any)=>!['americanfootball_nfl','americanfootball_ncaaf'].includes(s.sport_key))
-    ))return await reject('TEASER_UNAVAILABLE','6- and 7-point Teasers require picks from the same supported football league (NFL or NCAAF). No test credits were charged.');
+      teaserPrice(normalized[0]?.sport_key,teaserPoints,normalized.length)===null
+    ))return await reject('TEASER_UNAVAILABLE','This Teaser set and pick count are unavailable for the selected sports league. No test credits were charged.');
     if (unsupported) return await reject('SETTLEMENT_UNAVAILABLE',
       'This sport or market is view-only in TEST MODE until its automatic grading rule is verified. No test credits were charged.',
       {selection:{event_id:unsupported.event_id,event_name:unsupported.event_name,market_key:unsupported.market_key,selection_name:unsupported.selection_name}});
@@ -144,7 +168,7 @@ Deno.serve(async (req: Request) => {
         const game=current.find((g:any)=>text(g?.id)===s.event_id);
         if(!game||game?.completed||!Number.isFinite(Date.parse(text(game?.commence_time)))||
            Date.parse(text(game?.commence_time))<=Date.now())
-          return await reject('LINE_SUSPENDED','Teasers are available only before kickoff. No test credits were charged.');
+          return await reject('LINE_SUSPENDED','Teasers are available only before game start. No test credits were charged.');
         const verdict:any=currentOutcomeFor({...s,point:s.teaser_original_point},current);
         if(!verdict.ok)return await reject(verdict.code,verdict.message,{current_line:verdict.current_line||null});
         continue;

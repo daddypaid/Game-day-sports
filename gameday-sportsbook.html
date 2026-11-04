@@ -72,10 +72,10 @@
 .teaser-settings{padding:13px;margin-bottom:13px;border:1px solid #40735b;border-radius:12px;background:#ecf7ef;color:#153f26}
 .teaser-settings label{display:block;font-size:14px;font-weight:800;margin-bottom:8px}
 .teaser-settings select{display:block;width:100%;min-height:48px;padding:10px 12px;background:#fff;border:1px solid #90b39b;border-radius:9px;color:#153f26;font-size:16px}
-.teaser-settings p{font-size:12px;line-height:1.55;margin:9px 0 0}
+.teaser-title{display:flex;align-items:center;justify-content:space-between;gap:8px;font-size:16px;font-weight:800;color:#163b28;padding-bottom:10px}
 .teaser-line{padding:9px;margin:8px 0;border:1px solid #47735a;border-radius:8px;background:#eaf5ec;color:#174029;font-size:13px;line-height:1.4}
 .teaser-line strong{display:block;margin-top:4px;color:#0b5130}
-.teaser-price{margin-top:10px;padding:10px;border-radius:8px;background:#173621;color:#e5f7e8;font-size:13px;font-weight:800}
+.teaser-price{display:none}
 </style>
 <link rel="stylesheet" href="gameday-light-theme.css">
 <link rel="stylesheet" href="gameday-team-logos.css">
@@ -85,10 +85,9 @@
 <main><div class="section">Featured Sports</div><div class="featured" id="featured"></div><div class="section">Worldwide Sports</div><select id="sportSelect" class="world"><option value="">Loading sports...</option></select><div class="views"><button class="view active" data-view="games">Games</button><button class="view" data-view="live">Live</button><button class="view" data-view="props">Player Props</button><button class="view" data-view="futures">Futures</button></div><div class="toolbar"><button id="refresh" class="refresh">Refresh</button><span id="status" class="status">Ready</span></div><div id="selectionNotice" role="status" aria-live="polite"></div><div id="content" class="cards"></div></main>
 <div class="slipbar"><button id="openSlip">Bet Slip <span id="count" class="count">0</span><span id="buyPointsBadge" hidden style="font-size:12px;margin-left:8px">· Buy Points</span></button></div>
 <div id="panel" class="panel"><div class="panel-head"><strong>GameDay Bet Slip</strong><button id="closeSlip">Close</button></div><div class="panel-body"><div class="notice" style="margin-bottom:12px">TEST MODE — wagers use test credits only. No real money is charged.</div><div class="slip-wallet"><span>Available Balance</span><strong id="slipBalance">—</strong></div><div class="tabs"><button id="single" class="active">Single</button><button id="parlay">Parlay</button><button id="round_robin">Round Robin</button><button id="teaser">Teaser</button></div><div id="betModeHelp" class="notice" role="status" aria-live="polite" style="margin-bottom:12px"></div><div id="roundRobinSettings" class="round-robin-settings" hidden><label for="roundRobinLegs">Round Robin combinations</label><select id="roundRobinLegs" aria-label="Choose number of picks per Round Robin combination"></select><div id="roundRobinBreakdown" class="round-robin-breakdown" role="status" aria-live="polite"></div></div><div id="teaserSettings" class="teaser-settings" hidden>
-  <label for="teaserPoints">Football Teaser adjustment</label>
-  <select id="teaserPoints" aria-label="Teaser adjustment"><option value="6">6 points</option><option value="7">7 points</option></select>
-  <div id="teaserPrice" class="teaser-price" role="status" aria-live="polite">Select 2–6 NFL or NCAAF spread/total picks.</div>
-  <p>TEST MODE fixed-reference payout table, not a live bookmaker teaser offer. Each leg must be a pregame line from a separate game in the same football league. A losing leg loses the teaser; pushes reduce the payout tier, or refund if fewer than two legs remain.</p>
+  <div class="teaser-title" id="teaserPrice" role="status" aria-live="polite">Teaser</div>
+  <label for="teaserPoints">Teaser Set</label>
+  <select id="teaserPoints" aria-label="Teaser set"><option value="">Select picks first</option></select>
 </div>
 <div id="slipMsg" role="status" aria-live="polite"></div><div id="slipItems"></div><div class="stake"><label id="stakeLabel" for="stake">Stake</label><input id="stake" type="number" min="0.01" max="100000" step="0.01" placeholder="10.00" aria-describedby="stakeLimits"><div id="stakeLimits" class="sub">Stake: $0.01–$100,000 per wager, up to your available balance. Use cents only.</div><div id="roundRobinPayoutMode" class="rr-payout-mode" role="status" aria-live="polite" hidden></div><div id="roundRobinTotalRow" class="payout rr-payout-row" hidden><span>Total Test-Credit Stake</span><strong id="totalStake">$0.00</strong></div><div class="payout"><span id="returnLabel">Potential Return</span><strong id="return">$0.00</strong></div><div id="roundRobinProfitRow" class="payout rr-payout-row" hidden><span>Max Net Profit (all win)</span><strong id="potentialProfit">$0.00</strong></div><div id="roundRobinPayoutNote" class="rr-payout-note" hidden>Maximum return includes your original stakes. All combinations must win to receive the maximum; partial wins can pay less, and some outcomes return $0.</div><details id="roundRobinTicketDetails" class="rr-ticket-details" hidden><summary id="roundRobinTicketSummary">View combination payouts</summary><div id="roundRobinTicketRows"></div></details><button id="place" class="place">Place Test Wager</button></div></div></div>
 <script type="module">
@@ -442,15 +441,51 @@ function setBetMode(mode){
 
 // Fixed TEST MODE teaser reference prices; matched by the Supabase
 // test_teaser_american_odds function. Not live bookmaker teaser quotes.
+// Sport-specific TEST MODE reference prices. Three-pick examples match
+// the owner's supplied sport menus. Unpriced leg counts are not wagerable.
+const TEASER_FOOTBALL_NFL={
+  '6':{2:-135,3:145,4:240,5:333,6:500},
+  '6.5':{3:135},'7':{2:-150,3:120,4:180,5:250,6:350},
+  '8':{3:100},'9':{3:-115},'10':{3:-130},'11':{3:-155}
+};
+const TEASER_FOOTBALL_NCAAF={
+  '6':{2:-115,3:180,4:260,5:475,6:750},
+  '6.5':{3:165},'7':{2:-125,3:150,4:230,5:380,6:600},
+  '8':{3:125},'9':{3:105},'10':{3:-110},'11':{3:-125}
+};
+const TEASER_BASKETBALL={
+  '4':{3:180},'4.5':{3:160},'5':{3:150},'6':{3:125},'7':{3:100}
+};
 const TEASER_TABLE={
-  americanfootball_nfl:{6:[-135,140,240,333,500],7:[-150,120,180,250,350]},
-  americanfootball_ncaaf:{6:[-115,160,260,475,750],7:[-125,140,230,380,600]}
+  americanfootball_nfl:TEASER_FOOTBALL_NFL,
+  americanfootball_ncaaf:TEASER_FOOTBALL_NCAAF,
+  basketball_nba:TEASER_BASKETBALL,
+  basketball_ncaab:TEASER_BASKETBALL,
+  basketball_wnba:TEASER_BASKETBALL
+};
+const TEASER_LEAGUE_NAME={
+  americanfootball_nfl:'NFL',
+  americanfootball_ncaaf:'College Football',
+  basketball_nba:'Basketball',
+  basketball_ncaab:'Basketball',
+  basketball_wnba:'Basketball'
 };
 function teaserLeague(x){return gradingSport(x?.sport)}
 function teaserPriceFor(picks,points){
   const sport=teaserLeague(picks[0]);
-  const value=TEASER_TABLE[sport]?.[points]?.[picks.length-2];
+  const value=TEASER_TABLE[sport]?.[String(points)]?.[picks.length];
   return Number.isInteger(value)&&Math.abs(value)>=100?value:null;
+}
+function teaserOptions(picks){
+  const sport=teaserLeague(picks[0]),table=TEASER_TABLE[sport];
+  if(!table||picks.length<2||picks.length>6)return [];
+  return Object.entries(table).map(([point,tier])=>({point:Number(point),odds:tier[picks.length]}))
+    .filter(item=>Number.isInteger(item.odds)&&Math.abs(item.odds)>=100)
+    .sort((a,b)=>a.point-b.point);
+}
+function teaserDisplayLabel(picks,option){
+  const sport=teaserLeague(picks[0]),prefix=Number(option.point)>=10&&sport?.startsWith('americanfootball_')?'Sweetheart ':'';
+  return prefix+(TEASER_LEAGUE_NAME[sport]||'Teaser')+' '+option.point+' points · '+price(option.odds);
 }
 function teasedPoint(x,points){
   const original=Number(x?.point);
@@ -461,11 +496,11 @@ function teasedPoint(x,points){
   return null;
 }
 function teaserProblem(picks,points){
-  if(![6,7].includes(points))return 'Choose a 6- or 7-point football Teaser.';
+  if(!Number.isFinite(points))return 'Choose a Teaser set.';
   if(picks.length<2||picks.length>6)return 'Select 2–6 spread or total picks for your Teaser.';
   const league=teaserLeague(picks[0]);
   if(!TEASER_TABLE[league]||picks.some(p=>teaserLeague(p)!==league))
-    return 'Teaser picks must belong to the same supported football league: NFL or NCAAF.';
+    return 'Use picks from one supported league.';
   if(incompatibleParlay(picks))return 'Each Teaser pick must be from a different game.';
   for(const p of picks){
     if(!['spreads','totals'].includes(p.market)||p.buyPoints===true||p.point===null||p.point===undefined||
@@ -476,7 +511,7 @@ function teaserProblem(picks,points){
       return 'Teasers are available only before the selected games start.';
     if(changedPick(p))return 'Refresh unavailable or changed lines before placing your Teaser.';
   }
-  return teaserPriceFor(picks,points)===null?'Verified TEST MODE teaser price is unavailable.':'';
+  return teaserPriceFor(picks,points)===null?'This Teaser set is unavailable for the selected number of picks.':'';
 }
 function teaserReturnCents(cents,odds){
   const value=BigInt(Math.abs(odds)),denominator=odds>0?100n:value;
@@ -601,27 +636,35 @@ function formatReturnCents(cents){return '$'+String(cents/100n)+'.'+String(cents
 function updateSlip(){
   syncBetMode();
   const locked=Boolean(pendingWager)||placementBusy,picks=ticketSelections(),blocked=picks.some(changedPick),
-    tooFew=(betType==='parlay'&&picks.length<2)||(betType==='round_robin'&&picks.length<3)||(betType==='teaser'&&picks.length<2),tooMany=['round_robin','teaser'].includes(betType)&&picks.length>6,incompatible=['parlay','round_robin','teaser'].includes(betType)&&incompatibleParlay(picks),missing=!picks.length,teaserIssue=betType==='teaser'?teaserProblem(picks,teaserPoints):'';
+    tooFew=(betType==='parlay'&&picks.length<2)||(betType==='round_robin'&&picks.length<3)||(betType==='teaser'&&picks.length<2),tooMany=['round_robin','teaser'].includes(betType)&&picks.length>6,incompatible=['parlay','round_robin','teaser'].includes(betType)&&incompatibleParlay(picks),missing=!picks.length;let teaserIssue=betType==='teaser'?teaserProblem(picks,teaserPoints):'';
   $('count').textContent=slip.length;
-  $('buyPointsBadge').hidden=!slip.some(x=>['spreads','totals'].includes(x.market));
+  $('buyPointsBadge').hidden=betType==='teaser'||!slip.some(x=>['spreads','totals'].includes(x.market));
   for(const mode of ['single','parlay','round_robin','teaser']){const button=$(mode);button.disabled=locked;button.classList.toggle('active',betType===mode);button.setAttribute('aria-pressed',String(betType===mode))}
   $('stake').disabled=locked;
   $('stakeLabel').textContent=betType==='round_robin'?'Stake per combination':'Stake';
   $('stakeLimits').textContent=betType==='round_robin'?'Each combination: $0.01–$100,000. Total across all combinations cannot exceed your balance or $100,000.':'Stake: $0.01–$100,000 per wager, up to your available balance. Use cents only.';
   $('roundRobinSettings').hidden=betType!=='round_robin';
   $('teaserSettings').hidden=betType!=='teaser';
-  $('teaserPoints').value=String(teaserPoints);
-  $('teaserPoints').disabled=locked;
-  if(betType==='teaser')$('teaserPrice').textContent=teaserIssue||('GameDay TEST MODE Teaser: '+teaserPoints+' points · '+picks.length+' legs · '+price(teaserPriceFor(picks,teaserPoints))+' reference odds.');
+  if(betType==='teaser'){
+    const options=teaserOptions(picks);
+    if(!pendingWager&&options.length&&!options.some(o=>o.point===teaserPoints))teaserPoints=options[0].point;
+    const selection=options.find(o=>o.point===teaserPoints);
+    $('teaserPoints').innerHTML=options.length?options.map(o=>'<option value="'+o.point+'">'+esc(teaserDisplayLabel(picks,o))+'</option>').join(''):'<option value="">Select eligible picks</option>';
+    $('teaserPoints').value=selection?String(teaserPoints):'';
+    teaserIssue=teaserProblem(picks,teaserPoints);
+    $('teaserPoints').disabled=locked||!options.length;
+    $('teaserPrice').textContent=selection?'Teaser ('+picks.length+' Picks) · '+price(selection.odds):'Teaser';
+  }
   $('returnLabel').textContent=betType==='round_robin'?'Max Return (incl. stakes)':'Potential Return';
   for(const id of ['roundRobinTotalRow','roundRobinProfitRow','roundRobinPayoutNote'])$(id).hidden=betType!=='round_robin';
   $('roundRobinPayoutMode').hidden=betType!=='round_robin';
   if(betType!=='round_robin')$('roundRobinTicketDetails').hidden=true;
+  $('betModeHelp').hidden=betType==='teaser'&&!teaserProblem(picks,teaserPoints);
   $('betModeHelp').textContent=betType==='single'?'Choose one pick below. Only that pick is wagered; your other picks stay in this slip.':
     betType==='round_robin'?(tooFew?'Select 3–6 picks from different events to create a Round Robin.':tooMany?'Round Robin supports a maximum of 6 picks.':incompatible?'Round Robin requires one selection per event.':'Every combination becomes its own parlay ticket; partial winners can return credits.'):
-    betType==='teaser'?(teaserIssue||'All Teaser legs move '+teaserPoints+' points in your favor. Every non-pushed leg must win.'):
+    betType==='teaser'?teaserIssue:
     tooFew?'Add at least two picks from different events to place a parlay.':incompatible?'Parlays require different events. Remove a conflicting pick, or switch to Single.':picks.length+' picks on one parlay ticket.';
-  $('slipItems').innerHTML=slip.length?slip.map((x,i)=>`<div class="slip-item ${x.lineStatus&&x.lineStatus!=='ok'?'stale':''} ${betType==='single'&&x.pickKey===singlePickKey?'chosen':''}">${betType==='single'?`<label class="single-choice"><input type="radio" name="singlePick" data-single-pick="${i}" ${x.pickKey===singlePickKey?'checked':''} ${locked?'disabled':''}><span>Bet ${esc(x.name)}${x.description?' — '+esc(x.description):''} individually</span></label>`:''}<div style="font-size:12px;color:#aab6ae;margin-bottom:6px">${esc(x.event)}</div><div class="slip-row"><div><strong>${['h2h','spreads'].includes(x.market)?teamLabel(x.name,x.sport,{fallback:false}):esc(x.name)} ${esc(x.point??'')}</strong><div>${esc(x.marketTitle)} • ${price(x.price)}</div></div><button class="remove" data-remove="${i}" ${locked?'disabled':''}>Remove</button></div>${betType==='teaser'&&['spreads','totals'].includes(x.market)&&teasedPoint(x,teaserPoints)!==null?'<div class="teaser-line">Original line: '+esc(x.point)+' <strong>Teaser line: '+esc(teasedPoint(x,teaserPoints))+'</strong></div>':''}${buyPointsSlipControl(x,i)}${warningFor(x)}</div>`).join(''):'<div class="empty">Select a GameDay line to add it to your bet slip.</div>';
+  $('slipItems').innerHTML=slip.length?slip.map((x,i)=>`<div class="slip-item ${x.lineStatus&&x.lineStatus!=='ok'?'stale':''} ${betType==='single'&&x.pickKey===singlePickKey?'chosen':''}">${betType==='single'?`<label class="single-choice"><input type="radio" name="singlePick" data-single-pick="${i}" ${x.pickKey===singlePickKey?'checked':''} ${locked?'disabled':''}><span>Bet ${esc(x.name)}${x.description?' — '+esc(x.description):''} individually</span></label>`:''}<div style="font-size:12px;color:#aab6ae;margin-bottom:6px">${esc(x.event)}</div><div class="slip-row"><div><strong>${['h2h','spreads'].includes(x.market)?teamLabel(x.name,x.sport,{fallback:false}):esc(x.name)} ${esc(x.point??'')}</strong><div>${esc(x.marketTitle)} • ${price(x.price)}</div></div><button class="remove" data-remove="${i}" ${locked?'disabled':''}>Remove</button></div>${betType==='teaser'&&['spreads','totals'].includes(x.market)&&teasedPoint(x,teaserPoints)!==null?'<div class="teaser-line">'+esc(x.point)+' → <strong>'+esc(teasedPoint(x,teaserPoints))+'</strong></div>':''}${buyPointsSlipControl(x,i)}${warningFor(x)}</div>`).join(''):'<div class="empty">Select a GameDay line to add it to your bet slip.</div>';
   hydrateTeamLogos($('slipItems'));
   document.querySelectorAll('[data-single-pick]').forEach(r=>r.onchange=()=>{if(pendingWager||placementBusy)return;const pick=slip[Number(r.dataset.singlePick)];if(!pick)return;singlePickKey=pick.pickKey;selectionChanged();updateSlip()});
   bindBuyPointsControls();
@@ -735,7 +778,7 @@ async function wagerResponse(body){
   return response.data;
 }
 function scheduleRecovery(owner,epoch){if(recoveryTimer)clearTimeout(recoveryTimer);recoveryTimer=null;if(recoveryChecks>=3)return;recoveryChecks++;recoveryTimer=setTimeout(()=>{recoveryTimer=null;if(ownerIsCurrent(owner,epoch)&&pendingWager&&!placementBusy)resolvePending(true)},2000)}
-async function resolvePending(recover=true){const record=pendingWager;if(!record||record.unreadable||placementBusy||!user||record.ownerId!==user.id)return;const owner=user.id,epoch=authEpoch;placementBusy=true;updateSlip();slipMessage(recover?'Checking whether your wager was accepted...':'Validating and placing your saved wager...','notice');try{const data=await wagerResponse(recover?{request_id:record.requestId,recover:true}:record.payload);if(!ownerIsCurrent(owner,epoch)||pendingWager?.requestId!==record.requestId)return;if(!data||data.request_id!==record.requestId)throw new Error('Wager confirmation could not be verified.');if(data.state==='accepted'&&data.ok&&data.wager?.id){accountSequence++;showBalance(data.balance);try{forgetPending(record)}catch{}pendingWager=null;selectionGeneration++;quoteRefreshSequence++;quoteRefreshBusy=false;lastQuoteReason='';const submitted=new Set(record.selections.map(x=>x.pickKey||x.id));slip=slip.filter(x=>!submitted.has(x.pickKey)&&!submitted.has(x.id));if(!slip.length){modePreference='auto';singlePickKey=null}else if(record.payload.wager_type==='single')modePreference='single';syncBetMode();$('stake').value='';stopRecovery();$('slipMsg').innerHTML=`<div class="success">Test wager accepted.<br>Ticket: ${esc(data.wager.id)}<br>Stake: ${money(data.wager.stake)}<br>Potential Return: ${money(data.wager.potential_return)}<br>Balance: <strong>${wallet===null?'Unavailable':money(wallet)}</strong><br><a href="gameday-my-bets.html">View My Bets</a></div>`;notice('');if(record.payload.wager_type==='teaser')$('slipMsg').innerHTML='<div class="success">Football Teaser accepted.<br>'+esc(data.wager.teaser_points)+'-point TEST MODE teaser · '+price(data.wager.teaser_american_odds)+'<br>Stake: '+money(data.wager.stake)+'<br>Potential Return: '+money(data.wager.potential_return)+'<br>Balance: <strong>'+money(wallet)+'</strong><br><a href="gameday-my-bets.html">View Teaser ticket in My Bets</a></div>';
+async function resolvePending(recover=true){const record=pendingWager;if(!record||record.unreadable||placementBusy||!user||record.ownerId!==user.id)return;const owner=user.id,epoch=authEpoch;placementBusy=true;updateSlip();slipMessage(recover?'Checking whether your wager was accepted...':'Validating and placing your saved wager...','notice');try{const data=await wagerResponse(recover?{request_id:record.requestId,recover:true}:record.payload);if(!ownerIsCurrent(owner,epoch)||pendingWager?.requestId!==record.requestId)return;if(!data||data.request_id!==record.requestId)throw new Error('Wager confirmation could not be verified.');if(data.state==='accepted'&&data.ok&&data.wager?.id){accountSequence++;showBalance(data.balance);try{forgetPending(record)}catch{}pendingWager=null;selectionGeneration++;quoteRefreshSequence++;quoteRefreshBusy=false;lastQuoteReason='';const submitted=new Set(record.selections.map(x=>x.pickKey||x.id));slip=slip.filter(x=>!submitted.has(x.pickKey)&&!submitted.has(x.id));if(!slip.length){modePreference='auto';singlePickKey=null}else if(record.payload.wager_type==='single')modePreference='single';syncBetMode();$('stake').value='';stopRecovery();$('slipMsg').innerHTML=`<div class="success">Test wager accepted.<br>Ticket: ${esc(data.wager.id)}<br>Stake: ${money(data.wager.stake)}<br>Potential Return: ${money(data.wager.potential_return)}<br>Balance: <strong>${wallet===null?'Unavailable':money(wallet)}</strong><br><a href="gameday-my-bets.html">View My Bets</a></div>`;notice('');if(record.payload.wager_type==='teaser')$('slipMsg').innerHTML='<div class="success">Teaser accepted.<br>'+esc(data.wager.teaser_points)+'-point TEST MODE teaser · '+price(data.wager.teaser_american_odds)+'<br>Stake: '+money(data.wager.stake)+'<br>Potential Return: '+money(data.wager.potential_return)+'<br>Balance: <strong>'+money(wallet)+'</strong><br><a href="gameday-my-bets.html">View Teaser ticket in My Bets</a></div>';
     if(record.payload.wager_type==='round_robin')$('slipMsg').innerHTML='<div class="success">Round Robin accepted.<br>Combination tickets: '+esc(data.wager.combinations)+'<br>By '+esc(data.wager.legs_per_combination)+'s · Stake per combination: '+money(data.wager.stake_per_combination)+'<br>Total test-credit cost: '+money(data.wager.stake)+'<br>Maximum Potential Return: '+money(data.wager.potential_return)+'<br>Balance: <strong>'+money(wallet)+'</strong><br><a href="gameday-my-bets.html">View all combination tickets in My Bets</a></div>';
     if(view==='games'||view==='live')renderGames()}else if(data.state==='rejected'&&data.no_credits_charged===true){try{forgetPending(record)}catch{}pendingWager=null;stopRecovery();if(data.code==='LINE_CHANGED'){void refreshSelectedQuotes(rejectionDetails(data))}else slipMessage(rejectionDetails(data)+' No credits were charged. Review the selections before trying again.')}else if(data.state==='not_found'){record.state='not_found';savePending(record);slipMessage('No wager receipt is available yet. Retry This Wager safely resends these exact selections and stake. Keep the saved wager until its result is confirmed.','notice')}else{record.state='pending';record.retrySameRequest=data.retry_same_request===true;savePending(record);slipMessage('Your wager is still being checked. These selections are locked to prevent another charge. Check Wager will retrieve its result.','notice');scheduleRecovery(owner,epoch)}}catch(e){if(!ownerIsCurrent(owner,epoch)||pendingWager?.requestId!==record.requestId)return;record.state='uncertain';try{savePending(record)}catch{}slipMessage((e.payload?rejectionDetails(e.payload)+' ':'')+'Your wager result is not yet confirmed. Check Wager retrieves its result before another wager can be placed.','notice');if(!recover)scheduleRecovery(owner,epoch)}finally{if(ownerIsCurrent(owner,epoch)&&(!pendingWager||pendingWager.requestId===record.requestId)){placementBusy=false;updateSlip()}}}
 
@@ -745,7 +788,7 @@ renderFeatured();
 document.querySelectorAll('[data-view]').forEach(x=>{x.classList.toggle('active',x.dataset.view===view);x.classList.toggle('live-active',x.dataset.view===view&&view==='live')});
 document.querySelectorAll('[data-view]').forEach(b=>b.onclick=()=>{view=b.dataset.view;document.querySelectorAll('[data-view]').forEach(x=>{x.classList.toggle('active',x===b);x.classList.toggle('live-active',x===b&&view==='live')});event=null;propMarkets=[];loadView()});
 $('sportSelect').onchange=()=>{if($('sportSelect').value)selectSport($('sportSelect').value)};
-$('refresh').onclick=async()=>{await Promise.all([account(),loadView(),lastQuoteReason&&slip.some(x=>x.lineStatus!=='ok')?refreshSelectedQuotes(lastQuoteReason):Promise.resolve()])};$('openSlip').onclick=async()=>{$('panel').classList.add('open');await account();updateSlip();loadBuyPointsQuotes()};$('closeSlip').onclick=()=>$('panel').classList.remove('open');$('single').onclick=()=>setBetMode('single');$('parlay').onclick=()=>setBetMode('parlay');$('round_robin').onclick=()=>setBetMode('round_robin');$('teaser').onclick=()=>setBetMode('teaser');$('teaserPoints').onchange=()=>{if(pendingWager||placementBusy)return;teaserPoints=Number($('teaserPoints').value);updateSlip()};$('roundRobinLegs').onchange=()=>{roundRobinLegs=Number($('roundRobinLegs').value);updateSlip()};$('stake').oninput=updateReturn;$('place').onclick=place;document.addEventListener('visibilitychange',()=>{if(!document.hidden){if(view==='live'){games=games.map(g=>({...g,live_state:stateFor(g)}));renderGames();loadGames()}if(pendingWager&&!placementBusy)resolvePending(true)}});supabase.auth.onAuthStateChange((_event,session)=>{setSession(session);const epoch=authEpoch;setTimeout(()=>{if(epoch===authEpoch)void account(session)},0)});await account();await loadSports();await loadView();updateSlip();if(location.hash==='#sportSelect')requestAnimationFrame(()=>$('sportSelect').scrollIntoView({block:'center'}));
+$('refresh').onclick=async()=>{await Promise.all([account(),loadView(),lastQuoteReason&&slip.some(x=>x.lineStatus!=='ok')?refreshSelectedQuotes(lastQuoteReason):Promise.resolve()])};$('openSlip').onclick=async()=>{$('panel').classList.add('open');await account();updateSlip();loadBuyPointsQuotes()};$('closeSlip').onclick=()=>$('panel').classList.remove('open');$('single').onclick=()=>setBetMode('single');$('parlay').onclick=()=>setBetMode('parlay');$('round_robin').onclick=()=>setBetMode('round_robin');$('teaser').onclick=()=>setBetMode('teaser');$('teaserPoints').onchange=()=>{if(pendingWager||placementBusy)return;teaserPoints=Number($('teaserPoints').value);selectionChanged();updateSlip()};$('roundRobinLegs').onchange=()=>{roundRobinLegs=Number($('roundRobinLegs').value);updateSlip()};$('stake').oninput=updateReturn;$('place').onclick=place;document.addEventListener('visibilitychange',()=>{if(!document.hidden){if(view==='live'){games=games.map(g=>({...g,live_state:stateFor(g)}));renderGames();loadGames()}if(pendingWager&&!placementBusy)resolvePending(true)}});supabase.auth.onAuthStateChange((_event,session)=>{setSession(session);const epoch=authEpoch;setTimeout(()=>{if(epoch===authEpoch)void account(session)},0)});await account();await loadSports();await loadView();updateSlip();if(location.hash==='#sportSelect')requestAnimationFrame(()=>$('sportSelect').scrollIntoView({block:'center'}));
 }
 initializeSportsbook().catch(()=>connectionFailure(()=>location.reload()));
 </script>

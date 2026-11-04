@@ -23,13 +23,13 @@ const sdk=`export function createClient(){
  const unlocked=()=>{if(__f.authLock)throw Error('SDK called inside auth callback')};
  return {auth:{getSession:async()=>{unlocked();return {data:{session:__f.session},error:null}},onAuthStateChange(fn){__f.callbacks.push(fn);return{data:{subscription:{unsubscribe(){}}}}}},
  from(table){unlocked();let owner;const q={select(){return q},eq(k,v){if(k==='user_id')owner=v;return q},async single(){const fixture=structuredClone(__f.wallets[owner]);if(fixture.delay)await new Promise(r=>setTimeout(r,fixture.delay));return {data:fixture.missing?null:{balance:fixture.balance},error:fixture.error?{message:'Fixture wallet failure'}:null}}};return q},
- functions:{async invoke(name,{body}){unlocked();__f.calls.push({name,body:structuredClone(body)});if(body.recover&&window.__acceptedFixture)return {data:window.__acceptedFixture,error:null};const failure=__f.failure;if(failure){let payload={...failure};if(!__f.legacy)payload={ok:false,state:'rejected',request_id:body.request_id,no_credits_charged:true,...payload};const context=__f.errorBodyStall?{json:()=>new Promise(()=>{})}:new Response(JSON.stringify(payload),{status:409,headers:{'Content-Type':'application/json'}});return {data:null,error:{name:'FunctionsHttpError',message:'Edge Function returned a non-2xx status code',context}}}const wallet=__f.wallets[__f.session.user.id],rr=body.wager_type==='round_robin',k=Number(body.round_robin_legs)||2,n=body.selections.length;let ways=1;if(rr)for(let i=1;i<=k;i++)ways=ways*(n-i+1)/i;const total=body.stake*ways;wallet.balance-=total;const teaser=body.wager_type==='teaser',teaserPrice=teaser?(body.teaser_points===6?-135:-150):null;const decimal=body.selections.reduce((v,s)=>v*(s.american_odds>0?1+s.american_odds/100:1+100/Math.abs(s.american_odds)),1);return {data:{ok:true,state:'accepted',request_id:body.request_id,balance:wallet.balance,wager:{id:'fixture-ticket',stake:total,stake_per_combination:body.stake,combinations:ways,legs_per_combination:k,potential_return:teaser?Math.round(total*(1+100/Math.abs(teaserPrice))*100)/100:rr?Math.round(ways*body.stake*Math.pow(decimal, k/n)*100)/100:Math.round(body.stake*decimal*100)/100,teaser_points:body.teaser_points||null,teaser_american_odds:teaserPrice}},error:null}}}};
+ functions:{async invoke(name,{body}){unlocked();__f.calls.push({name,body:structuredClone(body)});if(body.recover&&window.__acceptedFixture)return {data:window.__acceptedFixture,error:null};const failure=__f.failure;if(failure){let payload={...failure};if(!__f.legacy)payload={ok:false,state:'rejected',request_id:body.request_id,no_credits_charged:true,...payload};const context=__f.errorBodyStall?{json:()=>new Promise(()=>{})}:new Response(JSON.stringify(payload),{status:409,headers:{'Content-Type':'application/json'}});return {data:null,error:{name:'FunctionsHttpError',message:'Edge Function returned a non-2xx status code',context}}}const wallet=__f.wallets[__f.session.user.id],rr=body.wager_type==='round_robin',k=Number(body.round_robin_legs)||2,n=body.selections.length;let ways=1;if(rr)for(let i=1;i<=k;i++)ways=ways*(n-i+1)/i;const total=body.stake*ways;wallet.balance-=total;const teaser=body.wager_type==='teaser',teaserSport=body.selections[0]?.sport_key,teaserPrices=teaserSport==='basketball_nba'?{'4.5':{3:160},'4':{3:180},'5':{3:150},'6':{3:125},'7':{3:100}}:{'6':{2:-135,3:145},'6.5':{3:135},'7':{2:-150,3:120},'8':{3:100},'9':{3:-115},'10':{3:-130},'11':{3:-155}},teaserPrice=teaser?teaserPrices[String(body.teaser_points)]?.[n]:null;const decimal=body.selections.reduce((v,s)=>v*(s.american_odds>0?1+s.american_odds/100:1+100/Math.abs(s.american_odds)),1);return {data:{ok:true,state:'accepted',request_id:body.request_id,balance:wallet.balance,wager:{id:'fixture-ticket',stake:total,stake_per_combination:body.stake,combinations:ways,legs_per_combination:k,potential_return:teaser?Math.round(total*(teaserPrice>0?1+teaserPrice/100:1+100/Math.abs(teaserPrice))*100)/100:rr?Math.round(ways*body.stake*Math.pow(decimal, k/n)*100)/100:Math.round(body.stake*decimal*100)/100,teaser_points:body.teaser_points||null,teaser_american_odds:teaserPrice}},error:null}}}};
 }`;
 function matchup(live=false,quote={price:-110,point:-3.5}){return {id:'fixture-event',commence_time:new Date(Date.now()+(live?-60000:3600000)).toISOString(),home_team:'Fixture Home',away_team:'Fixture Away',bookmakers:[{markets:[{key:'h2h',outcomes:[{name:'Fixture Home',price:100},{name:'Fixture Away',price:110}]},{key:'spreads',outcomes:[{name:'Fixture Home',price:quote.price,point:quote.point}]}]}]}}
 function verifiedLiveState(){return {sport:'nfl',home_key:'fixture home',away_key:'fixture away',home_team:'Fixture Home',away_team:'Fixture Away',home_score:21,away_score:14,period:'Q3',clock:'05:32',period_verified:true,clock_verified:true,clock_kind:'countdown',live:true,completed:false,event_start:new Date(Date.now()-60000).toISOString(),fetched_at:new Date().toISOString(),stale:false}}
 test.before(async()=>{server=http.createServer((req,res)=>{const file=path.join(root,decodeURIComponent(new URL(req.url,'http://local').pathname));if(!file.startsWith(root+path.sep)){res.writeHead(403).end();return}try{res.setHeader('Content-Type',file.endsWith('.js')?'text/javascript':file.endsWith('.css')?'text/css':'text/html');res.end(fs.readFileSync(file))}catch{res.writeHead(404).end()}});await new Promise(r=>server.listen(0,'127.0.0.1',r));base=`http://127.0.0.1:${server.address().port}`;browser=await chromium.launch({...(process.env.CHROMIUM_PATH?{executablePath:process.env.CHROMIUM_PATH}:{}),headless:true,args:['--no-sandbox']})});
 test.after(async()=>{await browser?.close();await new Promise(r=>server.close(r))});
-async function open(t,{sdkFailures=0,sdkDependencyFailures=0,wallet=100,live=false,liveFailure=false,states=[],empty='',roundRobinEvents=0,invalidSpreadOdds=false}={}){
+async function open(t,{sdkFailures=0,sdkDependencyFailures=0,wallet=100,live=false,liveFailure=false,states=[],empty='',roundRobinEvents=0,invalidSpreadOdds=false,sport='nfl'}={}){
  const quotes={price:invalidSpreadOdds?-1:-110,point:-3.5,hold:false,waiters:[]};
  const releaseQuotes=()=>{quotes.hold=false;quotes.waiters.splice(0).forEach(resolve=>resolve())};
  const context=await browser.newContext({viewport:{width:390,height:844},serviceWorkers:'block'});t.after(()=>{releaseQuotes();return disposeContext(context)});
@@ -38,7 +38,7 @@ async function open(t,{sdkFailures=0,sdkDependencyFailures=0,wallet=100,live=fal
  let sdkRequests=0,dependencyRequests=0;
  await context.route('https://cdn.jsdelivr.net/**',r=>{if(r.request().url().includes('fixture-sdk-dependency.js')){dependencyRequests++;return dependencyRequests<=sdkDependencyFailures?r.abort():r.fulfill({contentType:'text/javascript',body:'export const ready=true;'})}sdkRequests++;return sdkRequests<=sdkFailures?r.abort():r.fulfill({contentType:'text/javascript',body:(sdkDependencyFailures?"import './fixture-sdk-dependency.js';\n":'')+sdk})});
  await context.route('https://qsvrvhcklnsbekxblpfo.supabase.co/**',async r=>{const b=r.request().postDataJSON(),f=await r.request().frame().evaluate(()=>({liveFailure:__f.liveFailure,states:__f.states,empty:__f.empty,delay:__f.liveDelay||0}));let data;if(b.mode==='sports')data={sports:[{key:'nfl',group:'Football',title:'NFL',active:true}]};else if(b.mode==='games'){data={games:[matchup(live,quotes),...Array.from({length:roundRobinEvents},(_,i)=>({id:'fixture-extra-'+i,commence_time:new Date(Date.now()+3600000).toISOString(),home_team:'Fixture Home '+i,away_team:'Fixture Away '+i,bookmakers:[{markets:[{key:'h2h',outcomes:[{name:'Fixture Home '+i,price:100},{name:'Fixture Away '+i,price:110}]},{key:'spreads',outcomes:[{name:'Fixture Home '+i,price:-110,point:-3.5}]}]}]}))]};if(quotes.hold)await new Promise(resolve=>quotes.waiters.push(resolve))}else if(b.mode==='alternate_lines')data={mode:'alternate_lines',source:'live',wagerable:true,event:{id:'fixture-event',bookmakers:f.empty==='alternate_lines'?[]:[{markets:[{key:'alternate_spreads',outcomes:[{name:'Fixture Home',point:-3,price:-125},{name:'Fixture Home',point:-2.5,price:-135},{name:'Fixture Home',point:-2,price:-150},{name:'Fixture Home',point:-1.5,price:-175},{name:'Fixture Home',point:-1,price:-200},{name:'Fixture Away',point:3,price:-120}]},{key:'alternate_totals',outcomes:[{name:'Over',point:42.5,price:-125},{name:'Under',point:43.5,price:-125}]}]}]}};else if(b.mode==='events')data={events:f.empty==='events'?[]:[matchup()]};else if(b.mode==='prop_markets')data={prop_markets:f.empty==='markets'?[]:['player_pass_yds']};else if(b.mode==='props')data={event:{...matchup(),bookmakers:[{markets:[{key:'player_pass_yds',outcomes:f.empty==='outcomes'?[]:[{name:'Over',description:'Fixture Player',point:250.5,price:-110}]}]}]}};else{if(f.delay)await new Promise(resolve=>setTimeout(resolve,f.delay));if(f.liveFailure){await r.fulfill({status:503,contentType:'application/json',body:JSON.stringify({error:'Fixture live state unavailable'})});return}data={sport:b.sport,fetched_at:new Date().toISOString(),stale:false,states:f.states}}await r.fulfill({contentType:'application/json',body:JSON.stringify(data)})});
- const p=await context.newPage(),errors=[];p.on('pageerror',e=>errors.push(e.message));await p.goto(base+'/gameday-sportsbook.html'+(live?'?view=live':''));
+ const p=await context.newPage(),errors=[];p.on('pageerror',e=>errors.push(e.message));await p.goto(base+'/gameday-sportsbook.html'+(sport!=='nfl'?'?sport='+encodeURIComponent(sport):live?'?view=live':''));
  await p.locator(sdkFailures||sdkDependencyFailures?'#retryConnection':'.odd').first().waitFor();t.after(()=>assert.deepEqual(errors,[],'no JS errors or auth callback lock re-entry'));
  return {p,context,quotes,releaseQuotes,get sdkRequests(){return sdkRequests}};
 }
@@ -413,13 +413,13 @@ test('football Teaser 6/7-point options preview fixed test odds and submit one v
   await p.click('#teaser');
   assert(await p.locator('#teaserSettings').isVisible());
   await p.fill('#stake','10');
-  assert.match(await p.locator('#teaserPrice').textContent(),/6 points.*2 legs.*-135/);
+  assert.match(await p.locator('#teaserPrice').textContent(),/Teaser \(2 Picks\).*?-135/);
   assert.equal(await p.locator('#return').textContent(),'$17.41');
-  assert.match(await p.locator('#slipItems').textContent(),/Teaser line: 2.5/);
+  assert.match(await p.locator('#slipItems').textContent(),/2.5/);
   await p.locator('#teaserPoints').selectOption('7');
-  assert.match(await p.locator('#teaserPrice').textContent(),/7 points.*2 legs.*-150/);
+  assert.match(await p.locator('#teaserPrice').textContent(),/Teaser \(2 Picks\).*?-150/);
   assert.equal(await p.locator('#return').textContent(),'$16.67');
-  assert.match(await p.locator('#slipItems').textContent(),/Teaser line: 3.5/);
+  assert.match(await p.locator('#slipItems').textContent(),/3.5/);
   assert(await p.locator('#place').isEnabled());
   await p.click('#place');
   await p.locator('#slipMsg .success').waitFor();
@@ -449,4 +449,35 @@ test('football Teaser disallows ineligible moneylines and missing legs without b
   assert(await p.locator('#teaserSettings').isHidden());
   await p.click('#teaser');
   assert(await p.locator('#place').isDisabled());
+});
+
+test('Three NFL picks display the full sport-specific Teaser list and no lengthy explanation block',async t=>{
+  const {p}=await open(t,{roundRobinEvents:2});
+  await p.locator('.card').first().locator('[data-market="spreads"]').click();
+  for(let i=0;i<3;i++)await p.locator('.card').nth(i).locator('.odd').first().click();
+  await p.click('#openSlip');await p.click('#teaser');await p.fill('#stake','10');
+  const points=await p.locator('#teaserPoints option').evaluateAll(items=>items.map(i=>i.value));
+  assert.deepEqual(points,['6','6.5','7','8','9','10','11']);
+  assert.match(await p.locator('#teaserPoints').textContent(),/Sweetheart NFL 10 points/);
+  assert.equal(await p.locator('#teaserPrice').textContent(),'Teaser (3 Picks) · +145');
+  assert(await p.locator('#betModeHelp').isHidden());
+  assert.equal(await p.locator('.teaser-settings p').count(),0);
+  await p.locator('#teaserPoints').selectOption('10');
+  assert.equal(await p.locator('#teaserPrice').textContent(),'Teaser (3 Picks) · -130');
+  assert.equal(await p.locator('#return').textContent(),'$17.69');
+  assert(await p.locator('#place').isEnabled());
+  assert.equal(await p.evaluate(()=>__f.calls.length),0);
+});
+test('Three basketball spread picks show 4–7 point sets without football entries',async t=>{
+  const {p}=await open(t,{roundRobinEvents:2,sport:'nba'});
+  await p.locator('.card').first().locator('[data-market="spreads"]').click();
+  for(let i=0;i<3;i++)await p.locator('.card').nth(i).locator('.odd').first().click();
+  await p.click('#openSlip');await p.click('#teaser');await p.fill('#stake','10');
+  const points=await p.locator('#teaserPoints option').evaluateAll(items=>items.map(i=>i.value));
+  assert.deepEqual(points,['4','4.5','5','6','7']);
+  await p.locator('#teaserPoints').selectOption('4.5');
+  assert.equal(await p.locator('#teaserPrice').textContent(),'Teaser (3 Picks) · +160');
+  assert.equal(await p.locator('#return').textContent(),'$26.00');
+  assert(await p.locator('#place').isEnabled());
+  assert.equal(await p.evaluate(()=>__f.calls.length),0);
 });

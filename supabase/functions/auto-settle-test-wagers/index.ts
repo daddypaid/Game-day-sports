@@ -16,11 +16,24 @@ function decimalFromAmerican(odds:number){return odds>0?1+odds/100:1+100/Math.ab
 // Must match the server-authoritative public.test_teaser_american_odds
 // schedule. These are TEST MODE reference prices, not live bookmaker quotes.
 function teaserTestPrice(sport:string,points:number,legs:number):number|null{
-  const table:Record<string,Record<number,number[]>>={
-    americanfootball_nfl:{6:[-135,140,240,333,500],7:[-150,120,180,250,350]},
-    americanfootball_ncaaf:{6:[-115,160,260,475,750],7:[-125,140,230,380,600]}
+  const footballNfl:Record<string,Record<number,number>>={
+    '6':{2:-135,3:145,4:240,5:333,6:500},'6.5':{3:135},
+    '7':{2:-150,3:120,4:180,5:250,6:350},'8':{3:100},
+    '9':{3:-115},'10':{3:-130},'11':{3:-155}
   };
-  const n=table[sport]?.[points]?.[legs-2];
+  const collegeFootball:Record<string,Record<number,number>>={
+    '6':{2:-115,3:180,4:260,5:475,6:750},'6.5':{3:165},
+    '7':{2:-125,3:150,4:230,5:380,6:600},'8':{3:125},
+    '9':{3:105},'10':{3:-110},'11':{3:-125}
+  };
+  const basketball:Record<string,Record<number,number>>={
+    '4':{3:180},'4.5':{3:160},'5':{3:150},'6':{3:125},'7':{3:100}
+  };
+  const table:Record<string,Record<string,Record<number,number>>>={
+    americanfootball_nfl:footballNfl,americanfootball_ncaaf:collegeFootball,
+    basketball_nba:basketball,basketball_ncaab:basketball,basketball_wnba:basketball
+  };
+  const n=table[sport]?.[String(points)]?.[legs];
   return Number.isInteger(n)&&Math.abs(n)>=100?n:null;
 }
 function isSoccer(sport:string){return ['mls','epl','ucl'].includes(sport)||sport.startsWith('soccer_')}
@@ -236,17 +249,18 @@ Deno.serve(async(req:Request)=>{
       const anyLost=grades.some(g=>g.result==='lost'),allVoid=grades.every(g=>g.result==='void');
       const teaser=wager.teaser_points===null||wager.teaser_points===undefined?null:Number(wager.teaser_points);
       const wins=grades.filter(g=>g.result==='won').length;
-      // A teaser with fewer than two non-pushed winners is no action. A
-      // losing leg always overrides pushes. Ordinary parleys are unchanged.
-      const result=anyLost?'lost':(allVoid||(teaser!==null&&wins<2))?'void':'won';
+      // Teaser pushes reduce the priced leg count. If no valid reduced
+      // payout exists, refund the stake rather than inventing odds.
+      const teaserSport=teaser!==null?resolveGradingSport(selections[0]?.sport_key):null;
+      const teaserUniform=teaser===null||selections.every((x:any)=>resolveGradingSport(x.sport_key)===teaserSport);
+      const fullTeaserPrice=teaser!==null&&teaserUniform&&teaserSport?teaserTestPrice(teaserSport,teaser,selections.length):null;
+      const reducedTeaserPrice=teaser!==null&&teaserUniform&&teaserSport?teaserTestPrice(teaserSport,teaser,wins):null;
+      const result=anyLost?'lost':(allVoid||(teaser!==null&&(wins<2||reducedTeaserPrice===null)))?'void':'won';
       let credit=0;
       if(result==='void')credit=Number(wager.stake);
       else if(result==='won'&&teaser!==null){
-        const sport=resolveGradingSport(selections[0]?.sport_key);
-        const uniform=selections.every((x:any)=>resolveGradingSport(x.sport_key)===sport);
-        const price=uniform&&sport?teaserTestPrice(sport,teaser,wins):null;
-        const initial=uniform&&sport?teaserTestPrice(sport,teaser,selections.length):null;
-        if(price===null||initial!==Number(wager.teaser_american_odds)){
+        const price=reducedTeaserPrice;
+        if(price===null||fullTeaserPrice!==Number(wager.teaser_american_odds)){
           const done=await finish(wager,'review','invalid_teaser_pricing');
           if(done?.applied){reviewRequired++;results.push({wager_id:wager.id,state:'review',reason:'invalid_teaser_pricing'})}
           continue;
