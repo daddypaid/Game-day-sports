@@ -39,7 +39,7 @@ test('Restore history and required environment inventory contain no captured pri
 test('Historical restore evidence remains intact while the new catalog is replayed by current CI', () => {
   const evidence = JSON.parse(fs.readFileSync(path.join(root, 'scripts/gameday-restore-evidence.json'), 'utf8'));
   assert.equal(evidence.passed, true);
-  assert.equal(evidence.canonical_migrations + 1, inventory.deployed_migrations.length, 'Historical restore proof predates the verified Round Robin migration');
+  assert.equal(evidence.canonical_migrations + 2, inventory.deployed_migrations.length, 'Historical restore proof predates the verified Round Robin and Teaser migrations');
   assert.match(evidence.server_version, /^17\.6(?: |$)/);
   assert.deepEqual(evidence.extensions.map(row => row.extname), ['pg_cron', 'pg_net']);
   assert.equal(evidence.extensions.find(row => row.extname === 'pg_net').extversion, '0.20.4');
@@ -60,5 +60,6 @@ test('Historical restore evidence remains intact while the new catalog is replay
   assert.equal(evidence.live_schema_md5, 'c67682a936e171ce1d08c4c7efe67e5f', 'Historical evidence remains attributed to the old verified catalog');
   assert.notEqual(snapshot.schema_md5, evidence.live_schema_md5, 'New live catalog differs from historical proof');
   assert(snapshot.entries.some(e=>e.kind==='column'&&e.key==='public.wagers.round_robin_group_id'), 'New live catalog includes Round Robin schema');
-  assert.equal(snapshot.entries.length - evidence.catalog_entries, 5, 'The live Round Robin migration adds five catalog objects; historical evidence remains unchanged');
+   assert(snapshot.entries.some(e=>e.kind==='column'&&e.key==='public.wagers.teaser_points'), 'New live catalog includes the verified Teaser schema');
+  assert.equal(snapshot.entries.length - evidence.catalog_entries, 11, 'Round Robin adds five objects and Teaser adds six; historical evidence remains unchanged');
 });
