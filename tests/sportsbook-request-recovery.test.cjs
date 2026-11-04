@@ -24,7 +24,7 @@ async function fixture() {
   const settleIndex=teaserSQL.indexOf('-- Keep all preexisting settlement invariants');
   assert(settleIndex>0);
   await db.exec(teaserSQL.slice(0,settleIndex));
-  const sportSpecificSQL=fs.readFileSync(path.join(root,'supabase/migrations/20261104140000_sport_specific_teaser_sets.sql'),'utf8');
+  const sportSpecificSQL=fs.readFileSync(path.join(root,'supabase/migrations/20261104140615_sport_specific_teaser_sets.sql'),'utf8');
   const sportSettleIndex=sportSpecificSQL.indexOf('-- Reapply the full atomic settlement routine');
   assert(sportSettleIndex>0);
   await db.exec(sportSpecificSQL.slice(0,sportSettleIndex));
@@ -254,7 +254,7 @@ async function addProductionSettlementToFixture(f) {
   const cut=teaser.indexOf('-- Keep all preexisting settlement invariants');
   assert(cut>0);
   await f.db.exec(teaser.slice(cut));
-  const current=fs.readFileSync(path.join(root,'supabase/migrations/20261104140000_sport_specific_teaser_sets.sql'),'utf8');
+  const current=fs.readFileSync(path.join(root,'supabase/migrations/20261104140615_sport_specific_teaser_sets.sql'),'utf8');
   const currentStart=current.indexOf('-- Reapply the full atomic settlement routine');
   assert(currentStart>0);
   await f.db.exec(current.slice(currentStart));
