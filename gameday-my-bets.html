@@ -12,6 +12,38 @@
 <title>GameDay My Bets</title>
 <style>
 *{box-sizing:border-box}body{margin:0;background:#090e0b;color:#fff;font-family:Arial,sans-serif}header{position:sticky;top:0;z-index:20;background:#101712;border-bottom:1px solid #27342c;padding:14px}h1{margin:0;font-size:23px}.sub{margin-top:5px;color:#94a198;font-size:12px}.nav{display:grid;grid-template-columns:repeat(4,1fr);gap:7px;margin-top:10px}.nav a{text-decoration:none;text-align:center;padding:10px 6px;border-radius:9px;background:#202b24;color:#fff;font-weight:bold;font-size:12px}.nav a.active{background:#eef5f0;color:#07100a}main{max-width:760px;margin:auto;padding:14px}.status,.empty,.error{border-radius:11px;padding:13px;margin-bottom:12px;background:#141c17;border:1px solid #2b3a31;color:#b9c4bc}.error{border-color:#733b3b;color:#efb4b4}.section{margin:18px 0 8px;color:#91a097;font-size:12px;font-weight:bold;text-transform:uppercase}.bet{background:#131b16;border:1px solid #2c3b31;border-radius:13px;padding:13px;margin-bottom:10px}.row{display:flex;justify-content:space-between;gap:10px;align-items:center}.small{margin-top:6px;color:#8f9d94;font-size:11px}.pill{display:inline-block;margin-top:8px;border-radius:999px;padding:5px 8px;font-size:11px;font-weight:bold}.pill.pending,.pill.accepted{background:#2a2617;color:#f0d98b}.pill.won{background:#173c22;color:#b9f5c8}.pill.lost{background:#351b1f;color:#efb4b4}.pill.void,.pill.cancelled{background:#23292d;color:#cbd3d8}.selection{margin-top:10px;padding:10px;border-radius:10px;background:#0d140f;border:1px solid #27372d}.selection+.selection{margin-top:7px}.selection-title{font-weight:bold;font-size:13px}.selection-meta{margin-top:4px;color:#aab6ae;font-size:11px;line-height:1.45}.refresh{width:100%;border:0;border-radius:10px;padding:12px;font-weight:bold;cursor:pointer;margin-bottom:12px}.label{color:#91a097;font-size:11px;text-transform:uppercase}.value{font-weight:bold}.summary{display:grid;grid-template-columns:repeat(2,1fr);gap:8px;margin-top:10px}.summary-box{background:#0d140f;border:1px solid #27372d;border-radius:9px;padding:9px}.summary-box .value{display:block;margin-top:3px}.auto{margin-top:6px;color:#829087;font-size:10px}@media(max-width:430px){.nav{grid-template-columns:repeat(2,1fr)}}
+
+/* One ticket per Round Robin group: no duplicated child cards in Open/Settled. */
+.round-robin-section[hidden]{display:none}
+.rr-group{background:#fff;border:1px solid #b8d2c0;border-radius:14px;padding:14px;margin-bottom:12px;min-width:0;color:#111}
+.rr-group .row{align-items:center;flex-wrap:wrap}
+.rr-title{font-size:16px;font-weight:800;color:#10281b}
+.rr-meta{font-size:12px;color:#405348;margin-top:8px;line-height:1.5;overflow-wrap:anywhere}
+.rr-counts{font-size:12px;color:#305b42;margin-top:6px;line-height:1.5}
+.rr-summary{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px;margin-top:12px}
+.rr-summary .summary-box{background:#f4faf5;border:1px solid #cee1d2;border-radius:10px;padding:10px;min-width:0}
+.rr-summary .label{color:#45614d;font-size:11px;line-height:1.3}
+.rr-summary .value{font-size:17px;font-variant-numeric:tabular-nums;color:#123722;overflow-wrap:anywhere}
+.rr-summary .rr-net-positive{color:#087038}
+.rr-summary .rr-net-negative{color:#93242b}
+.rr-note{font-size:12px;color:#405348;line-height:1.5;margin-top:10px}
+.rr-details{margin-top:12px;border-top:1px solid #d4e4d8;padding-top:11px}
+.rr-details summary{cursor:pointer;font-weight:700;font-size:13px;color:#075e30;min-height:42px;display:flex;align-items:center}
+.rr-child{border-top:1px solid #dce8df;padding:10px 0}
+.rr-child-head{display:flex;justify-content:space-between;gap:8px;align-items:center;flex-wrap:wrap}
+.rr-child-head strong{font-size:13px;color:#111}
+.rr-child .rr-child-meta{font-size:12px;color:#52685a;line-height:1.5;margin-top:5px}
+.rr-child .rr-child-picks{font-size:12px;color:#263c2c;margin-top:5px;line-height:1.5;overflow-wrap:anywhere}
+.rr-group .pill{margin-top:0}
+.rr-group .pill.open{background:#fbf2d8;color:#785113}
+.rr-group .pill.settled{background:#dff1e5;color:#075e30}
+.rr-group .pill.review{background:#fbe6e5;color:#8f282b}
+@media(max-width:430px){
+ .rr-group{padding:12px}
+ .rr-title{font-size:15px}
+ .rr-summary .value{font-size:15px}
+ .rr-summary{gap:7px}
+}
 </style>
 <link rel="stylesheet" href="gameday-light-theme.css">
 </head>
@@ -21,12 +53,13 @@
 <div class="status">TEST MODE · No real money. Bets use GameDay test credits.</div>
 <div id="status" class="status" role="status" aria-live="polite">Checking your GameDay account...<div class="auto">Auto-refreshes every 30 seconds while this page is visible.</div></div>
 <button id="refresh" class="refresh">Refresh Bets</button>
+<section id="roundRobinSection" class="round-robin-section" hidden><div class="section">Round Robin Tickets</div><div id="roundRobinBets"></div></section>
 <div class="section">Open Bets</div><div id="openBets"></div>
 <div class="section">Settled Bets</div><div id="settledBets"></div>
 </main>
 <script type="module">
 import{GAMEDAY_CONFIG}from"./gameday-config.js";
-const statusEl=document.getElementById('status'),openEl=document.getElementById('openBets'),settledEl=document.getElementById('settledBets'),refreshBtn=document.getElementById('refresh');
+const statusEl=document.getElementById('status'),openEl=document.getElementById('openBets'),settledEl=document.getElementById('settledBets'),roundRobinEl=document.getElementById('roundRobinBets'),roundRobinSection=document.getElementById('roundRobinSection'),refreshBtn=document.getElementById('refresh');
 let supabase=null,refreshTimer=null,currentSession=null,sessionObserved=false,sessionGeneration=0,requestId=0,connectionAttempt=0,connecting=false;
 const CONNECTION_TIMEOUT=12000;
 function bounded(promise){return new Promise((resolve,reject)=>{const timer=setTimeout(()=>reject(new Error('Connection timed out.')),CONNECTION_TIMEOUT);Promise.resolve(promise).then(value=>{clearTimeout(timer);resolve(value)},error=>{clearTimeout(timer);reject(error)})})}
@@ -40,8 +73,107 @@ function statusLabel(s){return String(s||'pending').toLowerCase()==='cancelled'?
 function selectionCard(s){const point=s.point===null||s.point===undefined?'':` ${esc(s.point)}`;return `<div class="selection"><div class="selection-title">${esc(s.selection_name)}${point}</div><div class="selection-meta">${esc(s.event_name)}<br>${esc(s.market_title||s.market_key)} • ${price(s.american_odds)}${s.description?' • '+esc(s.description):''}${s.quoted_at?'<br>Quoted '+dt(s.quoted_at):''}</div></div>`}
 function actualReturn(w){const s=String(w.status||'pending').toLowerCase();if(['pending','accepted'].includes(s))return null;return w._settlement_credit===null||w._settlement_credit===undefined?undefined:Number(w._settlement_credit)}
 function card(w){const s=String(w.status||'pending').toLowerCase(),sels=Array.isArray(w.wager_selections)?w.wager_selections:[],actual=actualReturn(w),settled=actual!==null,returnText=!settled?money(w.potential_return):actual===undefined?'—':money(actual);return `<div class="bet"><div class="row"><strong>${w.round_robin_group_id?'ROUND ROBIN · BY '+esc(w.round_robin_leg_count)+'s':esc(String(w.wager_type||'Bet').toUpperCase())}</strong><span class="pill ${esc(s)}">${esc(statusLabel(s))}</span></div><div class="summary"><div class="summary-box"><span class="label">Stake</span><span class="value">${money(w.stake)}</span></div><div class="summary-box"><span class="label">${settled?'Actual Return':'Potential Return'}</span><span class="value">${returnText}</span></div></div>${sels.length?sels.map(selectionCard).join(''):'<div class="small">Selection details unavailable.</div>'}${w.round_robin_group_id?'<div class="small">Combination ticket · Group '+esc(String(w.round_robin_group_id).slice(0,8))+'</div>':''}<div class="small">Placed ${dt(w.placed_at)}${w.settled_at?' • Settled '+dt(w.settled_at):''}</div></div>`}
+
+function parseCents(value){
+  const raw=String(value??'').trim();
+  if(!/^\d+(?:\.\d{1,2})?$/.test(raw))return null;
+  const parts=raw.split('.');
+  return BigInt(parts[0])*100n+BigInt((parts[1]||'').padEnd(2,'0'));
+}
+function centsMoney(value){
+  if(value===null||value===undefined)return '—';
+  const negative=value<0n,n=negative?-value:value;
+  return (negative?'-':'')+'$'+String(n/100n)+'.'+String(n%100n).padStart(2,'0');
+}
+function signedCentsMoney(value){return value===null?'—':(value>0n?'+':'')+centsMoney(value)}
+function combinationCount(n,k){
+  if(!Number.isInteger(n)||!Number.isInteger(k)||n<3||n>6||k<2||k>=n)return 0;
+  let ways=1;for(let i=1;i<=k;i++)ways=ways*(n-i+1)/i;
+  return ways;
+}
+function roundRobinRows(wagers){
+  const groups=new Map(),ordinary=[];
+  for(const wager of wagers){
+    const id=String(wager.round_robin_group_id||'').trim();
+    if(!id){ordinary.push(wager);continue}
+    if(!groups.has(id))groups.set(id,[]);
+    groups.get(id).push(wager);
+  }
+  return {groups:[...groups].map(([id,rows])=>({id,rows})),ordinary};
+}
+function roundRobinCard(group,listPossiblyIncomplete=false){
+  const rows=group.rows,legs=Number(rows[0]?.round_robin_leg_count);
+  const eventIds=new Set(),signatures=new Set();
+  let validLegs=Number.isInteger(legs),validRows=true;
+  for(const w of rows){
+    const selections=Array.isArray(w.wager_selections)?w.wager_selections:[];
+    const events=selections.map(s=>String(s.event_id||'').trim()).filter(Boolean);
+    const sig=[...events].sort().join('|');
+    if(legs!==Number(w.round_robin_leg_count)||w.wager_type!=='parlay'||events.length!==legs||
+      new Set(events).size!==legs||!sig||signatures.has(sig))validRows=false;
+    signatures.add(sig);
+    for(const event of events)eventIds.add(event);
+  }
+  const expected=combinationCount(eventIds.size,legs);
+  const complete=validLegs&&validRows&&expected>=3&&rows.length===expected&&!listPossiblyIncomplete;
+  const counts={won:0,lost:0,void:0,cancelled:0,pending:0,other:0};
+  let staked=0n,returned=0n,stakeKnown=true,ledgerKnown=true,uncredited=false;
+  for(const w of rows){
+    const status=String(w.status||'pending').toLowerCase();
+    if(status==='pending'||status==='accepted')counts.pending++;
+    else if(Object.hasOwn(counts,status))counts[status]++;
+    else counts.other++;
+    const stake=parseCents(w.stake);
+    if(stake===null)stakeKnown=false;else staked+=stake;
+    if(w._settlement_cents===null||w._settlement_cents===undefined)ledgerKnown=false;
+    else if(status==='won'||status==='void'||status==='cancelled'||status==='lost')returned+=w._settlement_cents;
+    if((status==='won'||status==='void')&&w._settlement_cents===0n)uncredited=true;
+  }
+  const final=complete&&counts.pending===0&&counts.other===0&&stakeKnown&&ledgerKnown&&!uncredited;
+  const open=counts.pending>0;
+  const state=!complete||counts.other||uncredited?'REVIEW':open?'OPEN':'SETTLED';
+  const stateClass=state==='REVIEW'?'review':state==='OPEN'?'open':'settled';
+  const knownCredits=ledgerKnown&&!uncredited;
+  const stakeText=complete&&stakeKnown?centsMoney(staked):'—';
+  const returnedText=knownCredits?centsMoney(returned):'—';
+  const net=final?returned-staked:null;
+  const countText=rows.length+' combination'+(rows.length===1?'':'s')+
+    ' · '+counts.won+' won · '+counts.lost+' lost · '+counts.void+' void · '+
+    counts.cancelled+' canceled · '+counts.pending+' pending';
+  const note=!complete?
+    'Some combination tickets or selection details could not be verified. Refresh to load the complete group before trusting totals.':
+    !ledgerKnown?'Settlement/refund ledger unavailable. Refresh to verify the returned credits.':
+    uncredited?'A winning or voided ticket is missing its expected credit. Refresh or contact support; totals are not final.':
+    !final?'Final profit or loss is shown only after every combination settles. Returned credits shown are the amounts recorded so far.':
+    'Final net = credits returned minus the total staked. All amounts are test credits.';
+  const groupText=esc(String(group.id).slice(0,8));
+  const child=rows.map((w,i)=>{
+    const s=String(w.status||'pending').toLowerCase(),selections=Array.isArray(w.wager_selections)?w.wager_selections:[];
+    const picks=selections.map(x=>esc(String(x.selection_name||'Selection'))+
+      (x.point===null||x.point===undefined?'':' '+esc(String(x.point)))).join(' + ');
+    const credit=(s==='pending'||s==='accepted')?'Pending':w._settlement_cents===null?'—':
+      centsMoney(w._settlement_cents);
+    return '<div class="rr-child"><div class="rr-child-head"><strong>Combination '+(i+1)+'</strong>'+
+      '<span class="pill '+esc(s)+'">'+esc(statusLabel(s))+'</span></div>'+
+      '<div class="rr-child-picks">'+(picks||'Selection details unavailable')+'</div>'+
+      '<div class="rr-child-meta">Stake '+money(w.stake)+' · '+(s==='pending'||s==='accepted'?'Potential':'Credited')+
+      ' '+(s==='pending'||s==='accepted'?money(w.potential_return):credit)+'</div></div>';
+  }).join('');
+  return '<article class="rr-group" data-rr-group><div class="row"><strong class="rr-title">Round Robin · By '+esc(legs)+'s</strong>'+
+    '<span class="pill '+stateClass+'">'+state+'</span></div>'+
+    '<div class="rr-meta">Group '+groupText+' · Placed '+dt(rows[0].placed_at)+'</div>'+
+    '<div class="rr-counts" data-rr-counts>'+countText+'</div>'+
+    '<div class="rr-summary">'+
+      '<div class="summary-box" data-rr-metric="stake"><span class="label">Total Test Credits Staked</span><span class="value">'+stakeText+'</span></div>'+
+      '<div class="summary-box" data-rr-metric="return"><span class="label">'+(final?'Actual Credits Returned':'Credits Returned So Far')+'</span><span class="value">'+returnedText+'</span></div>'+
+      '<div class="summary-box" data-rr-metric="net"><span class="label">Final Net Profit / Loss</span><span class="value '+(net!==null?(net>=0n?'rr-net-positive':'rr-net-negative'):'')+'">'+signedCentsMoney(net)+'</span></div>'+
+      '<div class="summary-box" data-rr-metric="count"><span class="label">Combination Tickets</span><span class="value">'+rows.length+(expected>0?' / '+expected:'')+'</span></div>'+
+    '</div><div class="rr-note">'+note+'</div>'+
+    '<details class="rr-details"><summary>View '+rows.length+' individual combination tickets</summary>'+child+'</details></article>';
+}
+
 function setStatus(text){statusEl.innerHTML=`${esc(text)}<div class="auto">Auto-refreshes every 30 seconds while this page is visible.</div>`}
-function clearPrivate(){openEl.innerHTML='';settledEl.innerHTML=''}
+function clearPrivate(){openEl.innerHTML='';settledEl.innerHTML='';roundRobinEl.innerHTML='';roundRobinSection.hidden=true}
 function applySession(session,event=''){
   const changed=!sessionObserved||(currentSession?.user.id||null)!==(session?.user.id||null)||event==='SIGNED_OUT';sessionObserved=true;currentSession=session||null;
   if(changed){sessionGeneration++;requestId++;clearPrivate();refreshBtn.disabled=false}
@@ -69,16 +201,31 @@ async function load(){
     if(!verified?.user||verified.user.id!==userId){verificationFailed({status:401});return}
     currentSession={...currentSession,user:verified.user};
     const[{data,error},{data:ledger,error:ledgerError}]=await bounded(Promise.all([
-      supabase.from('wagers').select('id,wager_type,round_robin_group_id,round_robin_leg_count,stake,potential_return,status,placed_at,settled_at,is_test,wager_selections(event_name,market_key,market_title,selection_name,description,point,american_odds,quoted_at)').eq('user_id',userId).eq('is_test',true).order('placed_at',{ascending:false}),
+      supabase.from('wagers').select('id,wager_type,round_robin_group_id,round_robin_leg_count,stake,potential_return,status,placed_at,settled_at,is_test,wager_selections(event_id,event_name,market_key,market_title,selection_name,description,point,american_odds,quoted_at)').eq('user_id',userId).eq('is_test',true).order('placed_at',{ascending:false}),
       supabase.from('wallet_transactions').select('wager_id,transaction_type,amount').eq('user_id',userId).in('transaction_type',['wager_credit','refund']).not('wager_id','is',null)
     ]));
     if(!isCurrent(generation,request,userId))return;
     if(expired(error)||expired(ledgerError)){verificationFailed(expired(error)?error:ledgerError);return}
     if(error){setStatus('Unable to load your bets. Try Refresh Bets.');openEl.innerHTML='<div class="error">Unable to load bets.</div>';settledEl.innerHTML='';return}
-    const credits=new Map();if(!ledgerError){for(const tx of ledger||[]){const id=String(tx.wager_id||''),amount=Number(tx.amount);if(!id||!Number.isFinite(amount))continue;credits.set(id,(credits.get(id)||0)+amount)}}
-    const rows=(data||[]).map(w=>({...w,_settlement_credit:ledgerError?null:(credits.has(String(w.id))?credits.get(String(w.id)):0)}));
-    const open=rows.filter(w=>['pending','accepted'].includes(String(w.status).toLowerCase())),settled=rows.filter(w=>['won','lost','void','cancelled'].includes(String(w.status).toLowerCase()));
-    openEl.innerHTML=open.length?open.map(card).join(''):'<div class="empty">No open bets.</div>';settledEl.innerHTML=settled.length?settled.map(card).join(''):'<div class="empty">No settled bets.</div>';setStatus(`${currentSession.user.email||'Signed in'} • Updated ${timeNow()}${ledgerError?' • Return amounts unavailable. Try Refresh Bets.':''}`);
+    const credits=new Map(),invalidCredits=new Set();
+    if(!ledgerError){for(const tx of ledger||[]){
+      const id=String(tx.wager_id||''),amount=parseCents(tx.amount);
+      if(!id)continue;
+      if(amount===null){invalidCredits.add(id);continue}
+      credits.set(id,(credits.get(id)||0n)+amount);
+    }}
+    const rows=(data||[]).map(w=>{
+      const cents=ledgerError||invalidCredits.has(String(w.id))?null:(credits.get(String(w.id))||0n);
+      return {...w,_settlement_cents:cents,_settlement_credit:cents===null?null:Number(cents)/100};
+    });
+    const grouped=roundRobinRows(rows),listPossiblyIncomplete=rows.length>=1000||(ledger||[]).length>=1000;
+    roundRobinSection.hidden=!grouped.groups.length;
+    roundRobinEl.innerHTML=grouped.groups.map(g=>roundRobinCard(g,listPossiblyIncomplete)).join('');
+    const open=grouped.ordinary.filter(w=>['pending','accepted'].includes(String(w.status).toLowerCase()));
+    const settled=grouped.ordinary.filter(w=>['won','lost','void','cancelled'].includes(String(w.status).toLowerCase()));
+    openEl.innerHTML=open.length?open.map(card).join(''):'<div class="empty">No open bets.</div>';
+    settledEl.innerHTML=settled.length?settled.map(card).join(''):'<div class="empty">No settled bets.</div>';
+    setStatus(`${currentSession.user.email||'Signed in'} • Updated ${timeNow()}${ledgerError?' • Return amounts unavailable. Try Refresh Bets.':''}`);
   }catch{
     if(isCurrent(generation,request,userId)){clearPrivate();setStatus('Unable to verify or refresh your bets. Check your connection and try Refresh Bets.');openEl.innerHTML='<div class="error">Unable to load bets.</div>'}
   }finally{if(isCurrent(generation,request,userId)||(!currentSession&&generation<=sessionGeneration))refreshBtn.disabled=false}
