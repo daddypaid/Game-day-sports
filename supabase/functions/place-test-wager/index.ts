@@ -4,6 +4,7 @@ import { resolveGradingSport, isFootballGradingSport, isMlbGradingSport } from "
 const cors={"Access-Control-Allow-Origin":"*","Access-Control-Allow-Headers":"authorization, x-client-info, apikey, content-type","Access-Control-Allow-Methods":"POST, OPTIONS","Content-Type":"application/json"};
 const MAX_BUY_POINTS=2;
 const STANDARD=new Set(['h2h','spreads','totals']);
+function roundRobinWays(n:number,k:number){if(!Number.isInteger(n)||!Number.isInteger(k)||n<3||n>6||k<2||k>=n)return 0;let ways=1;for(let i=1;i<=k;i++)ways=ways*(n-i+1)/i;return ways}
 const FOOTBALL_PROP_BASE=new Set(['player_pass_yds','player_pass_tds','player_pass_attempts','player_pass_completions','player_pass_interceptions','player_rush_yds','player_rush_attempts','player_reception_yds','player_receptions','player_rush_reception_yds']);
 const MLB_PROPS=new Set(['batter_doubles_alternate','batter_hits','batter_hits_alternate','batter_hits_runs_rbis_alternate','batter_home_runs','batter_rbis','batter_rbis_alternate','batter_runs_scored_alternate','batter_total_bases','batter_total_bases_alternate','pitcher_outs','pitcher_strikeouts_alternate']);
 function response(data:unknown,status=200){return new Response(JSON.stringify(data),{status,headers:cors})}
@@ -59,10 +60,13 @@ Deno.serve(async (req: Request) => {
     }
     const wagerType = body?.wager_type, stake = Number(body?.stake);
     const selections = Array.isArray(body?.selections) ? body.selections : [];
-    if (!['single','parlay'].includes(wagerType)) throw new Error('Invalid wager type');
+    if (!['single','parlay','round_robin'].includes(wagerType)) throw new Error('Invalid wager type');
     if (!Number.isFinite(stake) || stake <= 0 || stake > 100000 || Math.abs(stake*100-Math.round(stake*100)) > 0.000001) throw new Error('Invalid stake');
     if ((wagerType === 'single' && selections.length !== 1) ||
-      (wagerType === 'parlay' && (selections.length < 2 || selections.length > 20))) throw new Error('Invalid selection count');
+      (wagerType === 'parlay' && (selections.length < 2 || selections.length > 20)) ||
+      (wagerType === 'round_robin' && (selections.length < 3 || selections.length > 6))) throw new Error('Invalid selection count');
+    const rrLegs=Number(body?.round_robin_legs),rrWays=wagerType==='round_robin'?roundRobinWays(selections.length,rrLegs):0;
+    if(wagerType==='round_robin'&&(!rrWays||rrWays>20||stake*rrWays>100000))throw new Error('Round Robin requires 3–6 picks and 2 to N−1 legs per combination; total cost cannot exceed 100,000 test credits');
     const validationTime = new Date().toISOString();
     const normalized = selections.map((s:any) => {
       const odds = Number(s?.american_odds);
@@ -90,14 +94,16 @@ Deno.serve(async (req: Request) => {
         point,american_odds:odds,quoted_at:supplied ? supplied.toISOString() : validationTime,
         ...(bought?{buy_points:true,original_point:originalPoint}:{})};
     });
-    const payload = {wager_type:wagerType,stake,selections:normalized.map(({quoted_at,...s}:any) => s)};
+    const payload = {wager_type:wagerType,stake,...(wagerType==='round_robin'?{round_robin_legs:rrLegs}:{}),selections:normalized.map(({quoted_at,...s}:any) => s)};
     processingToken = crypto.randomUUID();
     const preparation = await rpc('sportsbook_test_request_prepare', {
       p_user_id:userId,p_request_id:requestId,p_payload:payload,p_processing_token:processingToken,
     });
     if (!preparation.processing) return response(preparation,preparation.state === 'conflict' ? 409 : 200);
-    if (wagerType === 'parlay' && new Set(normalized.map((s:any) => s.event_id.toLowerCase())).size !== normalized.length) {
-      return await reject('SAME_EVENT_PARLAY','Parlays must use different events. Same-event selections are not available. No test credits were charged.');
+    if (['parlay','round_robin'].includes(wagerType) && new Set(normalized.map((s:any) => s.event_id.trim().toLowerCase())).size !== normalized.length) {
+      return await reject(wagerType==='round_robin'?'SAME_EVENT_ROUND_ROBIN':'SAME_EVENT_PARLAY',
+        wagerType==='round_robin'?'Round Robin requires picks from different events. No test credits were charged.':
+          'Parlays must use different events. Same-event selections are not available. No test credits were charged.');
     }
     const unsupported = normalized.find((s:any) => !resolveGradingSport(s.sport_key) ||
       (!STANDARD.has(s.market_key) && !isSupportedProp(s.market_key,s.sport_key)));
@@ -156,7 +162,7 @@ Deno.serve(async (req: Request) => {
         if (!verdict.ok) return await reject(verdict.code,verdict.message,{current_line:verdict.current_line || null});
       }
     }
-    return response(await rpc('sportsbook_test_request_commit', {
+    return response(await rpc(wagerType==='round_robin'?'sportsbook_test_request_commit_round_robin':'sportsbook_test_request_commit', {
       p_user_id:userId,p_request_id:requestId,p_processing_token:processingToken,p_selections:normalized,
     }));
   } catch (e:any) {
