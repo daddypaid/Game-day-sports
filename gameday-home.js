@@ -220,7 +220,7 @@ if (promotionsButton && promotionsDialog) {
 
 if ('serviceWorker' in navigator) {
   window.addEventListener('load', () => {
-    navigator.serviceWorker.register('./sw.js?v=126', { scope: './', updateViaCache: 'none' }).then(registration => registration.update()).catch(() => {});
+    navigator.serviceWorker.register('./sw.js?v=127', { scope: './', updateViaCache: 'none' }).then(registration => registration.update()).catch(() => {});
   });
 }
 

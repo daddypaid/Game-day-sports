@@ -370,6 +370,7 @@ function setBetMode(mode){
   modePreference=mode;syncBetMode();selectionChanged();updateSlip();
 }
 
+const MAX_BUY_POINTS=2;
 const buyPointsQuotes=new Map();
 function buyPointsQuoteKey(x){return [x.sport,x.eventId,x.market].join('|')}
 function buyPointsChoices(x){
@@ -384,10 +385,10 @@ function buyPointsChoices(x){
     const line=Number(o.point),odds=Number(o.price);
     if(norm(o.name)!==norm(x.name)||norm(o.description||'')!==norm(x.description||'')||!Number.isFinite(line)||!Number.isFinite(original)||!Number.isInteger(odds)||odds===0)continue;
     const points=x.market==='spreads'?line-original:norm(x.name)==='over'?original-line:norm(x.name)==='under'?line-original:0;
-    if(points<=0||Math.abs(points*2-Math.round(points*2))>0.000001)continue;
+    if(points<=0||points>MAX_BUY_POINTS||Math.abs(points*2-Math.round(points*2))>0.000001)continue;
     candidates.push({line,odds,points});
   }
-  return [...new Map(candidates.map(o=>[String(o.line),o])).values()].sort((a,b)=>a.points-b.points).slice(0,12);
+  return [...new Map(candidates.map(o=>[String(o.line),o])).values()].sort((a,b)=>a.points-b.points).slice(0,4);
 }
 function applyBuyPointsQuote(x,g){
   if(g&&(g.completed||String(g.id)!==String(x.eventId))){quoteUnavailable(x);return false}
@@ -438,7 +439,7 @@ function buyPointsSlipControl(x,i,where='slip'){
   const waiting=entry?.status==='loading',unavailable=x.buyPoints===true&&!choices.some(o=>samePoint(o.line,x.point));
   const saved=unavailable?'<option value="pending" selected disabled>Adjusted line '+esc(x.point)+' — verifying price</option>':'';
   const noPrices=!waiting&&!choices.length?'<option value="none" disabled>No verified alternate prices for this event</option>':'';
-  const guidance=waiting?'Checking available 0.5-point prices…':unavailable?'Adjusted line unavailable until the provider confirms its price.':choices.length?'Select a half-point adjustment to update the odds and potential return.':'No verified alternate prices available right now. The original wager is still available.';
+  const guidance=waiting?'Checking available 0.5-point prices…':unavailable?'Adjusted line unavailable until the provider confirms its price.':choices.length?'Buy up to 2 points in 0.5-point steps; the odds and potential return will update.':'No verified alternate prices available right now. The original wager is still available.';
   return '<div class="buy-points-preview '+(board?'buy-points-inline':'')+'" data-inline-pick="'+i+'"><label for="'+id+'">Buy Points'+(board?' — '+esc(x.name):'')+'</label><select id="'+id+'" data-buy-points="'+i+'" aria-label="Buy points for '+esc(x.name)+'" '+(locked?'disabled':'')+'><option value="" '+(x.buyPoints?'':'selected')+'>Original line '+(original>0?'+':'')+original+' ('+price(basePrice)+')</option>'+option+saved+noPrices+'</select><small id="buy-points-preview-'+(board?'board-':'')+i+'" aria-live="polite">'+guidance+'</small></div>';
 }
 function boardBuyPoints(g,k){
