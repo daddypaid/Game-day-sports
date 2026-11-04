@@ -17,6 +17,7 @@ async function fixture() {
   const db = new PGlite(); await db.waitReady;
   await db.exec(fs.readFileSync(path.join(__dirname,'fixtures/sportsbook-placement-baseline.sql'),'utf8'));
   await db.exec(fs.readFileSync(path.join(root,'supabase/migrations/20261010110728_sportsbook_durable_requests_and_safe_parlays.sql'),'utf8'));
+  await db.exec(fs.readFileSync(path.join(root,'supabase/migrations/20261104050000_sportsbook_round_robin_atomic_test_wagers.sql'),'utf8'));
   await db.query('insert into auth.users values($1),($2)',[user,other]);
   await db.query('insert into wallets(user_id,balance) values($1,1000),($2,1000)',[user,other]);
   const rpc = async (name,args) => (await db.query(`select public.${name}(${args.map((_,i) => '$'+(i+1)).join(',')}) as result`,args)).rows[0].result;
@@ -32,7 +33,7 @@ const sqlTest = (name,fn) => test(name,{skip:PGlite ? false : 'Set GAMEDAY_PGLIT
 sqlTest('Sportsbook receipt storage and all privileged RPCs are inaccessible to browser roles',async () => {
   const f = await fixture();
   for (const signature of ['sportsbook_test_request_receipt(uuid,uuid)','sportsbook_test_request_prepare(uuid,uuid,jsonb,uuid)',
-    'sportsbook_test_request_reject(uuid,uuid,uuid,text,text)','sportsbook_test_request_commit(uuid,uuid,uuid,jsonb)']) {
+    'sportsbook_test_request_reject(uuid,uuid,uuid,text,text)','sportsbook_test_request_commit(uuid,uuid,uuid,jsonb)','sportsbook_test_request_commit_round_robin(uuid,uuid,uuid,jsonb)']) {
     const rights = (await f.db.query("select has_function_privilege('anon',$1,'EXECUTE') as anon,has_function_privilege('authenticated',$1,'EXECUTE') as customer,has_function_privilege('service_role',$1,'EXECUTE') as service",[signature])).rows[0];
     assert.deepEqual(rights,{anon:false,customer:false,service:true});
   }
@@ -140,7 +141,8 @@ function edge(f,options = {}) {
         {key:'spreads',outcomes:[{name:'Home',point:options.changedAnchor?-4.5:-3.5,price:-110}]},
         {key:'totals',outcomes:[{name:'Over',point:43,price:-110},{name:'Under',point:43,price:-110}]}
       ]}]};
-      return new Response(JSON.stringify({games:[game]}));
+      const others=['event-b','event-c','event-d','event-e','event-f'].map(id=>({id,home_team:'Home',away_team:'Away',bookmakers:[{markets:[{key:'h2h',outcomes:[{name:'Home',price:100},{name:'Away',price:110}]}]}]}));
+      return new Response(JSON.stringify({games:[game,...others]}));
     },
   });
   new vm.Script(executable('supabase/functions/place-test-wager/index.ts')).runInContext(context);
@@ -181,6 +183,69 @@ sqlTest('Bought half-point spreads and totals validate live alternate prices and
   assert.equal(max.data.state,'accepted');assert.equal(await f.debits(),3);
   await f.db.close();
 });
+sqlTest('Round Robin atomically creates each 2-leg parlay, charges the total, and recovers an owner-scoped group receipt',async () => {
+  const f=await fixture(),e=edge(f),requestId=uuid();
+  const picks=['event-a','event-b','event-c'].map(id=>selection(id,{market_key:'h2h',selection_name:'Home',american_odds:100}));
+  const body={request_id:requestId,wager_type:'round_robin',round_robin_legs:2,stake:2,selections:picks};
+  const first=await e.send(body);
+  assert.equal(first.data.state,'accepted');
+  assert.equal(first.data.wager.wager_type,'round_robin');
+  assert.equal(Number(first.data.wager.stake),6);
+  assert.equal(Number(first.data.wager.potential_return),24);
+  assert.equal(Number(first.data.wager.stake_per_combination),2);
+  assert.equal(Number(first.data.wager.combinations),3);
+  assert.equal(await f.balance(),994);
+  assert.equal(await f.debits(),3);
+  const tickets=(await f.db.query('select w.id,w.wager_type,w.stake,w.potential_return,w.round_robin_group_id,w.round_robin_leg_count, (select count(*)::int from wager_selections s where s.wager_id=w.id) as leg_count from wagers w where w.round_robin_group_id=$1 order by w.id',[requestId])).rows;
+  assert.equal(tickets.length,3);
+  assert(tickets.every(w=>w.wager_type==='parlay'&&Number(w.stake)===2&&Number(w.potential_return)===8&&
+    Number(w.round_robin_leg_count)===2&&w.leg_count===2));
+  const combos=(await f.db.query('select array_agg(s.event_id order by s.event_id) as ids from wager_selections s join wagers w on w.id=s.wager_id where w.round_robin_group_id=$1 group by s.wager_id',[requestId])).rows.map(row=>row.ids.join('+')).sort();
+  assert.deepEqual(combos,['event-a+event-b','event-a+event-c','event-b+event-c']);
+  const saved=await e.send({request_id:requestId,recover:true});
+  assert.equal(saved.data.state,'accepted');assert.equal(Number(saved.data.wager.stake),6);
+  const replay=await e.send(body);
+  assert.equal(replay.data.wager.id,first.data.wager.id);
+  assert.equal(await f.balance(),994);assert.equal(await f.debits(),3);
+  assert.equal((await edge(f,{user:other}).send({request_id:requestId,recover:true})).data.state,'not_found');
+  const altered=await e.send({...body,round_robin_legs:3});
+  assert.equal(altered.data.code,'INVALID_REQUEST');
+  await f.db.close();
+});
+sqlTest('Round Robin rejects incomplete, duplicate, changed-price and unaffordable groups without partial debits',async () => {
+  const f=await fixture();
+  const base=['event-a','event-b','event-c'].map(id=>selection(id));
+  const send=(extra={},picks=base,options={})=>edge(f,options).send({request_id:uuid(),wager_type:'round_robin',round_robin_legs:2,stake:2,selections:picks,...extra});
+  const failures=[
+    await send({round_robin_legs:3}),
+    await send({stake:400}),
+    await send({},[base[0],base[0],base[2]]),
+    await send({},[base[0],base[1]]),
+    await send({},base,{changedOdds:true})
+  ];
+  assert.equal(failures[0].data.code,'INVALID_REQUEST');
+  assert.equal(failures[1].data.code,'INSUFFICIENT_BALANCE');
+  assert.equal(failures[2].data.code,'SAME_EVENT_ROUND_ROBIN');
+  assert.equal(failures[3].data.code,'INVALID_REQUEST');
+  assert.equal(failures[4].data.code,'LINE_CHANGED');
+  assert(failures.every(v=>v.data.no_credits_charged===true));
+  assert.equal(await f.balance(),1000);assert.equal(await f.debits(),0);
+  assert.equal((await f.db.query('select count(*)::int as c from wagers')).rows[0].c,0);
+  await f.db.close();
+});
+sqlTest('Four-pick Round Robin creates exactly four 3-leg tickets without a duplicate charge',async()=>{
+  const f=await fixture(),picks=['event-a','event-b','event-c','event-d'].map(id=>selection(id));
+  const requestId=uuid(),body={request_id:requestId,wager_type:'round_robin',round_robin_legs:3,stake:1,selections:picks};
+  const response=await edge(f).send(body);
+  assert.equal(response.data.state,'accepted');
+  assert.equal(Number(response.data.wager.combinations),4);
+  assert.equal(Number(response.data.wager.stake),4);
+  assert.equal(Number(response.data.wager.potential_return),32);
+  assert.equal(await f.balance(),996);assert.equal(await f.debits(),4);
+  assert.equal((await f.db.query('select count(*)::int as c from wagers where round_robin_group_id=$1',[requestId])).rows[0].c,4);
+  await f.db.close();
+});
+
 sqlTest('Buy Points reject invented prices, moved original lines, unavailable feeds and invalid increments without charging',async () => {
   const f=await fixture();
   const bet=extra=>selection('event-a',{market_key:'spreads',selection_name:'Home',point:-2.5,american_odds:-125,original_point:-3.5,buy_points:true,...extra});
