@@ -2,6 +2,7 @@ import "jsr:@supabase/functions-js/edge-runtime.d.ts";
 import { createClient } from "npm:@supabase/supabase-js@2.115.0";
 import { resolveGradingSport, isFootballGradingSport, isMlbGradingSport } from "./sport-keys.ts";
 const cors={"Access-Control-Allow-Origin":"*","Access-Control-Allow-Headers":"authorization, x-client-info, apikey, content-type","Access-Control-Allow-Methods":"POST, OPTIONS","Content-Type":"application/json"};
+const MAX_BUY_POINTS=2;
 const STANDARD=new Set(['h2h','spreads','totals']);
 const FOOTBALL_PROP_BASE=new Set(['player_pass_yds','player_pass_tds','player_pass_attempts','player_pass_completions','player_pass_interceptions','player_rush_yds','player_rush_attempts','player_reception_yds','player_receptions','player_rush_reception_yds']);
 const MLB_PROPS=new Set(['batter_doubles_alternate','batter_hits','batter_hits_alternate','batter_hits_runs_rbis_alternate','batter_home_runs','batter_rbis','batter_rbis_alternate','batter_runs_scored_alternate','batter_total_bases','batter_total_bases_alternate','pitcher_outs','pitcher_strikeouts_alternate']);
@@ -80,7 +81,7 @@ Deno.serve(async (req: Request) => {
         if(!Number.isFinite(originalPoint))throw new Error('Original line is invalid');
         const marketKey=text(s.market_key),side=norm(s.selection_name);
         const distance=marketKey==='spreads'?point-originalPoint:side==='over'?originalPoint-point:side==='under'?point-originalPoint:0;
-        if(distance<=0||Math.abs(distance*2-Math.round(distance*2))>0.000001)throw new Error('Buy Points requires a supported half-point adjustment in the favorable direction');
+        if(distance<=0||distance>MAX_BUY_POINTS||Math.abs(distance*2-Math.round(distance*2))>0.000001)throw new Error('Buy Points only supports favorable adjustments of 0.5, 1.0, 1.5, or 2.0 points');
       }
       return {event_id:text(s.event_id),event_name:text(s.event_name),
         sport_key:resolveGradingSport(s.sport_key) ?? text(s.sport_key).toLowerCase(),

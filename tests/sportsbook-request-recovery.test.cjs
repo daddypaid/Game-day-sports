@@ -130,7 +130,7 @@ function edge(f,options = {}) {
       if(alternate){
         if(options.failAlternateQuotes)throw new Error('Alternate price feed unavailable');
         const game={id:'event-a',home_team:'Home',away_team:'Away',bookmakers:[{markets:[
-          {key:'alternate_spreads',outcomes:[{name:'Home',point:-3,price:-120},{name:'Home',point:-2.5,price:options.changedAlternateOdds?-140:-125},{name:'Home',point:-2,price:-150}]},
+          {key:'alternate_spreads',outcomes:[{name:'Home',point:-3,price:-120},{name:'Home',point:-2.5,price:options.changedAlternateOdds?-140:-125},{name:'Home',point:-2,price:-150},{name:'Home',point:-1.5,price:-180},{name:'Home',point:-1,price:-200}]},
           {key:'alternate_totals',outcomes:[{name:'Over',point:42.5,price:-125},{name:'Under',point:43.5,price:-125}]}
         ]}]};
         return new Response(JSON.stringify({source:options.staleAlternate?'stored':'live',stale:Boolean(options.staleAlternate),mode:'alternate_lines',wagerable:true,event:game}));
@@ -177,6 +177,8 @@ sqlTest('Bought half-point spreads and totals validate live alternate prices and
   const second=await total;assert.equal(second.data.state,'accepted');assert.equal(await f.debits(),2);
   const totalRow=(await f.db.query('select market_key,point from wager_selections where wager_id=$1',[second.data.wager.id])).rows[0];
   assert.equal(totalRow.market_key,'totals');assert.equal(Number(totalRow.point),42.5);
+  const max=await edge(f).send({request_id:uuid(),wager_type:'single',stake:5,selections:[bet({point:-1.5,american_odds:-180})]});
+  assert.equal(max.data.state,'accepted');assert.equal(await f.debits(),3);
   await f.db.close();
 });
 sqlTest('Buy Points reject invented prices, moved original lines, unavailable feeds and invalid increments without charging',async () => {
@@ -189,7 +191,8 @@ sqlTest('Buy Points reject invented prices, moved original lines, unavailable fe
     [edge(f,{staleAlternate:true}),bet(), 'LINE_SUSPENDED'],
     [edge(f),bet({point:-2.75}), 'INVALID_REQUEST'],
     [edge(f),bet({point:-4}), 'INVALID_REQUEST'],
-    [edge(f),bet({original_point:-6.5}), 'LINE_CHANGED']
+    [edge(f),bet({point:-1,american_odds:-200}), 'INVALID_REQUEST'],
+    [edge(f),bet({original_point:-4}), 'LINE_CHANGED']
   ];
   for(const [e,pick,expected] of attempts){
     const r=await e.send({request_id:uuid(),wager_type:'single',stake:10,selections:[pick]});

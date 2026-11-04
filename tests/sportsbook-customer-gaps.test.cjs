@@ -37,7 +37,7 @@ async function open(t,{sdkFailures=0,sdkDependencyFailures=0,wallet=100,live=fal
  await context.route('https://**/*',r=>r.abort());
  let sdkRequests=0,dependencyRequests=0;
  await context.route('https://cdn.jsdelivr.net/**',r=>{if(r.request().url().includes('fixture-sdk-dependency.js')){dependencyRequests++;return dependencyRequests<=sdkDependencyFailures?r.abort():r.fulfill({contentType:'text/javascript',body:'export const ready=true;'})}sdkRequests++;return sdkRequests<=sdkFailures?r.abort():r.fulfill({contentType:'text/javascript',body:(sdkDependencyFailures?"import './fixture-sdk-dependency.js';\n":'')+sdk})});
- await context.route('https://qsvrvhcklnsbekxblpfo.supabase.co/**',async r=>{const b=r.request().postDataJSON(),f=await r.request().frame().evaluate(()=>({liveFailure:__f.liveFailure,states:__f.states,empty:__f.empty,delay:__f.liveDelay||0}));let data;if(b.mode==='sports')data={sports:[{key:'nfl',group:'Football',title:'NFL',active:true}]};else if(b.mode==='games'){data={games:[matchup(live,quotes)]};if(quotes.hold)await new Promise(resolve=>quotes.waiters.push(resolve))}else if(b.mode==='alternate_lines')data={mode:'alternate_lines',source:'live',wagerable:true,event:{id:'fixture-event',bookmakers:f.empty==='alternate_lines'?[]:[{markets:[{key:'alternate_spreads',outcomes:[{name:'Fixture Home',point:-3,price:-125},{name:'Fixture Home',point:-2.5,price:-135},{name:'Fixture Away',point:3,price:-120}]},{key:'alternate_totals',outcomes:[{name:'Over',point:42.5,price:-125},{name:'Under',point:43.5,price:-125}]}]}]}};else if(b.mode==='events')data={events:f.empty==='events'?[]:[matchup()]};else if(b.mode==='prop_markets')data={prop_markets:f.empty==='markets'?[]:['player_pass_yds']};else if(b.mode==='props')data={event:{...matchup(),bookmakers:[{markets:[{key:'player_pass_yds',outcomes:f.empty==='outcomes'?[]:[{name:'Over',description:'Fixture Player',point:250.5,price:-110}]}]}]}};else{if(f.delay)await new Promise(resolve=>setTimeout(resolve,f.delay));if(f.liveFailure){await r.fulfill({status:503,contentType:'application/json',body:JSON.stringify({error:'Fixture live state unavailable'})});return}data={sport:b.sport,fetched_at:new Date().toISOString(),stale:false,states:f.states}}await r.fulfill({contentType:'application/json',body:JSON.stringify(data)})});
+ await context.route('https://qsvrvhcklnsbekxblpfo.supabase.co/**',async r=>{const b=r.request().postDataJSON(),f=await r.request().frame().evaluate(()=>({liveFailure:__f.liveFailure,states:__f.states,empty:__f.empty,delay:__f.liveDelay||0}));let data;if(b.mode==='sports')data={sports:[{key:'nfl',group:'Football',title:'NFL',active:true}]};else if(b.mode==='games'){data={games:[matchup(live,quotes)]};if(quotes.hold)await new Promise(resolve=>quotes.waiters.push(resolve))}else if(b.mode==='alternate_lines')data={mode:'alternate_lines',source:'live',wagerable:true,event:{id:'fixture-event',bookmakers:f.empty==='alternate_lines'?[]:[{markets:[{key:'alternate_spreads',outcomes:[{name:'Fixture Home',point:-3,price:-125},{name:'Fixture Home',point:-2.5,price:-135},{name:'Fixture Home',point:-2,price:-150},{name:'Fixture Home',point:-1.5,price:-175},{name:'Fixture Home',point:-1,price:-200},{name:'Fixture Away',point:3,price:-120}]},{key:'alternate_totals',outcomes:[{name:'Over',point:42.5,price:-125},{name:'Under',point:43.5,price:-125}]}]}]}};else if(b.mode==='events')data={events:f.empty==='events'?[]:[matchup()]};else if(b.mode==='prop_markets')data={prop_markets:f.empty==='markets'?[]:['player_pass_yds']};else if(b.mode==='props')data={event:{...matchup(),bookmakers:[{markets:[{key:'player_pass_yds',outcomes:f.empty==='outcomes'?[]:[{name:'Over',description:'Fixture Player',point:250.5,price:-110}]}]}]}};else{if(f.delay)await new Promise(resolve=>setTimeout(resolve,f.delay));if(f.liveFailure){await r.fulfill({status:503,contentType:'application/json',body:JSON.stringify({error:'Fixture live state unavailable'})});return}data={sport:b.sport,fetched_at:new Date().toISOString(),stale:false,states:f.states}}await r.fulfill({contentType:'application/json',body:JSON.stringify(data)})});
  const p=await context.newPage(),errors=[];p.on('pageerror',e=>errors.push(e.message));await p.goto(base+'/gameday-sportsbook.html'+(live?'?view=live':''));
  await p.locator(sdkFailures||sdkDependencyFailures?'#retryConnection':'.odd').first().waitFor();t.after(()=>assert.deepEqual(errors,[],'no JS errors or auth callback lock re-entry'));
  return {p,context,quotes,releaseQuotes,get sdkRequests(){return sdkRequests}};
@@ -178,6 +178,23 @@ test('Mobile sportsbook reveals the Buy Points dropdown inline after selecting a
  await p.click('#openSlip');
  await p.locator('#buy-points-0').waitFor({state:'visible'});
  assert.equal(await p.locator('#buy-points-0').inputValue(),'0');
+ assert.equal(await p.evaluate(()=>__f.calls.length),0);
+});
+test('Buy Points offers only half-point steps through 2.0 points even when farther provider prices exist',async t=>{
+ const {p}=await open(t);
+ await p.locator('[data-market="spreads"]').first().click();
+ await p.locator('.odd').first().click();
+ const inline=p.locator('.buy-points-inline select').first();
+ await p.waitForFunction(()=>document.querySelector('.buy-points-inline select')?.options.length===5);
+ const choices=await inline.locator('option').allTextContents();
+ assert.equal(choices.length,5);
+ for(const increment of ['0.5','1.0','1.5','2.0'])assert(choices.some(label=>label.includes('Buy '+increment+' point')));
+ assert(!choices.some(label=>label.includes('Buy 2.5 points')));
+ await inline.selectOption('3');
+ assert.match(await p.locator('#slipItems').textContent(),/-1.5/);
+ await p.click('#openSlip');
+ assert.equal(await p.locator('#buy-points-0').inputValue(),'3');
+ assert.equal(await p.locator('#buy-points-0 option').count(),5);
  assert.equal(await p.evaluate(()=>__f.calls.length),0);
 });
 test('Buy Points remains visibly labeled on the game card while quotes are unavailable',async t=>{
