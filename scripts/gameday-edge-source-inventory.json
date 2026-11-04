@@ -1,7 +1,7 @@
 {
   "schema_version": 1,
   "project_ref": "qsvrvhcklnsbekxblpfo",
-  "observed_at": "2026-11-04T03:10:15.918Z",
+  "observed_at": "2026-11-04T03:19:29.865Z",
   "source": "Supabase list_edge_functions and get_edge_function read-only snapshots",
   "hash_algorithm": "sha256",
   "notes": [
@@ -28,17 +28,17 @@
     },
     {
       "slug": "place-test-wager",
-      "deployed_version": 14,
+      "deployed_version": 15,
       "deployed_status": "ACTIVE",
       "verify_jwt": true,
       "import_map": false,
-      "deployed_bundle_sha256": "068447632fbe0502d44b01d63d31d3faf27d866d69bdc94636f9d6757b99f21b",
+      "deployed_bundle_sha256": "a40c7a54fef2d6425da53acb6f781ececab5ace3611c04c4f7104d396bbfc0e8",
       "source_status": "local_matches_deployment",
       "files": [
         {
           "path": "supabase/functions/place-test-wager/index.ts",
-          "deployed_sha256": "7a2cd19e4e29b8ae34fede8460acb33694d39408f88709c937667232e5fd2e5b",
-          "local_sha256": "7a2cd19e4e29b8ae34fede8460acb33694d39408f88709c937667232e5fd2e5b"
+          "deployed_sha256": "0d128ab3742bea1baa0e7031291dee6e5eded30afe81d7999be0087546582583",
+          "local_sha256": "0d128ab3742bea1baa0e7031291dee6e5eded30afe81d7999be0087546582583"
         },
         {
           "path": "supabase/functions/place-test-wager/sport-keys.ts",
@@ -161,17 +161,17 @@
     },
     {
       "slug": "odds-engine",
-      "deployed_version": 5,
+      "deployed_version": 6,
       "deployed_status": "ACTIVE",
       "verify_jwt": false,
       "import_map": false,
-      "deployed_bundle_sha256": "0fd4d4d89d0c41375557f7dc08c81b3192a809831ecb1873b147dec1a77ce1bc",
+      "deployed_bundle_sha256": "9ebea938c6720bbfe613522072969ed0e37e1687bb50a3f5da22e12bcc6dafd3",
       "source_status": "local_matches_deployment",
       "files": [
         {
           "path": "supabase/functions/odds-engine/index.ts",
-          "deployed_sha256": "de84a7487d94858085cebeaeef613edd48ca5317b159a7761fbba371567e05f5",
-          "local_sha256": "de84a7487d94858085cebeaeef613edd48ca5317b159a7761fbba371567e05f5"
+          "deployed_sha256": "01f3833d1f1c11afd2d74aee4e6379550b944c62dc360a5cba16352adc0f7056",
+          "local_sha256": "01f3833d1f1c11afd2d74aee4e6379550b944c62dc360a5cba16352adc0f7056"
         }
       ]
     },
