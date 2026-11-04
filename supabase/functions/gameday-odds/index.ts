@@ -92,8 +92,15 @@ async function persistedGamesFallback(admin:any,sport:string){
     if(o.updated_at&&(!newestLineAt||new Date(o.updated_at)>new Date(newestLineAt)))newestLineAt=o.updated_at
   }
   const marketsByEvent=new Map<string,any[]>()
+  const basketball=/^basketball_/.test(sportKey)
   for(const m of markets){
-    const os=outcomesByMarket.get(m.id)??[]
+    // Older stored snapshots may contain quarter-point consensus lines.
+    // Never reoffer an NBA spread/total which isn't an actual half-point quote.
+    const os=(outcomesByMarket.get(m.id)??[]).filter((o:any)=>
+      !(basketball&&['spreads','totals'].includes(m.provider_market_key))||
+      (o.point!==null&&o.point!==undefined&&o.point!==''&&
+        Number.isFinite(Number(o.point))&&
+        Math.abs(Number(o.point)*2-Math.round(Number(o.point)*2))<0.000001))
     if(!os.length)continue
     if(!marketsByEvent.has(m.event_id))marketsByEvent.set(m.event_id,[])
     marketsByEvent.get(m.event_id)!.push({key:m.provider_market_key,last_update:m.updated_at,source_books:null,outcomes:os})
