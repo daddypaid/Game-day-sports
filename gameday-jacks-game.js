@@ -72,13 +72,13 @@ async function renderHand(value, animate = false, token = generation) {
   resultView.hidden = hand?.status !== 'settled';
   if (!hand) {
     view.clear();
-    say('Choose a chip, then Deal. Test credits only.');
+    say('');
   } else {
     if (activeHand()) wager.setAmount(Number(hand.stake));
     else wager.startNextWager(`${userId}:${hand.id}`, Number(hand.stake));
     if (!sameHand && animate) view.clear();
     if (activeHand()) {
-      say('Select any cards to hold, then Draw to finish your hand.');
+      say('');
     } else {
       const payout = Number(hand.payout), net = Math.round((payout - Number(hand.stake)) * 100) / 100;
       resultView.replaceChildren();
@@ -87,7 +87,7 @@ async function renderHand(value, animate = false, token = generation) {
       const detail = document.createElement('span');
       detail.textContent = `Returned ${money(payout)} · Net ${net >= 0 ? '+' : '−'}${money(Math.abs(net))}`;
       resultView.append(title, detail);
-      say(Number.isInteger(Number(hand.stake)) ? 'Hand complete. Choose your next wager, then New Deal.' : 'Hand complete. Choose a whole-dollar chip for your next Deal.');
+      say('');
     }
     await view.render({ groups: { player: activeHand() ? hand.initial_hand : hand.final_hand }, phase: activeHand() ? 'active' : 'complete', selectedIndices: [...holds], selectable: activeHand() && !pending }, { animate });
   }
@@ -273,7 +273,7 @@ function toggleHold(index) {
   if (!ready || busy || pending || hidden || !activeHand() || index < 0 || index >= 5) return;
   if (holds.has(index)) holds.delete(index); else holds.add(index);
   view.setSelection([...holds]);
-  say(`${holds.size} ${holds.size === 1 ? 'card' : 'cards'} held. Draw finishes your hand, including when all five are held.`);
+  say(`${holds.size} ${holds.size === 1 ? 'card' : 'cards'} held`);
   updateControls();
 }
 function attach() {
@@ -299,7 +299,7 @@ function attach() {
   stage.addEventListener('gameday:wager-change', () => {
     if (!busy && (!pending || pending.retryAllowed) && !activeHand() && (ready || pending?.retryAllowed)) {
       const amount = wager.getAmount();
-      say(amount <= 0 ? 'Choose a chip, then Deal.' : !Number.isInteger(amount) ? 'Choose a whole-dollar chip for your next Deal.' : amount > 1000 ? 'The maximum wager is $1,000. Decrease your wager to deal.' : amount > balance ? 'Your wager exceeds your test balance. Use the down arrow to reduce it.' : 'Press Deal to start your next hand.');
+      say(amount > 1000 ? 'Maximum wager $1,000.' : amount > balance ? 'Insufficient balance.' : !Number.isInteger(amount) ? 'Whole-dollar wagers only.' : '');
     }
     updateControls();
   });

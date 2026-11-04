@@ -124,3 +124,6 @@ body.gd-game-baccarat .controls>label{display:none!important}
 
 
 @media(prefers-reduced-motion:reduce){body.gd-live-card-game .gd-deal,body.gd-live-card-game .gd-reveal,body.gd-live-card-game .gd-chip-pop{animation-duration:.01ms!important;animation-delay:0ms!important}}
+
+/* Compact card-table layout without an empty instructional status pill. */
+body.gd-live-card-game .status:empty{display:none!important}

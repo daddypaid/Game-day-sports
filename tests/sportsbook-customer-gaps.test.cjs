@@ -301,12 +301,12 @@ test('iPhone Buy Points selector is vertically stacked inside the selected team 
   const geometry=await p.evaluate(()=>{
     const b=e=>e.getBoundingClientRect(),wrap=document.querySelector('.slip-item .buy-points-preview'),
       label=wrap.querySelector('label'),select=wrap.querySelector('select'),help=wrap.querySelector('small'),card=document.querySelector('.slip-item');
-    return {wrap:b(wrap).toJSON(),label:b(label).toJSON(),select:b(select).toJSON(),help:b(help).toJSON(),
+    return {wrap:b(wrap).toJSON(),label:b(label).toJSON(),select:b(select).toJSON(),helpHidden:getComputedStyle(help).display==='none',
       card:b(card).toJSON(),display:getComputedStyle(wrap).display,selectDisplay:getComputedStyle(select).display};
   });
   assert.equal(geometry.display,'block');assert.equal(geometry.selectDisplay,'block');
   assert(geometry.select.top>=geometry.label.bottom+3,'Select must be below label');
-  assert(geometry.help.top>=geometry.select.bottom+3,'Help must be below select');
+  assert(geometry.helpHidden,'Instructional text below Buy Points should not be displayed');
   assert(geometry.select.width>=geometry.wrap.width-35,'Buy Points selector must span its card');
   assert(geometry.wrap.left>=geometry.card.left&&geometry.wrap.right<=geometry.card.right+1,'Buy Points must not exceed selection card');
 });
@@ -354,6 +354,7 @@ test('Buy Points remains visibly labeled on the game card while quotes are unava
  const inline=p.locator('.buy-points-inline select').first();
  await inline.waitFor({state:'visible'});
  await p.waitForFunction(()=>document.querySelector('.buy-points-inline small')?.textContent.includes('No verified alternate prices'));
+  assert(await p.locator('.buy-points-inline small').first().isHidden());
  assert.equal(await inline.locator('option').count(),2);
  assert.match(await p.locator('.buy-points-inline').textContent(),/Buy Points/);
  assert.equal(await p.evaluate(()=>__f.calls.length),0);
@@ -480,4 +481,19 @@ test('Three basketball spread picks show 4–7 point sets without football entri
   assert.equal(await p.locator('#return').textContent(),'$26.00');
   assert(await p.locator('#place').isEnabled());
   assert.equal(await p.evaluate(()=>__f.calls.length),0);
+});
+
+test('Round Robin shows price controls and totals without instructional paragraphs',async t=>{
+ const {p}=await open(t,{roundRobinEvents:2});
+ for(let i=0;i<3;i++)await p.locator('.card').nth(i).locator('.odd').first().click();
+ await p.click('#openSlip');await p.click('#round_robin');await p.fill('#stake','2');
+ assert(await p.locator('#betModeHelp').isHidden());
+ assert(await p.locator('#roundRobinBreakdown').isHidden());
+ assert(await p.locator('#roundRobinPayoutNote').isHidden());
+ assert(await p.locator('#stakeLimits').isHidden());
+ assert(await p.locator('#roundRobinLegs').isVisible());
+ assert.equal(await p.locator('#totalStake').textContent(),'$6.00');
+ assert.equal(await p.locator('#return').textContent(),'$24.00');
+ assert.equal(await p.locator('#potentialProfit').textContent(),'$18.00');
+ assert.equal(await p.evaluate(()=>__f.calls.length),0);
 });

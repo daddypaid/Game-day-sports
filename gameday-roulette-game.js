@@ -99,10 +99,10 @@ function controls() {
 }
 function prompt() {
   if (!ready || busy || pending || !owner) return;
-  if (!validStake(amount())) setStatus('Choose a bet on the table, add chips, then Spin. Wagers are $1 to $10,000.');
-  else if (amount() > balance) setStatus('Your wager exceeds your test balance. Use the down arrow to reduce it.');
-  else if (!selection) setStatus('Choose a bet on the table, then Spin.');
-  else setStatus(`${label(selection)} selected · ${money(amount())}. Press Spin to play.`);
+  if (!validStake(amount())) setStatus('');
+  else if (amount() > balance) setStatus('Insufficient balance.');
+  else if (!selection) setStatus('');
+  else setStatus('');
 }
 function validateSpin(value) {
   const bet = normalizedBet(value?.bet_type, value?.bet_value);
@@ -138,7 +138,7 @@ async function renderSpin(spin, token, animate = false) {
   resultText(spin);
   setWheelCaption(`${spin.winning_number} ${spin.winning_color[0].toUpperCase() + spin.winning_color.slice(1)} · Returned ${money(Number(spin.payout))}`);
   if (animate && spin.result === 'won') winSound();
-  setStatus('Spin complete. Add chips for your next wager, or Repeat Bet.');
+  setStatus('');
   return true;
 }
 function stopSpinSound() {

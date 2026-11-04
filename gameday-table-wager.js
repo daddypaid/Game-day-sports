@@ -83,7 +83,7 @@
   if (existingStatus) existingStatus.id = statusId;
   panel.innerHTML = `<div class="gd-wager-bar"><button type="button" class="gd-wager-adjust" data-wager-adjust="increase" aria-label="Increase wager by $1"><span aria-hidden="true">&#8593;</span></button><div class="gd-wager-display"><span id="gd-table-wager-label">TOTAL BET</span><output class="gd-wager-total" aria-labelledby="gd-table-wager-label" aria-live="polite" aria-atomic="true"></output></div><button type="button" class="gd-wager-adjust" data-wager-adjust="decrease" aria-label="Decrease wager by $1"><span aria-hidden="true">&#8595;</span></button></div>
     <div class="gd-table-action-groups" role="group" aria-label="Game actions">${actions[game].map(([columns, labels]) => `<div class="gd-table-action-row" style="--gd-action-columns:${columns}">${labels.map(label => `<button type="button" class="gd-table-action" data-table-action="${label.toLowerCase().replaceAll(' ', '-')}" aria-describedby="${statusId}" disabled>${label}</button>`).join('')}</div>`).join('')}</div>
-    ${existingStatus ? '' : `<p id="${statusId}" class="gd-table-actions-status">Gameplay is still building.</p>`}`;
+    ${existingStatus ? '' : `<p id="${statusId}" class="gd-table-actions-status"></p>`}`;
   stage.appendChild(panel);
   const limits = document.createElement('p');
   limits.className = 'gd-wager-limits';
@@ -94,6 +94,7 @@
       : ['gameday-blackjack.html', 'gameday-baccarat.html'].includes(game)
         ? 'Main wagers: $1–$10,000 in whole test credits.'
         : 'Opening ante: $1–$10,000 in whole test credits. Later bets use the limits shown.';
+  limits.hidden=true; limits.style.display='none';
   panel.appendChild(limits);
   const output = panel.querySelector('.gd-wager-total');
   const feedback = document.createElement('span');

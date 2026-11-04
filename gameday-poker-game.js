@@ -96,20 +96,20 @@ function prompt() {
   if (busy || pending || !ready || unavailable || !owner) return;
   if (!active()) {
     if (balance < 1) message('Your test balance is below $1. Refill test credits in Account to deal again.');
-    else if (!validStake(draft())) message('Choose chips for an ante from $1 to $10,000, then Deal.');
+    else if (!validStake(draft())) message('');
     else if (draft() > balance) message('Your ante exceeds your test balance. Use the down arrow or choose a smaller chip.');
-    else message(`Ready to deal. You and the computer each ante ${money.format(draft())}.`);
+    else message('');
     return;
   }
-  if (legal('draw')) { message('Select cards to discard, or keep all five, then Draw. A final betting round follows.'); return; }
-  if (legal('bring-in')) { message(`Third street · Post the required Bring In, Complete the opening bet to ${money.format(hand.stake)}, or Fold.`); return; }
+  if (legal('draw')) { message(''); return; }
+  if (legal('bring-in')) { message(`Bring In ${money.format(hand.stake)}`); return; }
   const chosen = ['bet','raise'].find(legal);
-  const range = chosen && !amountAllowed(chosen) ? ` ${names[chosen]} adds ${money.format(hand[`min_${chosen}`])}–${money.format(hand[`max_${chosen}`])}; change your chips to choose an amount.` : chosen ? ' Chips set the amount added by Bet or Raise.' : '';
-  message(`${streets[hand.street] || 'Betting round'} · ${hand.to_call > 0 ? `${money.format(hand.to_call)} to call.` : legal('check') ? 'No bet to call; Check is available.' : 'Choose an available action below.'}${range}`);
+  const range = chosen && !amountAllowed(chosen) ? `${names[chosen]} ${money.format(hand[`min_${chosen}`])}–${money.format(hand[`max_${chosen}`])}` : '';
+  message([hand.to_call > 0 ? `To call ${money.format(hand.to_call)}` : '',range].filter(Boolean).join(' · '));
 }
 function renderInfo() {
   info.replaceChildren();
-  if (!hand) { const rule = document.createElement('p'); rule.textContent = 'Heads-up poker against the computer · Test credits only'; info.appendChild(rule); return; }
+  if (!hand) return;
   const line = document.createElement('p'); line.textContent = active() ? `${streets[hand.street] || 'Hand'} · Pot ${money.format(hand.pot)} · To call ${money.format(hand.to_call)}` : `Hand complete · Pot ${money.format(hand.pot)}`;
   const committed = document.createElement('p'); committed.textContent = `Your committed wager ${money.format(hand.committed)}`;
   info.append(line,committed);
@@ -137,8 +137,8 @@ async function applyHand(next, token, id, animate = false) {
   if (!rendered || !current(token,id)) return false;
   if (!active()) {
     wager.startNextWager(`${id}:${hand.id}`,hand.stake);
-    view.announcement.textContent = `${hand.result || 'Hand complete'}. Returned ${money.format(hand.payout)}. Choose a wager for New Deal.`;
-  } else view.announcement.textContent = `${streets[hand.street] || 'Hand'} ready. ${hand.to_call > 0 ? `${money.format(hand.to_call)} to call.` : 'Choose your action.'}`;
+    view.announcement.textContent = `${hand.result || 'Hand complete'} · Returned ${money.format(hand.payout)}`;
+  } else view.announcement.textContent = `${streets[hand.street] || 'Hand'}${hand.to_call > 0 ? ` · To call ${money.format(hand.to_call)}` : ''}`;
   return true;
 }
 async function request(body, token, id) {

@@ -99,7 +99,7 @@ async function initializeBlackjack() {
     signIn.hidden = Boolean(user);
     balanceOutput.value = Number.isFinite(balance) && balance >= 0 ? money.format(balance) : '—';
     if (!busy && user && !isActive() && !unavailable && !recoveryRequired && !valid) {
-      message(rejectedDealMessage || (amount < 1 ? 'Choose a chip to set a wager of at least $1.' : amount > 10000 ? 'The maximum wager is $10,000.' : 'Your wager exceeds your available test balance. Choose a smaller amount.'));
+      message(rejectedDealMessage || (amount < 1 ? '' : amount > 10000 ? 'The maximum wager is $10,000.' : 'Your wager exceeds your available test balance. Choose a smaller amount.'));
     }
   }
   function validateHand(next) {
@@ -131,11 +131,11 @@ async function initializeBlackjack() {
     const insurancePayout = Number(next.insurance_payout || 0);
     info.querySelector('.gd-blackjack-insurance-result').textContent = insuranceStake > 0 ? `Insurance ${money.format(insuranceStake)} · Returned ${money.format(insurancePayout)}${insurancePayout > 0 ? ' · Dealer has blackjack' : ' · Dealer has no blackjack'}` : '';
     if (isActive() && next.insurance_status === 'pending') {
-      message(next.can_insure ? `Insurance costs ${money.format(next.insurance_offer)} and pays 2:1. Choose Insurance or No insurance before playing.` : 'Your available test balance cannot cover insurance. Choose No insurance to continue.');
-      announcement.textContent = 'Dealer shows an Ace. Choose Insurance or No insurance before the dealer checks the hidden card.';
+      message(next.can_insure ? `Insurance ${money.format(next.insurance_offer)} · Pays 2:1` : 'Insufficient balance for insurance.');
+      announcement.textContent = 'Insurance available.';
     } else if (isActive()) {
-      message(split ? `Play highlighted hand ${Number(next.active_hand_index) + 1}.` : 'Choose Hit, Stand, Double or Split when available.');
-      announcement.textContent = split ? 'Both split hands remain on the table. Finish the highlighted hand to continue.' : 'Your hand is active. Stand lets the dealer finish the round.';
+      message(split ? `Hand ${Number(next.active_hand_index) + 1}` : '');
+      announcement.textContent = split ? `Hand ${Number(next.active_hand_index) + 1}` : '';
     } else {
       result.replaceChildren();
       const title = document.createElement('h2');
@@ -152,7 +152,7 @@ async function initializeBlackjack() {
         result.appendChild(parts);
       }
       result.hidden = false;
-      message('Round complete. Choose a wager and press New Deal for the next hand.');
+      message('');
       announcement.textContent = `${resultNames[next.status]}. Test balance ${money.format(balance)}.`;
     }
     window.dispatchEvent(new CustomEvent('gameday:wallet-updated', { detail: { balance, userId: id } }));
@@ -321,7 +321,7 @@ async function initializeBlackjack() {
       if (walletError || !wallet || !Number.isFinite(Number(wallet.balance))) throw new Error('Your test balance could not be loaded. Retry connection before placing a wager.');
       balance = Number(wallet.balance);
       if (wager.getAmount() === 0) wager.setAmount(1);
-      message('Choose a wager, then press Deal.');
+      message('');
     } catch (error) {
       if (token !== epoch || hidden) return;
       unavailable = true;
