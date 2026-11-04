@@ -169,6 +169,7 @@ test('Three-pick Round Robin uses three 2-leg tickets, previews total cost and s
  await p.click('#openSlip');await p.click('#round_robin');await p.fill('#stake','2');
  assert.match(await p.locator('#roundRobinLegs').inputValue(),/^2$/);
  assert.match(await p.locator('#roundRobinBreakdown').textContent(),/3 combinations.*\$2\.00.*\$6\.00 total/);
+ assert.equal(await p.locator('#roundRobinPayoutMode').textContent(),'Round Robin — By 2s · 3 combinations');
  assert.equal(await p.locator('#returnLabel').textContent(),'Max Return (incl. stakes)');
  assert.equal(await p.locator('#totalStake').textContent(),'$6.00');
  assert.equal(await p.locator('#potentialProfit').textContent(),'$18.00');
@@ -188,6 +189,27 @@ test('Three-pick Round Robin uses three 2-leg tickets, previews total cost and s
  assert.equal(await p.locator('#balance').textContent(),'Balance: $94.00');
  assert.equal(await p.evaluate(()=>localStorage.getItem('gameday.sportsbook.pending.v1.A')),null);
 });
+test('Five picks keep 10 combinations but update payout mode next to return when switching By 2s to By 3s',async t=>{
+ const {p}=await open(t,{roundRobinEvents:4});
+ for(let i=0;i<5;i++)await p.locator('.card').nth(i).locator('.odd').first().click();
+ await p.click('#openSlip');await p.click('#round_robin');await p.fill('#stake','1');
+ assert.equal(await p.locator('#roundRobinPayoutMode').textContent(),'Round Robin — By 2s · 10 combinations');
+ assert.equal(await p.locator('#totalStake').textContent(),'$10.00');
+ assert.equal(await p.locator('#return').textContent(),'$40.00');
+ assert.equal(await p.locator('#potentialProfit').textContent(),'$30.00');
+ await p.locator('#roundRobinLegs').selectOption('3');
+ assert.equal(await p.locator('#roundRobinPayoutMode').textContent(),'Round Robin — By 3s · 10 combinations');
+ assert.equal(await p.locator('#totalStake').textContent(),'$10.00');
+ assert.equal(await p.locator('#return').textContent(),'$80.00');
+ assert.equal(await p.locator('#potentialProfit').textContent(),'$70.00');
+ assert.equal(await p.locator('#roundRobinTicketRows .rr-ticket-entry').count(),10);
+ await p.click('#single');
+ assert(await p.locator('#roundRobinPayoutMode').isHidden());
+ await p.click('#parlay');
+ assert(await p.locator('#roundRobinPayoutMode').isHidden());
+ assert.equal(await p.evaluate(()=>__f.calls.length),0);
+});
+
 test('Four-pick Round Robin changes from six 2-leg tickets to four 3-leg tickets',async t=>{
  const {p}=await open(t,{roundRobinEvents:3});
  for(let i=0;i<4;i++)await p.locator('.card').nth(i).locator('.odd').first().click();
