@@ -204,7 +204,8 @@ function setSession(session){const next=session?.user||null;if((user?.id||null)!
 
 function esc(v){return String(v??'').replaceAll('&','&amp;').replaceAll('<','&lt;').replaceAll('>','&gt;')}
 function money(v){return '$'+Number(v||0).toFixed(2)}
-function price(v){return typeof v==='number'?(v>0?'+'+v:String(v)):'--'}
+function validAmericanOdds(v){const n=Number(v);return Number.isInteger(n)&&Math.abs(n)>=100}
+function price(v){const n=Number(v);return validAmericanOdds(v)?(n>0?'+'+n:String(n)):'—'}
 function dt(v){return v?new Intl.DateTimeFormat('en-US',{month:'short',day:'numeric',hour:'numeric',minute:'2-digit'}).format(new Date(v)):'—'}
 function title(k){return k==='h2h'?'Moneyline':k==='spreads'?'Spread':k==='totals'?'Total':String(k).replaceAll('_',' ').replace(/\b\w/g,c=>c.toUpperCase())}
 function sportLabel(k){return SPORT_LABELS.get(k)||String(k||'').replaceAll('_',' ').replace(/\b\w/g,c=>c.toUpperCase())}
@@ -274,7 +275,7 @@ function applySelectionQuote(x,g){
   const candidates=outcomes.filter(o=>norm(o.name)===norm(x.name)&&norm(o.description||'')===norm(x.description||''));
   const quote=candidates.find(o=>samePoint(o.point??null,x.point??null))||candidates[0];
   const nextPrice=Number(quote?.price),nextPoint=quote?.point===null||quote?.point===undefined?null:Number(quote.point);
-  if(!quote||!Number.isInteger(nextPrice)||nextPrice===0||
+  if(!quote||!validAmericanOdds(nextPrice)||
     (nextPoint!==null&&!Number.isFinite(nextPoint))||
     (x.market!=='h2h'&&nextPoint===null)||
     (!['h2h','spreads','totals'].includes(x.market)&&!x.description)){
@@ -361,8 +362,8 @@ async function refreshSelectedQuotes(reason=''){
     if(sequence===quoteRefreshSequence&&ownerIsCurrent(owner,epoch)){quoteRefreshBusy=false;updateSlip()}
   }
 }
-function odd(x){const disabled=x.wagerable===false||(['h2h','spreads','totals'].includes(x.market)&&!gradingSport(x.sport)),e=encodeURIComponent(JSON.stringify(x)),name=['h2h','spreads','outrights'].includes(x.market)?teamLabel(x.name,x.sport,{fallback:false}):esc(x.name);return `<button class="odd ${selected(x)?'selected':''} ${disabled?'view-only':''}" ${disabled?'disabled':`data-sel="${e}"`}><div class="odd-name">${name}</div>${x.description?`<div class="odd-desc">${esc(x.description)}</div>`:''}<div class="odd-price">${price(x.price)}</div>${x.point!==null&&x.point!==undefined?`<div class="odd-point">${esc(x.point)}</div>`:''}${disabled?'<div class="odd-point">VIEW ONLY</div>':''}</button>`}
-function bindOdds(){hydrateTeamLogos(content);document.querySelectorAll('[data-sel]').forEach(b=>{b.disabled=Boolean(pendingWager)||placementBusy;b.onclick=()=>{if(pendingWager||placementBusy)return;const x=JSON.parse(decodeURIComponent(b.dataset.sel)),i=slip.findIndex(s=>s.id===selId(x));if(i>=0){slip.splice(i,1);selectionChanged();notice('')}else{if(slip.length>=20){notice('Your bet slip can hold at most 20 picks.');return}if(!Number.isInteger(Number(x.price))||Number(x.price)===0){notice('This quote is unavailable. Refresh before selecting it.');return}slip.push({...x,id:selId(x),pickKey:crypto.randomUUID(),quotedAt:new Date().toISOString(),lineStatus:'ok',currentPrice:x.price,currentPoint:x.point});selectionChanged();notice(['spreads','totals'].includes(x.market)?'Buy Points is directly below your selected line. It is also available in Bet Slip.':'')}updateSlip();if(view==='games'||view==='live')renderGames()}})}
+function odd(x){const disabled=x.wagerable===false||!validAmericanOdds(x.price)||(['h2h','spreads','totals'].includes(x.market)&&!gradingSport(x.sport)),e=encodeURIComponent(JSON.stringify(x)),name=['h2h','spreads','outrights'].includes(x.market)?teamLabel(x.name,x.sport,{fallback:false}):esc(x.name);return `<button class="odd ${selected(x)?'selected':''} ${disabled?'view-only':''}" ${disabled?'disabled':`data-sel="${e}"`}><div class="odd-name">${name}</div>${x.description?`<div class="odd-desc">${esc(x.description)}</div>`:''}<div class="odd-price">${price(x.price)}</div>${x.point!==null&&x.point!==undefined?`<div class="odd-point">${esc(x.point)}</div>`:''}${disabled?'<div class="odd-point">'+(validAmericanOdds(x.price)?'VIEW ONLY':'QUOTE UNAVAILABLE')+'</div>':''}</button>`}
+function bindOdds(){hydrateTeamLogos(content);document.querySelectorAll('[data-sel]').forEach(b=>{b.disabled=Boolean(pendingWager)||placementBusy;b.onclick=()=>{if(pendingWager||placementBusy)return;const x=JSON.parse(decodeURIComponent(b.dataset.sel)),i=slip.findIndex(s=>s.id===selId(x));if(i>=0){slip.splice(i,1);selectionChanged();notice('')}else{if(slip.length>=20){notice('Your bet slip can hold at most 20 picks.');return}if(!validAmericanOdds(x.price)){notice('This quote is unavailable. Refresh before selecting it.');return}slip.push({...x,id:selId(x),pickKey:crypto.randomUUID(),quotedAt:new Date().toISOString(),lineStatus:'ok',currentPrice:x.price,currentPoint:x.point});selectionChanged();notice(['spreads','totals'].includes(x.market)?'Buy Points is directly below your selected line. It is also available in Bet Slip.':'')}updateSlip();if(view==='games'||view==='live')renderGames()}})}
 function syncSlipWithGames(){
   if(pendingWager||quoteRefreshBusy)return;
   let updated=0;
@@ -389,7 +390,7 @@ function loadView(){boardGeneration++;liveSequence++;games=[];liveStates=[];cont
 function renderFeatured(){const featured=$('featured');featured.innerHTML=sports.filter(s=>!['basketball_nba_preseason','icehockey_nhl_preseason'].includes(s)).map(s=>`<button class="sport ${currentSport===s?'active':''}" data-sport="${esc(s)}">${esc(sportLabel(s))}</button>`).join('');featured.querySelectorAll('[data-sport]').forEach(b=>b.onclick=()=>selectSport(b.dataset.sport))}
 function selectSport(s){if(s==='basketball_nba_preseason')s='nba';if(s==='icehockey_nhl_preseason')s='nhl';currentSport=s;document.querySelectorAll('[data-sport]').forEach(x=>x.classList.toggle('active',x.dataset.sport===s));const option=[...$('sportSelect').options].find(x=>x.value===s);if(option)$('sportSelect').value=s;event=null;propMarkets=[];liveStates=[];gameMarket='h2h';loadView()}
 async function loadSports(){try{const d=await api({mode:'sports',all:true}),all=d.sports||[],active=all.filter(x=>x.active&&!['basketball_nba_preseason','icehockey_nhl_preseason'].includes(x.key)),activeKeys=new Set(active.map(x=>x.key));sports=[...CORE_SPORTS,...COMBAT_SPORTS.filter(x=>activeKeys.has(x.key)).map(x=>x.key)];$('sportSelect').innerHTML='<option value="">Select worldwide sport</option>'+active.map(x=>`<option value="${esc(x.key)}">${esc(x.key==='mma_mixed_martial_arts'?'Mixed Martial Arts — UFC / MMA':`${x.group} — ${x.title}`)}${gradingSport(x.key)?'':' — View only'}</option>`).join('');renderFeatured()}catch{$('sportSelect').innerHTML='<option>Worldwide sports unavailable</option>';renderFeatured()}}
-function warningFor(x){if(x.lineStatus==='needs_refresh')return '<div class="slip-warning">REFRESHING<small>Checking for a current quote. A wager using this pick cannot be submitted until it is verified.</small></div>';if(x.lineStatus==='suspended')return '<div class="slip-warning">SUSPENDED<small>This market is unavailable. No wager can be submitted with this selection.</small></div>';return ''}
+function warningFor(x){if(!validAmericanOdds(x.price))return '<div class="slip-warning">ODDS UNAVAILABLE<small>This price is invalid. Remove or refresh this selection; it cannot be wagered.</small></div>';if(x.lineStatus==='needs_refresh')return '<div class="slip-warning">REFRESHING<small>Checking for a current quote. A wager using this pick cannot be submitted until it is verified.</small></div>';if(x.lineStatus==='suspended')return '<div class="slip-warning">SUSPENDED<small>This market is unavailable. No wager can be submitted with this selection.</small></div>';return ''}
 function syncBetMode(){
   for(const x of slip)if(!x.pickKey)x.pickKey=crypto.randomUUID();
   if(!slip.length){if(!pendingWager&&singlePickKey!==null)modePreference='auto';singlePickKey=null}
@@ -400,7 +401,7 @@ function ticketSelections(){
   if(pendingWager)return Array.isArray(pendingWager.selections)?pendingWager.selections:[];
   return betType==='single'?slip.filter(x=>x.pickKey===singlePickKey):slip;
 }
-function changedPick(x){return ['changed','suspended','needs_refresh'].includes(x.lineStatus)||!Number.isInteger(Number(x.price))||Number(x.price)===0}
+function changedPick(x){return ['changed','suspended','needs_refresh'].includes(x.lineStatus)||!validAmericanOdds(x.price)}
 function incompatibleParlay(picks){return new Set(picks.map(x=>String(x.eventId).trim().toLowerCase())).size!==picks.length}
 function setBetMode(mode){
   if(pendingWager||placementBusy||!['single','parlay','round_robin'].includes(mode))return;
@@ -420,7 +421,7 @@ function buyPointsChoices(x){
   const candidates=[],original=Number(x.buyPointsOriginal??x.point);
   for(const o of options){
     const line=Number(o.point),odds=Number(o.price);
-    if(norm(o.name)!==norm(x.name)||norm(o.description||'')!==norm(x.description||'')||!Number.isFinite(line)||!Number.isFinite(original)||!Number.isInteger(odds)||odds===0)continue;
+    if(norm(o.name)!==norm(x.name)||norm(o.description||'')!==norm(x.description||'')||!Number.isFinite(line)||!Number.isFinite(original)||!validAmericanOdds(odds))continue;
     const points=x.market==='spreads'?line-original:norm(x.name)==='over'?original-line:norm(x.name)==='under'?line-original:0;
     if(points<=0||points>MAX_BUY_POINTS||Math.abs(points*2-Math.round(points*2))>0.000001)continue;
     candidates.push({line,odds,points});
@@ -561,6 +562,7 @@ function updateReturn(){
   if(rr)$('roundRobinBreakdown').textContent=ways?
     ways+' combinations × '+money(validStake?stake:0)+' each = '+money(validStake?total:0)+' total test credits. Each winning combination pays separately.':
     'Select 3–6 picks from different events to see combination costs.';
+  if(rr&&picks.some(p=>!validAmericanOdds(p.price)))$('roundRobinBreakdown').textContent+=' A selected quote has invalid odds: remove or refresh it before wagering.';
   if(!validStake||!picks.length||picks.some(changedPick)||(['parlay','round_robin'].includes(betType)&&incompatibleParlay(picks))||
     (betType==='parlay'&&picks.length<2)||(rr&&(!ways||total>100000||total>(wallet??0)))){
     $('return').textContent='$0.00';return;

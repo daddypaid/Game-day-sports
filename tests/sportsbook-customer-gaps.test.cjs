@@ -29,8 +29,8 @@ function matchup(live=false,quote={price:-110,point:-3.5}){return {id:'fixture-e
 function verifiedLiveState(){return {sport:'nfl',home_key:'fixture home',away_key:'fixture away',home_team:'Fixture Home',away_team:'Fixture Away',home_score:21,away_score:14,period:'Q3',clock:'05:32',period_verified:true,clock_verified:true,clock_kind:'countdown',live:true,completed:false,event_start:new Date(Date.now()-60000).toISOString(),fetched_at:new Date().toISOString(),stale:false}}
 test.before(async()=>{server=http.createServer((req,res)=>{const file=path.join(root,decodeURIComponent(new URL(req.url,'http://local').pathname));if(!file.startsWith(root+path.sep)){res.writeHead(403).end();return}try{res.setHeader('Content-Type',file.endsWith('.js')?'text/javascript':file.endsWith('.css')?'text/css':'text/html');res.end(fs.readFileSync(file))}catch{res.writeHead(404).end()}});await new Promise(r=>server.listen(0,'127.0.0.1',r));base=`http://127.0.0.1:${server.address().port}`;browser=await chromium.launch({...(process.env.CHROMIUM_PATH?{executablePath:process.env.CHROMIUM_PATH}:{}),headless:true,args:['--no-sandbox']})});
 test.after(async()=>{await browser?.close();await new Promise(r=>server.close(r))});
-async function open(t,{sdkFailures=0,sdkDependencyFailures=0,wallet=100,live=false,liveFailure=false,states=[],empty='',roundRobinEvents=0}={}){
- const quotes={price:-110,point:-3.5,hold:false,waiters:[]};
+async function open(t,{sdkFailures=0,sdkDependencyFailures=0,wallet=100,live=false,liveFailure=false,states=[],empty='',roundRobinEvents=0,invalidSpreadOdds=false}={}){
+ const quotes={price:invalidSpreadOdds?-1:-110,point:-3.5,hold:false,waiters:[]};
  const releaseQuotes=()=>{quotes.hold=false;quotes.waiters.splice(0).forEach(resolve=>resolve())};
  const context=await browser.newContext({viewport:{width:390,height:844},serviceWorkers:'block'});t.after(()=>{releaseQuotes();return disposeContext(context)});
  await context.addInitScript(({wallet,liveFailure,states,empty})=>{const session=id=>({user:{id,email:id+'@example.invalid'},access_token:'fixture-'+id});window.__session=session;window.__f={session:session('A'),callbacks:[],authLock:false,wallets:{A:{balance:wallet},B:{balance:500}},calls:[],failure:null,legacy:false,liveFailure,states,empty};const nativeInterval=window.setInterval;window.setInterval=(fn,ms,...args)=>{if(ms===15000)__f.liveTick=fn;return nativeInterval(fn,ms,...args)};window.__emit=s=>{__f.session=s;__f.authLock=true;try{for(const cb of __f.callbacks)cb(s?'SIGNED_IN':'SIGNED_OUT',s)}finally{__f.authLock=false}}},{wallet,liveFailure,states,empty});
@@ -201,6 +201,19 @@ test('Round Robin blocks the total if combined stake exceeds wallet without send
  assert.equal(await p.locator('#return').textContent(),'$0.00');
  await p.click('#place');
  assert.match(await p.locator('#slipMsg').textContent(),/Insufficient test balance/);
+ assert.equal(await p.evaluate(()=>__f.calls.length),0);
+});
+
+test('Invalid -1 American odds are unavailable to wager instead of showing a false quoted price',async t=>{
+ const {p}=await open(t,{invalidSpreadOdds:true});
+ await p.locator('[data-market="spreads"]').first().click();
+ const button=p.locator('.odd').first();
+ assert(await button.isDisabled(),'Invalid price must disable selection');
+ assert.match(await button.textContent(),/QUOTE UNAVAILABLE/);
+ assert.match(await button.locator('.odd-price').textContent(),/—/);
+ assert.equal(await p.locator('#count').textContent(),'0');
+ await p.click('#openSlip');
+ assert(await p.locator('#place').isDisabled());
  assert.equal(await p.evaluate(()=>__f.calls.length),0);
 });
 
