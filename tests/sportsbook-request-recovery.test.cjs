@@ -209,7 +209,7 @@ sqlTest('Round Robin atomically creates each 2-leg parlay, charges the total, an
   assert.equal(await f.balance(),994);assert.equal(await f.debits(),3);
   assert.equal((await edge(f,{user:other}).send({request_id:requestId,recover:true})).data.state,'not_found');
   const altered=await e.send({...body,round_robin_legs:3});
-  assert.equal(altered.data.code,'INVALID_REQUEST');
+  assert.equal(altered.data.code,'REQUEST_CONFLICT');
   await f.db.close();
 });
 sqlTest('Round Robin rejects incomplete, duplicate, changed-price and unaffordable groups without partial debits',async () => {
