@@ -1,7 +1,7 @@
 {
   "schema_version": 1,
   "project_ref": "qsvrvhcklnsbekxblpfo",
-  "observed_at": "2026-11-04T03:19:29.865Z",
+  "observed_at": "2026-11-04T03:39:09.173Z",
   "source": "Supabase list_edge_functions and get_edge_function read-only snapshots",
   "hash_algorithm": "sha256",
   "notes": [
@@ -145,33 +145,33 @@
     },
     {
       "slug": "gameday-odds",
-      "deployed_version": 18,
+      "deployed_version": 19,
       "deployed_status": "ACTIVE",
       "verify_jwt": false,
       "import_map": false,
-      "deployed_bundle_sha256": "7cffee4a987bd476e374a726358f21f178c5b67ab18d409f8a2619df0cfa1573",
+      "deployed_bundle_sha256": "2c3f9f110348ff0b793fadb176c927631c787456d3ff0fa1ac3eada7ad49bba4",
       "source_status": "local_matches_deployment",
       "files": [
         {
           "path": "supabase/functions/gameday-odds/index.ts",
-          "deployed_sha256": "ecb74ba303f5c2aab1985220644d7df40228891b8cddfbf655ef3c079ffd5141",
-          "local_sha256": "ecb74ba303f5c2aab1985220644d7df40228891b8cddfbf655ef3c079ffd5141"
+          "deployed_sha256": "c015dcaf1cd631164c2d895f4569caf9c2da3d64d8881a316341854c482a2dcc",
+          "local_sha256": "c015dcaf1cd631164c2d895f4569caf9c2da3d64d8881a316341854c482a2dcc"
         }
       ]
     },
     {
       "slug": "odds-engine",
-      "deployed_version": 6,
+      "deployed_version": 7,
       "deployed_status": "ACTIVE",
       "verify_jwt": false,
       "import_map": false,
-      "deployed_bundle_sha256": "9ebea938c6720bbfe613522072969ed0e37e1687bb50a3f5da22e12bcc6dafd3",
+      "deployed_bundle_sha256": "fc857f434ad6dde0b148e4fa751578e44c3fdf6696e3002dc9154acdad3483ad",
       "source_status": "local_matches_deployment",
       "files": [
         {
           "path": "supabase/functions/odds-engine/index.ts",
-          "deployed_sha256": "01f3833d1f1c11afd2d74aee4e6379550b944c62dc360a5cba16352adc0f7056",
-          "local_sha256": "01f3833d1f1c11afd2d74aee4e6379550b944c62dc360a5cba16352adc0f7056"
+          "deployed_sha256": "e41e71819645af29033c28b318acf94bd6ae69c34a7455aa342e33e9028fd0fa",
+          "local_sha256": "e41e71819645af29033c28b318acf94bd6ae69c34a7455aa342e33e9028fd0fa"
         }
       ]
     },
