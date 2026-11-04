@@ -228,6 +228,7 @@ function selectionChanged(){
 }
 function quoteUnavailable(x){x.lineStatus='suspended';x.currentPrice=null;x.currentPoint=null}
 function applySelectionQuote(x,g){
+  if(x.buyPoints===true)return applyBuyPointsQuote(x,g);
   if(!g||String(g.id)!==String(x.eventId)||g.completed){quoteUnavailable(x);return false}
   const outcomes=market(g.bookmakers?.[0],x.market)?.outcomes;
   if(!Array.isArray(outcomes)){quoteUnavailable(x);return false}
@@ -363,15 +364,25 @@ function buyPointsChoices(x){
   if(String(event?.id)!==String(x.eventId))return [];
   const marketKey=x.market==='spreads'?'alternate_spreads':'alternate_totals';
   const options=event?.bookmakers?.[0]?.markets?.find(m=>m.key===marketKey)?.outcomes||[];
-  const candidates=[];
+  const candidates=[],original=Number(x.buyPointsOriginal??x.point);
   for(const o of options){
-    const line=Number(o.point),odds=Number(o.price),original=Number(x.point);
+    const line=Number(o.point),odds=Number(o.price);
     if(norm(o.name)!==norm(x.name)||norm(o.description||'')!==norm(x.description||'')||!Number.isFinite(line)||!Number.isFinite(original)||!Number.isInteger(odds)||odds===0)continue;
     const points=x.market==='spreads'?line-original:norm(x.name)==='over'?original-line:norm(x.name)==='under'?line-original:0;
     if(points<=0||Math.abs(points*2-Math.round(points*2))>0.000001)continue;
     candidates.push({line,odds,points});
   }
   return [...new Map(candidates.map(o=>[String(o.line),o])).values()].sort((a,b)=>a.points-b.points).slice(0,12);
+}
+function applyBuyPointsQuote(x,g){
+  if(!g||g.completed||String(g.id)!==String(x.eventId)){quoteUnavailable(x);return false}
+  const base=g.bookmakers?.[0]?.markets?.find(m=>m.key===x.market)?.outcomes||[];
+  const anchor=base.find(o=>norm(o.name)===norm(x.name)&&norm(o.description||'')===norm(x.description||'')&&samePoint(o.point,x.buyPointsOriginal));
+  if(!anchor){quoteUnavailable(x);return false}
+  const options=buyPointsChoices(x),current=options.find(o=>samePoint(o.line,x.point));
+  if(!current){x.lineStatus='needs_refresh';x.currentPrice=null;x.currentPoint=null;return false}
+  x.price=current.odds;x.currentPrice=current.odds;x.currentPoint=current.line;
+  x.lineStatus='ok';x.quotedAt=new Date().toISOString();x.id=selId(x);return true;
 }
 function loadBuyPointsQuotes(){
   if(!$('panel').classList.contains('open')||pendingWager)return;
@@ -397,10 +408,13 @@ function buyPointsSlipControl(x,i){
   if(!['spreads','totals'].includes(x.market))return '';
   const entry=buyPointsQuotes.get(buyPointsQuoteKey(x)),choices=buyPointsChoices(x);
   const locked=Boolean(pendingWager)||placementBusy;
-  const options=choices.map((o,j)=>'<option value="'+j+'">Buy '+o.points.toFixed(1)+' point'+(o.points===1?'':'s')+' · '+(o.line>0?'+':'')+o.line+' ('+price(o.odds)+')</option>').join('');
-  const loading=entry?.status==='loading';
-  const guidance=loading?'Retrieving verified alternate prices…':choices.length?'Choose a quoted adjustment to preview it. Adjusted wagers are not enabled yet.':'No verified half-point prices for this selection. Standard wagering is unaffected.';
-  return '<div class="buy-points-preview" style="margin-top:10px"><label for="buy-points-'+i+'" style="display:block;margin-bottom:5px">Buy Points — quote preview</label><select id="buy-points-'+i+'" data-buy-points="'+i+'" style="width:100%;padding:11px;border-radius:8px" aria-label="Preview buy points for '+esc(x.name)+'" '+(locked||!choices.length?'disabled':'')+'><option value="">Original line '+esc(x.point)+' ('+price(x.price)+')</option>'+options+'</select><small id="buy-points-preview-'+i+'" aria-live="polite" style="display:block;margin-top:5px">'+guidance+'</small></div>';
+  const original=Number(x.buyPointsOriginal??x.point),basePrice=Number(x.buyPointsBasePrice??x.price);
+  const option=choices.map((o,j)=>'<option value="'+j+'" '+(x.buyPoints===true&&samePoint(x.point,o.line)?'selected':'')+'>Buy '+o.points.toFixed(1)+' point'+(o.points===1?'':'s')+' · '+(o.line>0?'+':'')+o.line+' ('+price(o.odds)+')</option>').join('');
+  const waiting=entry?.status==='loading';
+  const unavailable=x.buyPoints===true&&!choices.some(o=>samePoint(o.line,x.point));
+  const saved=unavailable?'<option value="pending" selected disabled>Adjusted line '+esc(x.point)+' — verifying price</option>':'';
+  const guidance=waiting?'Retrieving current alternate odds…':unavailable?'Adjusted line is unavailable until a fresh quote is verified.':choices.length?'Select a verified half-point price. The potential return will update automatically.':'No verified half-point prices are currently available. The original wager remains available.';
+  return '<div class="buy-points-preview" style="margin-top:10px"><label for="buy-points-'+i+'" style="display:block;margin-bottom:5px">Buy Points</label><select id="buy-points-'+i+'" data-buy-points="'+i+'" style="width:100%;padding:11px;border-radius:8px" aria-label="Buy points for '+esc(x.name)+'" '+(locked||(!choices.length&&!x.buyPoints)?'disabled':'')+'><option value="" '+(x.buyPoints?'':'selected')+'>Original line '+(original>0?'+':'')+original+' ('+price(basePrice)+')</option>'+option+saved+'</select><small id="buy-points-preview-'+i+'" aria-live="polite" style="display:block;margin-top:5px">'+guidance+'</small></div>';
 }
 function updateSlip(){
   syncBetMode();
@@ -414,10 +428,17 @@ function updateSlip(){
   hydrateTeamLogos($('slipItems'));
   document.querySelectorAll('[data-single-pick]').forEach(r=>r.onchange=()=>{if(pendingWager||placementBusy)return;const pick=slip[Number(r.dataset.singlePick)];if(!pick)return;singlePickKey=pick.pickKey;selectionChanged();updateSlip()});
   document.querySelectorAll('[data-buy-points]').forEach(control=>control.onchange=()=>{
-    const i=Number(control.dataset.buyPoints),x=slip[i],target=$('buy-points-preview-'+i);
-    if(!x||!target)return;
-    const selected=Number(control.value),choice=buyPointsChoices(x)[selected];
-    target.textContent=control.value!==''&&choice?'Preview: '+(choice.line>0?'+':'')+choice.line+' at '+price(choice.odds)+'. This quote is not selected for wagering; your original bet remains unchanged.':'Your original spread or total remains selected for wagering.';
+    const x=slip[Number(control.dataset.buyPoints)];
+    if(!x||pendingWager||placementBusy)return;
+    if(control.value===''){
+      if(x.buyPoints){x.point=x.buyPointsOriginal;x.price=x.buyPointsBasePrice;delete x.buyPoints;delete x.buyPointsOriginal;delete x.buyPointsBasePrice;x.id=selId(x);x.lineStatus='needs_refresh';selectionChanged();updateSlip();void refreshSelectedQuotes('Original line restored.');}
+      return;
+    }
+    const choice=buyPointsChoices(x)[Number(control.value)];
+    if(!choice)return;
+    if(!x.buyPoints){x.buyPointsOriginal=x.point;x.buyPointsBasePrice=x.price}
+    x.buyPoints=true;x.point=choice.line;x.price=choice.odds;x.currentPoint=choice.line;x.currentPrice=choice.odds;x.id=selId(x);x.quotedAt=new Date().toISOString();x.lineStatus='ok';
+    selectionChanged();updateSlip();slipMessage('Buy Points price selected. Review the adjusted line and new potential payout before placing your test wager.','notice');
   });
   document.querySelectorAll('[data-remove]').forEach(b=>b.onclick=()=>{if(pendingWager||placementBusy)return;slip.splice(Number(b.dataset.remove),1);selectionChanged();notice('');updateSlip();if(view==='games'||view==='live')renderGames()});
   document.querySelectorAll('[data-sel]').forEach(b=>{b.disabled=locked;b.classList.toggle('selected',selected(JSON.parse(decodeURIComponent(b.dataset.sel))))});
@@ -448,7 +469,7 @@ async function place(){
   if(betType==='parlay'&&(picks.length<2||picks.length>20)){slipMessage('A parlay requires 2–20 picks from different events.');return}
   if(betType==='parlay'&&incompatibleParlay(picks)){slipMessage('Parlays require different events. Switch to Single or remove a conflicting pick.');return}
   if(picks.some(changedPick)){slipMessage('A pick on this wager changed or is suspended. Refresh or reselect it before placing the wager.');return}
-  const requestId=crypto.randomUUID(),selections=picks.map(x=>({event_id:String(x.eventId),event_name:x.event,sport_key:x.sport,market_key:x.market,market_title:x.marketTitle,selection_name:x.name,description:x.description||null,point:x.point,american_odds:Number(x.price),quoted_at:x.quotedAt||new Date().toISOString()})),
+  const requestId=crypto.randomUUID(),selections=picks.map(x=>({event_id:String(x.eventId),event_name:x.event,sport_key:x.sport,market_key:x.market,market_title:x.marketTitle,selection_name:x.name,description:x.description||null,point:x.point,american_odds:Number(x.price),quoted_at:x.quotedAt||new Date().toISOString(),...(x.buyPoints===true?{buy_points:true,original_point:x.buyPointsOriginal}:{})})),
     record={version:2,ownerId:user.id,requestId,payload:{request_id:requestId,wager_type:betType,stake,selections},selections:structuredClone(picks),slipSelections:structuredClone(slip),modePreference,singlePickKey,createdAt:new Date().toISOString(),state:'prepared'};
   try{savePending(record)}catch(e){slipMessage(e.message||'Wager recovery could not be saved on this device. No wager was sent.');return}
   pendingWager=record;stopRecovery();updateSlip();await resolvePending(false);
