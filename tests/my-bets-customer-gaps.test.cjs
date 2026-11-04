@@ -120,7 +120,7 @@ test('Mixed settled and pending combinations show credits so far but no prematur
   assert.equal(await rrMetric(p,'return'),'$8.00');
   assert.equal(await rrMetric(p,'net'),'—');
   assert.equal(await p.locator('#roundRobinBets .pill.open').first().textContent(),'OPEN');
-  assert.match(await p.locator('#roundRobinBets .rr-note').textContent(),/after every combination settles/);
+  assert.equal(await p.locator('#roundRobinBets .rr-note').count(),0);
   await p.evaluate(()=>{
     __fixtures.A.wagers[2].status='void';
     __fixtures.A.wallet_transactions.push({wager_id:'rr-2',transaction_type:'refund',amount:'2.00'});

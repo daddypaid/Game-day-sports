@@ -144,8 +144,7 @@ function roundRobinCard(group,listPossiblyIncomplete=false){
     'Some combination tickets or selection details could not be verified. Refresh to load the complete group before trusting totals.':
     !ledgerKnown?'Settlement/refund ledger unavailable. Refresh to verify the returned credits.':
     uncredited?'A winning or voided ticket is missing its expected credit. Refresh or contact support; totals are not final.':
-    !final?'Final profit or loss is shown only after every combination settles. Returned credits shown are the amounts recorded so far.':
-    'Final net = credits returned minus the total staked. All amounts are test credits.';
+    '';
   const groupText=esc(String(group.id).slice(0,8));
   const child=rows.map((w,i)=>{
     const s=String(w.status||'pending').toLowerCase(),selections=Array.isArray(w.wager_selections)?w.wager_selections:[];
@@ -168,11 +167,11 @@ function roundRobinCard(group,listPossiblyIncomplete=false){
       '<div class="summary-box" data-rr-metric="return"><span class="label">'+(final?'Actual Credits Returned':'Credits Returned So Far')+'</span><span class="value">'+returnedText+'</span></div>'+
       '<div class="summary-box" data-rr-metric="net"><span class="label">Final Net Profit / Loss</span><span class="value '+(net!==null?(net>=0n?'rr-net-positive':'rr-net-negative'):'')+'">'+signedCentsMoney(net)+'</span></div>'+
       '<div class="summary-box" data-rr-metric="count"><span class="label">Combination Tickets</span><span class="value">'+rows.length+(expected>0?' / '+expected:'')+'</span></div>'+
-    '</div><div class="rr-note">'+note+'</div>'+
+    '</div>'+(note?'<div class="rr-note">'+note+'</div>':'')+
     '<details class="rr-details"><summary>View '+rows.length+' individual combination tickets</summary>'+child+'</details></article>';
 }
 
-function setStatus(text){statusEl.innerHTML=`${esc(text)}<div class="auto">Auto-refreshes every 30 seconds while this page is visible.</div>`}
+function setStatus(text){statusEl.textContent=text}
 function clearPrivate(){openEl.innerHTML='';settledEl.innerHTML='';roundRobinEl.innerHTML='';roundRobinSection.hidden=true}
 function applySession(session,event=''){
   const changed=!sessionObserved||(currentSession?.user.id||null)!==(session?.user.id||null)||event==='SIGNED_OUT';sessionObserved=true;currentSession=session||null;
