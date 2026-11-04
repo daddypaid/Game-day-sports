@@ -635,7 +635,7 @@ function formatReturnCents(cents){return '$'+String(cents/100n)+'.'+String(cents
 function updateSlip(){
   syncBetMode();
   const locked=Boolean(pendingWager)||placementBusy,picks=ticketSelections(),blocked=picks.some(changedPick),
-    tooFew=(betType==='parlay'&&picks.length<2)||(betType==='round_robin'&&picks.length<3)||(betType==='teaser'&&picks.length<2),tooMany=['round_robin','teaser'].includes(betType)&&picks.length>6,incompatible=['parlay','round_robin','teaser'].includes(betType)&&incompatibleParlay(picks),missing=!picks.length,teaserIssue=betType==='teaser'?teaserProblem(picks,teaserPoints):'';
+    tooFew=(betType==='parlay'&&picks.length<2)||(betType==='round_robin'&&picks.length<3)||(betType==='teaser'&&picks.length<2),tooMany=['round_robin','teaser'].includes(betType)&&picks.length>6,incompatible=['parlay','round_robin','teaser'].includes(betType)&&incompatibleParlay(picks),missing=!picks.length;let teaserIssue=betType==='teaser'?teaserProblem(picks,teaserPoints):'';
   $('count').textContent=slip.length;
   $('buyPointsBadge').hidden=betType==='teaser'||!slip.some(x=>['spreads','totals'].includes(x.market));
   for(const mode of ['single','parlay','round_robin','teaser']){const button=$(mode);button.disabled=locked;button.classList.toggle('active',betType===mode);button.setAttribute('aria-pressed',String(betType===mode))}
@@ -650,6 +650,7 @@ function updateSlip(){
     const selection=options.find(o=>o.point===teaserPoints);
     $('teaserPoints').innerHTML=options.length?options.map(o=>'<option value="'+o.point+'">'+esc(teaserDisplayLabel(picks,o))+'</option>').join(''):'<option value="">Select eligible picks</option>';
     $('teaserPoints').value=selection?String(teaserPoints):'';
+    teaserIssue=teaserProblem(picks,teaserPoints);
     $('teaserPoints').disabled=locked||!options.length;
     $('teaserPrice').textContent=selection?'Teaser ('+picks.length+' Picks) · '+price(selection.odds):'Teaser';
   }
