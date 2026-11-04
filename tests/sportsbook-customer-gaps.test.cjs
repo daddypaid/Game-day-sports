@@ -37,7 +37,7 @@ async function open(t,{sdkFailures=0,sdkDependencyFailures=0,wallet=100,live=fal
  await context.route('https://**/*',r=>r.abort());
  let sdkRequests=0,dependencyRequests=0;
  await context.route('https://cdn.jsdelivr.net/**',r=>{if(r.request().url().includes('fixture-sdk-dependency.js')){dependencyRequests++;return dependencyRequests<=sdkDependencyFailures?r.abort():r.fulfill({contentType:'text/javascript',body:'export const ready=true;'})}sdkRequests++;return sdkRequests<=sdkFailures?r.abort():r.fulfill({contentType:'text/javascript',body:(sdkDependencyFailures?"import './fixture-sdk-dependency.js';\n":'')+sdk})});
- await context.route('https://qsvrvhcklnsbekxblpfo.supabase.co/**',async r=>{const b=r.request().postDataJSON(),f=await r.request().frame().evaluate(()=>({liveFailure:__f.liveFailure,states:__f.states,empty:__f.empty,delay:__f.liveDelay||0}));let data;if(b.mode==='sports')data={sports:[{key:'nfl',group:'Football',title:'NFL',active:true}]};else if(b.mode==='games'){data={games:[matchup(live,quotes)]};if(quotes.hold)await new Promise(resolve=>quotes.waiters.push(resolve))}else if(b.mode==='events')data={events:f.empty==='events'?[]:[matchup()]};else if(b.mode==='prop_markets')data={prop_markets:f.empty==='markets'?[]:['player_pass_yds']};else if(b.mode==='props')data={event:{...matchup(),bookmakers:[{markets:[{key:'player_pass_yds',outcomes:f.empty==='outcomes'?[]:[{name:'Over',description:'Fixture Player',point:250.5,price:-110}]}]}]}};else{if(f.delay)await new Promise(resolve=>setTimeout(resolve,f.delay));if(f.liveFailure){await r.fulfill({status:503,contentType:'application/json',body:JSON.stringify({error:'Fixture live state unavailable'})});return}data={sport:b.sport,fetched_at:new Date().toISOString(),stale:false,states:f.states}}await r.fulfill({contentType:'application/json',body:JSON.stringify(data)})});
+ await context.route('https://qsvrvhcklnsbekxblpfo.supabase.co/**',async r=>{const b=r.request().postDataJSON(),f=await r.request().frame().evaluate(()=>({liveFailure:__f.liveFailure,states:__f.states,empty:__f.empty,delay:__f.liveDelay||0}));let data;if(b.mode==='sports')data={sports:[{key:'nfl',group:'Football',title:'NFL',active:true}]};else if(b.mode==='games'){data={games:[matchup(live,quotes)]};if(quotes.hold)await new Promise(resolve=>quotes.waiters.push(resolve))}else if(b.mode==='alternate_lines')data={mode:'alternate_lines',source:'live',wagerable:false,event:{id:'fixture-event',bookmakers:[{markets:[{key:'alternate_spreads',outcomes:[{name:'Fixture Home',point:-3,price:-125},{name:'Fixture Home',point:-2.5,price:-135},{name:'Fixture Away',point:3,price:-120}]},{key:'alternate_totals',outcomes:[{name:'Over',point:42.5,price:-125},{name:'Under',point:43.5,price:-125}]}]}]}};else if(b.mode==='events')data={events:f.empty==='events'?[]:[matchup()]};else if(b.mode==='prop_markets')data={prop_markets:f.empty==='markets'?[]:['player_pass_yds']};else if(b.mode==='props')data={event:{...matchup(),bookmakers:[{markets:[{key:'player_pass_yds',outcomes:f.empty==='outcomes'?[]:[{name:'Over',description:'Fixture Player',point:250.5,price:-110}]}]}]}};else{if(f.delay)await new Promise(resolve=>setTimeout(resolve,f.delay));if(f.liveFailure){await r.fulfill({status:503,contentType:'application/json',body:JSON.stringify({error:'Fixture live state unavailable'})});return}data={sport:b.sport,fetched_at:new Date().toISOString(),stale:false,states:f.states}}await r.fulfill({contentType:'application/json',body:JSON.stringify(data)})});
  const p=await context.newPage(),errors=[];p.on('pageerror',e=>errors.push(e.message));await p.goto(base+'/gameday-sportsbook.html'+(live?'?view=live':''));
  await p.locator(sdkFailures||sdkDependencyFailures?'#retryConnection':'.odd').first().waitFor();t.after(()=>assert.deepEqual(errors,[],'no JS errors or auth callback lock re-entry'));
  return {p,context,quotes,releaseQuotes,get sdkRequests(){return sdkRequests}};
@@ -158,4 +158,30 @@ test('older failed live refresh cannot clear a newer successful score and clock'
  await p.evaluate(()=>{__f.liveFailure=false;__f.liveDelay=0;__f.states[0].period='Q4';__f.states[0].clock='02:21';__f.states[0].fetched_at=new Date().toISOString();__f.liveTick()});
  await p.waitForFunction(()=>document.querySelector('.game-state')?.textContent.includes('Q4'));await p.waitForTimeout(300);
  assert.match(await p.locator('.game-state').textContent(),/Q4.*02:21/);assert.equal(await p.locator('.score').first().textContent(),'14');
+});
+
+
+test('Buy Points fetches half-point prices for a selected game but never charges an unapproved adjusted wager',async t=>{
+ const {p}=await open(t);
+ await p.locator('[data-market="spreads"]').first().click();
+ await p.locator('.odd').first().click();
+ await p.click('#openSlip');
+ await p.waitForFunction(()=>document.querySelectorAll('#buy-points-0 option').length>=3);
+ const list=await p.locator('#buy-points-0 option').allTextContents();
+ assert.match(list[1],/Buy 0.5 point/);
+ assert.match(list[1],/-3/);
+ assert.match(list[1],/-125/);
+ assert.match(list[2],/Buy 1.0 point/);
+ await p.fill('#stake','10');
+ const originalReturn=await p.locator('#return').textContent();
+ await p.locator('#buy-points-0').selectOption('0');
+ assert.match(await p.locator('#buy-points-preview-0').textContent(),/not selected for wagering/);
+ assert.equal(await p.locator('#return').textContent(),originalReturn);
+ assert.equal(await p.evaluate(()=>__f.calls.length),0);
+ await p.click('#place');
+ await p.locator('#slipMsg .success').waitFor();
+ const submitted=await p.evaluate(()=>__f.calls[0].body.selections[0]);
+ assert.equal(submitted.market_key,'spreads');
+ assert.equal(submitted.point,-3.5);
+ assert.equal(submitted.american_odds,-110);
 });
