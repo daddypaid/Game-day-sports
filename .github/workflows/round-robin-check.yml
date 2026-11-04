@@ -1,0 +1,31 @@
+name: Round Robin Isolated Regression
+
+on:
+  pull_request:
+    paths:
+      - 'gameday-sportsbook.html'
+      - 'gameday-my-bets.html'
+      - 'supabase/functions/place-test-wager/**'
+      - 'supabase/migrations/*round_robin*'
+      - 'tests/sportsbook-customer-gaps.test.cjs'
+      - 'tests/sportsbook-request-recovery.test.cjs'
+      - '.github/workflows/round-robin-check.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  round-robin-isolated:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+          cache: npm
+      - run: npm ci --ignore-scripts --no-audit --no-fund
+      - run: npx playwright install --with-deps chromium
+      - name: Round Robin browser and PostgreSQL transaction regressions
+        run: node --test tests/sportsbook-customer-gaps.test.cjs tests/sportsbook-request-recovery.test.cjs
