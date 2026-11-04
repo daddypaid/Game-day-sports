@@ -1,7 +1,7 @@
 {
   "schema_version": 1,
   "project_ref": "qsvrvhcklnsbekxblpfo",
-  "observed_at": "2026-11-04T14:08:43.619Z",
+  "observed_at": "2026-11-04T14:10:50.978Z",
   "source": "Supabase list_edge_functions and get_edge_function read-only snapshots",
   "hash_algorithm": "sha256",
   "notes": [
@@ -28,7 +28,7 @@
     },
     {
       "slug": "place-test-wager",
-      "deployed_version": 20,
+      "deployed_version": 21,
       "deployed_status": "ACTIVE",
       "verify_jwt": true,
       "import_map": false,
@@ -198,7 +198,7 @@
     },
     {
       "slug": "auto-settle-test-wagers",
-      "deployed_version": 9,
+      "deployed_version": 10,
       "deployed_status": "ACTIVE",
       "verify_jwt": false,
       "import_map": false,
