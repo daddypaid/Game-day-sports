@@ -283,7 +283,7 @@ async function refreshSelectedQuotes(reason=''){
     jobs.forEach((job,i)=>{
       if(job.body.mode!=='alternate_lines')return;
       const result=results[i],data=result.status==='fulfilled'?result.value:null;
-      const x=job.items[0],key=buyPointsQuoteKey(x),valid=data?.mode==='alternate_lines'&&data?.source==='live'&&data?.stale!==true&&data?.wagerable===false&&String(data?.event?.id)===String(x.eventId);
+      const x=job.items[0],key=buyPointsQuoteKey(x),valid=data?.mode==='alternate_lines'&&data?.source==='live'&&data?.stale!==true&&data?.wagerable===true&&String(data?.event?.id)===String(x.eventId);
       buyPointsQuotes.set(key,{status:valid?'ready':'unavailable',event:valid?data.event:null,at:Date.now(),nonce:crypto.randomUUID()});
     });
     jobs.forEach((job,i)=>{
