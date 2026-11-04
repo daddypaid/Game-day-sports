@@ -50,6 +50,20 @@
   .slip-wallet{font-size:14px}
   .payout{font-size:14px}
 }
+
+/* Round Robin payout receipt: keep stake, gross return and profit together. */
+.rr-payout-row[hidden],.rr-payout-note[hidden],.rr-ticket-details[hidden]{display:none}
+.rr-payout-row{align-items:baseline;line-height:1.35}
+.rr-payout-row span{max-width:66%;font-size:13px}
+.rr-payout-row strong{font-size:17px;font-variant-numeric:tabular-nums;text-align:right}
+.rr-payout-note{margin-top:10px;font-size:12px;line-height:1.55;color:#405348}
+.rr-ticket-details{margin-top:12px;border:1px solid #b5d1be;border-radius:10px;background:#f6faf7;padding:9px 11px;color:#123c24}
+.rr-ticket-details summary{cursor:pointer;font-size:13px;font-weight:700;min-height:30px}
+.rr-ticket-list{margin-top:8px}
+.rr-ticket-entry{padding:8px 0;border-top:1px solid #d4e3d7;display:flex;align-items:baseline;justify-content:space-between;gap:10px;font-size:12px;line-height:1.45}
+.rr-ticket-entry span{min-width:0;overflow-wrap:anywhere}
+.rr-ticket-entry strong{white-space:nowrap;font-variant-numeric:tabular-nums}
+@media(max-width:430px){.rr-payout-row span{max-width:66%}.rr-ticket-details{padding:9px}}
 </style>
 <link rel="stylesheet" href="gameday-light-theme.css">
 <link rel="stylesheet" href="gameday-team-logos.css">
@@ -58,7 +72,7 @@
 <header><div class="top"><h1>GameDay Sports</h1><div class="live-badge">LIVE ODDS • TEST MODE</div></div><div class="sub">Pregame • Live / In-Play • Player Props • Futures</div><div class="account-row"><div id="account" class="account">Checking account...</div><div id="balance" class="balance">Balance: —</div></div><div class="nav"><a class="active" href="gameday-sportsbook.html">Sportsbook</a><a href="gameday-casino-v2.html">Casino</a><a href="gameday-my-bets.html">My Bets</a><a href="gameday-auth.html">Account</a></div></header>
 <main><div class="section">Featured Sports</div><div class="featured" id="featured"></div><div class="section">Worldwide Sports</div><select id="sportSelect" class="world"><option value="">Loading sports...</option></select><div class="views"><button class="view active" data-view="games">Games</button><button class="view" data-view="live">Live</button><button class="view" data-view="props">Player Props</button><button class="view" data-view="futures">Futures</button></div><div class="toolbar"><button id="refresh" class="refresh">Refresh</button><span id="status" class="status">Ready</span></div><div id="selectionNotice" role="status" aria-live="polite"></div><div id="content" class="cards"></div></main>
 <div class="slipbar"><button id="openSlip">Bet Slip <span id="count" class="count">0</span><span id="buyPointsBadge" hidden style="font-size:12px;margin-left:8px">· Buy Points</span></button></div>
-<div id="panel" class="panel"><div class="panel-head"><strong>GameDay Bet Slip</strong><button id="closeSlip">Close</button></div><div class="panel-body"><div class="notice" style="margin-bottom:12px">TEST MODE — wagers use test credits only. No real money is charged.</div><div class="slip-wallet"><span>Available Balance</span><strong id="slipBalance">—</strong></div><div class="tabs"><button id="single" class="active">Single</button><button id="parlay">Parlay</button><button id="round_robin">Round Robin</button></div><div id="betModeHelp" class="notice" role="status" aria-live="polite" style="margin-bottom:12px"></div><div id="roundRobinSettings" class="round-robin-settings" hidden><label for="roundRobinLegs">Round Robin combinations</label><select id="roundRobinLegs" aria-label="Choose number of picks per Round Robin combination"></select><div id="roundRobinBreakdown" class="round-robin-breakdown" role="status" aria-live="polite"></div></div><div id="slipMsg" role="status" aria-live="polite"></div><div id="slipItems"></div><div class="stake"><label id="stakeLabel" for="stake">Stake</label><input id="stake" type="number" min="0.01" max="100000" step="0.01" placeholder="10.00" aria-describedby="stakeLimits"><div id="stakeLimits" class="sub">Stake: $0.01–$100,000 per wager, up to your available balance. Use cents only.</div><div class="payout"><span id="returnLabel">Potential Return</span><strong id="return">$0.00</strong></div><button id="place" class="place">Place Test Wager</button></div></div></div>
+<div id="panel" class="panel"><div class="panel-head"><strong>GameDay Bet Slip</strong><button id="closeSlip">Close</button></div><div class="panel-body"><div class="notice" style="margin-bottom:12px">TEST MODE — wagers use test credits only. No real money is charged.</div><div class="slip-wallet"><span>Available Balance</span><strong id="slipBalance">—</strong></div><div class="tabs"><button id="single" class="active">Single</button><button id="parlay">Parlay</button><button id="round_robin">Round Robin</button></div><div id="betModeHelp" class="notice" role="status" aria-live="polite" style="margin-bottom:12px"></div><div id="roundRobinSettings" class="round-robin-settings" hidden><label for="roundRobinLegs">Round Robin combinations</label><select id="roundRobinLegs" aria-label="Choose number of picks per Round Robin combination"></select><div id="roundRobinBreakdown" class="round-robin-breakdown" role="status" aria-live="polite"></div></div><div id="slipMsg" role="status" aria-live="polite"></div><div id="slipItems"></div><div class="stake"><label id="stakeLabel" for="stake">Stake</label><input id="stake" type="number" min="0.01" max="100000" step="0.01" placeholder="10.00" aria-describedby="stakeLimits"><div id="stakeLimits" class="sub">Stake: $0.01–$100,000 per wager, up to your available balance. Use cents only.</div><div id="roundRobinTotalRow" class="payout rr-payout-row" hidden><span>Total Test-Credit Stake</span><strong id="totalStake">$0.00</strong></div><div class="payout"><span id="returnLabel">Potential Return</span><strong id="return">$0.00</strong></div><div id="roundRobinProfitRow" class="payout rr-payout-row" hidden><span>Max Net Profit (all win)</span><strong id="potentialProfit">$0.00</strong></div><div id="roundRobinPayoutNote" class="rr-payout-note" hidden>Maximum return includes your original stakes. All combinations must win to receive the maximum; partial wins can pay less, and some outcomes return $0.</div><details id="roundRobinTicketDetails" class="rr-ticket-details" hidden><summary id="roundRobinTicketSummary">View combination payouts</summary><div id="roundRobinTicketRows"></div></details><button id="place" class="place">Place Test Wager</button></div></div></div>
 <script type="module">
 import{GAMEDAY_CONFIG,functionUrl}from'./gameday-config.js';
 import{teamLabel,hydrateTeamLogos}from'./gameday-team-logos.js';
@@ -534,7 +548,9 @@ function updateSlip(){
   $('stakeLabel').textContent=betType==='round_robin'?'Stake per combination':'Stake';
   $('stakeLimits').textContent=betType==='round_robin'?'Each combination: $0.01–$100,000. Total across all combinations cannot exceed your balance or $100,000.':'Stake: $0.01–$100,000 per wager, up to your available balance. Use cents only.';
   $('roundRobinSettings').hidden=betType!=='round_robin';
-  $('returnLabel').textContent=betType==='round_robin'?'Max Potential Return':'Potential Return';
+  $('returnLabel').textContent=betType==='round_robin'?'Max Return (incl. stakes)':'Potential Return';
+  for(const id of ['roundRobinTotalRow','roundRobinProfitRow','roundRobinPayoutNote'])$(id).hidden=betType!=='round_robin';
+  if(betType!=='round_robin')$('roundRobinTicketDetails').hidden=true;
   $('betModeHelp').textContent=betType==='single'?'Choose one pick below. Only that pick is wagered; your other picks stay in this slip.':
     betType==='round_robin'?(tooFew?'Select 3–6 picks from different events to create a Round Robin.':tooMany?'Round Robin supports a maximum of 6 picks.':incompatible?'Round Robin requires one selection per event.':'Every combination becomes its own parlay ticket; partial winners can return credits.'):
     tooFew?'Add at least two picks from different events to place a parlay.':incompatible?'Parlays require different events. Remove a conflicting pick, or switch to Single.':picks.length+' picks on one parlay ticket.';
@@ -559,8 +575,13 @@ function updateReturn(){
   }
   const cents=Math.round(stake*100),validStake=Number.isFinite(stake)&&stake>=0.01&&stake<=100000&&Math.abs(stake*100-cents)<0.000001;
   const ways=rr?roundRobinWays(picks.length,roundRobinLegs):1,total=rr?ways*stake:stake;
+  const totalCents=validStake&&ways>0?BigInt(cents)*BigInt(ways):0n;
+  $('totalStake').textContent=formatReturnCents(totalCents);
+  $('potentialProfit').textContent='$0.00';
+  $('roundRobinTicketRows').innerHTML='';
+  $('roundRobinTicketDetails').hidden=true;
   if(rr)$('roundRobinBreakdown').textContent=ways?
-    ways+' combinations × '+money(validStake?stake:0)+' each = '+money(validStake?total:0)+' total test credits. Each winning combination pays separately.':
+    ways+' combinations × '+money(validStake?stake:0)+' each = '+formatReturnCents(totalCents)+' total test credits. Each winning combination pays separately.':
     'Select 3–6 picks from different events to see combination costs.';
   if(rr&&picks.some(p=>!validAmericanOdds(p.price)))$('roundRobinBreakdown').textContent+=' A selected quote has invalid odds: remove or refresh it before wagering.';
   if(!validStake||!picks.length||picks.some(changedPick)||(['parlay','round_robin'].includes(betType)&&incompatibleParlay(picks))||
@@ -569,8 +590,22 @@ function updateReturn(){
   }
   const groups=rr?roundRobinCombinations(picks,roundRobinLegs):[picks];
   let maximum=0n;
-  for(const group of groups)maximum+=wagerReturnCents(group,cents);
+  const rows=[];
+  for(const [i,group] of groups.entries()){
+    const amount=wagerReturnCents(group,cents);
+    maximum+=amount;
+    if(rr){
+      const legs=group.map(p=>esc(String(p.name||'Selection')+(p.point===null||p.point===undefined?'':' '+p.point))).join(' + ');
+      rows.push('<div class="rr-ticket-entry"><span>'+String(i+1)+'. '+legs+'</span><strong>'+formatReturnCents(amount)+'</strong></div>');
+    }
+  }
   $('return').textContent=formatReturnCents(maximum);
+  if(rr){
+    $('potentialProfit').textContent=formatReturnCents(maximum-totalCents);
+    $('roundRobinTicketSummary').textContent='View '+ways+' combination payouts';
+    $('roundRobinTicketRows').innerHTML='<div class="rr-ticket-list">'+rows.join('')+'</div>';
+    $('roundRobinTicketDetails').hidden=false;
+  }
 }
 async function place(){
   if(placementBusy||quoteRefreshBusy)return;

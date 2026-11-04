@@ -169,7 +169,12 @@ test('Three-pick Round Robin uses three 2-leg tickets, previews total cost and s
  await p.click('#openSlip');await p.click('#round_robin');await p.fill('#stake','2');
  assert.match(await p.locator('#roundRobinLegs').inputValue(),/^2$/);
  assert.match(await p.locator('#roundRobinBreakdown').textContent(),/3 combinations.*\$2\.00.*\$6\.00 total/);
- assert.equal(await p.locator('#returnLabel').textContent(),'Max Potential Return');
+ assert.equal(await p.locator('#returnLabel').textContent(),'Max Return (incl. stakes)');
+ assert.equal(await p.locator('#totalStake').textContent(),'$6.00');
+ assert.equal(await p.locator('#potentialProfit').textContent(),'$18.00');
+ assert.match(await p.locator('#roundRobinPayoutNote').textContent(),/includes your original stakes/);
+ assert.equal(await p.locator('#roundRobinTicketRows .rr-ticket-entry').count(),3);
+ assert.deepEqual(await p.locator('#roundRobinTicketRows .rr-ticket-entry strong').allTextContents(),['$8.00','$8.00','$8.00']);
  assert.equal(await p.locator('#return').textContent(),'$24.00');
  assert(await p.locator('#place').isEnabled());
  await p.click('#place');await p.locator('#slipMsg .success').waitFor();
@@ -192,13 +197,33 @@ test('Four-pick Round Robin changes from six 2-leg tickets to four 3-leg tickets
  await p.locator('#roundRobinLegs').selectOption('3');
  assert.match(await p.locator('#roundRobinBreakdown').textContent(),/4 combinations.*\$4\.00 total/);
  assert.equal(await p.locator('#return').textContent(),'$32.00');
+ assert.equal(await p.locator('#totalStake').textContent(),'$4.00');
+ assert.equal(await p.locator('#potentialProfit').textContent(),'$28.00');
+ assert.equal(await p.locator('#roundRobinTicketRows .rr-ticket-entry').count(),4);
  assert.equal(await p.evaluate(()=>__f.calls.length),0);
 });
+test('A $100 stake per combination visibly means $300 total, not $100 total',async t=>{
+ const {p}=await open(t,{roundRobinEvents:2,wallet:500});
+ for(let i=0;i<3;i++)await p.locator('.card').nth(i).locator('.odd').first().click();
+ await p.click('#openSlip');await p.click('#round_robin');await p.fill('#stake','100');
+ assert.equal(await p.locator('#totalStake').textContent(),'$300.00');
+ assert.equal(await p.locator('#return').textContent(),'$1200.00');
+ assert.equal(await p.locator('#potentialProfit').textContent(),'$900.00');
+ assert.equal(await p.locator('#roundRobinTicketRows .rr-ticket-entry').count(),3);
+ assert.deepEqual(await p.locator('#roundRobinTicketRows .rr-ticket-entry strong').allTextContents(),['$400.00','$400.00','$400.00']);
+ await p.locator('#roundRobinTicketSummary').click();
+ assert(await p.locator('#roundRobinTicketDetails').evaluate(e=>e.open));
+ assert.equal(await p.evaluate(()=>__f.calls.length),0);
+});
+
 test('Round Robin blocks the total if combined stake exceeds wallet without sending a wager',async t=>{
  const {p}=await open(t,{roundRobinEvents:2,wallet:5});
  for(let i=0;i<3;i++)await p.locator('.card').nth(i).locator('.odd').first().click();
  await p.click('#openSlip');await p.click('#round_robin');await p.fill('#stake','2');
  assert.equal(await p.locator('#return').textContent(),'$0.00');
+ assert.equal(await p.locator('#totalStake').textContent(),'$6.00');
+ assert.equal(await p.locator('#potentialProfit').textContent(),'$0.00');
+ assert(await p.locator('#roundRobinTicketDetails').isHidden());
  await p.click('#place');
  assert.match(await p.locator('#slipMsg').textContent(),/Insufficient test balance/);
  assert.equal(await p.evaluate(()=>__f.calls.length),0);
