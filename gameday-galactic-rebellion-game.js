@@ -355,8 +355,8 @@ function playSound(kind) {
 function sync() {
   ui.info.setAttribute('aria-label', 'Paytable, game rules and wager limits');
   ui.wallet.textContent = user && balance !== null ? money(balance) : '—';
-  ui['bet-line'].textContent = unitMoney();
-  if (ui['unit-label']) ui['unit-label'].textContent = bonus?.wager_mode === 'lines' ? 'BET PER LINE' : 'BET PER WAY';
+  ui['bet-line'].textContent = money(totalBet());
+  if (ui['unit-label']) ui['unit-label'].textContent = 'BET PER SPIN';
   ui['total-bet'].textContent = money(totalBet());
   ui['total-bet'].title = `Total bet: ${money(rules.min_total_bet)}–${money(rules.max_total_bet)} in ${money(rules.total_bet_step)} steps. Wager limits are in Info.`;
   ui['free-spins'].textContent = `${bonusProgress.used} / ${bonusProgress.total}`;
@@ -836,7 +836,7 @@ function showInfo() {
   const content = document.createElement('div');
   const legacy = bonus?.wager_mode === 'lines';
   content.append(paragraph(legacy ? 'Your active free-spin session keeps the original 20-line rules and captured bet per line. When this bonus is complete, new paid spins use 243 ways.' : 'Choose your total bet, then press SPIN. All 243 ways are active. Three or more matching symbols pay consecutively from the leftmost reel, using any of the three rows on each reel.'));
-  content.append(paragraph(`Total bet: ${money(rules.min_total_bet)}–${money(rules.max_total_bet)} in ${money(rules.total_bet_step)} steps. Bet per way is total bet ÷ 243. Both wager panels change the total by the same ${money(rules.total_bet_step)} step. AUTO runs up to five spins and stops on a new bonus, insufficient balance, an error, or when you leave the game. MAX BET chooses the highest wager your test wallet can cover.`));
+  content.append(paragraph(`Total bet: ${money(rules.min_total_bet)}–${money(rules.max_total_bet)} in ${money(rules.total_bet_step)} steps. Bet per spin is the total test-credit charge. The 243-way payout calculation remains internal. Both wager panels change the total by the same ${money(rules.total_bet_step)} step. AUTO runs up to five spins and stops on a new bonus, insufficient balance, an error, or when you leave the game. MAX BET chooses the highest wager your test wallet can cover.`));
   const title = document.createElement('h3');
   title.textContent = '243 ways';
   content.appendChild(title);
