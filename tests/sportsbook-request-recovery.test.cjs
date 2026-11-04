@@ -444,7 +444,7 @@ sqlTest('Two-leg 6-point football Teaser quotes -135, debits exactly once and st
   assert.equal(await f.debits(),1);
   assert.equal(e.calls.commits,1);
   const dbTicket=(await f.db.query('select wager_type,teaser_points,teaser_american_odds from public.wagers where id=$1',[first.data.wager.id])).rows[0];
-  assert.deepEqual(dbTicket,{wager_type:'parlay',teaser_points:6,teaser_american_odds:-135});
+  assert.deepEqual({...dbTicket,teaser_points:Number(dbTicket.teaser_points)},{wager_type:'parlay',teaser_points:6,teaser_american_odds:-135});
   const legs=(await f.db.query('select point,teaser_original_point from public.wager_selections where wager_id=$1',[first.data.wager.id])).rows;
   assert.equal(legs.length,2);
   assert(legs.every(x=>Number(x.point)===2.5&&Number(x.teaser_original_point)===-3.5));

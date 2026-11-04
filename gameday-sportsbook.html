@@ -480,7 +480,8 @@ function teaserOptions(picks){
   const sport=teaserLeague(picks[0]),table=TEASER_TABLE[sport];
   if(!table||picks.length<2||picks.length>6)return [];
   return Object.entries(table).map(([point,tier])=>({point:Number(point),odds:tier[picks.length]}))
-    .filter(item=>Number.isInteger(item.odds)&&Math.abs(item.odds)>=100);
+    .filter(item=>Number.isInteger(item.odds)&&Math.abs(item.odds)>=100)
+    .sort((a,b)=>a.point-b.point);
 }
 function teaserDisplayLabel(picks,option){
   const sport=teaserLeague(picks[0]),prefix=Number(option.point)>=10&&sport?.startsWith('americanfootball_')?'Sweetheart ':'';

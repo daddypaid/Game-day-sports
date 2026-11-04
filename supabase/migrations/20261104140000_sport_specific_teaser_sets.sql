@@ -182,6 +182,7 @@ declare
   v_won_count integer;
   v_expected_result text;
   v_teaser_sport text;
+  v_teaser_sport_count integer;
   v_teaser_price integer;
   v_expected_credit numeric;
 begin
@@ -243,9 +244,9 @@ begin
 
   if v_wager.teaser_points is not null then
     select min(s.sport_key), count(distinct s.sport_key)
-      into v_teaser_sport, v_selection_count
+      into v_teaser_sport, v_teaser_sport_count
       from public.wager_selections s where s.wager_id=v_wager.id;
-    if v_selection_count <> 1 then raise exception 'Mixed teaser sports are invalid'; end if;
+    if v_teaser_sport_count <> 1 then raise exception 'Mixed teaser sports are invalid'; end if;
   end if;
   if v_lost_count > 0 then
     v_expected_result := 'lost';
