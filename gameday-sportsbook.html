@@ -408,7 +408,7 @@ function syncSlipWithGames(){
   updateSlip();
   loadBuyPointsQuotes();
 }
-function renderGame(g){const b=g.bookmakers?.[0],m=market(b,gameMarket),sportKey=String(g.sport_key||g._sport||currentSport).toLowerCase(),halfPointBasketball=(sportKey.startsWith('basketball_')||['nba','wnba','ncaab'].includes(sportKey))&&['spreads','totals'].includes(gameMarket),outcomes=(m?.outcomes||[]).filter(o=>!halfPointBasketball||(o.point!==null&&o.point!==undefined&&Number.isFinite(Number(o.point))&&Math.abs(Number(o.point)*2-Math.round(Number(o.point)*2))<0.000001)),eventName=`${g.away_team} @ ${g.home_team}`,live=isLive(g),marketBody=outcomes.length?`<div class="book"><div class="book-name">GameDay Sports</div><div class="odds">${outcomes.map(o=>odd({eventId:g.id,event:eventName,sport:g._sport||currentSport,market:gameMarket,marketTitle:title(gameMarket),name:o.name,description:o.description||'',point:o.point??null,price:o.price})).join('')}</div></div>`:live?'<div class="suspended">SUSPENDED<small>Market temporarily unavailable. Waiting for the next live quote.</small></div>':'<div class="empty">No line available.</div>';return `<div class="card ${live?'live-card':''}"><div class="card-head"><div class="time">${dt(g.commence_time)}${live?'<span class="inplay">IN-PLAY</span>':''}</div>${live?`<div class="game-state"><strong>${liveStateText(g)}</strong></div>`:''}<div class="team">${teamLabel(g.away_team,currentSport,{fallback:!isCombatSport()})}<span class="team-right"><span class="score">${live?esc(scoreFor(g,g.away_team)):''}</span><span class="tag">AWAY</span></span></div><div class="team">${teamLabel(g.home_team,currentSport,{fallback:!isCombatSport()})}<span class="team-right"><span class="score">${live?esc(scoreFor(g,g.home_team)):''}</span><span class="tag">HOME</span></span></div></div><div class="market-tabs">${['h2h','spreads','totals'].map(k=>`<button class="market ${gameMarket===k?'active':''}" data-market="${k}">${title(k)}</button>`).join('')}</div><div class="books">${marketBody}${boardBuyPoints(g,gameMarket)}</div></div>`}
+function renderGame(g){const b=g.bookmakers?.[0],m=market(b,gameMarket),sportKey=String(g.sport_key||g._sport||currentSport).toLowerCase(),halfPointBasketball=(sportKey.startsWith('basketball_')||['nba','wnba','ncaab'].includes(sportKey))&&['spreads','totals'].includes(gameMarket),outcomes=(m?.outcomes||[]).filter(o=>!halfPointBasketball||(o.point!==null&&o.point!==undefined&&Number.isFinite(Number(o.point))&&Math.abs(Number(o.point)*2-Math.round(Number(o.point)*2))<0.000001)),eventName=`${g.away_team} @ ${g.home_team}`,live=isLive(g),marketBody=outcomes.length?`<div class="book"><div class="book-name">GameDay Sports</div><div class="odds">${outcomes.map(o=>odd({eventId:g.id,event:eventName,sport:g._sport||currentSport,market:gameMarket,marketTitle:title(gameMarket),name:o.name,description:o.description||'',point:o.point??null,price:o.price,commenceTime:g.commence_time})).join('')}</div></div>`:live?'<div class="suspended">SUSPENDED<small>Market temporarily unavailable. Waiting for the next live quote.</small></div>':'<div class="empty">No line available.</div>';return `<div class="card ${live?'live-card':''}"><div class="card-head"><div class="time">${dt(g.commence_time)}${live?'<span class="inplay">IN-PLAY</span>':''}</div>${live?`<div class="game-state"><strong>${liveStateText(g)}</strong></div>`:''}<div class="team">${teamLabel(g.away_team,currentSport,{fallback:!isCombatSport()})}<span class="team-right"><span class="score">${live?esc(scoreFor(g,g.away_team)):''}</span><span class="tag">AWAY</span></span></div><div class="team">${teamLabel(g.home_team,currentSport,{fallback:!isCombatSport()})}<span class="team-right"><span class="score">${live?esc(scoreFor(g,g.home_team)):''}</span><span class="tag">HOME</span></span></div></div><div class="market-tabs">${['h2h','spreads','totals'].map(k=>`<button class="market ${gameMarket===k?'active':''}" data-market="${k}">${title(k)}</button>`).join('')}</div><div class="books">${marketBody}${boardBuyPoints(g,gameMarket)}</div></div>`}
 function renderGames(){const list=view==='live'?games.filter(isLive):games.filter(g=>!isLive(g)),isMlb=['mlb','baseball'].includes(String(currentSport).toLowerCase()),isCombat=isCombatSport(),stale=Boolean(oddsMeta.stale),notice=oddsMeta.notice?`<div class="notice">${esc(oddsMeta.notice)}</div>`:'',empty=view==='live'?`No in-play ${esc(sportLabel(currentSport))} betting lines right now.`:isMlb?'No current MLB games are available. The stored MLB schedule is stale or the live provider quota is unavailable; GameDay is not fabricating matchups. Use Refresh when the provider is available.':isCombat?`No current ${esc(sportLabel(currentSport))} betting lines are available from the live provider. No bouts or odds have been fabricated.`:'No upcoming games are currently available.';content.innerHTML=notice+(!gradingSport(currentSport)?'<div class="notice">VIEW ONLY — wagering is unavailable for this sport until automatic grading is verified.</div>':'')+(list.length?list.map(renderGame).join(''):`<div class="empty">${empty}</div>`);status.textContent=(view==='live'?`${list.length} live games • updates every 15s${list.some(g=>!liveTimeAvailable(g))?' • score/clock updates unavailable':''}`:`${list.length} upcoming games`)+(stale?' • stale data shown':'');document.querySelectorAll('[data-market]').forEach(b=>b.onclick=()=>{gameMarket=b.dataset.market;renderGames()});bindOdds();bindBuyPointsControls();scheduleLiveExpiry()}
 async function loadGames(){const t=boardTicket(),stateSequence=t.view==='live'?++liveSequence:liveSequence;status.textContent=t.view==='live'?'Loading in-play lines, scores and clock...':`Loading ${sportLabel(t.sport)} lines...`;try{let nextMeta,nextGames,nextStates=[];if(t.view==='live'){const [oddsResult,stateResult]=await Promise.allSettled([timed(api({mode:'games',sport:t.sport})),timed(liveApi(t.sport))]);if(oddsResult.status!=='fulfilled')throw oddsResult.reason;nextMeta=oddsResult.value;nextGames=nextMeta.games||[];if(t.sport==='nba'){try{const preseason=await timed(api({mode:'games',sport:'basketball_nba_preseason'}));const ids=new Set(nextGames.map(g=>String(g.id)));for(const g of preseason.games||[]){if(!ids.has(String(g.id))){nextGames.push({...g,_sport:'basketball_nba_preseason',_preseason:true});ids.add(String(g.id))}}}catch{nextMeta.notice=[nextMeta.notice,'NBA preseason feed unavailable.'].filter(Boolean).join(' ')}}nextStates=stateResult.status==='fulfilled'?liveSnapshot(stateResult.value,t.sport):[]}else{nextMeta=await timed(api({mode:'games',sport:t.sport}));nextGames=nextMeta.games||[];if(t.sport==='nba'){try{const preseason=await timed(api({mode:'games',sport:'basketball_nba_preseason'}));const ids=new Set(nextGames.map(g=>String(g.id)));for(const g of preseason.games||[]){if(!ids.has(String(g.id))){nextGames.push({...g,_sport:'basketball_nba_preseason',_preseason:true});ids.add(String(g.id))}}}catch{nextMeta.notice=[nextMeta.notice,'NBA preseason feed unavailable.'].filter(Boolean).join(' ')}}}if(!boardIsCurrent(t))return;oddsMeta=nextMeta;if(stateSequence===liveSequence)liveStates=nextStates;games=nextGames.map(g=>({...g,_sport:g._sport||t.sport,live_state:t.view==='live'?stateFor(g):null}));syncSlipWithGames();renderGames()}catch(e){if(!boardIsCurrent(t))return;games=[];oddsMeta={};if(!pendingWager){slip.forEach(x=>{if(x.sport===t.sport&&['h2h','spreads','totals'].includes(x.market))x.lineStatus='suspended'});updateSlip()}status.textContent='Data unavailable';content.innerHTML=`<div class="error">${esc(e.message||'Lines are temporarily unavailable. Try Refresh.')}</div>`}}
 async function refreshLiveStateOnly(){if(view!=='live'||document.hidden)return;const generation=boardGeneration,sport=currentSport,sequence=++liveSequence;try{const d=await timed(liveApi(sport));if(generation!==boardGeneration||sport!==currentSport||view!=='live'||sequence!==liveSequence)return;liveStates=liveSnapshot(d,sport);games=games.map(g=>({...g,live_state:stateFor(g)}));renderGames()}catch(e){if(generation===boardGeneration&&sport===currentSport&&view==='live'&&sequence===liveSequence){liveStates=[];games=games.map(g=>({...g,live_state:null}));renderGames()}}}
@@ -436,10 +436,53 @@ function ticketSelections(){
 function changedPick(x){return ['changed','suspended','needs_refresh'].includes(x.lineStatus)||!validAmericanOdds(x.price)}
 function incompatibleParlay(picks){return new Set(picks.map(x=>String(x.eventId).trim().toLowerCase())).size!==picks.length}
 function setBetMode(mode){
-  if(pendingWager||placementBusy||!['single','parlay','round_robin'].includes(mode))return;
+  if(pendingWager||placementBusy||!['single','parlay','round_robin','teaser'].includes(mode))return;
   modePreference=mode;syncBetMode();selectionChanged();updateSlip();
 }
 
+// Fixed TEST MODE teaser reference prices; matched by the Supabase
+// test_teaser_american_odds function. Not live bookmaker teaser quotes.
+const TEASER_TABLE={
+  americanfootball_nfl:{6:[-135,140,240,333,500],7:[-150,120,180,250,350]},
+  americanfootball_ncaaf:{6:[-115,160,260,475,750],7:[-125,140,230,380,600]}
+};
+function teaserLeague(x){return gradingSport(x?.sport)}
+function teaserPriceFor(picks,points){
+  const sport=teaserLeague(picks[0]);
+  const value=TEASER_TABLE[sport]?.[points]?.[picks.length-2];
+  return Number.isInteger(value)&&Math.abs(value)>=100?value:null;
+}
+function teasedPoint(x,points){
+  const original=Number(x?.point);
+  if(!Number.isFinite(original))return null;
+  if(x.market==='spreads')return original+points;
+  if(x.market==='totals'&&norm(x.name)==='over')return original-points;
+  if(x.market==='totals'&&norm(x.name)==='under')return original+points;
+  return null;
+}
+function teaserProblem(picks,points){
+  if(![6,7].includes(points))return 'Choose a 6- or 7-point football Teaser.';
+  if(picks.length<2||picks.length>6)return 'Select 2–6 spread or total picks for your Teaser.';
+  const league=teaserLeague(picks[0]);
+  if(!TEASER_TABLE[league]||picks.some(p=>teaserLeague(p)!==league))
+    return 'Teaser picks must belong to the same supported football league: NFL or NCAAF.';
+  if(incompatibleParlay(picks))return 'Each Teaser pick must be from a different game.';
+  for(const p of picks){
+    if(!['spreads','totals'].includes(p.market)||p.buyPoints===true||p.point===null||p.point===undefined||
+       !Number.isFinite(Number(p.point))||Math.abs(Number(p.point)*2-Math.round(Number(p.point)*2))>0.000001||
+       teasedPoint(p,points)===null)
+      return 'Teasers use original spread or total lines only. Remove Buy Points and unsupported picks.';
+    if(!p.commenceTime||!Number.isFinite(Date.parse(p.commenceTime))||Date.parse(p.commenceTime)<=Date.now())
+      return 'Teasers are available only before the selected games start.';
+    if(changedPick(p))return 'Refresh unavailable or changed lines before placing your Teaser.';
+  }
+  return teaserPriceFor(picks,points)===null?'Verified TEST MODE teaser price is unavailable.':'';
+}
+function teaserReturnCents(cents,odds){
+  const value=BigInt(Math.abs(odds)),denominator=odds>0?100n:value;
+  const numerator=BigInt(cents)*(value+100n);
+  return (numerator*2n+denominator)/(denominator*2n);
+}
 const MAX_BUY_POINTS=2;
 const buyPointsQuotes=new Map();
 function buyPointsQuoteKey(x){return [x.sport,x.eventId,x.market].join('|')}
@@ -500,7 +543,7 @@ function loadBuyPointsQuotes(){
   }
 }
 function buyPointsSlipControl(x,i,where='slip'){
-  if(!['spreads','totals'].includes(x.market))return '';
+  if(!['spreads','totals'].includes(x.market)||betType==='teaser')return '';
   const entry=buyPointsQuotes.get(buyPointsQuoteKey(x)),choices=buyPointsChoices(x),board=where==='board';
   const locked=Boolean(pendingWager)||placementBusy;
   const original=Number(x.buyPointsOriginal??x.point),basePrice=Number(x.buyPointsBasePrice??x.price);
