@@ -188,7 +188,7 @@ sqlTest('Round Robin atomically creates each 2-leg parlay, charges the total, an
   const picks=['event-a','event-b','event-c'].map(id=>selection(id,{market_key:'h2h',selection_name:'Home',american_odds:100}));
   const body={request_id:requestId,wager_type:'round_robin',round_robin_legs:2,stake:2,selections:picks};
   const first=await e.send(body);
-  assert.equal(first.data.state,'accepted');
+  assert.equal(first.data.state,'accepted',JSON.stringify(first.data));
   assert.equal(first.data.wager.wager_type,'round_robin');
   assert.equal(Number(first.data.wager.stake),6);
   assert.equal(Number(first.data.wager.potential_return),24);
@@ -224,7 +224,7 @@ sqlTest('Round Robin rejects incomplete, duplicate, changed-price and unaffordab
     await send({},base,{changedOdds:true})
   ];
   assert.equal(failures[0].data.code,'INVALID_REQUEST');
-  assert.equal(failures[1].data.code,'INSUFFICIENT_BALANCE');
+  assert.equal(failures[1].data.code,'INSUFFICIENT_BALANCE',JSON.stringify(failures[1].data));
   assert.equal(failures[2].data.code,'SAME_EVENT_ROUND_ROBIN');
   assert.equal(failures[3].data.code,'INVALID_REQUEST');
   assert.equal(failures[4].data.code,'LINE_CHANGED');
@@ -237,7 +237,7 @@ sqlTest('Four-pick Round Robin creates exactly four 3-leg tickets without a dupl
   const f=await fixture(),picks=['event-a','event-b','event-c','event-d'].map(id=>selection(id));
   const requestId=uuid(),body={request_id:requestId,wager_type:'round_robin',round_robin_legs:3,stake:1,selections:picks};
   const response=await edge(f).send(body);
-  assert.equal(response.data.state,'accepted');
+  assert.equal(response.data.state,'accepted',JSON.stringify(response.data));
   assert.equal(Number(response.data.wager.combinations),4);
   assert.equal(Number(response.data.wager.stake),4);
   assert.equal(Number(response.data.wager.potential_return),32);
