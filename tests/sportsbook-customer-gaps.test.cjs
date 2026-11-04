@@ -264,7 +264,7 @@ test('Invalid -1 American odds are unavailable to wager instead of showing a fal
  assert.equal(await p.evaluate(()=>__f.calls.length),0);
 });
 
-test('iPhone bet slip retains a three-column betting-mode row and properly spaced controls in light theme',async t=>{
+test('iPhone bet slip keeps four betting modes in a readable two-row mobile grid',async t=>{
   const {p}=await open(t,{roundRobinEvents:2});
   for(let i=0;i<3;i++)await p.locator('.card').nth(i).locator('.odd').first().click();
   await p.click('#openSlip');await p.click('#round_robin');await p.fill('#stake','2');
@@ -279,10 +279,13 @@ test('iPhone bet slip retains a three-column betting-mode row and properly space
       settingsWidth:box(settings).width,stakeWidth:box(stake).width,placeWidth:box(place).width,
       bodyWidth:box(body).width,documentWidth:document.documentElement.scrollWidth,windowWidth:window.innerWidth};
   });
-  assert.equal(layout.display,'grid');assert.equal(layout.columns,3);
-  assert(layout.tabs.every(x=>x.height>=40&&x.width>=60));
-  assert(layout.tabs.every(x=>Math.abs(x.top-layout.tabs[0].top)<=2),'Tabs must share one horizontal row');
-  assert(layout.tabs[0].right<layout.tabs[1].left&&layout.tabs[1].right<layout.tabs[2].left,'Tabs must not overlap');
+  assert.equal(layout.display,'grid');assert.equal(layout.columns,2);
+  assert.equal(layout.tabs.length,4);
+  assert(layout.tabs.every(x=>x.height>=40&&x.width>=110));
+  assert(Math.abs(layout.tabs[0].top-layout.tabs[1].top)<=2,'First two modes share a row');
+  assert(Math.abs(layout.tabs[2].top-layout.tabs[3].top)<=2,'Round Robin and Teaser share a row');
+  assert(layout.tabs[2].top>layout.tabs[0].top,'Betting modes must occupy two rows');
+  assert(layout.tabs[0].right<layout.tabs[1].left&&layout.tabs[2].right<layout.tabs[3].left,'Tabs must not overlap');
   assert(layout.cardPadding>=10&&layout.cardRadius>=8,'Each bet must be presented in a padded card');
   assert(layout.stakeWidth>=layout.bodyWidth-60,'Stake input should fill the card');
   assert(layout.placeWidth>=layout.bodyWidth-65,'Wager action should be a full-width tap target');
