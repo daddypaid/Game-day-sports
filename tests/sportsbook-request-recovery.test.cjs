@@ -229,6 +229,81 @@ sqlTest('Round Robin atomically creates each 2-leg parlay, charges the total, an
   assert.equal(altered.data.code,'REQUEST_CONFLICT');
   await f.db.close();
 });
+
+async function addProductionSettlementToFixture(f) {
+  await f.db.exec("alter type public.wager_status add value if not exists 'void';");
+  await f.db.exec("create type public.transaction_type as enum('wager_debit','wager_credit','refund');");
+  await f.db.exec("alter table public.wallet_transactions alter column transaction_type type public.transaction_type using transaction_type::public.transaction_type;");
+  await f.db.exec("alter table public.wagers add column settled_at timestamptz, add column updated_at timestamptz;");
+  await f.db.exec("alter table public.wager_selections add column result text, add column graded_at timestamptz, add column final_home_score numeric, add column final_away_score numeric;");
+  const source=fs.readFileSync(path.join(root,'supabase/migrations/20261010131537_fair_settlement_queue_and_score_receipts.sql'),'utf8');
+  const end=source.indexOf('-- Internal grading state.');
+  assert(end>0,'Production settlement source must contain the exact function and its grants');
+  await f.db.exec(source.slice(0,end));
+  const rights=(await f.db.query("select has_function_privilege('service_role','public.settle_test_wager_auto_atomic(uuid,text,numeric,jsonb)','EXECUTE') as service,has_function_privilege('authenticated','public.settle_test_wager_auto_atomic(uuid,text,numeric,jsonb)','EXECUTE') as browser")).rows[0];
+  assert.deepEqual(rights,{service:true,browser:false});
+}
+async function settleSyntheticRoundRobinTicket(f,id,results){
+  const legs=(await f.db.query('select id,event_id from public.wager_selections where wager_id=$1 order by event_id',[id])).rows;
+  assert.equal(legs.length,2);
+  const grades=legs.map(s=>({selection_id:s.id,result:results[s.event_id]}));
+  assert(grades.every(s=>['won','lost','void'].includes(s.result)));
+  const outcome=grades.some(s=>s.result==='lost')?'lost':grades.every(s=>s.result==='void')?'void':'won';
+  const credit=outcome==='lost'?0:outcome==='void'?1:grades.reduce((p,s)=>p*(s.result==='won'?2:1),1);
+  const receipt=await f.db.query('select * from public.settle_test_wager_auto_atomic($1,$2,$3,$4::jsonb)',
+    [id,outcome,credit,JSON.stringify(grades)]);
+  assert.equal(receipt.rows.length,1);
+  assert.equal(receipt.rows[0].status,outcome);
+  assert.equal(Number(receipt.rows[0].credited_amount),credit);
+  return {outcome,credit,grades};
+}
+sqlTest('Real settlement SQL closes a $3 Round Robin with one winner, two losers, no duplicate credit',async()=>{
+  const f=await fixture();
+  await addProductionSettlementToFixture(f);
+  const requestId=uuid(),picks=['event-a','event-b','event-c'].map(e=>selection(e));
+  const body={request_id:requestId,wager_type:'round_robin',round_robin_legs:2,stake:1,selections:picks};
+  const placed=await edge(f).send(body);
+  assert.equal(placed.data.state,'accepted',JSON.stringify(placed.data));
+  assert.equal(Number(placed.data.wager.stake),3);
+  assert.equal(Number(placed.data.wager.combinations),3);
+  assert.equal(await f.balance(),997);
+  const tickets=(await f.db.query('select w.id,array_agg(s.event_id order by s.event_id) as events from public.wagers w join public.wager_selections s on s.wager_id=w.id where w.round_robin_group_id=$1 group by w.id',[requestId])).rows;
+  assert.equal(tickets.length,3);
+  const outcomes={'event-a':'won','event-b':'won','event-c':'lost'};
+  let credits=0;
+  for(const ticket of tickets)credits+=(await settleSyntheticRoundRobinTicket(f,ticket.id,outcomes)).credit;
+  assert.equal(credits,4);
+  assert.equal(await f.balance(),1001);
+  assert.equal(await f.balance(other),1000);
+  const credited=(await f.db.query("select count(*)::int as c,sum(amount)::numeric as n from public.wallet_transactions where transaction_type::text='wager_credit'")).rows[0];
+  assert.equal(credited.c,1);assert.equal(Number(credited.n),4);
+  const winning=tickets.find(t=>t.events.join('+')==='event-a+event-b');
+  assert(winning);
+  await assert.rejects(f.db.query('select * from public.settle_test_wager_auto_atomic($1,$2,$3,$4::jsonb)',
+    [winning.id,'won',4,JSON.stringify((await f.db.query('select id from public.wager_selections where wager_id=$1',[winning.id])).rows.map(s=>({selection_id:s.id,result:'won'})))]),/already settled or unavailable/i);
+  assert.equal((await edge(f).send({request_id:requestId,recover:true})).data.state,'accepted');
+  assert.equal(await f.balance(),1001);
+  assert.equal((await f.db.query("select count(*)::int as c from public.wallet_transactions where transaction_type::text='wager_credit'")).rows[0].c,1);
+  await f.db.close();
+});
+sqlTest('Real settlement SQL refunds an all-void $1 Round Robin combo without crediting losing combos',async()=>{
+  const f=await fixture();await addProductionSettlementToFixture(f);
+  const id=uuid(),picks=['event-a','event-b','event-c'].map(e=>selection(e));
+  const placed=await edge(f).send({request_id:id,wager_type:'round_robin',round_robin_legs:2,stake:1,selections:picks});
+  assert.equal(placed.data.state,'accepted');
+  const tickets=(await f.db.query('select id from public.wagers where round_robin_group_id=$1',[id])).rows;
+  assert.equal(tickets.length,3);
+  const results={'event-a':'void','event-b':'void','event-c':'lost'},settled=[];
+  for(const ticket of tickets)settled.push(await settleSyntheticRoundRobinTicket(f,ticket.id,results));
+  assert.deepEqual(settled.map(x=>x.outcome).sort(),['lost','lost','void']);
+  assert.equal(await f.balance(),998);
+  const refund=(await f.db.query("select count(*)::int as c,sum(amount)::numeric as n from public.wallet_transactions where transaction_type::text='refund'")).rows[0];
+  assert.equal(refund.c,1);assert.equal(Number(refund.n),1);
+  const win=(await f.db.query("select count(*)::int as c from public.wallet_transactions where transaction_type::text='wager_credit'")).rows[0];
+  assert.equal(win.c,0);
+  await f.db.close();
+});
+
 sqlTest('Round Robin rejects incomplete, duplicate, changed-price and unaffordable groups without partial debits',async () => {
   const f=await fixture();
   const base=['event-a','event-b','event-c'].map(id=>selection(id));
