@@ -452,20 +452,20 @@ test('football Teaser disallows ineligible moneylines and missing legs without b
   assert(await p.locator('#place').isDisabled());
 });
 
-test('Three NFL picks display the full sport-specific Teaser list and no lengthy explanation block',async t=>{
+test('Three NFL picks show only priced 4–7-point Teaser sets with no lengthy explanation block',async t=>{
   const {p}=await open(t,{roundRobinEvents:2});
   await p.locator('.card').first().locator('[data-market="spreads"]').click();
   for(let i=0;i<3;i++)await p.locator('.card').nth(i).locator('.odd').first().click();
   await p.click('#openSlip');await p.click('#teaser');await p.fill('#stake','10');
   const points=await p.locator('#teaserPoints option').evaluateAll(items=>items.map(i=>i.value));
-  assert.deepEqual(points,['6','6.5','7','8','9','10','11']);
-  assert.match(await p.locator('#teaserPoints').textContent(),/Sweetheart NFL 10 points/);
+  assert.deepEqual(points,['6','6.5','7']);
+  assert(!points.some(p=>Number(p)>7||Number(p)<4));
   assert.equal(await p.locator('#teaserPrice').textContent(),'Teaser (3 Picks) · +145');
   assert(await p.locator('#betModeHelp').isHidden());
   assert.equal(await p.locator('.teaser-settings p').count(),0);
-  await p.locator('#teaserPoints').selectOption('10');
-  assert.equal(await p.locator('#teaserPrice').textContent(),'Teaser (3 Picks) · -130');
-  assert.equal(await p.locator('#return').textContent(),'$17.69');
+  await p.locator('#teaserPoints').selectOption('6.5');
+  assert.equal(await p.locator('#teaserPrice').textContent(),'Teaser (3 Picks) · +135');
+  assert.equal(await p.locator('#return').textContent(),'$23.50');
   assert(await p.locator('#place').isEnabled());
   assert.equal(await p.evaluate(()=>__f.calls.length),0);
 });
