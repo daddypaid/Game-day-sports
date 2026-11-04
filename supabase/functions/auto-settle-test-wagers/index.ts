@@ -13,6 +13,16 @@ function clean(v:unknown){return String(v??'').trim()}
 function norm(v:unknown){return clean(v).toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g,'').replace(/\b(jr|sr|ii|iii|iv)\b/g,' ').replace(/[^a-z0-9]+/g,' ').replace(/\s+/g,' ').trim()}
 function num(v:unknown){if(v===null||v===undefined||clean(v)==='')return null;const n=Number(v);return Number.isFinite(n)?n:null}
 function decimalFromAmerican(odds:number){return odds>0?1+odds/100:1+100/Math.abs(odds)}
+// Must match the server-authoritative public.test_teaser_american_odds
+// schedule. These are TEST MODE reference prices, not live bookmaker quotes.
+function teaserTestPrice(sport:string,points:number,legs:number):number|null{
+  const table:Record<string,Record<number,number[]>>={
+    americanfootball_nfl:{6:[-135,140,240,333,500],7:[-150,120,180,250,350]},
+    americanfootball_ncaaf:{6:[-115,160,260,475,750],7:[-125,140,230,380,600]}
+  };
+  const n=table[sport]?.[points]?.[legs-2];
+  return Number.isInteger(n)&&Math.abs(n)>=100?n:null;
+}
 function isSoccer(sport:string){return ['mls','epl','ucl'].includes(sport)||sport.startsWith('soccer_')}
 function propBase(key:string){return key.endsWith('_alternate')?key.slice(0,-10):key}
 function isFootballProp(key:string,sport:string){return isFootballGradingSport(sport)&&FOOTBALL_PROP_BASE.has(propBase(key))}
@@ -97,7 +107,7 @@ Deno.serve(async(req:Request)=>{
       if(health.error)throw new Error('Settlement backlog unavailable');
       return reply({ok:true,claimed:0,checked:0,settled:0,skipped_pending:0,skipped_unsupported:0,review_required:0,provider_errors:0,queue_remaining:health.data?.pending_count??0,backlog:health.data});
     }
-    const wagerRead=await admin.from('wagers').select('id,wager_type,stake,potential_return,status,placed_at,wager_selections(id,event_id,event_name,sport_key,market_key,selection_name,description,point,american_odds)').eq('is_test',true).in('status',['pending','accepted']).in('id',wagerIds);
+    const wagerRead=await admin.from('wagers').select('id,wager_type,stake,potential_return,status,placed_at,teaser_points,teaser_american_odds,wager_selections(id,event_id,event_name,sport_key,market_key,selection_name,description,point,american_odds,teaser_original_point)').eq('is_test',true).in('status',['pending','accepted']).in('id',wagerIds);
     if(wagerRead.error)throw new Error('Settlement wagers unavailable');
     const byWagerId=new Map((wagerRead.data??[]).map((w:any)=>[String(w.id),w]));
     const wagers=wagerIds.map((id:string)=>byWagerId.get(id)).filter(Boolean) as any[];
@@ -224,10 +234,25 @@ Deno.serve(async(req:Request)=>{
         continue;
       }
       const anyLost=grades.some(g=>g.result==='lost'),allVoid=grades.every(g=>g.result==='void');
-      const result=anyLost?'lost':allVoid?'void':'won';
+      const teaser=wager.teaser_points===null||wager.teaser_points===undefined?null:Number(wager.teaser_points);
+      const wins=grades.filter(g=>g.result==='won').length;
+      // A teaser with fewer than two non-pushed winners is no action. A
+      // losing leg always overrides pushes. Ordinary parleys are unchanged.
+      const result=anyLost?'lost':(allVoid||(teaser!==null&&wins<2))?'void':'won';
       let credit=0;
       if(result==='void')credit=Number(wager.stake);
-      else if(result==='won'){
+      else if(result==='won'&&teaser!==null){
+        const sport=resolveGradingSport(selections[0]?.sport_key);
+        const uniform=selections.every((x:any)=>resolveGradingSport(x.sport_key)===sport);
+        const price=uniform&&sport?teaserTestPrice(sport,teaser,wins):null;
+        const initial=uniform&&sport?teaserTestPrice(sport,teaser,selections.length):null;
+        if(price===null||initial!==Number(wager.teaser_american_odds)){
+          const done=await finish(wager,'review','invalid_teaser_pricing');
+          if(done?.applied){reviewRequired++;results.push({wager_id:wager.id,state:'review',reason:'invalid_teaser_pricing'})}
+          continue;
+        }
+        credit=Math.round(Number(wager.stake)*decimalFromAmerican(price)*100)/100;
+      }else if(result==='won'){
         let decimal=1;
         for(let i=0;i<grades.length;i++)if(grades[i].result==='won')decimal*=decimalFromAmerican(Number(selections[i].american_odds));
         credit=Math.round(Number(wager.stake)*decimal*100)/100;

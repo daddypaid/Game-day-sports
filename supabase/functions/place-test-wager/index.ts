@@ -17,7 +17,7 @@ function isSupportedFootballProp(key:string,sport:string){return isFootballGradi
 function isSupportedMlbProp(key:string,sport:string){return isMlbGradingSport(sport)&&MLB_PROPS.has(key)}
 function isSupportedProp(key:string,sport:string){return isSupportedFootballProp(key,sport)||isSupportedMlbProp(key,sport)}
 async function edgeJson(url:string,anon:string,body:any,label:string){const internal=Deno.env.get('SUPABASE_SERVICE_ROLE_KEY')||'';const r=await fetch(`${url}/functions/v1/gameday-odds`,{method:'POST',headers:{'Content-Type':'application/json','apikey':anon,'Authorization':`Bearer ${anon}`,'x-gameday-fresh':internal},body:JSON.stringify(body),signal:AbortSignal.timeout(30000)});const raw=await r.text();let data:any={};try{data=raw?JSON.parse(raw):{}}catch{}if(!r.ok)throw new Error(data?.detail||data?.error||`Unable to validate ${label}`);return data}
-async function loadCurrentGames(url:string,anon:string,sport:string){const data=await edgeJson(url,anon,{mode:'games',sport},`${sport} line`);return Array.isArray(data?.games)?data.games:[]}
+async function loadCurrentGames(url:string,anon:string,sport:string,requireLive=false){const data=await edgeJson(url,anon,{mode:'games',sport},`${sport} line`);if(requireLive&&(data?.source!=='live'||data?.stale===true||data?.mode!=='games'))throw new Error('Fresh live pregame lines are required for a Teaser. No test credits were charged.');return Array.isArray(data?.games)?data.games:[]}
 async function loadCurrentProps(url:string,anon:string,sport:string,eventId:string,markets:string[]){const data=await edgeJson(url,anon,{mode:'props',sport,event_id:eventId,markets},'player prop');return data?.event||null}
 async function loadCurrentAlternate(url:string,anon:string,sport:string,eventId:string,market:string){const data=await edgeJson(url,anon,{mode:'alternate_lines',sport,event_id:eventId,markets:[market]},'alternate line');if(data?.source!=='live'||data?.stale===true||data?.mode!=='alternate_lines'||data?.wagerable!==true||text(data?.event?.id)!==eventId)return null;return data.event;}
 function currentOutcomeFor(selection:any,games:any[]){const game=games.find((g:any)=>text(g?.id)===selection.event_id);if(!game||game?.completed)return{ok:false,code:'LINE_SUSPENDED',message:'This event is no longer available for wagering.'};const bookmaker=Array.isArray(game?.bookmakers)?game.bookmakers[0]:null;const market=bookmaker?.markets?.find((m:any)=>text(m?.key)===selection.market_key);if(!market)return{ok:false,code:'LINE_SUSPENDED',message:'This market is currently suspended.'};const outcomes=Array.isArray(market?.outcomes)?market.outcomes:[];const sameName=outcomes.filter((o:any)=>norm(o?.name)===norm(selection.selection_name));const exact=sameName.find((o:any)=>norm(o?.description)===norm(selection.description)&&sameNumber(o?.point,selection.point));if(!exact){const moved=sameName.find((o:any)=>norm(o?.description)===norm(selection.description))||sameName[0];if(moved)return{ok:false,code:'LINE_CHANGED',message:'The line changed after you selected it.',current_line:{point:moved?.point??null,american_odds:Number(moved?.price)}};return{ok:false,code:'LINE_SUSPENDED',message:'This selection is currently unavailable.'}}const currentOdds=Number(exact?.price);if(!validAmericanOdds(currentOdds))return{ok:false,code:'LINE_SUSPENDED',message:'This selection is currently unavailable.'};if(currentOdds!==selection.american_odds)return{ok:false,code:'LINE_CHANGED',message:'The odds changed after you selected this line.',current_line:{point:exact?.point??null,american_odds:currentOdds}};return{ok:true}}
@@ -61,11 +61,14 @@ Deno.serve(async (req: Request) => {
     }
     const wagerType = body?.wager_type, stake = Number(body?.stake);
     const selections = Array.isArray(body?.selections) ? body.selections : [];
-    if (!['single','parlay','round_robin'].includes(wagerType)) throw new Error('Invalid wager type');
+    if (!['single','parlay','round_robin','teaser'].includes(wagerType)) throw new Error('Invalid wager type');
     if (!Number.isFinite(stake) || stake <= 0 || stake > 100000 || Math.abs(stake*100-Math.round(stake*100)) > 0.000001) throw new Error('Invalid stake');
     if ((wagerType === 'single' && selections.length !== 1) ||
       (wagerType === 'parlay' && (selections.length < 2 || selections.length > 20)) ||
-      (wagerType === 'round_robin' && (selections.length < 3 || selections.length > 6))) throw new Error('Invalid selection count');
+      (wagerType === 'round_robin' && (selections.length < 3 || selections.length > 6)) ||
+      (wagerType === 'teaser' && (selections.length < 2 || selections.length > 6))) throw new Error('Invalid selection count');
+    const teaserPoints=Number(body?.teaser_points);
+    if(wagerType==='teaser'&&(![6,7].includes(teaserPoints)))throw new Error('Football Teaser must adjust all legs by 6 or 7 points');
     const rrLegs=Number(body?.round_robin_legs),rrWays=wagerType==='round_robin'?roundRobinWays(selections.length,rrLegs):0;
     if(wagerType==='round_robin'&&(!rrWays||rrWays>20||stake*rrWays>100000))throw new Error('Round Robin requires 3–6 picks and 2 to N−1 legs per combination; total cost cannot exceed 100,000 test credits');
     const validationTime = new Date().toISOString();
@@ -78,6 +81,20 @@ Deno.serve(async (req: Request) => {
       const supplied = s?.quoted_at ? new Date(s.quoted_at) : null;
       if (supplied && Number.isNaN(supplied.getTime())) throw new Error('Invalid quote timestamp');
       const bought=s?.buy_points===true;
+      let teaserOriginalPoint:number|null=null;
+      if(wagerType==='teaser'){
+        const market=text(s?.market_key),side=norm(s?.selection_name);
+        teaserOriginalPoint=Number(s?.teaser_original_point);
+        if(bought||!['spreads','totals'].includes(market)||point===null||
+           s?.teaser_original_point===null||s?.teaser_original_point===undefined||
+           s?.teaser_original_point===''||!Number.isFinite(teaserOriginalPoint)||
+           Math.abs(teaserOriginalPoint*2-Math.round(teaserOriginalPoint*2))>0.000001||
+           Math.abs(point*2-Math.round(point*2))>0.000001)throw new Error('Teasers require original pregame spread/total lines; Buy Points cannot be combined.');
+        const expected=market==='spreads'?teaserOriginalPoint+teaserPoints:
+           side==='over'?teaserOriginalPoint-teaserPoints:
+           side==='under'?teaserOriginalPoint+teaserPoints:NaN;
+        if(!Number.isFinite(expected)||Math.abs(point-expected)>0.000001)throw new Error('Invalid Teaser adjustment: every leg must move in the selected direction by 6 or 7 points');
+      }
       let originalPoint:number|null=null;
       if(bought){
         if(!['spreads','totals'].includes(text(s.market_key))||point===null)throw new Error('Buy Points requires a spread or total');
@@ -93,30 +110,45 @@ Deno.serve(async (req: Request) => {
         market_key:text(s.market_key),market_title:text(s.market_title) || null,
         selection_name:text(s.selection_name),description:text(s.description) || null,
         point,american_odds:odds,quoted_at:supplied ? supplied.toISOString() : validationTime,
-        ...(bought?{buy_points:true,original_point:originalPoint}:{})};
+        ...(bought?{buy_points:true,original_point:originalPoint}:{}),
+        ...(wagerType==='teaser'?{teaser_original_point:teaserOriginalPoint}:{})};
     });
-    const payload = {wager_type:wagerType,stake,...(wagerType==='round_robin'?{round_robin_legs:rrLegs}:{}),selections:normalized.map(({quoted_at,...s}:any) => s)};
+    const payload = {wager_type:wagerType,stake,...(wagerType==='round_robin'?{round_robin_legs:rrLegs}:{}),...(wagerType==='teaser'?{teaser_points:teaserPoints}:{}),selections:normalized.map(({quoted_at,...s}:any) => s)};
     processingToken = crypto.randomUUID();
     const preparation = await rpc('sportsbook_test_request_prepare', {
       p_user_id:userId,p_request_id:requestId,p_payload:payload,p_processing_token:processingToken,
     });
     if (!preparation.processing) return response(preparation,preparation.state === 'conflict' ? 409 : 200);
-    if (['parlay','round_robin'].includes(wagerType) && new Set(normalized.map((s:any) => s.event_id.trim().toLowerCase())).size !== normalized.length) {
+    if (['parlay','round_robin','teaser'].includes(wagerType) && new Set(normalized.map((s:any) => s.event_id.trim().toLowerCase())).size !== normalized.length) {
       return await reject(wagerType==='round_robin'?'SAME_EVENT_ROUND_ROBIN':'SAME_EVENT_PARLAY',
         wagerType==='round_robin'?'Round Robin requires picks from different events. No test credits were charged.':
+          wagerType==='teaser'?'Teasers require picks from different pregame events. No test credits were charged.':
           'Parlays must use different events. Same-event selections are not available. No test credits were charged.');
     }
     const unsupported = normalized.find((s:any) => !resolveGradingSport(s.sport_key) ||
       (!STANDARD.has(s.market_key) && !isSupportedProp(s.market_key,s.sport_key)));
+    if(wagerType==='teaser'&&(
+      new Set(normalized.map((s:any)=>s.sport_key)).size!==1||
+      normalized.some((s:any)=>!['americanfootball_nfl','americanfootball_ncaaf'].includes(s.sport_key))
+    ))return await reject('TEASER_UNAVAILABLE','6- and 7-point Teasers require picks from the same supported football league (NFL or NCAAF). No test credits were charged.');
     if (unsupported) return await reject('SETTLEMENT_UNAVAILABLE',
       'This sport or market is view-only in TEST MODE until its automatic grading rule is verified. No test credits were charged.',
       {selection:{event_id:unsupported.event_id,event_name:unsupported.event_name,market_key:unsupported.market_key,selection_name:unsupported.selection_name}});
     const standardSelections = normalized.filter((s:any) => STANDARD.has(s.market_key));
     const sports = [...new Set<string>(standardSelections.map((s:any) => s.sport_key))];
     const gamesBySport = new Map<string,any[]>();
-    await Promise.all(sports.map(async sport => gamesBySport.set(sport,await loadCurrentGames(url,anon,sport))));
+    await Promise.all(sports.map(async sport => gamesBySport.set(sport,await loadCurrentGames(url,anon,sport,wagerType==='teaser'))));
     for (const s of standardSelections) {
       const current=gamesBySport.get(s.sport_key)||[];
+      if(wagerType==='teaser'){
+        const game=current.find((g:any)=>text(g?.id)===s.event_id);
+        if(!game||game?.completed||!Number.isFinite(Date.parse(text(game?.commence_time)))||
+           Date.parse(text(game?.commence_time))<=Date.now())
+          return await reject('LINE_SUSPENDED','Teasers are available only before kickoff. No test credits were charged.');
+        const verdict:any=currentOutcomeFor({...s,point:s.teaser_original_point},current);
+        if(!verdict.ok)return await reject(verdict.code,verdict.message,{current_line:verdict.current_line||null});
+        continue;
+      }
       if(!s.buy_points){
         const verdict:any=currentOutcomeFor(s,current);
         if(!verdict.ok)return await reject(verdict.code,verdict.message,{current_line:verdict.current_line||null});
@@ -163,7 +195,7 @@ Deno.serve(async (req: Request) => {
         if (!verdict.ok) return await reject(verdict.code,verdict.message,{current_line:verdict.current_line || null});
       }
     }
-    return response(await rpc(wagerType==='round_robin'?'sportsbook_test_request_commit_round_robin':'sportsbook_test_request_commit', {
+    return response(await rpc(wagerType==='round_robin'?'sportsbook_test_request_commit_round_robin':wagerType==='teaser'?'sportsbook_test_request_commit_teaser':'sportsbook_test_request_commit', {
       p_user_id:userId,p_request_id:requestId,p_processing_token:processingToken,p_selections:normalized,
     }));
   } catch (e:any) {
