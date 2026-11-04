@@ -48,27 +48,12 @@ try {
   report.server_version = version;
   await client.query(fs.readFileSync(path.join(root, 'supabase/restore/local-platform-prerequisites.sql'), 'utf8'));
   const migrations = fs.readdirSync(path.join(root, 'supabase/migrations')).filter(name => /^\d{14}_[a-z0-9_]+\.sql$/.test(name)).sort();
-  const staged = JSON.parse(fs.readFileSync(path.join(root,'scripts/gameday-staged-migrations-and-edge.json'),'utf8'));
-  const inventory = JSON.parse(fs.readFileSync(path.join(root,'scripts/gameday-database-migration-inventory.json'),'utf8'));
-  if(staged.schema_version!==1||staged.release_state!=='staged_not_deployed')throw new Error('Invalid staged migration manifest');
-  const stagedByName=new Map(staged.pending_migrations.map(item=>[path.basename(item.path),item]));
-  if(stagedByName.size!==staged.pending_migrations.length)throw new Error('Duplicate staged migration');
-  if(staged.pending_migrations.length!==1||!stagedByName.has('20261104050000_sportsbook_round_robin_atomic_test_wagers.sql'))throw new Error('Unexpected staged migration set');
-  const deployedNames=inventory.deployed_migrations.map(row=>path.basename(row.path));
-  if(JSON.stringify([...deployedNames,...stagedByName.keys()].sort())!==JSON.stringify(migrations))throw new Error('Unclassified or missing deployable migration');
-  const gitBlob = bytes => crypto.createHash('sha1').update(`blob ${bytes.length}\0`).update(bytes).digest('hex');
-  const applyLocalMigration=async name=>{
-    const sql=fs.readFileSync(path.join(root,'supabase/migrations',name),'utf8');
+  for (const name of migrations) {
+    const sql = fs.readFileSync(path.join(root, 'supabase/migrations', name), 'utf8');
     try { await client.query('begin'); await client.query(sql); await client.query('commit'); }
-    catch(error){await client.query('rollback');throw new Error(`Migration ${name} failed (${error.code||'unknown'}): ${error.message}`)}
-    report.migrations.push({path:`supabase/migrations/${name}`,sha256:sha(sql)});
-  };
-  for(const name of deployedNames)await applyLocalMigration(name);
-  const deferred=[...stagedByName].map(([name,record])=>{
-    const bytes=fs.readFileSync(path.join(root,'supabase/migrations',name));
-    if(gitBlob(bytes)!==record.git_blob_sha1)throw new Error('Unverified staged migration bytes');
-    return name;
-  });
+    catch (error) { await client.query('rollback'); throw new Error(`Migration ${name} failed (${error.code || 'unknown'}): ${error.message}`); }
+    report.migrations.push({ path: `supabase/migrations/${name}`, sha256: sha(sql) });
+  }
   const extensions = (await client.query("select extname,extversion from pg_extension where extname in ('pg_cron','pg_net') order by extname")).rows;
   if (JSON.stringify(extensions) !== JSON.stringify([{ extname: 'pg_cron', extversion: '1.6' }, { extname: 'pg_net', extversion: '0.20.4' }]) &&
       JSON.stringify(extensions) !== JSON.stringify([{ extname: 'pg_cron', extversion: '1.6.4' }, { extname: 'pg_net', extversion: '0.20.4' }])) throw new Error('Real pg_cron/pg_net extension version mismatch');
@@ -76,28 +61,20 @@ try {
   const dormant = (await client.query('select (select count(*)::int from cron.job) scheduled_jobs,(select count(*)::int from net.http_request_queue) queued_requests')).rows[0];
   if (dormant.scheduled_jobs || dormant.queued_requests) throw new Error('Rehearsal unexpectedly contains scheduled or queued outbound work');
   report.scheduler = dormant;
-  const fingerprintSql = fs.readFileSync(path.join(root,'scripts/gameday-schema-fingerprint.sql'),'utf8');
-  const expected=JSON.parse(fs.readFileSync(path.join(root,'scripts/gameday-production-schema-fingerprint.json'),'utf8'));
-  const expectedCatalog=expected.fingerprint||expected.catalog||expected.snapshot||expected;
-  const deployedCatalog=(await client.query(fingerprintSql)).rows[0].fingerprint;
-  report.schema_fingerprint_equal=JSON.stringify(deployedCatalog)===JSON.stringify(expectedCatalog);
-  report.deployed_schema_fingerprint_sha256=sha(JSON.stringify(deployedCatalog));
-  if(!report.schema_fingerprint_equal){
-    fs.writeFileSync(path.join(artifactDir,'expected-schema-fingerprint.json'),JSON.stringify(expectedCatalog,null,2)+'\n');
-    fs.writeFileSync(path.join(artifactDir,'deployed-rehearsal-fingerprint.json'),JSON.stringify(deployedCatalog,null,2)+'\n');
-    throw new Error('Deployed-history rehearsal differs from read-only production catalog; do not apply staged migrations');
+  report.checks.push('Every chronological application migration applied without omitted extension SQL');
+  const fingerprintSql = fs.readFileSync(path.join(root, 'scripts/gameday-schema-fingerprint.sql'), 'utf8');
+  const actual = (await client.query(fingerprintSql)).rows[0];
+  fs.writeFileSync(path.join(artifactDir, 'restored-schema-fingerprint.json'), JSON.stringify(actual, null, 2) + '\n');
+  const expected = JSON.parse(fs.readFileSync(path.join(root, 'scripts/gameday-production-schema-fingerprint.json'), 'utf8'));
+  const expectedCatalog = expected.fingerprint || expected.catalog || expected.snapshot || expected;
+  const actualCatalog = actual.fingerprint || actual.catalog || actual.snapshot || actual;
+  report.schema_fingerprint_equal = JSON.stringify(actualCatalog) === JSON.stringify(expectedCatalog);
+  report.schema_fingerprint_sha256 = sha(JSON.stringify(actualCatalog));
+  if (!report.schema_fingerprint_equal) {
+    fs.writeFileSync(path.join(artifactDir, 'expected-schema-fingerprint.json'), JSON.stringify(expectedCatalog, null, 2) + '\n');
+    throw new Error('Restored schema fingerprint differs from the read-only production catalog snapshot; inspect isolated artifact metadata');
   }
-  report.checks.push('Exact deployed migration history matches read-only production catalog before any staged migration');
-  for(const name of deferred)await applyLocalMigration(name);
-  if(deferred.length)report.checks.push('Blob-pinned staged migration applied in isolated PostgreSQL only');
-  const actual=(await client.query(fingerprintSql)).rows[0];
-  fs.writeFileSync(path.join(artifactDir,'restored-schema-fingerprint.json'),JSON.stringify(actual,null,2)+'\n');
-  const actualCatalog=actual.fingerprint||actual.catalog||actual.snapshot||actual;
-  report.schema_fingerprint_sha256=sha(JSON.stringify(actualCatalog));
-  report.staged_schema_changed=JSON.stringify(actualCatalog)!==JSON.stringify(deployedCatalog);
-  if(deferred.length&&!report.staged_schema_changed)throw new Error('Staged migration did not change schema');
-  report.staged_schema_md5=actualCatalog.schema_md5;
-  report.checks.push('Canonical schema, RLS and routines after staged migration will be verified again during backup/restore');
+  report.checks.push('Live catalog and restored catalog match: columns, constraints, indexes, policies, ACLs, routines, triggers and views');
   const relationRls = (await client.query("select count(*)::int tables, bool_and(c.relrowsecurity) all_rls from pg_class c join pg_namespace n on n.oid=c.relnamespace where n.nspname='public' and c.relkind='r' and not exists(select 1 from pg_depend d where d.classid='pg_class'::regclass and d.objid=c.oid and d.deptype='e')")).rows[0];
   if (!relationRls.all_rls) throw new Error('Restored application table without RLS');
   report.application_tables = relationRls.tables;

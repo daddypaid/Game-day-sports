@@ -17,7 +17,7 @@ async function fixture() {
   const db = new PGlite(); await db.waitReady;
   await db.exec(fs.readFileSync(path.join(__dirname,'fixtures/sportsbook-placement-baseline.sql'),'utf8'));
   await db.exec(fs.readFileSync(path.join(root,'supabase/migrations/20261010110728_sportsbook_durable_requests_and_safe_parlays.sql'),'utf8'));
-  await db.exec(fs.readFileSync(path.join(root,'supabase/migrations/20261104050000_sportsbook_round_robin_atomic_test_wagers.sql'),'utf8'));
+  await db.exec(fs.readFileSync(path.join(root,'supabase/migrations/20261104045004_sportsbook_round_robin_atomic_test_wagers.sql'),'utf8'));
   await db.query('insert into auth.users values($1),($2)',[user,other]);
   await db.query('insert into wallets(user_id,balance) values($1,1000),($2,1000)',[user,other]);
   const rpc = async (name,args) => (await db.query(`select public.${name}(${args.map((_,i) => '$'+(i+1)).join(',')}) as result`,args)).rows[0].result;

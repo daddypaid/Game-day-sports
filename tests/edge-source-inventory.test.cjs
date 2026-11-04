@@ -5,9 +5,6 @@ const path = require('node:path');
 const crypto = require('node:crypto');
 const root = path.resolve(__dirname, '..');
 const inventory = JSON.parse(fs.readFileSync(path.join(root, 'scripts/gameday-edge-source-inventory.json'), 'utf8'));
-const staged = JSON.parse(fs.readFileSync(path.join(root, 'scripts/gameday-staged-migrations-and-edge.json'), 'utf8'));
-const gitBlob = bytes => crypto.createHash('sha1').update(`blob ${bytes.length}\0`).update(bytes).digest('hex');
-const stagedEdges = new Map(staged.pending_edge_sources.map(item=>[item.path,item]));
 const hash = bytes => crypto.createHash('sha256').update(bytes).digest('hex');
 
 test('Edge source inventory records the complete safe deployed metadata snapshot', () => {
@@ -30,18 +27,6 @@ test('Edge source inventory records the complete safe deployed metadata snapshot
   assert(!/"(?:authorization|headers|command|schedule|content)"\s*:/i.test(encoded), 'no job requests, schedules or raw source');
 });
 
-test('Staged Edge files are explicitly pinned without rewriting deployed source evidence',()=>{
-  assert.equal(staged.release_state,'staged_not_deployed');
-  assert.deepEqual([...stagedEdges.keys()],['supabase/functions/place-test-wager/index.ts']);
-  for(const item of stagedEdges.values()){
-    const captured=inventory.functions.flatMap(fn=>fn.files).find(f=>f.path===item.path);
-    assert(captured,'Candidate must have a real prior deployment to compare against');
-    assert.equal(captured.deployed_sha256,item.deployed_sha256);
-    assert.equal(captured.deployed_sha256,captured.local_sha256);
-    assert.match(item.git_blob_sha1,/^[0-9a-f]{40}$/);
-    assert.equal(gitBlob(fs.readFileSync(path.join(root,item.path))),item.git_blob_sha1,'Staged source must match pinned blob');
-  }
-});
 test('Every deployed Edge bundle and shared helper matches the exact canonical UTF-8 source', () => {
   const seenHelpers = new Map();
   for (const fn of inventory.functions) for (const file of fn.files) {
@@ -49,16 +34,7 @@ test('Every deployed Edge bundle and shared helper matches the exact canonical U
     assert(inventory.functions.some(other => file.path.startsWith('supabase/functions/' + other.slug + '/')) || file.path.startsWith('supabase/functions/_shared/'), 'helper belongs to a deployed function or shared source directory');
     assert(!file.path.split('/').includes('..')); const absolute = path.join(root, file.path); assert(fs.statSync(absolute).isFile(), file.path + ' exists');
     assert.match(file.deployed_sha256, /^[a-f0-9]{64}$/); assert.match(file.local_sha256, /^[a-f0-9]{64}$/);
-    const actual = hash(fs.readFileSync(absolute)),candidate=stagedEdges.get(file.path);
-    if(candidate){
-      assert.notEqual(actual,file.deployed_sha256,file.path+' is unpublished candidate, not deployed');
-      assert.equal(file.local_sha256,file.deployed_sha256,file.path+' preserved independently recorded deployed state');
-      assert.equal(candidate.deployed_sha256,file.deployed_sha256,file.path+' agrees with captured deployed hash');
-      assert.equal(gitBlob(fs.readFileSync(absolute)),candidate.git_blob_sha1,file.path+' source is pinned');
-    }else{
-      assert.equal(actual,file.local_sha256,file.path+' matches the inventory');
-      assert.equal(actual,file.deployed_sha256,file.path+' matches canonical deployed source');
-    }
+    const actual = hash(fs.readFileSync(absolute)); assert.equal(actual, file.local_sha256, file.path + ' matches the inventory'); assert.equal(actual, file.deployed_sha256, file.path + ' matches canonical deployed source');
     if (seenHelpers.has(file.path)) assert.equal(file.deployed_sha256, seenHelpers.get(file.path), file.path + ' is identical across deployed bundles');
     else seenHelpers.set(file.path, file.deployed_sha256);
   }
