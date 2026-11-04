@@ -20,7 +20,7 @@ async function fixture() {
   await db.exec(fs.readFileSync(path.join(root,'supabase/migrations/20261104045004_sportsbook_round_robin_atomic_test_wagers.sql'),'utf8'));
   // The isolated baseline adds grading columns separately, so first load the
   // wager schema and commit RPC, then replace settlement after that setup.
-  const teaserSQL=fs.readFileSync(path.join(root,'supabase/migrations/20261104133500_add_football_teaser_test_wagers.sql'),'utf8');
+  const teaserSQL=fs.readFileSync(path.join(root,'supabase/migrations/20261104132132_add_football_teaser_test_wagers.sql'),'utf8');
   const settleIndex=teaserSQL.indexOf('-- Keep all preexisting settlement invariants');
   assert(settleIndex>0);
   await db.exec(teaserSQL.slice(0,settleIndex));
@@ -246,7 +246,7 @@ async function addProductionSettlementToFixture(f) {
   const end=source.indexOf('-- Internal grading state.');
   assert(end>0,'Production settlement source must contain the exact function and its grants');
   await f.db.exec(source.slice(0,end));
-  const teaser=fs.readFileSync(path.join(root,'supabase/migrations/20261104133500_add_football_teaser_test_wagers.sql'),'utf8');
+  const teaser=fs.readFileSync(path.join(root,'supabase/migrations/20261104132132_add_football_teaser_test_wagers.sql'),'utf8');
   const cut=teaser.indexOf('-- Keep all preexisting settlement invariants');
   assert(cut>0);
   await f.db.exec(teaser.slice(cut));
