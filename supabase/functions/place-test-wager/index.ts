@@ -16,6 +16,7 @@ function isSupportedProp(key:string,sport:string){return isSupportedFootballProp
 async function edgeJson(url:string,anon:string,body:any,label:string){const internal=Deno.env.get('SUPABASE_SERVICE_ROLE_KEY')||'';const r=await fetch(`${url}/functions/v1/gameday-odds`,{method:'POST',headers:{'Content-Type':'application/json','apikey':anon,'Authorization':`Bearer ${anon}`,'x-gameday-fresh':internal},body:JSON.stringify(body),signal:AbortSignal.timeout(30000)});const raw=await r.text();let data:any={};try{data=raw?JSON.parse(raw):{}}catch{}if(!r.ok)throw new Error(data?.detail||data?.error||`Unable to validate ${label}`);return data}
 async function loadCurrentGames(url:string,anon:string,sport:string){const data=await edgeJson(url,anon,{mode:'games',sport},`${sport} line`);return Array.isArray(data?.games)?data.games:[]}
 async function loadCurrentProps(url:string,anon:string,sport:string,eventId:string,markets:string[]){const data=await edgeJson(url,anon,{mode:'props',sport,event_id:eventId,markets},'player prop');return data?.event||null}
+async function loadCurrentAlternate(url:string,anon:string,sport:string,eventId:string,market:string){const data=await edgeJson(url,anon,{mode:'alternate_lines',sport,event_id:eventId,markets:[market]},'alternate line');if(data?.source!=='live'||data?.stale===true||data?.mode!=='alternate_lines'||text(data?.event?.id)!==eventId)return null;return data.event;}
 function currentOutcomeFor(selection:any,games:any[]){const game=games.find((g:any)=>text(g?.id)===selection.event_id);if(!game||game?.completed)return{ok:false,code:'LINE_SUSPENDED',message:'This event is no longer available for wagering.'};const bookmaker=Array.isArray(game?.bookmakers)?game.bookmakers[0]:null;const market=bookmaker?.markets?.find((m:any)=>text(m?.key)===selection.market_key);if(!market)return{ok:false,code:'LINE_SUSPENDED',message:'This market is currently suspended.'};const outcomes=Array.isArray(market?.outcomes)?market.outcomes:[];const sameName=outcomes.filter((o:any)=>norm(o?.name)===norm(selection.selection_name));const exact=sameName.find((o:any)=>norm(o?.description)===norm(selection.description)&&sameNumber(o?.point,selection.point));if(!exact){const moved=sameName.find((o:any)=>norm(o?.description)===norm(selection.description))||sameName[0];if(moved)return{ok:false,code:'LINE_CHANGED',message:'The line changed after you selected it.',current_line:{point:moved?.point??null,american_odds:Number(moved?.price)}};return{ok:false,code:'LINE_SUSPENDED',message:'This selection is currently unavailable.'}}const currentOdds=Number(exact?.price);if(!Number.isInteger(currentOdds)||currentOdds===0)return{ok:false,code:'LINE_SUSPENDED',message:'This selection is currently unavailable.'};if(currentOdds!==selection.american_odds)return{ok:false,code:'LINE_CHANGED',message:'The odds changed after you selected this line.',current_line:{point:exact?.point??null,american_odds:currentOdds}};return{ok:true}}
 Deno.serve(async (req: Request) => {
   if (req.method === 'OPTIONS') return new Response('ok', {headers: cors});
@@ -70,11 +71,23 @@ Deno.serve(async (req: Request) => {
       if (point !== null && !Number.isFinite(point)) throw new Error('Invalid selection point');
       const supplied = s?.quoted_at ? new Date(s.quoted_at) : null;
       if (supplied && Number.isNaN(supplied.getTime())) throw new Error('Invalid quote timestamp');
+      const bought=s?.buy_points===true;
+      let originalPoint:number|null=null;
+      if(bought){
+        if(!['spreads','totals'].includes(text(s.market_key))||point===null)throw new Error('Buy Points requires a spread or total');
+        if(s.original_point===null||s.original_point===undefined||s.original_point==='')throw new Error('Original line is required for Buy Points');
+        originalPoint=Number(s.original_point);
+        if(!Number.isFinite(originalPoint))throw new Error('Original line is invalid');
+        const marketKey=text(s.market_key),side=norm(s.selection_name);
+        const distance=marketKey==='spreads'?point-originalPoint:side==='over'?originalPoint-point:side==='under'?point-originalPoint:0;
+        if(distance<=0||Math.abs(distance*2-Math.round(distance*2))>0.000001)throw new Error('Buy Points requires a supported half-point adjustment in the favorable direction');
+      }
       return {event_id:text(s.event_id),event_name:text(s.event_name),
         sport_key:resolveGradingSport(s.sport_key) ?? text(s.sport_key).toLowerCase(),
         market_key:text(s.market_key),market_title:text(s.market_title) || null,
         selection_name:text(s.selection_name),description:text(s.description) || null,
-        point,american_odds:odds,quoted_at:supplied ? supplied.toISOString() : validationTime};
+        point,american_odds:odds,quoted_at:supplied ? supplied.toISOString() : validationTime,
+        ...(bought?{buy_points:true,original_point:originalPoint}:{})};
     });
     const payload = {wager_type:wagerType,stake,selections:normalized.map(({quoted_at,...s}:any) => s)};
     processingToken = crypto.randomUUID();
@@ -95,8 +108,29 @@ Deno.serve(async (req: Request) => {
     const gamesBySport = new Map<string,any[]>();
     await Promise.all(sports.map(async sport => gamesBySport.set(sport,await loadCurrentGames(url,anon,sport))));
     for (const s of standardSelections) {
-      const verdict:any = currentOutcomeFor(s,gamesBySport.get(s.sport_key) || []);
-      if (!verdict.ok) return await reject(verdict.code,verdict.message,{current_line:verdict.current_line || null});
+      const current=gamesBySport.get(s.sport_key)||[];
+      if(!s.buy_points){
+        const verdict:any=currentOutcomeFor(s,current);
+        if(!verdict.ok)return await reject(verdict.code,verdict.message,{current_line:verdict.current_line||null});
+        continue;
+      }
+      // The stored wager remains a spread/total, so existing grading and push
+      // settlement operate on the purchased point. Its price must be taken
+      // from a fresh event-specific provider quote, never browser arithmetic.
+      const game=current.find((g:any)=>text(g?.id)===s.event_id);
+      const base=game?.bookmakers?.[0]?.markets?.find((m:any)=>text(m?.key)===s.market_key);
+      const anchors=(base?.outcomes||[]).filter((o:any)=>norm(o?.name)===norm(s.selection_name)&&norm(o?.description)===norm(s.description));
+      const anchor=anchors.find((o:any)=>sameNumber(o?.point,s.original_point));
+      if(!game||game.completed||!base)return await reject('LINE_SUSPENDED','The original market is unavailable. No credits were charged.');
+      if(!anchor){
+        const now=anchors[0];
+        return await reject(now?'LINE_CHANGED':'LINE_SUSPENDED','The original line changed. Reselect it before buying points.',{current_line:now?{point:now.point??null,american_odds:Number(now.price)}:null});
+      }
+      const alternateKey=s.market_key==='spreads'?'alternate_spreads':'alternate_totals';
+      const alternate=await loadCurrentAlternate(url,anon,s.sport_key,s.event_id,alternateKey);
+      if(!alternate)return await reject('LINE_SUSPENDED','Fresh alternate-line pricing is unavailable. No credits were charged.');
+      const verdict:any=currentOutcomeFor({...s,market_key:alternateKey},[alternate]);
+      if(!verdict.ok)return await reject(verdict.code,verdict.message,{current_line:verdict.current_line||null});
     }
     const propGroups = new Map<string,any[]>();
     for (const s of normalized.filter((s:any) => isSupportedProp(s.market_key,s.sport_key))) {
