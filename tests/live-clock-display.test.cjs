@@ -56,10 +56,10 @@ async function open(t, { sport = 'nfl', payload, clock = false } = {}) {
   await route.fulfill({ contentType: 'application/json', body: JSON.stringify(result) });
  });
  await page.goto(base + '/gameday-sportsbook.html?view=live&sport=' + sport);
- await page.locator('.game-state strong').waitFor();
+ await page.locator('.game-state strong').first().waitFor();
  return { page, fixture, context };
 }
-async function label(page) { return page.locator('.game-state strong').textContent(); }
+async function label(page) { return page.locator('.game-state strong').first().textContent(); }
 async function tick(page) { await page.evaluate(() => { void __liveTick(); }); }
 async function waitLabel(page, text) { await page.waitForFunction(text => document.querySelector('.game-state strong')?.textContent === text, text); }
 
