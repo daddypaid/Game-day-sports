@@ -161,7 +161,7 @@ test('older failed live refresh cannot clear a newer successful score and clock'
 });
 
 
-test('Buy Points fetches half-point prices for a selected game but never charges an unapproved adjusted wager',async t=>{
+test('Buy Points selects verified half-point spread prices without changing the original wallet charge',async t=>{
  const {p}=await open(t);
  await p.locator('[data-market="spreads"]').first().click();
  await p.locator('.odd').first().click();
@@ -175,13 +175,34 @@ test('Buy Points fetches half-point prices for a selected game but never charges
  await p.fill('#stake','10');
  const originalReturn=await p.locator('#return').textContent();
  await p.locator('#buy-points-0').selectOption('0');
- assert.match(await p.locator('#buy-points-preview-0').textContent(),/not selected for wagering/);
- assert.equal(await p.locator('#return').textContent(),originalReturn);
+ assert.equal(await p.locator('#buy-points-0').inputValue(),'0');
+ assert.match(await p.locator('#slipItems').textContent(),/-3/);
+ assert.notEqual(await p.locator('#return').textContent(),originalReturn);
  assert.equal(await p.evaluate(()=>__f.calls.length),0);
  await p.click('#place');
  await p.locator('#slipMsg .success').waitFor();
  const submitted=await p.evaluate(()=>__f.calls[0].body.selections[0]);
  assert.equal(submitted.market_key,'spreads');
+ assert.equal(submitted.point,-3);
+ assert.equal(submitted.american_odds,-125);
+ assert.equal(submitted.buy_points,true);
+ assert.equal(submitted.original_point,-3.5);
+ assert.equal(await p.evaluate(()=>__f.calls.length),1);
+});
+test('Buy Points dropdown can revert to the original line without losing the selected team',async t=>{
+ const {p}=await open(t);
+ await p.locator('[data-market="spreads"]').first().click();
+ await p.locator('.odd').first().click();
+ await p.click('#openSlip');
+ await p.waitForFunction(()=>document.querySelectorAll('#buy-points-0 option').length>=3);
+ await p.locator('#buy-points-0').selectOption('0');
+ await p.locator('#buy-points-0').selectOption('');
+ await p.waitForFunction(()=>document.querySelector('#slipItems')?.textContent.includes('-3.5'));
+ await p.fill('#stake','10');
+ await p.click('#place');
+ await p.locator('#slipMsg .success').waitFor();
+ const submitted=await p.evaluate(()=>__f.calls[0].body.selections[0]);
  assert.equal(submitted.point,-3.5);
  assert.equal(submitted.american_odds,-110);
+ assert.equal(submitted.buy_points,undefined);
 });
