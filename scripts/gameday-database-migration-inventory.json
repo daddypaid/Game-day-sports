@@ -658,6 +658,15 @@
       "source_payload_sha256": "6ea50c16c289c1915e0a13d961b0574ea18e0ca6e25df6316fc8889c4fa0309d",
       "local_file_sha256": "6ea50c16c289c1915e0a13d961b0574ea18e0ca6e25df6316fc8889c4fa0309d",
       "previous_local_path": null
+    },
+    {
+      "version": "20261104140615",
+      "name": "sport_specific_teaser_sets",
+      "path": "supabase/migrations/20261104140615_sport_specific_teaser_sets.sql",
+      "source": "deployed_migration_history",
+      "source_payload_sha256": "0ed8db91f9ffa08ecbcb2b7b525d0e1426e0fbef2bee449286c6c1f5f4e999b5",
+      "local_file_sha256": "0ed8db91f9ffa08ecbcb2b7b525d0e1426e0fbef2bee449286c6c1f5f4e999b5",
+      "previous_local_path": null
     }
   ],
   "supplemental_local_migrations": [],
