@@ -135,7 +135,7 @@ function edge(f,options = {}) {
     },
     async fetch(_url,opts) {
       calls.freshQuotes++; const body = JSON.parse(opts.body);
-      assert.equal(body.sport,'americanfootball_nfl');
+      assert(['americanfootball_nfl','basketball_nba'].includes(body.sport));
       if (options.failQuotes) throw new Error('Quote provider unavailable');
       const alternate = body.mode==='alternate_lines';
       if(alternate){
