@@ -16,7 +16,8 @@ const js=source.slice(start,end)
  .replaceAll('bookmakers:any[]=[]','bookmakers=[]')
  .replaceAll('(b:any)','(b)')
  .replaceAll('(m:any)','(m)')
- .replaceAll('new Map<string,any[]>()','new Map()');
+ .replaceAll('new Map<string,any[]>()','new Map()')
+ .replaceAll('groups.get(sig)!.push(outcome)','groups.get(sig).push(outcome)');
 const aggregate=new Function(js+'\nreturn consensusBookmaker;')();
 
 const outcome=(name,point,price)=>({name,description:null,point,price});
